@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/keyboard_root"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#CCCCCC"
+    android:orientation="vertical">
+
+    <!-- Container for letter keys -->
+    <LinearLayout
+        android:id="@+id/letter_keys_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp">
+
+        <!-- Row 1: q w e r t y u i o p -->
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/xButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:tag="x"
+                android:text="@string/x" />
+
+            <Button
+                android:id="@+id/wButton"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:tag="w"
+                android:text="@string/w" />
+
+            <!-- Add other keys similarly, ensuring each letter key has an android:tag -->
+        </LinearLayout>
+
+        <!-- Row 2: a s d f g h j k l -->
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/key_a"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:tag="a"
+                android:text="@string/a" />
+
+            <Button
+                android:id="@+id/key_s"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:tag="s"
+                android:text="@string/s" />
+            <!-- Add d, f, g, h, j, k, l similarly -->
+        </LinearLayout>
+
+        <!-- Row 3: shift, z, x, c, v, b, n, m, delete -->
+        <LinearLayout
+            style="?android:attr/buttonBarStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/key_shift"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Shift" />
+
+            <Button
+                android:id="@+id/key_z"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:tag="z"
+                android:text="@string/z" />
+
+            <Button
+                android:id="@+id/key_x"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:tag="x"
+                android:text="@string/x" />
+            <!-- Add keys for c, v, b, n, m -->
+            <Button
+                android:id="@+id/key_delete"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/del" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Container for symbol keys (initially hidden) -->
+    <LinearLayout
+        android:id="@+id/symbol_keys_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="4dp"
+        android:visibility="gone">
+        <!-- Define symbol keys similarly to letter keys, e.g., !, @, #, etc. -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            tools:ignore="UselessParent">
+
+            <Button
+                android:id="@+id/key_exclam"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="!" />
+
+            <Button
+                android:id="@+id/key_at"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="_" />
+            <!-- Continue for other symbols -->
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Bottom row with additional function keys -->
+    <LinearLayout
+        android:id="@+id/row_functions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="4dp">
+
+        <Button
+            android:id="@+id/key_lang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="EN" />
+
+        <Button
+            android:id="@+id/key_add_lang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+Lang" />
+
+        <Button
+            android:id="@+id/key_space"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Space" />
+
+        <Button
+            android:id="@+id/key_symbols"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="123?" />
+
+        <Button
+            android:id="@+id/key_enter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enter" />
+    </LinearLayout>
+
+</LinearLayout>

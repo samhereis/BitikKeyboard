@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">BitikKeyboard</string>
+    <string name="q">q</string>
+    <string name="w">w</string>
+    <string name="e">e</string>
+    <string name="a">a</string>
+    <string name="s">s</string>
+    <string name="z">z</string>
+    <string name="x">x</string>
+    <string name="del">Del</string>
+</resources>
