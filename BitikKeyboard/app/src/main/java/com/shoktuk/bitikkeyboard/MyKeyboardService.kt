@@ -82,7 +82,14 @@ class MyKeyboardService : InputMethodService()
 
                         "Del" ->
                         {
-                           currentInputConnection?.deleteSurroundingText(1, 0)
+                           if (currentLayout!!.directionality == 1)
+                           {
+                              currentInputConnection?.deleteSurroundingText(1, 0)
+                              currentInputConnection?.deleteSurroundingText(1, 0)
+                           } else if (currentLayout!!.directionality == 0)
+                           {
+                              currentInputConnection?.deleteSurroundingText(1, 0)
+                           }
                         }
                      }
                   }
@@ -112,13 +119,8 @@ class MyKeyboardService : InputMethodService()
 
                keyView.setOnClickListener {
                   val letter = if (isCaps) key.uppercase else key.lowercase
-                  val textToCommit = if (layout.directionality == 1) "\u202B$letter\u202C" else letter
+                  val textToCommit = letter
                   currentInputConnection?.commitText(textToCommit, 1)
-                  if (isCaps)
-                  {
-                     isCaps = false
-                     updateLetterKeys(container, layout)
-                  }
                }
                keyView.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
                   height = buttonHeight
