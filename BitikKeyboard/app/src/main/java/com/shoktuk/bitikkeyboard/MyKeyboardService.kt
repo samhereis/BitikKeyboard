@@ -1,12 +1,18 @@
 package com.shoktuk.bitikkeyboard
 
+import KeyboardLayout
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.inputmethodservice.InputMethodService
+import android.view.Gravity
+import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.LinearLayout
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import android.widget.TextView
+import androidx.core.view.marginBottom
+import androidx.core.view.marginTop
 import com.google.gson.Gson
 import java.io.InputStreamReader
 
@@ -15,7 +21,6 @@ class MyKeyboardService : InputMethodService()
    private var isCaps: Boolean = false
    private var languageIndex: Int = 0
    private val languages = listOf("en", "kg_bitik", "ru")
-
    private var currentLayout: KeyboardLayout? = null
 
    override fun onCreateInputView(): View
@@ -26,71 +31,109 @@ class MyKeyboardService : InputMethodService()
 
    private fun buildKeyboardView(layout: KeyboardLayout): LinearLayout
    {
+      val buttonHeight = (75 * resources.displayMetrics.density).toInt()
+      val margin = (4 * resources.displayMetrics.density).toInt()
+
       val container = LinearLayout(this).apply {
          orientation = LinearLayout.VERTICAL
          layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
       }
+
+      // Build each row of keys.
       for (row in layout.rows)
       {
          val rowLayout = LinearLayout(this).apply {
             orientation = LinearLayout.HORIZONTAL
-            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
          }
          for (key in row)
          {
-            val keyButton = Button(this).apply {
-               if (key.name == "Shift")
-               {
-                  text = "" // Remove text to display only the icon
-                  setBackgroundResource(android.R.drawable.arrow_up_float)
-                  contentDescription = "Shift key"
-               } else if (key.name == "Del")
-               {
-                  text = ""
-                  setBackgroundResource(android.R.drawable.ic_input_delete)
-                  contentDescription = "Delete key"
-               } else
-               {
-                  text = if (isCaps) key.uppercase else key.lowercase
-               }
-
-               textSize = 20f
-               height = 150
-
-               layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-               setOnClickListener {
-                  if (key.name == "Shift")
+            // If the key is a system key, create a simple Button.
+            if (key.name == "Shift" || key.name == "Del")
+            {
+               val keyButton = Button(this).apply {
+                  when (key.name)
                   {
-                     isCaps = !isCaps
-                     updateLetterKeys(container, layout)
-                  } else if (key.name == "Del")
-                  {
-                     if (layout.directionality == 1)
+                     "Shift" ->
                      {
-                        currentInputConnection?.deleteSurroundingText(1, 0)
-                        currentInputConnection?.deleteSurroundingText(1, 0)
-                        currentInputConnection?.deleteSurroundingText(1, 0)
-                     } else
-                     {
-                        currentInputConnection?.deleteSurroundingText(1, 0)
+                        text = ""
+                        setBackgroundResource(android.R.drawable.arrow_up_float)
+                        contentDescription = "Shift key"
                      }
-                  } else
-                  {
-                     val letter = if (isCaps) key.uppercase else key.lowercase
-                     currentInputConnection?.commitText("\u202B$letter\u202C", 1)
+
+                     "Del" ->
+                     {
+                        text = ""
+                        setBackgroundResource(android.R.drawable.ic_input_delete)
+                        contentDescription = "Delete key"
+                     }
+                  }
+                  textSize = 20f
+                  height = 150
+                  layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+                  setOnClickListener {
+                     when (key.name)
+                     {
+                        "Shift" ->
+                        {
+                           isCaps = !isCaps
+                           updateLetterKeys(container, layout)
+                        }
+
+                        "Del" ->
+                        {
+                           currentInputConnection?.deleteSurroundingText(1, 0)
+                        }
+                     }
                   }
                }
+               rowLayout.addView(keyButton)
+            } else
+            {
+// For non-system keys (using custom compound view)
+               val keyView = LayoutInflater.from(this).inflate(R.layout.keyboard_key, rowLayout, false)
+               keyView.background = GradientDrawable().apply {
+                  shape = GradientDrawable.RECTANGLE
+                  setColor(Color.parseColor("#282626"))
+                  cornerRadius = 8 * resources.displayMetrics.density
+               }
+
+               val mainTextView = keyView.findViewById<TextView>(R.id.mainText)
+               val subTextView = keyView.findViewById<TextView>(R.id.subText)
+               mainTextView.text = if (isCaps) key.uppercase else key.lowercase
+
+               if (isCaps)
+               {
+                  subTextView.text = key.upperCaseHint ?: ""
+               } else
+               {
+                  subTextView.text = key.lowerCaseHint ?: ""
+               }
+
+               keyView.setOnClickListener {
+                  val letter = if (isCaps) key.uppercase else key.lowercase
+                  val textToCommit = if (layout.directionality == 1) "\u202B$letter\u202C" else letter
+                  currentInputConnection?.commitText(textToCommit, 1)
+                  if (isCaps)
+                  {
+                     isCaps = false
+                     updateLetterKeys(container, layout)
+                  }
+               }
+               keyView.layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f).apply {
+                  height = buttonHeight
+               }
+               rowLayout.addView(keyView)
             }
-            rowLayout.addView(keyButton)
          }
          container.addView(rowLayout)
       }
 
+      // Create the bottom row with language switching, space, and enter keys.
       val bottomRow = LinearLayout(this).apply {
          orientation = LinearLayout.HORIZONTAL
          layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
       }
-
       val langButton = Button(this).apply {
          text = languages[languageIndex]
          height = 150
@@ -109,7 +152,9 @@ class MyKeyboardService : InputMethodService()
          text = "Space"
          height = 150
          layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 2f)
-         setOnClickListener { currentInputConnection?.commitText(currentLayout!!.spaceKey, 1) }
+         setOnClickListener {
+            currentInputConnection?.commitText(currentLayout!!.spaceKey, 1)
+         }
       }
       bottomRow.addView(spaceButton)
 
@@ -117,7 +162,9 @@ class MyKeyboardService : InputMethodService()
          text = "Enter"
          height = 150
          layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
-         setOnClickListener { currentInputConnection?.commitText("\n", 1) }
+         setOnClickListener {
+            currentInputConnection?.commitText("\n", 1)
+         }
       }
       bottomRow.addView(enterButton)
 
@@ -127,17 +174,29 @@ class MyKeyboardService : InputMethodService()
 
    private fun updateLetterKeys(container: LinearLayout, layout: KeyboardLayout)
    {
+      // Update only non-system keys (those that use the custom view).
       for (i in layout.rows.indices)
       {
          val rowLayout = container.getChildAt(i) as? LinearLayout ?: continue
          val rowKeys = layout.rows[i]
          for (j in rowKeys.indices)
          {
-            val btn = rowLayout.getChildAt(j) as? Button ?: continue
             val key = rowKeys[j]
             if (key.name != "Shift" && key.name != "Del")
             {
-               btn.text = if (isCaps) key.uppercase else key.lowercase
+               // For custom key views, the first child (with id mainText) holds the letter.
+               val keyView = rowLayout.getChildAt(j)
+               val mainTextView = keyView.findViewById<TextView>(R.id.mainText)
+               val subTextView = keyView.findViewById<TextView>(R.id.subText)
+               mainTextView.text = if (isCaps) key.uppercase else key.lowercase
+
+               if (isCaps)
+               {
+                  subTextView.text = key.upperCaseHint ?: ""
+               } else
+               {
+                  subTextView.text = key.lowerCaseHint ?: ""
+               }
             }
          }
       }
@@ -152,7 +211,6 @@ class MyKeyboardService : InputMethodService()
          "ru" -> "langs/keyboard_ru.json"
          else -> "langs/keyboard_en.json"
       }
-
       assets.open(fileName).use { inputStream ->
          InputStreamReader(inputStream).use { reader ->
             return Gson().fromJson(reader, KeyboardLayout::class.java)

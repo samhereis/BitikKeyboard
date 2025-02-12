@@ -3,37 +3,37 @@
   "directionality": 1,
   "rows": [
     [
-      {"name": "𐰶", "lowercase": "𐰶", "uppercase": "𐰷", "hold": "" },
-      {"name": "𐰭", "lowercase": "𐰭", "uppercase": "𐰬", "hold": "" },
-      {"name": "𐰀", "lowercase": "𐰀", "uppercase": "𐰂", "hold": "" },
-      {"name": "𐰺", "lowercase": "𐰺", "uppercase": "𐰼", "hold": "" },
-      {"name": "𐱄", "lowercase": "𐱄", "uppercase": "𐱅", "hold": "" },
-      {"name": "𐰖", "lowercase": "𐰖", "uppercase": "𐰖", "hold": "" },
-      {"name": "𐰆", "lowercase": "𐰆", "uppercase": "𐰇", "hold": "" },
-      {"name": "𐰃", "lowercase": "𐰃", "uppercase": "𐰄", "hold": "" },
-      {"name": "𐰗", "lowercase": "𐰗", "uppercase": "𐰈", "hold": "" },
-      {"name": "𐰯", "lowercase": "𐰯", "uppercase": "𐰯", "hold": "" }
+      {"name": "𐰶", "lowercase": "𐰶", "uppercase": "𐰷", "hold": "", "lowerCaseHint": "qi", "upperCaseHint": "ıq" },
+      {"name": "𐰭", "lowercase": "𐰬", "uppercase":"𐰭" , "hold": "", "lowerCaseHint": "ñ", "upperCaseHint": "ñ'" },
+      {"name": "𐰀", "lowercase": "𐰀", "uppercase": "𐰂", "hold": "", "lowerCaseHint": "e", "upperCaseHint": "ə" },
+      {"name": "𐰺", "lowercase": "𐰺", "uppercase": "𐰼", "hold": "", "lowerCaseHint": "r", "upperCaseHint": "r'" },
+      {"name": "𐱄", "lowercase": "𐱄", "uppercase": "𐱅", "hold": "", "lowerCaseHint": "t", "upperCaseHint": "t'" },
+      {"name": "𐰖", "lowercase": "𐰖", "uppercase": "𐰖", "hold": "", "lowerCaseHint": "y", "upperCaseHint": "y" },
+      {"name": "𐰆", "lowercase": "𐰆", "uppercase": "𐰇", "hold": "", "lowerCaseHint": "u", "upperCaseHint": "ü" },
+      {"name": "𐰃", "lowercase": "𐰃", "uppercase": "𐰄", "hold": "", "lowerCaseHint": "i", "upperCaseHint": "ı" },
+      {"name": "𐰗", "lowercase": "𐰗", "uppercase": "𐰈", "hold": "", "lowerCaseHint": "o", "upperCaseHint": "ö" },
+      {"name": "𐰯", "lowercase": "𐰯", "uppercase": "𐰊", "hold": "", "lowerCaseHint": "p", "upperCaseHint": "f" }
     ],
     [
-      { "name": "𐰁", "lowercase": "𐰁", "uppercase": "𐰁", "hold": "" },
-      { "name": "𐰽", "lowercase": "𐰽", "uppercase": "𐰾", "hold": "" },
-      { "name": "𐰑", "lowercase": "𐰑", "uppercase": "𐰓", "hold": "" },
-      { "name": "𐰹", "lowercase": "𐰹", "uppercase": "𐰊", "hold": "" },
-      { "name": "𐰏", "lowercase": "𐰏", "uppercase": "𐰏", "hold": "" },
-      { "name": "𐰎", "lowercase": "𐰎", "uppercase": "𐰛", "hold": "" },
-      { "name": "𐰘", "lowercase": "𐰘", "uppercase": "𐰘", "hold": "" },
-      { "name": "𐰴", "lowercase": "𐰴", "uppercase": "𐰚", "hold": "" },
-      { "name": "𐰞", "lowercase": "𐰞", "uppercase": "𐰠", "hold": "" }
+      { "name": "𐰁", "lowercase": "𐰁", "uppercase": "𐰁", "hold": "" , "lowerCaseHint": "a", "upperCaseHint": "a"},
+      { "name": "𐰽", "lowercase": "𐰽", "uppercase": "𐰾", "hold": "", "lowerCaseHint": "s" , "upperCaseHint": "s'"},
+      { "name": "𐰑", "lowercase": "𐰑", "uppercase": "𐰓", "hold": "", "lowerCaseHint": "d" , "upperCaseHint": "d'"},
+      { "name": "𐰹", "lowercase": "𐰹", "uppercase": "𐰸", "hold": "", "lowerCaseHint": "oq", "upperCaseHint": "uq"},
+      { "name": "𐰏", "lowercase": "𐰏", "uppercase": "𐰏", "hold": "", "lowerCaseHint": "g", "upperCaseHint": "g"},
+      { "name": "𐰎", "lowercase": "𐰎", "uppercase": "𐰎", "hold": "", "lowerCaseHint": "ǧ", "upperCaseHint": "ǧ"},
+      { "name": "𐰘", "lowercase": "𐰘", "uppercase": "𐰘", "hold": "", "lowerCaseHint": "j", "upperCaseHint": "j"},
+      { "name": "𐰴", "lowercase": "𐰴", "uppercase": "𐰚", "hold": "", "lowerCaseHint": "q", "upperCaseHint": "k'"},
+      { "name": "𐰞", "lowercase": "𐰞", "uppercase": "𐰠", "hold": "", "lowerCaseHint": "l", "upperCaseHint": "l'"}
     ],
     [
       { "name": "Shift" },
-      { "name": "𐰕", "lowercase": "𐰕", "uppercase": "𐰕", "hold": "" },
-      { "name": "𐱁", "lowercase": "𐱁", "uppercase": "𐱀", "hold": "" },
-      { "name": "𐰲", "lowercase": "𐰲", "uppercase": "𐰲", "hold": "" },
-      { "name": "𐰸", "lowercase": "𐰸", "uppercase": "𐰟", "hold": "" },
-      { "name": "𐰉", "lowercase": "𐰉", "uppercase": "𐰋", "hold": "" },
-      { "name": "𐰣", "lowercase": "𐰣", "uppercase": "𐰥", "hold": "" },
-      { "name": "𐰢", "lowercase": "𐰢", "uppercase": "𐰢", "hold": "" },
+      { "name": "𐰕", "lowercase": "𐰕", "uppercase": "𐰕", "hold": "", "lowerCaseHint": "z", "upperCaseHint": "z" },
+      { "name": "𐱁", "lowercase": "𐱁", "uppercase": "𐱀", "hold": "", "lowerCaseHint": "ş", "upperCaseHint": "ş'" },
+      { "name": "𐰲", "lowercase": "𐰲", "uppercase": "𐰲", "hold": "", "lowerCaseHint": "ç", "upperCaseHint": "ç" },
+      { "name": "𐰜", "lowercase": "𐰜", "uppercase": "𐰝",  "hold": "", "lowerCaseHint": "ük", "upperCaseHint": "ök" },
+      { "name": "𐰉", "lowercase": "𐰉", "uppercase": "𐰉", "hold": "", "lowerCaseHint": "b", "upperCaseHint": "b'" },
+      { "name": "𐰣", "lowercase": "𐰣", "uppercase": "𐰥", "hold": "", "lowerCaseHint": "n", "upperCaseHint": "n'" },
+      { "name": "𐰢", "lowercase": "𐰢", "uppercase": "𐰟", "hold": "", "lowerCaseHint": "m", "upperCaseHint": "v" },
       { "name": "Del" }
     ]
   ]

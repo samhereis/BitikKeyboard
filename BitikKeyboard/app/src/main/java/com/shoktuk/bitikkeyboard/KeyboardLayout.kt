@@ -1,5 +1,6 @@
-package com.shoktuk.bitikkeyboard
-
 data class KeyboardLayout(
-        val spaceKey: String, var directionality: Int, val rows: List<List<KeyEntry>>
+        val name: String,
+        val directionality: Int,
+        val spaceKey: String,
+        val rows: List<List<KeyEntry>>
 )
