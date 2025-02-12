@@ -1,0 +1,46 @@
+{
+  "name": "russian",
+  "spaceKey": " ",
+  "directionality": 0,
+  "rows": [
+    [
+      { "name": "й", "lowercase": "й", "uppercase": "Й", "hold": "й_hold" },
+      { "name": "ц", "lowercase": "ц", "uppercase": "Ц", "hold": "ц_hold" },
+      { "name": "у", "lowercase": "у", "uppercase": "У", "hold": "у_hold" },
+      { "name": "к", "lowercase": "к", "uppercase": "К", "hold": "к_hold" },
+      { "name": "е", "lowercase": "е", "uppercase": "Е", "hold": "е_hold" },
+      { "name": "н", "lowercase": "н", "uppercase": "Н", "hold": "н_hold" },
+      { "name": "г", "lowercase": "г", "uppercase": "Г", "hold": "г_hold" },
+      { "name": "ш", "lowercase": "ш", "uppercase": "Ш", "hold": "ш_hold" },
+      { "name": "щ", "lowercase": "щ", "uppercase": "Щ", "hold": "щ_hold" },
+      { "name": "з", "lowercase": "з", "uppercase": "З", "hold": "з_hold" },
+      { "name": "х", "lowercase": "х", "uppercase": "Х", "hold": "х_hold" }
+    ],
+    [
+      { "name": "ф", "lowercase": "ф", "uppercase": "Ф", "hold": "ф_hold" },
+      { "name": "ы", "lowercase": "ы", "uppercase": "Ы", "hold": "ы_hold" },
+      { "name": "в", "lowercase": "в", "uppercase": "В", "hold": "в_hold" },
+      { "name": "а", "lowercase": "а", "uppercase": "А", "hold": "а_hold" },
+      { "name": "п", "lowercase": "п", "uppercase": "П", "hold": "п_hold" },
+      { "name": "р", "lowercase": "р", "uppercase": "Р", "hold": "р_hold" },
+      { "name": "о", "lowercase": "о", "uppercase": "О", "hold": "о_hold" },
+      { "name": "л", "lowercase": "л", "uppercase": "Л", "hold": "л_hold" },
+      { "name": "д", "lowercase": "д", "uppercase": "Д", "hold": "д_hold" },
+      { "name": "ж", "lowercase": "жд", "uppercase": "Ж", "hold": "ж_hold" },
+      { "name": "э", "lowercase": "э", "uppercase": "Э", "hold": "э_hold" }
+    ],
+    [
+      { "name": "Shift", "lowercase": "Shift" },
+      { "name": "я", "lowercase": "я", "uppercase": "Я", "hold": "я_hold" },
+      { "name": "ч", "lowercase": "ч", "uppercase": "Ч", "hold": "ч_hold" },
+      { "name": "с", "lowercase": "с", "uppercase": "С", "hold": "с_hold" },
+      { "name": "м", "lowercase": "м", "uppercase": "М", "hold": "м_hold" },
+      { "name": "и", "lowercase": "и", "uppercase": "И", "hold": "и_hold" },
+      { "name": "т", "lowercase": "т", "uppercase": "Т", "hold": "т_hold" },
+      { "name": "ь", "lowercase": "ь", "uppercase": "Ь", "hold": "ь_hold" },
+      { "name": "б", "lowercase": "б", "uppercase": "Б", "hold": "б_hold" },
+      { "name": "ю", "lowercase": "ю", "uppercase": "Ю", "hold": "ю_hold" },
+      { "name": "Del", "lowercase": "Del" }
+    ]
+  ]
+}

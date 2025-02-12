@@ -1,0 +1,40 @@
+{
+  "spaceKey": " : ",
+  "directionality": 1,
+  "rows": [
+    [
+      {"name": "𐰶", "lowercase": "𐰶", "uppercase": "𐰷", "hold": "" },
+      {"name": "𐰭", "lowercase": "𐰭", "uppercase": "𐰬", "hold": "" },
+      {"name": "𐰀", "lowercase": "𐰀", "uppercase": "𐰂", "hold": "" },
+      {"name": "𐰺", "lowercase": "𐰺", "uppercase": "𐰼", "hold": "" },
+      {"name": "𐱄", "lowercase": "𐱄", "uppercase": "𐱅", "hold": "" },
+      {"name": "𐰖", "lowercase": "𐰖", "uppercase": "𐰖", "hold": "" },
+      {"name": "𐰆", "lowercase": "𐰆", "uppercase": "𐰇", "hold": "" },
+      {"name": "𐰃", "lowercase": "𐰃", "uppercase": "𐰄", "hold": "" },
+      {"name": "𐰗", "lowercase": "𐰗", "uppercase": "𐰈", "hold": "" },
+      {"name": "𐰯", "lowercase": "𐰯", "uppercase": "𐰯", "hold": "" }
+    ],
+    [
+      { "name": "𐰁", "lowercase": "𐰁", "uppercase": "𐰁", "hold": "" },
+      { "name": "𐰽", "lowercase": "𐰽", "uppercase": "𐰾", "hold": "" },
+      { "name": "𐰑", "lowercase": "𐰑", "uppercase": "𐰓", "hold": "" },
+      { "name": "𐰹", "lowercase": "𐰹", "uppercase": "𐰊", "hold": "" },
+      { "name": "𐰏", "lowercase": "𐰏", "uppercase": "𐰏", "hold": "" },
+      { "name": "𐰎", "lowercase": "𐰎", "uppercase": "𐰛", "hold": "" },
+      { "name": "𐰘", "lowercase": "𐰘", "uppercase": "𐰘", "hold": "" },
+      { "name": "𐰴", "lowercase": "𐰴", "uppercase": "𐰚", "hold": "" },
+      { "name": "𐰞", "lowercase": "𐰞", "uppercase": "𐰠", "hold": "" }
+    ],
+    [
+      { "name": "Shift" },
+      { "name": "𐰕", "lowercase": "𐰕", "uppercase": "𐰕", "hold": "" },
+      { "name": "𐱁", "lowercase": "𐱁", "uppercase": "𐱀", "hold": "" },
+      { "name": "𐰲", "lowercase": "𐰲", "uppercase": "𐰲", "hold": "" },
+      { "name": "𐰸", "lowercase": "𐰸", "uppercase": "𐰟", "hold": "" },
+      { "name": "𐰉", "lowercase": "𐰉", "uppercase": "𐰋", "hold": "" },
+      { "name": "𐰣", "lowercase": "𐰣", "uppercase": "𐰥", "hold": "" },
+      { "name": "𐰢", "lowercase": "𐰢", "uppercase": "𐰢", "hold": "" },
+      { "name": "Del" }
+    ]
+  ]
+}

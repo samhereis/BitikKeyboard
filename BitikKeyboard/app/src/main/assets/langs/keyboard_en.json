@@ -1,0 +1,41 @@
+{
+  "name": "english",
+  "spaceKey": " ",
+  "directionality": 0,
+  "rows": [
+    [
+      {"name": "q", "lowercase": "q", "uppercase": "Q", "hold": "q"},
+      {"name": "w", "lowercase": "w", "uppercase": "W", "hold": "w"},
+      {"name": "e", "lowercase": "e", "uppercase": "E", "hold": "e"},
+      {"name": "r", "lowercase": "r", "uppercase": "R", "hold": "r"},
+      {"name": "t", "lowercase": "t", "uppercase": "T", "hold": "t"},
+      {"name": "y", "lowercase": "y", "uppercase": "Y", "hold": "y"},
+      {"name": "u", "lowercase": "u", "uppercase": "U", "hold": "u"},
+      {"name": "i", "lowercase": "i", "uppercase": "I", "hold": "i"},
+      {"name": "o", "lowercase": "o", "uppercase": "O", "hold": "o"},
+      {"name": "p", "lowercase": "p", "uppercase": "P", "hold": "p"}
+    ],
+    [
+      {"name": "a", "lowercase": "a", "uppercase": "A", "hold": "a"},
+      {"name": "s", "lowercase": "s", "uppercase": "S", "hold": "s"},
+      {"name": "d", "lowercase": "d", "uppercase": "D", "hold": "d"},
+      {"name": "f", "lowercase": "f", "uppercase": "F", "hold": "f"},
+      {"name": "g", "lowercase": "g", "uppercase": "G", "hold": "g"},
+      {"name": "h", "lowercase": "h", "uppercase": "H", "hold": "h"},
+      {"name": "j", "lowercase": "j", "uppercase": "J", "hold": "j"},
+      {"name": "k", "lowercase": "k", "uppercase": "K", "hold": "k"},
+      {"name": "l", "lowercase": "l", "uppercase": "L", "hold": "l"}
+    ],
+    [
+      {"name": "Shift", "lowercase": "Shift"},
+      {"name": "z", "lowercase": "z", "uppercase": "Z", "hold": "z"},
+      {"name": "x", "lowercase": "x", "uppercase": "X", "hold": "x"},
+      {"name": "c", "lowercase": "c", "uppercase": "C", "hold": "c"},
+      {"name": "v", "lowercase": "v", "uppercase": "V", "hold": "v"},
+      {"name": "b", "lowercase": "b", "uppercase": "B", "hold": "b"},
+      {"name": "n", "lowercase": "n", "uppercase": "N", "hold": "n"},
+      {"name": "m", "lowercase": "m", "uppercase": "M", "hold": "m"},
+      {"name": "Del", "lowercase": "Del"}
+    ]
+  ]
+}
