@@ -1,150 +1,149 @@
 package com.shoktuk.bitikkeyboard
 
 import android.inputmethodservice.InputMethodService
-import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.FrameLayout
-import android.widget.Toast
+import android.widget.LinearLayout
 
 class MyKeyboardService : InputMethodService()
 {
-   private var isCaps: Boolean = false
-   private var isSymbols: Boolean = false
-   private var languageIndex: Int = 0
 
-   // Update your languages list to match your layouts.
+   // State for shift and language selection
+   private var isCaps: Boolean = false
+   private var languageIndex: Int = 0
    private val languages = listOf("EN", "KG", "RU")
 
-   // Map language code to its corresponding layout resource.
-   private val languageLayouts = mapOf("EN" to R.layout.keyboard_en, "KG" to R.layout.keyboard_bitik_kg, "RU" to R.layout.keyboard_ru)
-
-   // Our container that holds the keyboard view.
-   private lateinit var keyboardContainer: FrameLayout
-
-   // The currently active keyboard view (child of the container)
-   private lateinit var currentKeyboardView: View
+   // Define the key rows for a basic QWERTY layout for English.
+   // For simplicity, we only define one layout here.
+   private val qwertyRows =
+      listOf(listOf("q", "w", "e", "r", "t", "y", "u", "i", "o", "p"), listOf("a", "s", "d", "f", "g", "h", "j", "k", "l"), listOf("Shift", "z", "x", "c", "v", "b", "n", "m", "Del"))
 
    override fun onCreateInputView(): View
    {
-      keyboardContainer = layoutInflater.inflate(R.layout.keyboard_container, null) as FrameLayout
+      // Create a vertical container for the keyboard
+      val container = LinearLayout(this).apply {
+         orientation = LinearLayout.VERTICAL
+         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+      }
 
-      changeLanguage();
-      return keyboardContainer
-   }
-
-   private fun changeLanguage()
-   {
-      currentKeyboardView = inflateKeyboardForLanguage(languages[languageIndex])
-      keyboardContainer.addView(currentKeyboardView)
-   }
-
-
-   private fun inflateKeyboardForLanguage(lang: String): View
-   {
-      val layoutId = languageLayouts[lang] ?: R.layout.keyboard_en
-      val view = layoutInflater.inflate(layoutId, keyboardContainer, false)
-      setupKeyListeners(view)
-      updateKeyboardKeys(view)
-      return view
-   }
-
-   private fun setupKeyListeners(view: View)
-   {
-      // Setup letter key listeners.
-      // Notice: iterate over rows (if letter keys are grouped in rows).
-      val letterContainer = view.findViewById<ViewGroup>(R.id.letter_keys_container)
-      if (letterContainer != null)
+      // Create rows for letter keys
+      for (row in qwertyRows)
       {
-         for (i in 0 until letterContainer.childCount)
+         val rowLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.HORIZONTAL
+            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+         }
+         // For each key in the row, create a button
+         for (key in row)
          {
-            val row = letterContainer.getChildAt(i)
-            if (row is ViewGroup)
-            {
-               for (j in 0 until row.childCount)
+            val keyButton = Button(this).apply {
+               // For regular letter keys, apply shift logic.
+               text = when (key)
                {
-                  val keyView = row.getChildAt(j)
-                  if (keyView is Button)
+                  "Shift", "Del" -> key
+                  else -> if (isCaps) key.uppercase() else key.lowercase()
+               }
+               // Use weight so that keys are distributed evenly.
+               layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+               setOnClickListener {
+                  when (key)
                   {
-                     val baseLetter = keyView.tag as? String ?: continue
-                     keyView.setOnClickListener {
-                        val letter = if (isCaps) baseLetter.uppercase() else baseLetter.lowercase()
+                     "Shift" ->
+                     {
+                        isCaps = !isCaps
+                        updateLetterKeys(container)
+                     }
+
+                     "Del" ->
+                     {
+                        currentInputConnection?.deleteSurroundingText(1, 0)
+                     }
+
+                     else ->
+                     {
+                        // Commit the letter (apply shift if needed)
+                        val letter = if (isCaps) key.uppercase() else key.lowercase()
                         currentInputConnection?.commitText(letter, 1)
+                        // Optionally, turn off shift after one key press.
                         if (isCaps)
                         {
                            isCaps = false
-                           updateKeyboardKeys(view)
+                           updateLetterKeys(container)
                         }
                      }
                   }
                }
             }
+            rowLayout.addView(keyButton)
+         }
+         container.addView(rowLayout)
+      }
+
+      // Bottom row for function keys (language, space, enter)
+      val bottomRow = LinearLayout(this).apply {
+         orientation = LinearLayout.HORIZONTAL
+         layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+      }
+
+      // Language switch button
+      val langButton = Button(this).apply {
+         text = languages[languageIndex]
+         layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+         setOnClickListener {
+            // Cycle through languages.
+            languageIndex = (languageIndex + 1) % languages.size
+            text = languages[languageIndex]
+            // For this simple demo, the keyboard layout remains the same.
+            // In a complete implementation, you might update the keys.
          }
       }
-      // Shift key toggles capitalization.
-      view.findViewById<Button>(R.id.key_shift)?.setOnClickListener {
-         isCaps = !isCaps
-         updateKeyboardKeys(view)
-      }
-      // Symbols key toggles between letters and symbols.
-      view.findViewById<Button>(R.id.key_symbols)?.setOnClickListener {
-         isSymbols = !isSymbols
-         updateKeyboardKeys(view)
-      }
-      // Language switch key cycles through available languages.
-      view.findViewById<Button>(R.id.key_lang)?.setOnClickListener { btn ->
-         languageIndex = (languageIndex + 1) % languages.size
-         // Update the button text to reflect the current language.
-         (btn as Button).text = languages[languageIndex]
-         // Replace the current keyboard view with the new language layout.
-         keyboardContainer.removeAllViews()
+      bottomRow.addView(langButton)
 
-         changeLanguage();
+      // Space button
+      val spaceButton = Button(this).apply {
+         text = "Space"
+         layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 2f)
+         setOnClickListener { currentInputConnection?.commitText(" ", 1) }
       }
+      bottomRow.addView(spaceButton)
 
-      view.findViewById<Button>(R.id.key_space)?.setOnClickListener {
-         currentInputConnection?.commitText(" ", 1)
+      // Enter button
+      val enterButton = Button(this).apply {
+         text = "Enter"
+         layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f)
+         setOnClickListener { currentInputConnection?.commitText("\n", 1) }
       }
-      // Delete key.
-      view.findViewById<Button>(R.id.key_delete)?.setOnClickListener {
-         currentInputConnection?.deleteSurroundingText(1, 0)
-      }
-      // Enter key.
-      view.findViewById<Button>(R.id.key_enter)?.setOnClickListener {
-         currentInputConnection?.commitText("\n", 1)
-      }
+      bottomRow.addView(enterButton)
+
+      container.addView(bottomRow)
+      return container
    }
 
-   private fun updateKeyboardKeys(view: View)
+   /**
+    * Update the text of the letter keys based on the current shift state.
+    * It iterates over the rows that contain letter keys (the first three rows).
+    */
+   private fun updateLetterKeys(container: LinearLayout)
    {
-      // Update letter keys text based on the isCaps state.
-      val letterContainer = view.findViewById<ViewGroup>(R.id.letter_keys_container)
-      if (letterContainer != null)
+      // Assume the first three children of the container are letter rows.
+      for (i in 0 until container.childCount)
       {
-         for (i in 0 until letterContainer.childCount)
+         val child = container.getChildAt(i)
+         if (child is LinearLayout && i < qwertyRows.size)
          {
-            val row = letterContainer.getChildAt(i)
-            if (row is ViewGroup)
+            val rowKeys = qwertyRows[i]
+            for (j in 0 until child.childCount)
             {
-               for (j in 0 until row.childCount)
+               val btn = child.getChildAt(j) as? Button ?: continue
+               val key = rowKeys[j]
+               // Only update letter keys, not the "Shift" or "Del" keys.
+               if (key != "Shift" && key != "Del")
                {
-                  val keyView = row.getChildAt(j)
-                  if (keyView is Button)
-                  {
-                     val baseLetter = keyView.tag as? String ?: continue
-                     keyView.text = if (isCaps) baseLetter.uppercase() else baseLetter.lowercase()
-                  }
+                  btn.text = if (isCaps) key.uppercase() else key.lowercase()
                }
             }
          }
-      }
-      // Toggle visibility of symbol keys if present.
-      val symbolsContainer = view.findViewById<ViewGroup>(R.id.symbol_keys_container)
-      if (symbolsContainer != null)
-      {
-         symbolsContainer.visibility = if (isSymbols) View.VISIBLE else View.GONE
-         letterContainer.visibility = if (isSymbols) View.GONE else View.VISIBLE
       }
    }
 }
