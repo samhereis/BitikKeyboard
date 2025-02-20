@@ -4,37 +4,40 @@
   "spaceKey": " ",
   "rows": [
     [
-      { "name": "!", "lowercase": "!", "uppercase": "!", "lowerCaseHint": "!" },
-      { "name": "@", "lowercase": "@", "uppercase": "@", "lowerCaseHint": "@" },
-      { "name": "#", "lowercase": "#", "uppercase": "#", "lowerCaseHint": "#" },
-      { "name": "$", "lowercase": "$", "uppercase": "$", "lowerCaseHint": "$" },
-      { "name": "%", "lowercase": "%", "uppercase": "%", "lowerCaseHint": "%" },
-      { "name": "^", "lowercase": "^", "uppercase": "^", "lowerCaseHint": "^" },
-      { "name": "&", "lowercase": "&", "uppercase": "&", "lowerCaseHint": "&" },
-      { "name": "*", "lowercase": "*", "uppercase": "*", "lowerCaseHint": "*" },
-      { "name": "(", "lowercase": "(", "uppercase": "(", "lowerCaseHint": "(" },
-      { "name": ")", "lowercase": ")", "uppercase": ")", "lowerCaseHint": ")" }
+      { "name": "1", "lowercase": "1", "uppercase": "1" },
+      { "name": "2", "lowercase": "2", "uppercase": "2" },
+      { "name": "3", "lowercase": "3", "uppercase": "3" },
+      { "name": "4", "lowercase": "4", "uppercase": "4" },
+      { "name": "5", "lowercase": "5", "uppercase": "5" },
+      { "name": "6", "lowercase": "6", "uppercase": "6" },
+      { "name": "7", "lowercase": "7", "uppercase": "7" },
+      { "name": "8", "lowercase": "8", "uppercase": "8" },
+      { "name": "9", "lowercase": "9", "uppercase": "9" },
+      { "name": "0", "lowercase": "0", "uppercase": "0" }
     ],
     [
-      { "name": "-", "lowercase": "-", "uppercase": "-", "lowerCaseHint": "-" },
-      { "name": "_", "lowercase": "_", "uppercase": "_", "lowerCaseHint": "_" },
-      { "name": "+", "lowercase": "+", "uppercase": "+", "lowerCaseHint": "+" },
-      { "name": "=", "lowercase": "=", "uppercase": "=", "lowerCaseHint": "=" },
-      { "name": "[", "lowercase": "[", "uppercase": "[", "lowerCaseHint": "[" },
-      { "name": "]", "lowercase": "]", "uppercase": "]", "lowerCaseHint": "]" },
-      { "name": "{", "lowercase": "{", "uppercase": "{", "lowerCaseHint": "{" },
-      { "name": "}", "lowercase": "}", "uppercase": "}", "lowerCaseHint": "}" },
-      { "name": "|", "lowercase": "|", "uppercase": "|", "lowerCaseHint": "|" }
+      { "name": "@", "lowercase": "@", "uppercase": "@" },
+      { "name": "#", "lowercase": "#", "uppercase": "#" },
+      { "name": "%", "lowercase": "%", "uppercase": "%" },
+      { "name": "&", "lowercase": "&", "uppercase": "&" },
+      { "name": "*", "lowercase": "*", "uppercase": "*" },
+      { "name": "(", "lowercase": "(", "uppercase": "(" },
+      { "name": ")", "lowercase": ")", "uppercase": ")" },
+      { "name": "/", "lowercase": "/", "uppercase": "/" },
+      { "name": "\\", "lowercase": "\\", "uppercase": "\\" },
+      { "name": "!", "lowercase": "!", "uppercase": "!" }
     ],
     [
-      { "name": "Shift", "lowercase": "Shift" },
-      { "name": ";", "lowercase": ";", "uppercase": ";", "lowerCaseHint": ";" },
-      { "name": ":", "lowercase": ":", "uppercase": ":", "lowerCaseHint": ":" },
-      { "name": "'", "lowercase": "'", "uppercase": "'", "lowerCaseHint": "'" },
-      { "name": "\"", "lowercase": "\"", "uppercase": "\"", "lowerCaseHint": "\"" },
-      { "name": ",", "lowercase": ",", "uppercase": ",", "lowerCaseHint": "," },
-      { "name": ".", "lowercase": ".", "uppercase": ".", "lowerCaseHint": "." },
-      { "name": "/", "lowercase": "/", "uppercase": "/", "lowerCaseHint": "/" }
+      { "name": "<", "lowercase": "<", "uppercase": "<" },
+      { "name": ">", "lowercase": ">", "uppercase": ">" },
+      { "name": "_", "lowercase": "_", "uppercase": "_" },
+      { "name": "-", "lowercase": "-", "uppercase": "-" },
+      { "name": "+", "lowercase": "+", "uppercase": "+" },
+      { "name": "=", "lowercase": "=", "uppercase": "=" },
+      { "name": "\"", "lowercase": "\"", "uppercase": "\"" },
+      { "name": ".", "lowercase": ".", "uppercase": "." },
+      { "name": ",", "lowercase": ",", "uppercase": "," },
+      { "name": "?", "lowercase": "?", "uppercase": "?" }
     ]
   ]
 }
