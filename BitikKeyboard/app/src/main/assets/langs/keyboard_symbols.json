@@ -1,0 +1,40 @@
+{
+  "name": "symbols",
+  "directionality": 0,
+  "spaceKey": " ",
+  "rows": [
+    [
+      { "name": "!", "lowercase": "!", "uppercase": "!", "lowerCaseHint": "!" },
+      { "name": "@", "lowercase": "@", "uppercase": "@", "lowerCaseHint": "@" },
+      { "name": "#", "lowercase": "#", "uppercase": "#", "lowerCaseHint": "#" },
+      { "name": "$", "lowercase": "$", "uppercase": "$", "lowerCaseHint": "$" },
+      { "name": "%", "lowercase": "%", "uppercase": "%", "lowerCaseHint": "%" },
+      { "name": "^", "lowercase": "^", "uppercase": "^", "lowerCaseHint": "^" },
+      { "name": "&", "lowercase": "&", "uppercase": "&", "lowerCaseHint": "&" },
+      { "name": "*", "lowercase": "*", "uppercase": "*", "lowerCaseHint": "*" },
+      { "name": "(", "lowercase": "(", "uppercase": "(", "lowerCaseHint": "(" },
+      { "name": ")", "lowercase": ")", "uppercase": ")", "lowerCaseHint": ")" }
+    ],
+    [
+      { "name": "-", "lowercase": "-", "uppercase": "-", "lowerCaseHint": "-" },
+      { "name": "_", "lowercase": "_", "uppercase": "_", "lowerCaseHint": "_" },
+      { "name": "+", "lowercase": "+", "uppercase": "+", "lowerCaseHint": "+" },
+      { "name": "=", "lowercase": "=", "uppercase": "=", "lowerCaseHint": "=" },
+      { "name": "[", "lowercase": "[", "uppercase": "[", "lowerCaseHint": "[" },
+      { "name": "]", "lowercase": "]", "uppercase": "]", "lowerCaseHint": "]" },
+      { "name": "{", "lowercase": "{", "uppercase": "{", "lowerCaseHint": "{" },
+      { "name": "}", "lowercase": "}", "uppercase": "}", "lowerCaseHint": "}" },
+      { "name": "|", "lowercase": "|", "uppercase": "|", "lowerCaseHint": "|" }
+    ],
+    [
+      { "name": "Shift", "lowercase": "Shift" },
+      { "name": ";", "lowercase": ";", "uppercase": ";", "lowerCaseHint": ";" },
+      { "name": ":", "lowercase": ":", "uppercase": ":", "lowerCaseHint": ":" },
+      { "name": "'", "lowercase": "'", "uppercase": "'", "lowerCaseHint": "'" },
+      { "name": "\"", "lowercase": "\"", "uppercase": "\"", "lowerCaseHint": "\"" },
+      { "name": ",", "lowercase": ",", "uppercase": ",", "lowerCaseHint": "," },
+      { "name": ".", "lowercase": ".", "uppercase": ".", "lowerCaseHint": "." },
+      { "name": "/", "lowercase": "/", "uppercase": "/", "lowerCaseHint": "/" }
+    ]
+  ]
+}
