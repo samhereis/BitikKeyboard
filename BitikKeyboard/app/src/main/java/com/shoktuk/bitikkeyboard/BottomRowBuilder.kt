@@ -1,7 +1,6 @@
 package com.shoktuk.bitikkeyboard
 
 import android.graphics.Color
-import android.graphics.drawable.Drawable
 import android.inputmethodservice.InputMethodService
 import android.view.Gravity
 import android.widget.Button
@@ -9,19 +8,20 @@ import android.widget.LinearLayout
 import androidx.core.graphics.drawable.DrawableCompat
 
 object BottomRowBuilder {
-
     fun createBottomRow(
         service: InputMethodService,
         layout: KeyboardLayout,
         buttonHeight: Int,
         margin: Int,
-        onModeChange: (String) -> Unit
+        onModeChange: (String) -> Unit,
+        onLangChange: () -> Unit
     ): LinearLayout {
         val bottomRow = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 topMargin = margin
                 bottomMargin = margin
@@ -29,88 +29,137 @@ object BottomRowBuilder {
         }
 
         if (layout.name == "symbols") {
-            // Symbols mode: [ABC] [Space] [":"] [Delete]
-            bottomRow.addView(createSystemAssetButton(
-                service, null, "ABC", buttonHeight, margin
-            ) {
-                onModeChange("letters")
-            })
+            bottomRow.addView(
+                createSystemAssetButton(
+                    service = service,
+                    assetPath = null, // No icon for "ABC" in this example
+                    textToSet = "ABC",
+                    buttonHeight = buttonHeight,
+                    margin = margin,
+                    onClick = {
+                        onModeChange("letters")
+                    },
+                    buttonStyle = KeyboardTheme.systemButtonStyle,
+                )
+            )
+            // 3) Space
             bottomRow.addView(
                 createExpandableAssetButton(
                     service, KeyboardTheme.SPACE_ICON_FILE, "", buttonHeight, margin, " "
                 )
             )
+            // 4) ":"
             bottomRow.addView(
                 createExpandableAssetButton(
                     service, null, ":", buttonHeight, margin, ":"
                 )
             )
-            bottomRow.addView(createSystemAssetButton(
-                service, KeyboardTheme.DELETE_ICON_FILE, "", buttonHeight, margin
-            ) {
-                service.currentInputConnection?.deleteSurroundingText(2, 1)
-                service.currentInputConnection?.deleteSurroundingText(2, 1)
-            })
+            // 5) Delete
+            bottomRow.addView(
+                createSystemAssetButton(
+                    service, KeyboardTheme.DELETE_ICON_FILE, "", buttonHeight, margin,
+                    onClick = {
+                        // This is your delete logic
+                        service.currentInputConnection?.deleteSurroundingText(1, 0)
+                    },
+                    buttonStyle = KeyboardTheme.systemButtonStyle,
+                )
+            )
         } else {
-            // Letters mode: [Symbols] [Space] [":"] [Enter]
-            bottomRow.addView(createSystemAssetButton(
-                service, null, "123", buttonHeight, margin
-            ) {
-                onModeChange("symbols")
-            })
+            bottomRow.addView(
+                createSystemAssetButton(
+                    service = service,
+                    assetPath = null,
+                    textToSet = layout.languageCode,
+                    buttonHeight = buttonHeight,
+                    onClick = { onLangChange() },
+                    margin = margin,
+                    buttonStyle = KeyboardTheme.systemButtonStyle.copy(fillColor = layout.languageColor)
+                )
+            )
+            // 2) "123" button
+            bottomRow.addView(
+                createSystemAssetButton(
+                    service = service,
+                    assetPath = null,
+                    textToSet = "123",
+                    buttonHeight = buttonHeight,
+                    margin = margin,
+                    onClick = {
+                        onModeChange("symbols")
+                    },
+                    buttonStyle = KeyboardTheme.systemButtonStyle,
+                )
+            )
+            // 3) Space
             bottomRow.addView(
                 createExpandableAssetButton(
                     service, KeyboardTheme.SPACE_ICON_FILE, "", buttonHeight, margin, " "
                 )
             )
+            // 4) ":"
             bottomRow.addView(
                 createExpandableAssetButton(
                     service, null, ":", buttonHeight, margin, ":"
                 )
             )
-            bottomRow.addView(createSystemAssetButton(
-                service, KeyboardTheme.ENTER_ICON_FILE, "", buttonHeight, margin
-            ) {
-                service.currentInputConnection?.commitText("\n", 1)
-            })
+            // 5) Enter
+            bottomRow.addView(
+                createSystemAssetButton(
+                    service,
+                    KeyboardTheme.ENTER_ICON_FILE,
+                    "",
+                    buttonHeight,
+                    margin,
+                    buttonStyle = KeyboardTheme.systemButtonStyle,
+                    onClick = {
+                        service.currentInputConnection?.commitText("\n", 1)
+                    })
+            )
         }
         return bottomRow
     }
 
+    /**
+     * Creates a system button (fixed width) that may or may not have an icon from assets,
+     * plus optional text.
+     */
     private fun createSystemAssetButton(
         service: InputMethodService,
         assetPath: String?,
         textToSet: String,
         buttonHeight: Int,
         margin: Int,
-        onClick: () -> Unit
+        onClick: () -> Unit,
+        buttonStyle: ButtonStyle,
     ): Button {
         val systemKeyWidthPx = KeyboardTheme.dpToPx(service, KeyboardTheme.SYSTEM_BUTTON_WIDTH_DP)
+
         return Button(service).apply {
             text = textToSet
             gravity = Gravity.CENTER
             setPadding(0, 0, 0, 0)
             compoundDrawablePadding = 0
-            textSize = KeyboardTheme.systemButtonStyle.textSizeSp
-            setTextColor(Color.parseColor(KeyboardTheme.systemButtonStyle.textColor))
+            textSize = buttonStyle.textSizeSp
+            setTextColor(Color.parseColor(buttonStyle.textColor))
             background =
-                KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.systemButtonStyle)
+                KeyboardTheme.createDrawableFromStyle(service, buttonStyle)
             layoutParams = LinearLayout.LayoutParams(systemKeyWidthPx, buttonHeight).apply {
                 marginStart = margin
                 marginEnd = margin
             }
+            // If there's an icon to load
             assetPath?.let { path ->
-                val iconDrawable: Drawable? = KeyboardTheme.loadAssetDrawable(service, path)
+                val iconDrawable = KeyboardTheme.loadAssetDrawable(service, path)
                 iconDrawable?.let { d ->
                     val tintedIcon = DrawableCompat.wrap(d).mutate()
                     DrawableCompat.setTint(
-                        tintedIcon, Color.parseColor(KeyboardTheme.systemButtonStyle.textColor)
+                        tintedIcon,
+                        Color.parseColor(buttonStyle.textColor)
                     )
                     val iconSize = buttonHeight / 2
                     tintedIcon.setBounds(0, 0, iconSize, iconSize)
                     setCompoundDrawables(null, tintedIcon, null, null)
-
-
                     setPadding(0, KeyboardTheme.BUTTON_HEIGHT_DP / 2, 0, 0)
                 }
             }
@@ -118,6 +167,9 @@ object BottomRowBuilder {
         }
     }
 
+    /**
+     * Creates an expandable button (weight=1) that might have an icon from assets or just text.
+     */
     private fun createExpandableAssetButton(
         service: InputMethodService,
         assetPath: String?,
@@ -139,14 +191,14 @@ object BottomRowBuilder {
                 marginStart = margin
                 marginEnd = margin
             }
+            // If there's an icon to load
             assetPath?.let { path ->
-                val iconDrawable: Drawable? = KeyboardTheme.loadAssetDrawable(service, path)
+                val iconDrawable = KeyboardTheme.loadAssetDrawable(service, path)
                 iconDrawable?.let { d ->
                     val tintedIcon = DrawableCompat.wrap(d).mutate()
                     val iconSize = buttonHeight / 2
                     tintedIcon.setBounds(0, 0, iconSize, iconSize)
                     setCompoundDrawables(null, tintedIcon, null, null)
-
                     setPadding(0, KeyboardTheme.BUTTON_HEIGHT_DP / 2, 0, 0)
                 }
             }

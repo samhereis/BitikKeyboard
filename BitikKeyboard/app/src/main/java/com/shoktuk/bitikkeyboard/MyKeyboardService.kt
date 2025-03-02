@@ -5,12 +5,13 @@ import android.view.View
 
 class MyKeyboardService : InputMethodService() {
     var isCaps: Boolean = false
-    // Modes: "letters" or "symbols"
+
     private var currentMode: String = "letters"
+    private var currentLanguage: String = "enesay"
     private var currentLayout: KeyboardLayout? = null
 
     override fun onCreateInputView(): View {
-        currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, currentMode)
+        currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, currentMode, currentLanguage)
         return KeyboardViewBuilder.buildKeyboardView(
             service = this,
             layout = currentLayout!!,
@@ -22,20 +23,33 @@ class MyKeyboardService : InputMethodService() {
             onModeChange = { newMode ->
                 currentMode = newMode
                 reloadKeyboard()
-            }
+            },
+            onLangChange = { changeLanguage() }
         )
     }
 
     private fun reloadKeyboard() {
-        currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, currentMode)
+        currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, currentMode, currentLanguage)
         setInputView(
             KeyboardViewBuilder.buildKeyboardView(
                 service = this,
                 layout = currentLayout!!,
                 isCaps = isCaps,
                 onCapsChange = { isCaps = it; reloadKeyboard() },
-                onModeChange = { newMode -> currentMode = newMode; reloadKeyboard() }
+                onModeChange = { newMode -> currentMode = newMode; reloadKeyboard() },
+                onLangChange = { changeLanguage() }
             )
         )
     }
+
+    private fun changeLanguage() {
+        if (currentLanguage == "enesay") {
+            currentLanguage = "orhon"
+        } else {
+            currentLanguage = "enesay"
+        }
+
+        reloadKeyboard();
+    }
+
 }

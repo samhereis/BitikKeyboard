@@ -5,16 +5,20 @@ import com.google.gson.Gson
 import java.io.InputStreamReader
 
 object KeyboardLayoutLoader {
-    /**
-     * Loads a keyboard layout based on mode.
-     * Mode should be either "letters" or "symbols".
-     */
-    fun loadKeyboardLayout(context: Context, mode: String): KeyboardLayout {
-        val fileName = when (mode) {
-            "letters" -> "langs/keyboard_kg_bitik.json"
-            "symbols" -> "langs/keyboard_symbols.json"
-            else -> "langs/keyboard_letters.json"
+
+    fun loadKeyboardLayout(context: Context, mode: String, language: String): KeyboardLayout {
+        var fileName = ""
+
+        if (mode == "symbols") {
+            fileName = "langs/keyboard_symbols.json"
+        } else {
+            fileName = when (language) {
+                "enesay" -> "langs/enesay.json"
+                "orhon" -> "langs/orhon.json"
+                else -> "langs/enesay.json"
+            }
         }
+
         context.assets.open(fileName).use { inputStream ->
             InputStreamReader(inputStream).use { reader ->
                 return Gson().fromJson(reader, KeyboardLayout::class.java)
