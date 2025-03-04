@@ -53,9 +53,8 @@ object LetterKeyBuilder {
 
         keyView.setOnClickListener {
             val letter = if (isCaps) key.uppercase else key.lowercase
-            val textToCommit = if (layout.directionality == 1) "\u202B$letter\u202C" else letter
+            val textToCommit = if (layout.directionality == 1) letter else letter
             service.currentInputConnection?.commitText(textToCommit, 1)
-            if (isCaps) onCapsChange(false)
         }
 
         keyView.layoutParams = LinearLayout.LayoutParams(KeyboardTheme.getLetterButtonWidth(service), buttonHeight).apply {

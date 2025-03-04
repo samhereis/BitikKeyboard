@@ -1,6 +1,6 @@
 {
-  "languageCode": "𐱄𐰎𐱀",
-  "languageColor": "#700000",
+  "languageCode": "𐱄𐰎",
+  "languageColor": "#800d1a",
   "spaceKey": ":",
   "directionality": 1,
   "rows": [
@@ -14,7 +14,7 @@
       {"name": "𐰆", "lowercase": "𐰩", "uppercase": "𐰇", "hold": "", "lowerCaseHint": "u", "upperCaseHint": "ü", "lowerCaseColor": 0 , "upperCaseColor": 0 },
       {"name": "𐰃", "lowercase": "𐰃", "uppercase": "𐰄", "hold": "", "lowerCaseHint": "i", "upperCaseHint": "ı", "lowerCaseColor": 0 , "upperCaseColor": 0 },
       {"name": "𐰗", "lowercase":"𐰆", "uppercase": "𐰈", "hold": "", "lowerCaseHint": "o", "upperCaseHint": "ö", "lowerCaseColor": 0 , "upperCaseColor": 0 },
-      {"name": "𐰯", "lowercase": "𐰯", "uppercase": "𐰯", "hold": "", "lowerCaseHint": "p", "upperCaseHint": "f" }
+      {"name": "𐰯", "lowercase": "𐰯", "uppercase": "𐰯", "hold": "", "lowerCaseHint": "p", "upperCaseHint": "p" }
     ],
     [
       { "name": "𐰹", "lowercase": "𐰹", "uppercase": "𐰸", "hold": "", "lowerCaseHint": "oq", "upperCaseHint": "uq", "lowerCaseColor": 1 , "upperCaseColor": 1},

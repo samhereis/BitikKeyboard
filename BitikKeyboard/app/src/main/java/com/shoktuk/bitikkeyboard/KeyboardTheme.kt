@@ -27,7 +27,7 @@ object KeyboardTheme {
     private const val MAX_SCALE_FACTOR = 1.5f
 
     // Basic dimensions (base design values)
-    private const val BUTTON_HEIGHT_DP = 70
+    private const val BUTTON_HEIGHT_DP = 150
     const val KEY_MARGIN_DP = 3
 
     // Base widths for keys in dp (from your design)
@@ -74,7 +74,7 @@ object KeyboardTheme {
     }
 
     fun getButtonHeight(context: Context): Int {
-        return (getLetterButtonWidth(context) * 1.5f).toInt()
+        return BUTTON_HEIGHT_DP
     }
 
     fun getKeyMargin(context: Context): Int = dpToPx(context, KEY_MARGIN_DP)
@@ -119,14 +119,14 @@ object KeyboardTheme {
     // Responsive styles for letter and system keys.
     fun getLetterButtonStyle(context: Context): ButtonStyle {
         return ButtonStyle(
-            fillColor = "#000000",     // dark gray
+            fillColor = "#141414",     // dark gray
             borderColor = "#4d4d4d", borderWidthDp = 2, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = getLetterButtonTextSize(context)
         )
     }
 
     fun getSystemButtonStyle(context: Context): ButtonStyle {
         return ButtonStyle(
-            fillColor = "#333333", borderColor = "#4d4d4d", borderWidthDp = 2, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = getSystemButtonTextSize(context)
+            fillColor = "#323840", borderColor = "#4d4d4d", borderWidthDp = 2, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = getSystemButtonTextSize(context)
         )
     }
 }
