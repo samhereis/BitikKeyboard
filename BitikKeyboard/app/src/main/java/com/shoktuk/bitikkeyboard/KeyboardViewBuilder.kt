@@ -21,29 +21,46 @@ object KeyboardViewBuilder {
         onModeChange: (String) -> Unit,
         onLangChange: () -> Unit
     ): LinearLayout {
-        val buttonHeight = KeyboardTheme.dpToPx(service, KeyboardTheme.BUTTON_HEIGHT_DP)
         val margin = KeyboardTheme.dpToPx(service, KeyboardTheme.KEY_MARGIN_DP)
-        // Compute the maximum number of keys in any row.
-        val maxCount = layout.rows.maxOf { it.size }
-        val screenWidth = service.resources.displayMetrics.widthPixels
-        // Calculate a fixed key width for system keys
-        val fixedKeyWidth = (screenWidth - (maxCount + 1) * margin) / maxCount
+
+        // Get the screen width in pixels.
+        val screenWidthPx = service.resources.displayMetrics.widthPixels
+        // Define your base design width in dp (e.g., 360 dp for a typical design).
+        val baseDesignWidthDp = 360f
+        // Convert base design width to pixels.
+        val density = service.resources.displayMetrics.density
+        val maxWidthPx = (baseDesignWidthDp * density).toInt()
+        // Calculate side margin if screen width is larger than max width.
+        val sideMarginPx = if (screenWidthPx > maxWidthPx) (screenWidthPx - maxWidthPx) / 2 else 0
 
         val container = LinearLayout(service).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
+            // Set width to the lesser of screen width or maxWidthPx, and add side margins if needed.
             layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
+                if (screenWidthPx > maxWidthPx) maxWidthPx else ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
-            )
+            ).apply {
+                leftMargin = sideMarginPx
+                rightMargin = sideMarginPx
+            }
             setBackgroundColor(Color.parseColor(KeyboardTheme.CONTAINER_BACKGROUND_COLOR))
+        }
+
+        // Use an insets listener if needed to add additional bottom padding (safe area).
+        container.setOnApplyWindowInsetsListener { view, insets ->
+            val bottomInset = insets.systemWindowInsetBottom
+            view.setPadding(0, 0, 0, bottomInset)
+            insets
         }
 
         // Build each row.
         layout.rows.forEach { row ->
             container.addView(
                 createRowLayout(
-                    service, row, layout, buttonHeight, margin, fixedKeyWidth,
+                    service, row, layout, KeyboardTheme.getButtonHeight(service), margin,
+                    // Calculate a fixed key width for system keys if needed.
+                    fixedKeyWidth = (screenWidthPx - (row.size + 1) * margin) / row.size,
                     isCaps, onCapsChange
                 )
             )
@@ -52,7 +69,7 @@ object KeyboardViewBuilder {
         // Build bottom row, now with language button.
         container.addView(
             BottomRowBuilder.createBottomRow(
-                service, layout, buttonHeight, margin,
+                service, layout, KeyboardTheme.getButtonHeight(service), margin,
                 onModeChange,
                 onLangChange = onLangChange
             )
@@ -85,7 +102,7 @@ object KeyboardViewBuilder {
             }
         }
 
-        // Identify system keys
+        // Identify system keys.
         val shiftKey = row.find { it.name == "Shift" }
         val delKey = row.find { it.name == "Del" }
         val middleKeys = row.filter { it.name != "Shift" && it.name != "Del" }
@@ -122,7 +139,6 @@ object KeyboardViewBuilder {
                 )
             )
         }
-
         return rowLayout
     }
 }

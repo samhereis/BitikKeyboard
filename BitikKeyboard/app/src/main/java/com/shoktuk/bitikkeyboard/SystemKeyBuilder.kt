@@ -10,15 +10,8 @@ import androidx.core.graphics.drawable.DrawableCompat
 object SystemKeyBuilder {
 
     fun createSystemKey(
-        service: InputMethodService,
-        key: KeyEntry,
-        layout: KeyboardLayout,
-        buttonHeight: Int,
-        margin: Int,
-        isCaps: Boolean,
-        onCapsChange: (Boolean) -> Unit
+        service: InputMethodService, key: KeyEntry, layout: KeyboardLayout, buttonHeight: Int, margin: Int, isCaps: Boolean, onCapsChange: (Boolean) -> Unit
     ): Button {
-        val systemKeyWidthPx = KeyboardTheme.dpToPx(service, KeyboardTheme.SYSTEM_BUTTON_WIDTH_DP)
         return Button(service).apply {
             text = "" // No text—icon only
             gravity = Gravity.CENTER  // Center content
@@ -26,10 +19,10 @@ object SystemKeyBuilder {
             setPadding(0, 0, 0, 0)
             compoundDrawablePadding = 0
 
-            textSize = KeyboardTheme.systemButtonStyle.textSizeSp
-            setTextColor(Color.parseColor(KeyboardTheme.systemButtonStyle.textColor))
-            background = KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.systemButtonStyle)
-            layoutParams = android.widget.LinearLayout.LayoutParams(systemKeyWidthPx, buttonHeight).apply {
+            textSize = KeyboardTheme.getSystemButtonStyle(service).textSizeSp
+            setTextColor(Color.parseColor(KeyboardTheme.getSystemButtonStyle(service).textColor))
+            background = KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getSystemButtonStyle(service))
+            layoutParams = android.widget.LinearLayout.LayoutParams(KeyboardTheme.getSystemButtonWidth(service), buttonHeight).apply {
                 marginStart = margin
                 marginEnd = margin
             }
@@ -43,12 +36,12 @@ object SystemKeyBuilder {
                 val iconDrawable: Drawable? = KeyboardTheme.loadAssetDrawable(service, path)
                 iconDrawable?.let { d ->
                     val tintedIcon = DrawableCompat.wrap(d).mutate()
-                    DrawableCompat.setTint(tintedIcon, Color.parseColor(KeyboardTheme.systemButtonStyle.textColor))
+                    DrawableCompat.setTint(tintedIcon, Color.parseColor(KeyboardTheme.getSystemButtonStyle(service).textColor))
                     // Set icon size to half the button height
                     val iconSize = buttonHeight / 2
                     tintedIcon.setBounds(0, 0, iconSize, iconSize)
                     setCompoundDrawables(null, tintedIcon, null, null)
-                    setPadding(0,KeyboardTheme.BUTTON_HEIGHT_DP / 2,0,0)
+                    setPadding(0, KeyboardTheme.getButtonHeight(service) / 4, 0, 0)
                 }
             }
             setOnClickListener {

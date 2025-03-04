@@ -9,7 +9,7 @@ import android.widget.TextView
 
 object LetterKeyBuilder {
 
-    val colorIndexes: List<String> = listOf("#004cb5", "#777500")
+    val colorIndexes: List<String> = listOf("#002547", "#472600")
 
     fun createLetterKey(
         service: InputMethodService,
@@ -20,9 +20,7 @@ object LetterKeyBuilder {
         isCaps: Boolean,
         onCapsChange: (Boolean) -> Unit
     ): View {
-        // Letter keys are narrower
-        val letterKeyWidthPx = KeyboardTheme.dpToPx(service, KeyboardTheme.LETTER_BUTTON_WIDTH_DP)
-        var style = KeyboardTheme.letterButtonStyle
+        var style = KeyboardTheme.getLetterButtonStyle(service)
 
         if (key.upperCaseColor != null && isCaps) {
             if (key.upperCaseColor >= 0) {
@@ -35,7 +33,7 @@ object LetterKeyBuilder {
                 style = style.copy(fillColor = colorIndexes[key.lowerCaseColor])
             }
         } else {
-            style = KeyboardTheme.letterButtonStyle
+            style = KeyboardTheme.getLetterButtonStyle(service)
         }
 
         val keyView = LayoutInflater.from(service).inflate(R.layout.keyboard_key, null, false)
@@ -60,7 +58,7 @@ object LetterKeyBuilder {
             if (isCaps) onCapsChange(false)
         }
 
-        keyView.layoutParams = LinearLayout.LayoutParams(letterKeyWidthPx, buttonHeight).apply {
+        keyView.layoutParams = LinearLayout.LayoutParams(KeyboardTheme.getLetterButtonWidth(service), buttonHeight).apply {
             marginStart = margin
             marginEnd = margin
         }

@@ -39,7 +39,7 @@ object BottomRowBuilder {
                     onClick = {
                         onModeChange("letters")
                     },
-                    buttonStyle = KeyboardTheme.systemButtonStyle,
+                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
                 )
             )
             // 3) Space
@@ -62,7 +62,7 @@ object BottomRowBuilder {
                         // This is your delete logic
                         service.currentInputConnection?.deleteSurroundingText(1, 0)
                     },
-                    buttonStyle = KeyboardTheme.systemButtonStyle,
+                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
                 )
             )
         } else {
@@ -74,7 +74,7 @@ object BottomRowBuilder {
                     buttonHeight = buttonHeight,
                     onClick = { onLangChange() },
                     margin = margin,
-                    buttonStyle = KeyboardTheme.systemButtonStyle.copy(fillColor = layout.languageColor)
+                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service).copy(fillColor = layout.languageColor)
                 )
             )
             // 2) "123" button
@@ -88,7 +88,7 @@ object BottomRowBuilder {
                     onClick = {
                         onModeChange("symbols")
                     },
-                    buttonStyle = KeyboardTheme.systemButtonStyle,
+                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
                 )
             )
             // 3) Space
@@ -111,7 +111,7 @@ object BottomRowBuilder {
                     "",
                     buttonHeight,
                     margin,
-                    buttonStyle = KeyboardTheme.systemButtonStyle,
+                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
                     onClick = {
                         service.currentInputConnection?.commitText("\n", 1)
                     })
@@ -133,7 +133,6 @@ object BottomRowBuilder {
         onClick: () -> Unit,
         buttonStyle: ButtonStyle,
     ): Button {
-        val systemKeyWidthPx = KeyboardTheme.dpToPx(service, KeyboardTheme.SYSTEM_BUTTON_WIDTH_DP)
 
         return Button(service).apply {
             text = textToSet
@@ -144,7 +143,7 @@ object BottomRowBuilder {
             setTextColor(Color.parseColor(buttonStyle.textColor))
             background =
                 KeyboardTheme.createDrawableFromStyle(service, buttonStyle)
-            layoutParams = LinearLayout.LayoutParams(systemKeyWidthPx, buttonHeight).apply {
+            layoutParams = LinearLayout.LayoutParams(KeyboardTheme.getSystemButtonWidth(service), buttonHeight).apply {
                 marginStart = margin
                 marginEnd = margin
             }
@@ -160,7 +159,7 @@ object BottomRowBuilder {
                     val iconSize = buttonHeight / 2
                     tintedIcon.setBounds(0, 0, iconSize, iconSize)
                     setCompoundDrawables(null, tintedIcon, null, null)
-                    setPadding(0, KeyboardTheme.BUTTON_HEIGHT_DP / 2, 0, 0)
+                    setPadding(0, KeyboardTheme.getButtonHeight(service) / 4, 0, 0)
                 }
             }
             setOnClickListener { onClick() }
@@ -183,10 +182,10 @@ object BottomRowBuilder {
             gravity = Gravity.CENTER
             setPadding(0, 0, 0, 0)
             compoundDrawablePadding = 0
-            textSize = KeyboardTheme.letterButtonStyle.textSizeSp
-            setTextColor(Color.parseColor(KeyboardTheme.letterButtonStyle.textColor))
+            textSize = KeyboardTheme.getSystemButtonStyle(service).textSizeSp
+            setTextColor(Color.parseColor(KeyboardTheme.getSystemButtonStyle(service).textColor))
             background =
-                KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.letterButtonStyle)
+                KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getSystemButtonStyle(service))
             layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f).apply {
                 marginStart = margin
                 marginEnd = margin
@@ -199,7 +198,7 @@ object BottomRowBuilder {
                     val iconSize = buttonHeight / 2
                     tintedIcon.setBounds(0, 0, iconSize, iconSize)
                     setCompoundDrawables(null, tintedIcon, null, null)
-                    setPadding(0, KeyboardTheme.BUTTON_HEIGHT_DP / 2, 0, 0)
+                    setPadding(0, KeyboardTheme.getButtonHeight(service) / 4, 0, KeyboardTheme.getButtonHeight(service) / 4)
                 }
             }
             setOnClickListener {
