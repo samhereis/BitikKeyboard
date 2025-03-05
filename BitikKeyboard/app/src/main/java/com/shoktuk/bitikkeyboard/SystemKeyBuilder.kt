@@ -21,12 +21,22 @@ object SystemKeyBuilder {
 
             textSize = KeyboardTheme.getSystemButtonStyle(service).textSizeSp
             setTextColor(Color.parseColor(KeyboardTheme.getSystemButtonStyle(service).textColor))
-            background = KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getSystemButtonStyle(service))
             layoutParams = android.widget.LinearLayout.LayoutParams(KeyboardTheme.getSystemButtonWidth(service), buttonHeight).apply {
                 marginStart = margin
                 marginEnd = margin
             }
-            // Load and set icon from assets
+
+            if (key.name == "Shift") {
+                if (isCaps) {
+                    background = KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getSystemButtonStyle(service).copy(fillColor = KeyboardTheme.colorIndexes[2]))
+                } else {
+                    background = KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getSystemButtonStyle(service))
+                }
+            } else {
+
+                background = KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getSystemButtonStyle(service))
+            }
+
             val assetPath = when (key.name) {
                 "Shift" -> KeyboardTheme.SHIFT_ICON_FILE
                 "Del" -> KeyboardTheme.DELETE_ICON_FILE

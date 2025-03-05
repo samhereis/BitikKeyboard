@@ -8,9 +8,6 @@ import android.widget.LinearLayout
 import android.widget.TextView
 
 object LetterKeyBuilder {
-
-    val colorIndexes: List<String> = listOf("#002547", "#472600")
-
     fun createLetterKey(
         service: InputMethodService,
         key: KeyEntry,
@@ -25,12 +22,12 @@ object LetterKeyBuilder {
         if (key.upperCaseColor != null && isCaps) {
             if (key.upperCaseColor >= 0) {
                 style = style.copy(
-                    fillColor = colorIndexes[key.upperCaseColor]
+                    fillColor = KeyboardTheme.colorIndexes[key.upperCaseColor]
                 )
             }
         } else if (key.lowerCaseColor != null && !isCaps) {
             if (key.lowerCaseColor >= 0) {
-                style = style.copy(fillColor = colorIndexes[key.lowerCaseColor])
+                style = style.copy(fillColor = KeyboardTheme.colorIndexes[key.lowerCaseColor])
             }
         } else {
             style = KeyboardTheme.getLetterButtonStyle(service)
@@ -49,7 +46,7 @@ object LetterKeyBuilder {
 
         subTextView.text = if (isCaps) key.upperCaseHint ?: "" else key.lowerCaseHint ?: ""
         subTextView.setTextColor(Color.WHITE)
-        subTextView.textSize = 12f // or style.textSizeSp if you want subtext the same size
+        subTextView.textSize = KeyboardTheme.getHintButtonTextSize(service) // or style.textSizeSp if you want subtext the same size
 
         keyView.setOnClickListener {
             val letter = if (isCaps) key.uppercase else key.lowercase

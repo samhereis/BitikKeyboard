@@ -74,7 +74,7 @@ object BottomRowBuilder {
                     buttonHeight = buttonHeight,
                     onClick = { onLangChange() },
                     margin = margin,
-                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service).copy(fillColor = layout.languageColor)
+                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
                 )
             )
             // 2) "123" button
@@ -185,7 +185,7 @@ object BottomRowBuilder {
             textSize = KeyboardTheme.getSystemButtonStyle(service).textSizeSp
             setTextColor(Color.parseColor(KeyboardTheme.getSystemButtonStyle(service).textColor))
             background =
-                KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getSystemButtonStyle(service))
+                KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getLetterButtonStyle(service))
             layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f).apply {
                 marginStart = margin
                 marginEnd = margin

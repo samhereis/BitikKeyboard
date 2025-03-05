@@ -5,14 +5,14 @@
   "directionality": 1,
   "rows": [
     [
-      {"name": "𐰶", "lowercase": "𐰶", "uppercase": "𐰷", "hold": "", "lowerCaseHint": "qi", "upperCaseHint": "ıq", "lowerCaseColor": 1 , "upperCaseColor": 1},
+      {"name": "𐰶", "lowercase": "𐰶", "uppercase": "𐰷", "hold": "", "lowerCaseHint": "qı", "upperCaseHint": "ıq", "lowerCaseColor": 1 , "upperCaseColor": 1},
       {"name": "𐰭", "lowercase": "𐰭", "uppercase":"𐰭" , "hold": "", "lowerCaseHint": "ñ", "upperCaseHint": "ñ'" },
       {"name": "𐰀", "lowercase": "𐰁", "uppercase": "𐰅", "hold": "", "lowerCaseHint": "a", "upperCaseHint": "e", "lowerCaseColor": 0 , "upperCaseColor": 0 },
       {"name": "𐰺", "lowercase": "𐰺", "uppercase": "𐰼", "hold": "", "lowerCaseHint": "r", "upperCaseHint": "r'" },
       {"name": "𐱄", "lowercase": "𐱃", "uppercase": "𐱅", "hold": "", "lowerCaseHint": "t", "upperCaseHint": "t'" },
       {"name": "𐰖", "lowercase": "𐰖", "uppercase": "𐰘", "hold": "", "lowerCaseHint": "y", "upperCaseHint": "y'" },
       {"name": "𐰆", "lowercase": "𐰩", "uppercase": "𐰇", "hold": "", "lowerCaseHint": "u", "upperCaseHint": "ü", "lowerCaseColor": 0, "upperCaseColor": 0 },
-      {"name": "𐰃", "lowercase": "𐰃", "uppercase": "𐰄", "hold": "", "lowerCaseHint": "i", "upperCaseHint": "ı", "lowerCaseColor": 0, "upperCaseColor": 0},
+      {"name": "𐰃", "lowercase": "𐰃", "uppercase": "𐰄", "hold": "", "lowerCaseHint": "ı", "upperCaseHint": "i", "lowerCaseColor": 0 , "upperCaseColor": 0 },
       {"name": "𐰗", "lowercase":"𐰆", "uppercase": "𐰈", "hold": "", "lowerCaseHint": "o", "upperCaseHint": "ö", "lowerCaseColor": 0, "upperCaseColor": 0},
       {"name": "𐰯", "lowercase": "𐰯", "uppercase": "𐰯", "hold": "", "lowerCaseHint": "p", "upperCaseHint": "p" }
     ],

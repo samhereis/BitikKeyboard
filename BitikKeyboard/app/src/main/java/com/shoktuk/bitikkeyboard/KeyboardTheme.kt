@@ -19,15 +19,19 @@ data class ButtonStyle(
     val textSizeSp: Float        // Base text size; will be scaled.
 )
 
+private const val i = 343537
+
 object KeyboardTheme {
-    // Define a base design screen width in dp (e.g., 360 dp corresponds to a 1080px screen at 3× density)
+    val colorIndexes: List<String> = listOf("#0b84fe", "#ac8f68", "#31d159")
+
+
     private const val BASE_SCREEN_WIDTH_DP = 360f
 
     // Maximum scale factor to avoid oversized keys on very wide screens.
     private const val MAX_SCALE_FACTOR = 1.5f
 
     // Basic dimensions (base design values)
-    private const val BUTTON_HEIGHT_DP = 150
+    private const val BUTTON_HEIGHT_DP = 140
     const val KEY_MARGIN_DP = 3
 
     // Base widths for keys in dp (from your design)
@@ -35,7 +39,8 @@ object KeyboardTheme {
     private const val BASE_SYSTEM_BUTTON_WIDTH_DP = 125
 
     // Base text sizes for buttons
-    private const val BASE_LETTER_TEXT_SIZE_SP = 20f
+    private const val BASE_LETTER_TEXT_SIZE_SP = 22f
+    private const val BASE_HINT_TEXT_SIZE_SP = 10f
     private const val BASE_SYSTEM_TEXT_SIZE_SP = 17f
 
     // Container background color
@@ -84,6 +89,11 @@ object KeyboardTheme {
         return BASE_LETTER_TEXT_SIZE_SP * scaleFactor
     }
 
+    fun getHintButtonTextSize(context: Context): Float {
+        val scaleFactor = getScaleFactor(context)
+        return BASE_HINT_TEXT_SIZE_SP * scaleFactor
+    }
+
     private fun getSystemButtonTextSize(context: Context): Float {
         val scaleFactor = getScaleFactor(context)
         return BASE_SYSTEM_TEXT_SIZE_SP * scaleFactor
@@ -119,14 +129,14 @@ object KeyboardTheme {
     // Responsive styles for letter and system keys.
     fun getLetterButtonStyle(context: Context): ButtonStyle {
         return ButtonStyle(
-            fillColor = "#141414",     // dark gray
-            borderColor = "#4d4d4d", borderWidthDp = 2, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = getLetterButtonTextSize(context)
+            fillColor = "#535353",     // dark gray
+            borderColor = "#535353", borderWidthDp = 0, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = getLetterButtonTextSize(context)
         )
     }
 
     fun getSystemButtonStyle(context: Context): ButtonStyle {
         return ButtonStyle(
-            fillColor = "#323840", borderColor = "#4d4d4d", borderWidthDp = 2, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = getSystemButtonTextSize(context)
+            fillColor = "#2d2d2d", borderColor = "#2d2d2d", borderWidthDp = 0, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = getSystemButtonTextSize(context)
         )
     }
 }
