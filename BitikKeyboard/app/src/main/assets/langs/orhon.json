@@ -17,7 +17,7 @@
       {"name": "𐰯", "lowercase": "𐰯", "uppercase": "𐰯", "hold": "", "lowerCaseHint": "p", "upperCaseHint": "p" }
     ],
     [
-      { "name": "𐰹", "lowercase": "𐰹", "uppercase": "𐰸", "hold": "", "lowerCaseHint": "oq", "upperCaseHint": "uq", "lowerCaseColor": 1 , "upperCaseColor": 1},
+      { "name": "𐰹", "lowercase":"𐰸", "uppercase": "𐰹", "hold": "", "lowerCaseHint": "uq", "upperCaseHint": "oq", "lowerCaseColor": 1 , "upperCaseColor": 1},
       { "name": "𐰽", "lowercase": "𐰽", "uppercase": "𐰾", "hold": "", "lowerCaseHint": "s" , "upperCaseHint": "s'"},
       { "name": "𐰑", "lowercase": "𐰑", "uppercase": "𐰓", "hold": "", "lowerCaseHint": "d" , "upperCaseHint": "d'"},
       { "name": "𐰁", "lowercase": "𐰊", "uppercase": "𐰌", "hold": "" , "lowerCaseHint": "f", "upperCaseHint": "v"},
@@ -25,14 +25,15 @@
       { "name": "𐰎", "lowercase": "𐰨",  "uppercase": "𐰛", "hold": "", "lowerCaseHint": "nç", "upperCaseHint": "h", "lowerCaseColor": 1},
       { "name": "𐰘", "lowercase": "𐰳", "uppercase": "𐰙", "hold": "", "lowerCaseHint": "j", "upperCaseHint": "j'"},
       { "name": "𐰴", "lowercase": "𐰴", "uppercase": "𐰚", "hold": "", "lowerCaseHint": "q", "upperCaseHint": "k"},
-      { "name": "𐰞", "lowercase": "𐰞", "uppercase": "𐰠", "hold": "", "lowerCaseHint": "l", "upperCaseHint": "l'"}
+      { "name": "𐰞", "lowercase": "𐰞", "uppercase": "𐰠", "hold": "", "lowerCaseHint": "l", "upperCaseHint": "l'"},
+      { "name": "'", "lowercase": "'", "uppercase": "'", "hold": "", "lowerCaseHint": "", "upperCaseHint": ""}
     ],
     [
       { "name": "Shift" },
       { "name": "𐰕", "lowercase": "𐰕", "uppercase": "𐰕", "hold": "", "lowerCaseHint": "z", "upperCaseHint": "z" },
       { "name": "𐱁", "lowercase": "𐱁", "uppercase": "𐱁", "hold": "", "lowerCaseHint": "ş", "upperCaseHint": "ş'" },
       { "name": "𐰲", "lowercase": "𐰲", "uppercase": "𐰲", "hold": "", "lowerCaseHint": "ç", "upperCaseHint": "ç'" },
-      { "name": "𐰜", "lowercase":"𐰝",  "uppercase": "𐰜",  "hold": "", "lowerCaseHint": "ök", "upperCaseHint": "ük", "lowerCaseColor": 1 , "upperCaseColor": 1},
+      { "name": "𐰜", "lowercase":"𐰝",  "uppercase":  "𐰜", "hold": "", "lowerCaseHint":"ük", "upperCaseHint":  "ök", "lowerCaseColor": 1 , "upperCaseColor": 1},
       { "name": "𐰉", "lowercase": "𐰉", "uppercase": "𐰋", "hold": "", "lowerCaseHint": "b", "upperCaseHint": "b'" },
       { "name": "𐰣", "lowercase": "𐰣", "uppercase": "𐰤", "hold": "", "lowerCaseHint": "n", "upperCaseHint": "n'" },
       { "name": "𐰢", "lowercase": "𐰢", "uppercase": "𐰢", "hold": "", "lowerCaseHint": "m", "upperCaseHint": "m" },
