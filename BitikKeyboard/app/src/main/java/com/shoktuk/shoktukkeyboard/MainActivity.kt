@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.eosrmg.apps.navigationdrawer.ui.view.SideMenuView
-import com.shoktuk.shoktukkeyboard.ui.theme.BitikKeyboardTheme
+import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +18,7 @@ class MainActivity : ComponentActivity() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
         setContent {
-            BitikKeyboardTheme {
+            ShoktukKeyboardTheme {
                 SideMenuView()
             }
         }
@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
 @Preview(showBackground = true)
 @Composable
 fun MainActivityPreview() {
-    BitikKeyboardTheme {
+    ShoktukKeyboardTheme {
         SideMenuView()
     }
 }

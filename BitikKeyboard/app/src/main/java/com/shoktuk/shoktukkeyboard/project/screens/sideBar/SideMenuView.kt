@@ -42,7 +42,7 @@ import androidx.navigation.compose.rememberNavController
 import com.shoktuk.shoktukkeyboard.project.data.Screens
 import com.shoktuk.shoktukkeyboard.project.data.SideMenuItem
 import com.shoktuk.shoktukkeyboard.project.screens.testKeyboard.TestKeyboard_Screen
-import com.shoktuk.shoktukkeyboard.ui.theme.BitikKeyboardTheme
+import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,7 +73,8 @@ fun SideMenuView() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(10.dp)
-                        .padding(top = 25.dp)
+                        .padding(top = 50.dp)
+                        .padding(bottom = 25.dp)
                 ) {
                     SideMenuHeader(
                         modifier = Modifier.fillMaxWidth()
@@ -145,7 +146,7 @@ fun SideMenuView() {
 @Preview(showBackground = true)
 @Composable
 fun SideMenuViewPreview() {
-    BitikKeyboardTheme {
+    ShoktukKeyboardTheme {
         SideMenuView()
     }
 }

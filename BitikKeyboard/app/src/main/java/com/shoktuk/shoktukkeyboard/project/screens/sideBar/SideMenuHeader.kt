@@ -15,7 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.shoktuk.shoktukkeyboard.ui.theme.BitikKeyboardTheme
+import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import com.shoktuk.shoktukkeyboard.R
 
 @Composable
@@ -50,7 +50,7 @@ fun SideMenuHeader(modifier: Modifier) {
 @Preview(showBackground = true)
 @Composable
 fun SideMenuHeaderPreview() {
-    BitikKeyboardTheme {
+    ShoktukKeyboardTheme {
         SideMenuHeader(Modifier.padding(vertical = 16.dp, horizontal = 16.dp))
     }
 }
