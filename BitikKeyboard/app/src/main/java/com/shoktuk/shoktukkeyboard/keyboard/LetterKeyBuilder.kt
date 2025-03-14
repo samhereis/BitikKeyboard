@@ -1,4 +1,4 @@
-package com.shoktuk.bitikkeyboard
+package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.graphics.Color
 import android.inputmethodservice.InputMethodService
@@ -6,16 +6,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.R
 
 object LetterKeyBuilder {
     fun createLetterKey(
-        service: InputMethodService,
-        key: KeyEntry,
-        layout: KeyboardLayout,
-        buttonHeight: Int,
-        margin: Int,
-        isCaps: Boolean,
-        onCapsChange: (Boolean) -> Unit
+        service: InputMethodService, key: KeyEntry, layout: KeyboardLayout, buttonHeight: Int, margin: Int, isCaps: Boolean
     ): View {
         var style = KeyboardTheme.getLetterButtonStyle(service)
 
@@ -41,7 +37,7 @@ object LetterKeyBuilder {
         val subTextView = keyView.findViewById<TextView>(R.id.subText)
 
         mainTextView.text = if (isCaps) key.uppercase else key.lowercase
-        mainTextView.setTextColor(Color.parseColor(style.textColor))
+        mainTextView.setTextColor(style.textColor.toColorInt())
         mainTextView.textSize = style.textSizeSp
 
         subTextView.text = if (isCaps) key.upperCaseHint ?: "" else key.lowerCaseHint ?: ""
@@ -50,7 +46,7 @@ object LetterKeyBuilder {
 
         keyView.setOnClickListener {
             val letter = if (isCaps) key.uppercase else key.lowercase
-            val textToCommit = if (layout.directionality == 1) letter else letter
+            val textToCommit = letter
             service.currentInputConnection?.commitText(textToCommit, 1)
         }
 

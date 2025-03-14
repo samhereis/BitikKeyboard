@@ -1,4 +1,4 @@
-package com.shoktuk.bitikkeyboard.ui.theme
+package com.shoktuk.shoktukkeyboard.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

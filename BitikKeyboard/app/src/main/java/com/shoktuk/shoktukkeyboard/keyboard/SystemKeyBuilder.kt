@@ -1,11 +1,11 @@
-package com.shoktuk.bitikkeyboard
+package com.shoktuk.shoktukkeyboard.keyboard
 
-import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.inputmethodservice.InputMethodService
 import android.view.Gravity
 import android.widget.Button
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.graphics.toColorInt
 
 object SystemKeyBuilder {
 
@@ -20,7 +20,7 @@ object SystemKeyBuilder {
             compoundDrawablePadding = 0
 
             textSize = KeyboardTheme.getSystemButtonStyle(service).textSizeSp
-            setTextColor(Color.parseColor(KeyboardTheme.getSystemButtonStyle(service).textColor))
+            setTextColor(KeyboardTheme.getSystemButtonStyle(service).textColor.toColorInt())
             layoutParams = android.widget.LinearLayout.LayoutParams(KeyboardTheme.getSystemButtonWidth(service), buttonHeight).apply {
                 marginStart = margin
                 marginEnd = margin
@@ -46,24 +46,19 @@ object SystemKeyBuilder {
                 val iconDrawable: Drawable? = KeyboardTheme.loadAssetDrawable(service, path)
                 iconDrawable?.let { d ->
                     val tintedIcon = DrawableCompat.wrap(d).mutate()
-                    DrawableCompat.setTint(tintedIcon, Color.parseColor(KeyboardTheme.getSystemButtonStyle(service).textColor))
+                    DrawableCompat.setTint(tintedIcon, KeyboardTheme.getSystemButtonStyle(service).textColor.toColorInt())
                     // Set icon size to half the button height
                     val iconSize = buttonHeight / 2
                     tintedIcon.setBounds(0, 0, iconSize, iconSize)
                     setCompoundDrawables(null, tintedIcon, null, null)
-                    setPadding(0, KeyboardTheme.getButtonHeight(service) / 4, 0, 0)
+                    setPadding(0, KeyboardTheme.getButtonHeight() / 4, 0, 0)
                 }
             }
             setOnClickListener {
                 when (key.name) {
                     "Shift" -> onCapsChange(!isCaps)
                     "Del" -> {
-                        if (layout.directionality == 1) {
-                            service.currentInputConnection?.deleteSurroundingText(2, 1)
-                            service.currentInputConnection?.deleteSurroundingText(2, 1)
-                        } else {
-                            service.currentInputConnection?.deleteSurroundingText(1, 0)
-                        }
+                        service.currentInputConnection?.deleteSurroundingText(2, 0)
                     }
                 }
             }

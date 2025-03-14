@@ -1,4 +1,4 @@
-package com.shoktuk.bitikkeyboard
+package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.graphics.Color
 import android.inputmethodservice.InputMethodService
@@ -59,8 +59,7 @@ object BottomRowBuilder {
                 createSystemAssetButton(
                     service, KeyboardTheme.DELETE_ICON_FILE, "", buttonHeight, margin,
                     onClick = {
-                        // This is your delete logic
-                        service.currentInputConnection?.deleteSurroundingText(1, 0)
+                        service.currentInputConnection?.deleteSurroundingText(2, 0)
                     },
                     buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
                 )
@@ -159,7 +158,7 @@ object BottomRowBuilder {
                     val iconSize = buttonHeight / 2
                     tintedIcon.setBounds(0, 0, iconSize, iconSize)
                     setCompoundDrawables(null, tintedIcon, null, null)
-                    setPadding(0, KeyboardTheme.getButtonHeight(service) / 4, 0, 0)
+                    setPadding(0, KeyboardTheme.getButtonHeight() / 4, 0, 0)
                 }
             }
             setOnClickListener { onClick() }
@@ -198,7 +197,7 @@ object BottomRowBuilder {
                     val iconSize = buttonHeight / 2
                     tintedIcon.setBounds(0, 0, iconSize, iconSize)
                     setCompoundDrawables(null, tintedIcon, null, null)
-                    setPadding(0, KeyboardTheme.getButtonHeight(service) / 4, 0, KeyboardTheme.getButtonHeight(service) / 4)
+                    setPadding(0, KeyboardTheme.getButtonHeight() / 4, 0, KeyboardTheme.getButtonHeight() / 4)
                 }
             }
             setOnClickListener {

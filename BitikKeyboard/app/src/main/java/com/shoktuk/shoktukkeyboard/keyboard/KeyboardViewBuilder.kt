@@ -1,10 +1,10 @@
-package com.shoktuk.bitikkeyboard
+package com.shoktuk.shoktukkeyboard.keyboard
 
-import android.graphics.Color
 import android.inputmethodservice.InputMethodService
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.graphics.toColorInt
 
 object KeyboardViewBuilder {
 
@@ -14,12 +14,7 @@ object KeyboardViewBuilder {
      * @param onLangChange Callback for language button press.
      */
     fun buildKeyboardView(
-        service: InputMethodService,
-        layout: KeyboardLayout,
-        isCaps: Boolean,
-        onCapsChange: (Boolean) -> Unit,
-        onModeChange: (String) -> Unit,
-        onLangChange: () -> Unit
+        service: InputMethodService, layout: KeyboardLayout, isCaps: Boolean, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit, onLangChange: () -> Unit
     ): LinearLayout {
         val margin = KeyboardTheme.dpToPx(service, KeyboardTheme.KEY_MARGIN_DP)
 
@@ -38,18 +33,17 @@ object KeyboardViewBuilder {
             gravity = Gravity.CENTER_HORIZONTAL
             // Set width to the lesser of screen width or maxWidthPx, and add side margins if needed.
             layoutParams = LinearLayout.LayoutParams(
-                if (screenWidthPx > maxWidthPx) maxWidthPx else ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+                if (screenWidthPx > maxWidthPx) maxWidthPx else ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
             ).apply {
                 leftMargin = sideMarginPx
                 rightMargin = sideMarginPx
             }
-            setBackgroundColor(Color.parseColor(KeyboardTheme.CONTAINER_BACKGROUND_COLOR))
+            setBackgroundColor(KeyboardTheme.CONTAINER_BACKGROUND_COLOR.toColorInt())
         }
 
         // Use an insets listener if needed to add additional bottom padding (safe area).
         container.setOnApplyWindowInsetsListener { view, insets ->
-            val bottomInset = insets.systemWindowInsetBottom
+            val bottomInset = android.view.WindowInsets.Side.BOTTOM
             view.setPadding(0, 0, 0, bottomInset)
             insets
         }
@@ -58,9 +52,8 @@ object KeyboardViewBuilder {
         layout.rows.forEach { row ->
             container.addView(
                 createRowLayout(
-                    service, row, layout, KeyboardTheme.getButtonHeight(service), margin,
+                    service, row, layout, KeyboardTheme.getButtonHeight(), margin,
                     // Calculate a fixed key width for system keys if needed.
-                    fixedKeyWidth = (screenWidthPx - (row.size + 1) * margin) / row.size,
                     isCaps, onCapsChange
                 )
             )
@@ -69,9 +62,7 @@ object KeyboardViewBuilder {
         // Build bottom row, now with language button.
         container.addView(
             BottomRowBuilder.createBottomRow(
-                service, layout, KeyboardTheme.getButtonHeight(service), margin,
-                onModeChange,
-                onLangChange = onLangChange
+                service, layout, KeyboardTheme.getButtonHeight(), margin, onModeChange, onLangChange = onLangChange
             )
         )
         return container
@@ -81,21 +72,13 @@ object KeyboardViewBuilder {
      * Creates a row layout with system keys (Shift/Del) pinned and letter keys centered.
      */
     private fun createRowLayout(
-        service: InputMethodService,
-        row: List<KeyEntry>,
-        layout: KeyboardLayout,
-        buttonHeight: Int,
-        margin: Int,
-        fixedKeyWidth: Int,
-        isCaps: Boolean,
-        onCapsChange: (Boolean) -> Unit
+        service: InputMethodService, row: List<KeyEntry>, layout: KeyboardLayout, buttonHeight: Int, margin: Int, isCaps: Boolean, onCapsChange: (Boolean) -> Unit
     ): LinearLayout {
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.WRAP_CONTENT
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT
             ).apply {
                 topMargin = margin
                 bottomMargin = margin
@@ -125,7 +108,7 @@ object KeyboardViewBuilder {
         middleKeys.forEach { key ->
             middleContainer.addView(
                 LetterKeyBuilder.createLetterKey(
-                    service, key, layout, buttonHeight, margin, isCaps, onCapsChange
+                    service, key, layout, buttonHeight, margin, isCaps
                 )
             )
         }

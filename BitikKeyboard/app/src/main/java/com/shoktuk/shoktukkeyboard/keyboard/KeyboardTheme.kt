@@ -1,11 +1,11 @@
-package com.shoktuk.bitikkeyboard
+package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import androidx.core.graphics.toColorInt
+import androidx.core.graphics.drawable.toDrawable
 
 /**
  * A data class holding all style properties for a button.
@@ -78,7 +78,7 @@ object KeyboardTheme {
         return getLetterButtonWidth(context) + (getLetterButtonWidth(context) / 2)
     }
 
-    fun getButtonHeight(context: Context): Int {
+    fun getButtonHeight(): Int {
         return BUTTON_HEIGHT_DP
     }
 
@@ -104,9 +104,9 @@ object KeyboardTheme {
     fun createDrawableFromStyle(context: Context, style: ButtonStyle): GradientDrawable {
         return GradientDrawable().apply {
             shape = GradientDrawable.RECTANGLE
-            setColor(Color.parseColor(style.fillColor))
+            setColor(style.fillColor.toColorInt())
             cornerRadius = dpToPx(context, style.cornerRadiusDp).toFloat()
-            setStroke(dpToPx(context, style.borderWidthDp), Color.parseColor(style.borderColor))
+            setStroke(dpToPx(context, style.borderWidthDp), style.borderColor.toColorInt())
         }
     }
 
@@ -118,7 +118,7 @@ object KeyboardTheme {
         return try {
             context.assets.open(assetPath).use { input ->
                 val bitmap = BitmapFactory.decodeStream(input)
-                BitmapDrawable(context.resources, bitmap)
+                bitmap.toDrawable(context.resources)
             }
         } catch (e: Exception) {
             e.printStackTrace()

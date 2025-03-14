@@ -1,4 +1,4 @@
-package com.shoktuk.bitikkeyboard
+package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
 import com.google.gson.Gson

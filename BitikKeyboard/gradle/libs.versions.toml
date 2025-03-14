@@ -1,6 +1,7 @@
 [versions]
-agp = "8.8.2"
+agp = "8.9.0"
 appcompat = "1.7.0"
+coilCompose = "2.4.0"
 gson = "2.12.1"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
@@ -9,16 +10,18 @@ junitVersion = "1.2.1"
 espressoCore = "3.6.1"
 lifecycleRuntimeKtx = "2.8.7"
 activityCompose = "1.10.1"
-composeBom = "2025.02.00"
+composeBom = "2025.03.00"
 material3Version = "1.3.1"
 ui = "1.7.8"
 uiToolingPreview = "1.7.8"
 lifecycleService = "2.8.7"
+navigationCompose = "2.8.9"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
 androidx-compose-material3-material3 = { module = "androidx.compose.material3:material3", version.ref = "material3Version" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
@@ -36,6 +39,7 @@ androidx-material3 = { group = "androidx.compose.material3", name = "material3" 
 ui = { module = "androidx.compose.ui:ui", version.ref = "ui" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview", version.ref = "uiToolingPreview" }
 androidx-lifecycle-service = { group = "androidx.lifecycle", name = "lifecycle-service", version.ref = "lifecycleService" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

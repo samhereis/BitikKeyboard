@@ -1,4 +1,4 @@
-package com.shoktuk.bitikkeyboard
+package com.shoktuk.shoktukkeyboard
 
 import org.junit.Test
 
