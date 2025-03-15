@@ -48,22 +48,22 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SideMenuView() {
-    val drawerState = rememberDrawerState(DrawerValue.Open)
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
 
     val items = listOf(
         SideMenuItem(Screens.HOW_TO_ENABLE.title, Screens.HOW_TO_ENABLE.systemImageName),
-        SideMenuItem(Screens.TEST_KEYBAORD.title, Screens.TEST_KEYBAORD.systemImageName),
+        SideMenuItem(Screens.TEST_KEYBOARD.title, Screens.TEST_KEYBOARD.systemImageName),
         SideMenuItem(Screens.BASIC_INFO.title, Screens.BASIC_INFO.systemImageName)
     )
 
     val screenTitle = when (selectedItemIndex) {
         0 -> Screens.HOW_TO_ENABLE.title
-        1 -> Screens.TEST_KEYBAORD.title
+        1 -> Screens.TEST_KEYBOARD.title
         2 -> Screens.BASIC_INFO.title
-        else -> Screens.BASIC_INFO.title
+        else -> Screens.HOW_TO_ENABLE.title
     }
 
     ModalNavigationDrawer(
@@ -88,9 +88,9 @@ fun SideMenuView() {
                         scope.launch { drawerState.close() }
                         val route = when (selectedItemIndex) {
                             0 -> Screens.HOW_TO_ENABLE.title
-                            1 -> Screens.TEST_KEYBAORD.title
+                            1 -> Screens.TEST_KEYBOARD.title
                             2 -> Screens.BASIC_INFO.title
-                            else -> Screens.BASIC_INFO.title
+                            else -> Screens.HOW_TO_ENABLE.title
                         }
                         navController.navigate(route) {
                             popUpTo(navController.graph.findStartDestination().id) {
@@ -131,12 +131,11 @@ fun SideMenuView() {
                     }
                 })
             }) { innerPadding ->
-            // Use the innerPadding provided by the Scaffold so that the content doesn't hide behind the TopAppBar.
             NavHost(
-                navController = navController, startDestination = Screens.BASIC_INFO.title, modifier = Modifier.padding(innerPadding)
+                navController = navController, startDestination = Screens.HOW_TO_ENABLE.title, modifier = Modifier.padding(innerPadding)
             ) {
                 composable(Screens.HOW_TO_ENABLE.title) { HowToEnable_Screen() }
-                composable(Screens.TEST_KEYBAORD.title) { TestKeyboard_Screen() }
+                composable(Screens.TEST_KEYBOARD.title) { TestKeyboard_Screen() }
                 composable(Screens.BASIC_INFO.title) { BasicInfo_Screen() }
             }
         }

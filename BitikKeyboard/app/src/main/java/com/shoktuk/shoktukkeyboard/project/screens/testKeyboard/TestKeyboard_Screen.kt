@@ -29,7 +29,7 @@ fun TestKeyboard_Screen() {
             .padding(10.dp)
     ) {
         Text(
-            text = "Test your custom keyboard below:", modifier = Modifier.padding(bottom = 8.dp)
+            text = "Test the keyboard below:", modifier = Modifier.padding(bottom = 8.dp)
         )
         TextField(
             value = text, onValueChange = { newValue -> text = newValue }, modifier = Modifier.fillMaxSize()
