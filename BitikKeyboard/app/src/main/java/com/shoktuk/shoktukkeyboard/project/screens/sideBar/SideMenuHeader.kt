@@ -13,35 +13,33 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Composable
-fun SideMenuHeader(modifier: Modifier) {
+fun SideMenuHeader(modifier: Modifier = Modifier) {
     Row(
         modifier = modifier, verticalAlignment = Alignment.CenterVertically
     ) {
-
         Box(
             contentAlignment = Alignment.Center, modifier = Modifier
                 .size(48.dp)
-                .clip(RoundedCornerShape(10.dp)) // This clips the content with rounded corners
+                .clip(RoundedCornerShape(10.dp))
                 .background(color = Color.Blue)
         ) {
             Icon(
-                painter = painterResource(id = R.drawable.shoktuk_icon), contentDescription = "User Icon", modifier = Modifier.size(48.dp), // Match the Box size for a neat fit
-                tint = Color.Unspecified // Display the image's original colors
+                painter = painterResource(id = R.drawable.shoktuk_icon), contentDescription = "User Icon", modifier = Modifier.size(48.dp), tint = Color.Unspecified
             )
         }
-
         Column(modifier = Modifier.padding(start = 8.dp)) {
             Text(
-                text = "Shoktuk Keyboard"
+                text = "Shoktuk Keyboard", maxLines = 1, overflow = TextOverflow.Ellipsis
             )
             Text(
-                text = "by Samagan Davlatbek uulu", color = Color.Gray
+                text = "by Samagan Davlatbek uulu", color = Color.Gray, maxLines = 1, overflow = TextOverflow.Ellipsis
             )
         }
     }

@@ -10,13 +10,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,7 +62,7 @@ fun NavigationItem(title: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
-            .background(Color.Blue)
+            .background(Color.DarkGray)
             .clickable(onClick = onClick)
             .padding(16.dp)
     ) {
@@ -70,7 +71,7 @@ fun NavigationItem(title: String, onClick: () -> Unit) {
         ) {
             Text(text = title, fontSize = 20.sp, color = Color.White)
             Image(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft, contentDescription = null
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, colorFilter = ColorFilter.tint(Color.White)
             )
         }
     }

@@ -37,6 +37,14 @@ fun ModernizedTamgasView() {
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 10.dp, vertical = 10.dp)
     ) {
+        Column(modifier = Modifier.padding(start = 10.dp)) {
+            Text("- Only one tamga is change drastically:")
+            Column(modifier = Modifier.padding(start = 20.dp)) {
+                Text("• NÇ 𐰩 -> U")
+            }
+        }
+        Spacer(modifier = Modifier.height(15.dp))
+
         Card(
             modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(25.dp), border = BorderStroke(1.dp, Color.Red)
         ) {

@@ -9,7 +9,6 @@ import SideMenuHeader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -79,16 +78,15 @@ fun SideMenuView() {
 
     ModalNavigationDrawer(
         drawerState = drawerState, gesturesEnabled = isMainScreen, drawerContent = {
-            ModalDrawerSheet(modifier = Modifier.fillMaxWidth(0.75f)) {
+            ModalDrawerSheet() {
                 // Drawer header.
                 Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(10.dp)
-                        .padding(top = 50.dp)
-                        .padding(bottom = 25.dp)
                 ) {
-                    SideMenuHeader(modifier = Modifier.fillMaxWidth())
+                    SideMenuHeader(
+                        modifier = Modifier
+                            .padding(top = 25.dp)
+                            .padding(20.dp)
+                    )
                 }
                 // Drawer items.
                 items.forEachIndexed { index, drawerItem ->
@@ -111,16 +109,14 @@ fun SideMenuView() {
                         }
                     }, icon = {
                         Row(
-                            modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
+                            modifier = Modifier, horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
                                 imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
                             )
                             Text(text = drawerItem.title)
                         }
-                    }, label = {}, modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(5.dp)
+                    }, label = {}, modifier = Modifier.padding(5.dp)
                     )
                 }
             }

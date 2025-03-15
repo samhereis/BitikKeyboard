@@ -9,6 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shoktuk.shoktukkeyboard.keyboard.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Preview(showBackground = true)
@@ -53,7 +54,7 @@ fun VowelsAndCharactersView() {
         BulletColumnView(
             items = colLeft,
             headline = "Vowels:",
-            textColor = Color.Blue,
+            textColor = Color(0xFF0B84FE), // #ac8f68 converted to ARGB format
             modifier = Modifier.weight(1f)
         )
         BulletColumnView(

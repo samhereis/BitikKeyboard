@@ -31,7 +31,7 @@ object KeyboardTheme {
 
     // Basic dimensions (base design values)
     private const val BUTTON_HEIGHT_DP = 140
-    const val KEY_MARGIN_DP = 5
+    const val KEY_MARGIN_DP = 4
 
     private const val BASE_LETTER_BUTTON_WIDTH_DP = 85
     private const val BASE_SYSTEM_BUTTON_WIDTH_DP = 125
