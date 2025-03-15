@@ -22,19 +22,17 @@ data class ButtonStyle(
 private const val i = 343537
 
 object KeyboardTheme {
-    val colorIndexes: List<String> = listOf("#0b84fe", "#ac8f68", "#31d159")
+    val colorIndexes: List<String> = listOf("#0b84fe", "#806642", "#31d159")
 
-
-    private const val BASE_SCREEN_WIDTH_DP = 360f
+    private const val BASE_SCREEN_WIDTH_DP = 350f
 
     // Maximum scale factor to avoid oversized keys on very wide screens.
     private const val MAX_SCALE_FACTOR = 1.5f
 
     // Basic dimensions (base design values)
     private const val BUTTON_HEIGHT_DP = 140
-    const val KEY_MARGIN_DP = 3
+    const val KEY_MARGIN_DP = 5
 
-    // Base widths for keys in dp (from your design)
     private const val BASE_LETTER_BUTTON_WIDTH_DP = 85
     private const val BASE_SYSTEM_BUTTON_WIDTH_DP = 125
 

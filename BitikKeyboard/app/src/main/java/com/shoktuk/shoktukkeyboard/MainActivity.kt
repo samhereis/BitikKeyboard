@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
-import com.eosrmg.apps.navigationdrawer.ui.view.SideMenuView
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 class MainActivity : ComponentActivity() {

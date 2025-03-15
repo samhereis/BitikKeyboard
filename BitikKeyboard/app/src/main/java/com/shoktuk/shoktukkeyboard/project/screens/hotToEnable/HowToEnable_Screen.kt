@@ -22,6 +22,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Composable
 fun HowToEnable_Screen() {
@@ -90,7 +91,7 @@ fun HowToEnable_Screen() {
 @Preview(showBackground = true)
 @Composable
 fun HowToEnable_ScreenPreview() {
-    MaterialTheme {
+    ShoktukKeyboardTheme {
         HowToEnable_Screen()
     }
 }

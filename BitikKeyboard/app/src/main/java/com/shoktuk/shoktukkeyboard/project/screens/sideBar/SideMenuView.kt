@@ -1,7 +1,10 @@
-package com.eosrmg.apps.navigationdrawer.ui.view
+package com.shoktuk.shoktukkeyboard
 
 import BasicInfo_Screen
 import HowToEnable_Screen
+import ModernizedTamgasView
+import OriginalTamgasView
+import RulesOfWritingView
 import SideMenuHeader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,8 +42,10 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.shoktuk.shoktukkeyboard.project.data.Screens
+import com.shoktuk.shoktukkeyboard.project.data.BasicInfoScreens
+import com.shoktuk.shoktukkeyboard.project.data.MainScreens
 import com.shoktuk.shoktukkeyboard.project.data.SideMenuItem
 import com.shoktuk.shoktukkeyboard.project.screens.testKeyboard.TestKeyboard_Screen
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
@@ -53,22 +59,28 @@ fun SideMenuView() {
     val navController = rememberNavController()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
 
-    val items = listOf(
-        SideMenuItem(Screens.HOW_TO_ENABLE.title, Screens.HOW_TO_ENABLE.systemImageName),
-        SideMenuItem(Screens.TEST_KEYBOARD.title, Screens.TEST_KEYBOARD.systemImageName),
-        SideMenuItem(Screens.BASIC_INFO.title, Screens.BASIC_INFO.systemImageName)
+    val mainScreens = listOf(
+        MainScreens.HOW_TO_ENABLE.title, MainScreens.TEST_KEYBOARD.title, MainScreens.BASIC_INFO.title
     )
 
-    val screenTitle = when (selectedItemIndex) {
-        0 -> Screens.HOW_TO_ENABLE.title
-        1 -> Screens.TEST_KEYBOARD.title
-        2 -> Screens.BASIC_INFO.title
-        else -> Screens.HOW_TO_ENABLE.title
-    }
+    // Drawer items – these are your main screen routes.
+    val items = listOf(
+        SideMenuItem(MainScreens.HOW_TO_ENABLE.title, MainScreens.HOW_TO_ENABLE.systemImageName),
+        SideMenuItem(MainScreens.TEST_KEYBOARD.title, MainScreens.TEST_KEYBOARD.systemImageName),
+        SideMenuItem(MainScreens.BASIC_INFO.title, MainScreens.BASIC_INFO.systemImageName)
+    )
+
+    // Observe the current back stack entry and extract the current route.
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentRoute = currentBackStackEntry?.destination?.route ?: MainScreens.HOW_TO_ENABLE.title
+
+    // If the current route is one of the main screens, show the hamburger; otherwise, show a back button.
+    val isMainScreen = mainScreens.contains(currentRoute)
 
     ModalNavigationDrawer(
-        drawerState = drawerState, drawerContent = {
+        drawerState = drawerState, gesturesEnabled = isMainScreen, drawerContent = {
             ModalDrawerSheet(modifier = Modifier.fillMaxWidth(0.75f)) {
+                // Drawer header.
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -76,21 +88,19 @@ fun SideMenuView() {
                         .padding(top = 50.dp)
                         .padding(bottom = 25.dp)
                 ) {
-                    SideMenuHeader(
-                        modifier = Modifier.fillMaxWidth()
-                    )
+                    SideMenuHeader(modifier = Modifier.fillMaxWidth())
                 }
-
-                items.forEachIndexed { index, drawerItems ->
+                // Drawer items.
+                items.forEachIndexed { index, drawerItem ->
                     NavigationDrawerItem(
                         selected = selectedItemIndex == index, onClick = {
                         selectedItemIndex = index
                         scope.launch { drawerState.close() }
                         val route = when (selectedItemIndex) {
-                            0 -> Screens.HOW_TO_ENABLE.title
-                            1 -> Screens.TEST_KEYBOARD.title
-                            2 -> Screens.BASIC_INFO.title
-                            else -> Screens.HOW_TO_ENABLE.title
+                            0 -> MainScreens.HOW_TO_ENABLE.title
+                            1 -> MainScreens.TEST_KEYBOARD.title
+                            2 -> MainScreens.BASIC_INFO.title
+                            else -> MainScreens.HOW_TO_ENABLE.title
                         }
                         navController.navigate(route) {
                             popUpTo(navController.graph.findStartDestination().id) {
@@ -104,39 +114,55 @@ fun SideMenuView() {
                             modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
                         ) {
                             Icon(
-                                imageVector = drawerItems.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
+                                imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
                             )
-                            Text(text = drawerItems.title)
+                            Text(text = drawerItem.title)
                         }
-                    }, label = { }, modifier = Modifier
+                    }, label = {}, modifier = Modifier
                             .fillMaxWidth()
                             .padding(5.dp)
                     )
                 }
             }
         }) {
-
         Scaffold(
             topBar = {
-                TopAppBar(title = {
-                    Text(
-                        text = screenTitle, fontSize = 15.sp, color = Color.White
+                if (isMainScreen) {
+                    // Main top bar with hamburger menu.
+                    TopAppBar(
+                        title = {
+                        Text(text = currentRoute, fontSize = 15.sp, color = Color.White)
+                    }, navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(
+                                imageVector = Icons.Rounded.Menu, contentDescription = "Menu", tint = Color.White
+                            )
+                        }
+                    }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
                     )
-                }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background), navigationIcon = {
-                    IconButton(
-                        modifier = Modifier.padding(10.dp), onClick = { scope.launch { drawerState.open() } }) {
-                        Icon(
-                            imageVector = Icons.Rounded.Menu, contentDescription = "Menu", tint = Color.White
-                        )
-                    }
-                })
+                } else {
+                    // Sub-screen top bar with back arrow.
+                    TopAppBar(
+                        title = { Text(text = currentRoute, fontSize = 15.sp, color = Color.White) }, navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = Color.White
+                            )
+                        }
+                    }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
+                    )
+                }
             }) { innerPadding ->
             NavHost(
-                navController = navController, startDestination = Screens.HOW_TO_ENABLE.title, modifier = Modifier.padding(innerPadding)
+                navController = navController, startDestination = MainScreens.HOW_TO_ENABLE.title, modifier = Modifier.padding(innerPadding)
             ) {
-                composable(Screens.HOW_TO_ENABLE.title) { HowToEnable_Screen() }
-                composable(Screens.TEST_KEYBOARD.title) { TestKeyboard_Screen() }
-                composable(Screens.BASIC_INFO.title) { BasicInfo_Screen() }
+                composable(MainScreens.HOW_TO_ENABLE.title) { HowToEnable_Screen() }
+                composable(MainScreens.TEST_KEYBOARD.title) { TestKeyboard_Screen() }
+                composable(MainScreens.BASIC_INFO.title) { BasicInfo_Screen(navController) }
+
+                composable(BasicInfoScreens.ORIGINAL_TAMGAS.title) { OriginalTamgasView() }
+                composable(BasicInfoScreens.MODERNIZED_TAMGAS.title) { ModernizedTamgasView() }
+                composable(BasicInfoScreens.RULES_OF_WRITING.title) { RulesOfWritingView() }
             }
         }
     }
