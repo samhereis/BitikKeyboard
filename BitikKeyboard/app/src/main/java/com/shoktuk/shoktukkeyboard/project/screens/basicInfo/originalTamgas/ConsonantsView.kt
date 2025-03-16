@@ -37,7 +37,7 @@ fun ConsonantsView() {
         BulletItem(text = "Aq - 𐰴"),
         BulletItem(text = "Al - 𐰟 ,𐰞"),
         BulletItem(text = "Aş - 𐱁 ,𐱀"),
-        BulletItem(text = "Aç - 𐰱"),
+        BulletItem(text = "Aç - 𐰱 ,𐰲"),
         BulletItem(text = "Ab - 𐰊 ,𐰉"),
         BulletItem(text = "An - 𐰣"),
         BulletItem(text = "", needBullet = false),
@@ -56,7 +56,7 @@ fun ConsonantsView() {
         BulletItem(text = "Ek - 𐰛 ,𐰚"),
         BulletItem(text = "El - 𐰠"),
         BulletItem(text = "Eş - 𐰿"),
-        BulletItem(text = "Üç - 𐰳 ,𐰲"),
+        BulletItem(text = "Eç - 𐰳 ,𐰲"),
         BulletItem(text = "Eb - 𐰌 ,𐰋"),
         BulletItem(text = "En - 𐰤 ,𐰥")
     )

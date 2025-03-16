@@ -39,7 +39,8 @@ fun VowelsAndCharactersView() {
         BulletItem(text = "Nt - 𐰦, 𐰧"),
         BulletItem(text = "Nç - 𐰩 ,𐰨"),
         BulletItem(text = "Ot - 𐱇"),
-        BulletItem(text = "Baş - 𐱈"),
+        BulletItem(text = "Cı/Çi - 𐰱"),
+        BulletItem(text = "Baş/Rt/Rd - 𐱈"),
         BulletItem(text = "An, En - 𐰪, 𐰫")
     )
     Row(

@@ -38,7 +38,7 @@ fun ModernizedTamgasView() {
             .padding(horizontal = 10.dp, vertical = 10.dp)
     ) {
         Column(modifier = Modifier.padding(start = 10.dp)) {
-            Text("- Only one tamga is change drastically:")
+            Text("- Only one tamga is changed drastically:")
             Column(modifier = Modifier.padding(start = 20.dp)) {
                 Text("• NÇ 𐰩 -> U")
             }

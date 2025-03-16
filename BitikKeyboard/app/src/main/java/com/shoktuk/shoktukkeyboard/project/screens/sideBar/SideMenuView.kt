@@ -2,6 +2,7 @@ package com.shoktuk.shoktukkeyboard
 
 import BasicInfo_Screen
 import HowToEnable_Screen
+import LanguageSelection
 import ModernizedTamgasView
 import OriginalTamgasView
 import RulesOfWritingView
@@ -35,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -53,10 +55,12 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SideMenuView() {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val drawerState = rememberDrawerState(DrawerValue.Open)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
+
+    var languageSelection = LanguageSelection(LocalContext.current)
 
     val mainScreens = listOf(
         MainScreens.HOW_TO_ENABLE.title, MainScreens.TEST_KEYBOARD.title, MainScreens.BASIC_INFO.title
@@ -78,10 +82,8 @@ fun SideMenuView() {
 
     ModalNavigationDrawer(
         drawerState = drawerState, gesturesEnabled = isMainScreen, drawerContent = {
-            ModalDrawerSheet() {
-                // Drawer header.
-                Column(
-                ) {
+            ModalDrawerSheet {
+                Column {
                     SideMenuHeader(
                         modifier = Modifier
                             .padding(top = 25.dp)
@@ -119,6 +121,10 @@ fun SideMenuView() {
                     }, label = {}, modifier = Modifier.padding(5.dp)
                     )
                 }
+
+                //Spacer(modifier = Modifier.weight(1f))
+                //ChangeLanguageWidget(languageSelection = languageSelection)
+                //Spacer(modifier = Modifier.weight(1f))
             }
         }) {
         Scaffold(
