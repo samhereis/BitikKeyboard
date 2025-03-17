@@ -32,7 +32,7 @@ fun VowelsAndCharactersView() {
     )
     val colRight = listOf(
         BulletItem(text = "Su - 𐰽"),
-        BulletItem(text = "Oq, Oq - 𐰹, 𐰸"),
+        BulletItem(text = "Uq, Oq - 𐰹, 𐰸"),
         BulletItem(text = "Qı, Ιq - 𐰷 ,𐰶"),
         BulletItem(text = "Ük, Ök - 𐰝, 𐰜"),
         BulletItem(text = "Lt - 𐰡"),
