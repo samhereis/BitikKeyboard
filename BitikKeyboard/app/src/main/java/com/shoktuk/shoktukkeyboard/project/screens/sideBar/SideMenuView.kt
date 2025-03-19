@@ -1,8 +1,8 @@
 package com.shoktuk.shoktukkeyboard
 
 import BasicInfo_Screen
+import ChangeLanguageWidget
 import HowToEnable_Screen
-import LanguageSelection
 import ModernizedTamgasView
 import OriginalTamgasView
 import RulesOfWritingView
@@ -10,6 +10,7 @@ import SideMenuHeader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -36,7 +37,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,12 +55,10 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SideMenuView() {
-    val drawerState = rememberDrawerState(DrawerValue.Open)
+    val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
-
-    var languageSelection = LanguageSelection(LocalContext.current)
 
     val mainScreens = listOf(
         MainScreens.HOW_TO_ENABLE.title, MainScreens.TEST_KEYBOARD.title, MainScreens.BASIC_INFO.title
@@ -94,37 +92,37 @@ fun SideMenuView() {
                 items.forEachIndexed { index, drawerItem ->
                     NavigationDrawerItem(
                         selected = selectedItemIndex == index, onClick = {
-                        selectedItemIndex = index
-                        scope.launch { drawerState.close() }
-                        val route = when (selectedItemIndex) {
-                            0 -> MainScreens.HOW_TO_ENABLE.title
-                            1 -> MainScreens.TEST_KEYBOARD.title
-                            2 -> MainScreens.BASIC_INFO.title
-                            else -> MainScreens.HOW_TO_ENABLE.title
-                        }
-                        navController.navigate(route) {
-                            popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                            selectedItemIndex = index
+                            scope.launch { drawerState.close() }
+                            val route = when (selectedItemIndex) {
+                                0 -> MainScreens.HOW_TO_ENABLE.title
+                                1 -> MainScreens.TEST_KEYBOARD.title
+                                2 -> MainScreens.BASIC_INFO.title
+                                else -> MainScreens.HOW_TO_ENABLE.title
                             }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
-                    }, icon = {
-                        Row(
-                            modifier = Modifier, horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
-                            )
-                            Text(text = drawerItem.title)
-                        }
-                    }, label = {}, modifier = Modifier.padding(5.dp)
+                            navController.navigate(route) {
+                                popUpTo(navController.graph.findStartDestination().id) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }, icon = {
+                            Row(
+                                modifier = Modifier, horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Icon(
+                                    imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
+                                )
+                                Text(text = drawerItem.title)
+                            }
+                        }, label = {}, modifier = Modifier.padding(5.dp)
                     )
                 }
 
-                //Spacer(modifier = Modifier.weight(1f))
-                //ChangeLanguageWidget(languageSelection = languageSelection)
-                //Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.weight(1f))
+                ChangeLanguageWidget()
+                Spacer(modifier = Modifier.weight(1f))
             }
         }) {
         Scaffold(
@@ -133,25 +131,25 @@ fun SideMenuView() {
                     // Main top bar with hamburger menu.
                     TopAppBar(
                         title = {
-                        Text(text = currentRoute, fontSize = 15.sp, color = Color.White)
-                    }, navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(
-                                imageVector = Icons.Rounded.Menu, contentDescription = "Menu", tint = Color.White
-                            )
-                        }
-                    }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
+                            Text(text = currentRoute, fontSize = 15.sp, color = Color.White)
+                        }, navigationIcon = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Icon(
+                                    imageVector = Icons.Rounded.Menu, contentDescription = "Menu", tint = Color.White
+                                )
+                            }
+                        }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
                     )
                 } else {
                     // Sub-screen top bar with back arrow.
                     TopAppBar(
                         title = { Text(text = currentRoute, fontSize = 15.sp, color = Color.White) }, navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = Color.White
-                            )
-                        }
-                    }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = Color.White
+                                )
+                            }
+                        }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
                     )
                 }
             }) { innerPadding ->

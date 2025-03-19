@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Text
@@ -18,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +45,10 @@ fun BasicInfo_Screen(navController: NavController) {
             .fillMaxSize()
             .padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
-        NavigationItem(title = "Original Bitik") {
+        NavigationItem(title = "bi_originalBitik".localized(
+            "loc_basicRules",
+            context = LocalContext.current
+        )) {
             navController.navigate(BasicInfoScreens.ORIGINAL_TAMGAS.title)
         }
         NavigationItem(title = "Modern Bitik") {
@@ -61,7 +66,7 @@ fun NavigationItem(title: String, onClick: () -> Unit) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(shape = androidx.compose.foundation.shape.RoundedCornerShape(10.dp))
+            .clip(shape = RoundedCornerShape(10.dp))
             .background(Color.DarkGray)
             .clickable(onClick = onClick)
             .padding(16.dp)
