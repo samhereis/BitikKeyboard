@@ -46,8 +46,13 @@ object LetterKeyBuilder {
 
         keyView.setOnClickListener {
             val letter = if (isCaps) key.uppercase else key.lowercase
-            val textToCommit = letter
-            service.currentInputConnection?.commitText(textToCommit, 1)
+            val inputConnection = service.currentInputConnection
+            if (inputConnection != null) {
+                if (ensureRTLContext(service)) {
+                    inputConnection.commitText("\u202B", 1)
+                }
+                inputConnection.commitText(letter, 1)
+            }
         }
 
         keyView.layoutParams = LinearLayout.LayoutParams(KeyboardTheme.getLetterButtonWidth(service), buttonHeight).apply {
@@ -55,5 +60,11 @@ object LetterKeyBuilder {
             marginEnd = margin
         }
         return keyView
+    }
+
+    private fun ensureRTLContext(service: InputMethodService): Boolean {
+        val inputConnection = service.currentInputConnection ?: return false
+        val textBefore = inputConnection.getTextBeforeCursor(1, 0)
+        return textBefore.isNullOrEmpty() || textBefore.last() == '\n'
     }
 }
