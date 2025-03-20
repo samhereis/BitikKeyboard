@@ -19,7 +19,6 @@ fun OriginalTamgasViewPreview() {
 
 @Composable
 fun OriginalTamgasView() {
-    // This screen combines the ConsonantsView and VowelsAndCharactersView
     Column(
         modifier = Modifier
             .fillMaxSize()

@@ -3,6 +3,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.edit
+import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 
 enum class Language(val code: String) {
     KY("ky"), KZ("kz"), TR("tr"), EN("en"), RU("ru")
@@ -34,7 +35,7 @@ object LocalizationManager {
     fun setLanguage(context: Context, newLanguage: Language) {
         currentLanguage = newLanguage
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit() { putString(KEY_LANGUAGE, newLanguage.code) }
+        prefs.edit { putString(KEY_LANGUAGE, newLanguage.code) }
     }
 
     fun localizedString(key: String, csvFileName: String, context: Context): String {
@@ -48,28 +49,20 @@ object LocalizationManager {
 
     private fun loadLocalizations(csvFileName: String, context: Context) {
         try {
-            context.assets.open("$csvFileName.csv").bufferedReader().use { reader ->
-                val lines = reader.readLines()
-                if (lines.isEmpty()) return
-
-                val headers = lines.first().split(",").map { it.trim() }
-                val languageIndices = Language.entries.associateWith { lang ->
-                    headers.indexOf(lang.code)
-                }
-
+            context.assets.open("$csvFileName.csv").use { inputStream ->
+                // Use the InputStream overload of readAllWithHeader
+                val rows: List<Map<String, String>> = csvReader().readAllWithHeader(inputStream)
                 val translations = mutableMapOf<String, Map<Language, String>>()
-                lines.drop(1).forEach { line ->
-                    if (line.isNotBlank()) {
-                        val tokens = line.split(",").map { it.trim() }
-                        val key = tokens.firstOrNull() ?: return@forEach
-                        val rowMap = mutableMapOf<Language, String>()
-                        languageIndices.forEach { (lang, index) ->
-                            if (index in tokens.indices) {
-                                rowMap[lang] = tokens[index]
-                            }
+                for (row in rows) {
+                    // "key" column must exist in your CSV header
+                    val key = row["key"] ?: continue
+                    val rowMap = mutableMapOf<Language, String>()
+                    for (lang in Language.entries) {
+                        row[lang.code]?.let { translation ->
+                            rowMap[lang] = translation
                         }
-                        translations[key] = rowMap
                     }
+                    translations[key] = rowMap
                 }
                 csvCache[csvFileName] = translations
             }

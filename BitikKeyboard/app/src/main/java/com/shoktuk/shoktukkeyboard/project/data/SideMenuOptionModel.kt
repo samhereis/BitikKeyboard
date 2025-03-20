@@ -12,10 +12,10 @@ enum class MainScreens(val id: String) {
 
     val title: String
         get() = when (this) {
-            HOW_TO_ENABLE -> "How to enable"
-            TEST_KEYBOARD -> "Test keyboard"
-            BASIC_INFO -> "Basic info"
-            else -> "Shoktuk Keyboard"
+            HOW_TO_ENABLE -> "sideBar_howToEbable"
+            TEST_KEYBOARD -> "sideBar_testTheKeyboard"
+            BASIC_INFO -> "sideBar_basicInfo"
+            else -> "sideBar_howToEbable"
         }
 
     val systemImageName: ImageVector
@@ -28,14 +28,14 @@ enum class MainScreens(val id: String) {
 }
 
 enum class BasicInfoScreens(val id: String) {
-    ORIGINAL_TAMGAS("OriginalTamgasView"), MODERNIZED_TAMGAS("ModernizedTamgasView"), RULES_OF_WRITING("HowToEnable_Screen");
+    ORIGINAL_TAMGAS("OriginalTamgasView"), MODERNIZED_TAMGAS("ModernizedTamgasView"), RULES_OF_WRITING("RulesOfWriting");
 
     val title: String
         get() = when (this) {
-            ORIGINAL_TAMGAS -> "Original Tamgas"
-            MODERNIZED_TAMGAS -> "Modernized Tamgas"
-            RULES_OF_WRITING -> "Rules of writing"
-            else -> "Shoktuk Keyboard"
+            ORIGINAL_TAMGAS -> "bi_originalBitik"
+            MODERNIZED_TAMGAS -> "bi_modernBitik"
+            RULES_OF_WRITING -> "bi_rulesOfWriting"
+            else -> "bi_originalBitik"
         }
 
     val systemImageName: ImageVector
@@ -49,5 +49,5 @@ enum class BasicInfoScreens(val id: String) {
 
 
 data class SideMenuItem(
-    val title: String, var icon: ImageVector
+    val path: MainScreens, var icon: ImageVector
 )

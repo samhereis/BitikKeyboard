@@ -7,9 +7,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.shoktuk.shoktukkeyboard.keyboard.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Preview(showBackground = true)
@@ -22,13 +22,10 @@ fun VowelsAndCharactersViewPreview() {
 
 @Composable
 fun VowelsAndCharactersView() {
+    var context = LocalContext.current
+
     val colLeft = listOf(
-        BulletItem(text = "А/E - 𐰁/𐰀"),
-        BulletItem(text = "E - 𐰅"),
-        BulletItem(text = "Ə - 𐰂"),
-        BulletItem(text = "И/Ы - 𐰄 ,𐰃"),
-        BulletItem(text = "О/U - 𐰆"),
-        BulletItem(text = "Ө/Ү - 𐰇/𐰈")
+        BulletItem(text = "А/E - 𐰁/𐰀"), BulletItem(text = "E - 𐰅"), BulletItem(text = "Ə - 𐰂"), BulletItem(text = "И/Ы - 𐰄 ,𐰃"), BulletItem(text = "О/U - 𐰆"), BulletItem(text = "Ө/Ү - 𐰇/𐰈")
     )
     val colRight = listOf(
         BulletItem(text = "Su - 𐰽"),
@@ -53,16 +50,11 @@ fun VowelsAndCharactersView() {
     ) {
         // Each column gets equal horizontal space.
         BulletColumnView(
-            items = colLeft,
-            headline = "Vowels:",
-            textColor = Color(0xFF0B84FE), // #ac8f68 converted to ARGB format
+            items = colLeft, headline = "ot_vowels".localized("loc_originalTamgas", context), textColor = Color(0xFF0B84FE), // #ac8f68 converted to ARGB format
             modifier = Modifier.weight(1f)
         )
         BulletColumnView(
-            items = colRight,
-            headline = "Characters:",
-            textColor = Color(0xFFFFA500),
-            modifier = Modifier.weight(1f)
+            items = colRight, headline = "ot_characters".localized("loc_originalTamgas", context), textColor = Color(0xFFFFA500), modifier = Modifier.weight(1f)
         )
     }
 }

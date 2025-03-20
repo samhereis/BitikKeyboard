@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -32,13 +33,15 @@ fun ModernizedTamgasViewPreview() {
 
 @Composable
 fun ModernizedTamgasView() {
+    var context = LocalContext.current
+
     Column(
         modifier = Modifier
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 10.dp, vertical = 10.dp)
     ) {
         Column(modifier = Modifier.padding(start = 10.dp)) {
-            Text("- Only one tamga is changed drastically:")
+            Text("- " + "mb_change_1".localized("loc_modernBitik", context) + ":")
             Column(modifier = Modifier.padding(start = 20.dp)) {
                 Text("• NÇ 𐰩 -> U")
             }
@@ -54,23 +57,27 @@ fun ModernizedTamgasView() {
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Altay variant:", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.Yellow
+                    text = "mb_altayVariant".localized("loc_modernBitik", context), fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.Yellow
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Altay hard tamgas", color = Color.Yellow)
+                Text("mb_altayHardTamgas".localized("loc_modernBitik", context), color = Color.Yellow)
                 Image(
-                    painter = painterResource(id = R.drawable.altay_hard), contentDescription = "Altay Hard Tamgas", modifier = Modifier
+                    painter = painterResource(id = R.drawable.altay_hard),
+                    contentDescription = "mb_altayHardTamgas".localized("loc_modernBitik", context),
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Altay soft tamgas", color = Color.Yellow)
+                Text("mb_altaySoftTamgas".localized("loc_modernBitik", context), color = Color.Yellow)
                 Image(
-                    painter = painterResource(id = R.drawable.altay_soft), contentDescription = "Altay Soft Tamgas", modifier = Modifier
+                    painter = painterResource(id = R.drawable.altay_soft),
+                    contentDescription = "mb_altaySoftTamgas".localized("loc_modernBitik", context),
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                 )
@@ -87,23 +94,27 @@ fun ModernizedTamgasView() {
                     .padding(16.dp)
             ) {
                 Text(
-                    text = "Orhon variant:", fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White
+                    text = "mb_orhonVariant".localized("loc_modernBitik", context), fontSize = 25.sp, fontWeight = FontWeight.Bold, color = Color.White
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Orhon hard tamgas", color = Color.White)
+                Text("mb_orhonHardTamgas".localized("loc_modernBitik", context), color = Color.White)
                 Image(
-                    painter = painterResource(id = R.drawable.orhon_hard), contentDescription = "Orhon Hard Tamgas", modifier = Modifier
+                    painter = painterResource(id = R.drawable.orhon_hard),
+                    contentDescription = "mb_orhonHardTamgas".localized("loc_modernBitik", context),
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                 )
 
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Text("Orhon soft tamgas", color = Color.White)
+                Text("mb_orhonSoftTamgas".localized("loc_modernBitik", context), color = Color.White)
                 Image(
-                    painter = painterResource(id = R.drawable.orhon_soft), contentDescription = "Orhon Soft Tamgas", modifier = Modifier
+                    painter = painterResource(id = R.drawable.orhon_soft),
+                    contentDescription = "mb_orhonSoftTamgas".localized("loc_modernBitik", context),
+                    modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
                 )

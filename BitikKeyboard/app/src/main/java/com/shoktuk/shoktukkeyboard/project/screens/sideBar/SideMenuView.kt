@@ -5,7 +5,6 @@ import ChangeLanguageWidget
 import HowToEnable_Screen
 import ModernizedTamgasView
 import OriginalTamgasView
-import RulesOfWritingView
 import SideMenuHeader
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -51,6 +51,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SideMenuItem
 import com.shoktuk.shoktukkeyboard.project.screens.testKeyboard.TestKeyboard_Screen
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import kotlinx.coroutines.launch
+import localized
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,23 +60,22 @@ fun SideMenuView() {
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
+    val context = LocalContext.current
 
     val mainScreens = listOf(
-        MainScreens.HOW_TO_ENABLE.title, MainScreens.TEST_KEYBOARD.title, MainScreens.BASIC_INFO.title
+        MainScreens.HOW_TO_ENABLE.id, MainScreens.TEST_KEYBOARD.id, MainScreens.BASIC_INFO.id
     )
 
     // Drawer items – these are your main screen routes.
     val items = listOf(
-        SideMenuItem(MainScreens.HOW_TO_ENABLE.title, MainScreens.HOW_TO_ENABLE.systemImageName),
-        SideMenuItem(MainScreens.TEST_KEYBOARD.title, MainScreens.TEST_KEYBOARD.systemImageName),
-        SideMenuItem(MainScreens.BASIC_INFO.title, MainScreens.BASIC_INFO.systemImageName)
+        SideMenuItem(MainScreens.HOW_TO_ENABLE, MainScreens.HOW_TO_ENABLE.systemImageName),
+        SideMenuItem(MainScreens.TEST_KEYBOARD, MainScreens.TEST_KEYBOARD.systemImageName),
+        SideMenuItem(MainScreens.BASIC_INFO, MainScreens.BASIC_INFO.systemImageName)
     )
 
-    // Observe the current back stack entry and extract the current route.
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = currentBackStackEntry?.destination?.route ?: MainScreens.HOW_TO_ENABLE.title
+    val currentRoute = currentBackStackEntry?.destination?.route ?: MainScreens.HOW_TO_ENABLE.id
 
-    // If the current route is one of the main screens, show the hamburger; otherwise, show a back button.
     val isMainScreen = mainScreens.contains(currentRoute)
 
     ModalNavigationDrawer(
@@ -95,10 +95,10 @@ fun SideMenuView() {
                             selectedItemIndex = index
                             scope.launch { drawerState.close() }
                             val route = when (selectedItemIndex) {
-                                0 -> MainScreens.HOW_TO_ENABLE.title
-                                1 -> MainScreens.TEST_KEYBOARD.title
-                                2 -> MainScreens.BASIC_INFO.title
-                                else -> MainScreens.HOW_TO_ENABLE.title
+                                0 -> MainScreens.HOW_TO_ENABLE.id
+                                1 -> MainScreens.TEST_KEYBOARD.id
+                                2 -> MainScreens.BASIC_INFO.id
+                                else -> MainScreens.HOW_TO_ENABLE.id
                             }
                             navController.navigate(route) {
                                 popUpTo(navController.graph.findStartDestination().id) {
@@ -114,7 +114,7 @@ fun SideMenuView() {
                                 Icon(
                                     imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
                                 )
-                                Text(text = drawerItem.title)
+                                Text(text = drawerItem.path.title.localized("loc_sideBar", context))
                             }
                         }, label = {}, modifier = Modifier.padding(5.dp)
                     )
@@ -128,10 +128,10 @@ fun SideMenuView() {
         Scaffold(
             topBar = {
                 if (isMainScreen) {
-                    // Main top bar with hamburger menu.
                     TopAppBar(
                         title = {
-                            Text(text = currentRoute, fontSize = 15.sp, color = Color.White)
+                            val menuTitle = items.find { it.path.id == currentRoute }?.path?.title?.localized("loc_sideBar", context) ?: ""
+                            Text(text = menuTitle, fontSize = 15.sp, color = Color.White)
                         }, navigationIcon = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Icon(
@@ -141,9 +141,11 @@ fun SideMenuView() {
                         }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
                     )
                 } else {
-                    // Sub-screen top bar with back arrow.
                     TopAppBar(
-                        title = { Text(text = currentRoute, fontSize = 15.sp, color = Color.White) }, navigationIcon = {
+                        title = {
+                            val menuTitle = BasicInfoScreens.entries.find { it.id == currentRoute }?.title?.localized("loc_basicInfo", context) ?: ""
+                            Text(text = menuTitle, fontSize = 15.sp, color = Color.White)
+                        }, navigationIcon = {
                             IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(
                                     imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = Color.White
@@ -154,15 +156,15 @@ fun SideMenuView() {
                 }
             }) { innerPadding ->
             NavHost(
-                navController = navController, startDestination = MainScreens.HOW_TO_ENABLE.title, modifier = Modifier.padding(innerPadding)
+                navController = navController, startDestination = MainScreens.HOW_TO_ENABLE.id, modifier = Modifier.padding(innerPadding)
             ) {
-                composable(MainScreens.HOW_TO_ENABLE.title) { HowToEnable_Screen() }
-                composable(MainScreens.TEST_KEYBOARD.title) { TestKeyboard_Screen() }
-                composable(MainScreens.BASIC_INFO.title) { BasicInfo_Screen(navController) }
+                composable(MainScreens.HOW_TO_ENABLE.id) { HowToEnable_Screen() }
+                composable(MainScreens.TEST_KEYBOARD.id) { TestKeyboard_Screen() }
+                composable(MainScreens.BASIC_INFO.id) { BasicInfo_Screen(navController) }
 
-                composable(BasicInfoScreens.ORIGINAL_TAMGAS.title) { OriginalTamgasView() }
-                composable(BasicInfoScreens.MODERNIZED_TAMGAS.title) { ModernizedTamgasView() }
-                composable(BasicInfoScreens.RULES_OF_WRITING.title) { RulesOfWritingView() }
+                composable(BasicInfoScreens.ORIGINAL_TAMGAS.id) { OriginalTamgasView() }
+                composable(BasicInfoScreens.MODERNIZED_TAMGAS.id) { ModernizedTamgasView() }
+                composable(BasicInfoScreens.RULES_OF_WRITING.id) { RulesOfWritingView() }
             }
         }
     }
