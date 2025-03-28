@@ -11,7 +11,7 @@ import androidx.core.graphics.drawable.toDrawable
  * A data class holding all style properties for a button.
  */
 data class ButtonStyle(
-    val fillColor: String,       // e.g. "#3A3A3C"
+    var fillColor: String,       // e.g. "#3A3A3C"
     val borderColor: String,     // e.g. "#888888"
     val borderWidthDp: Int,      // e.g. 2
     val cornerRadiusDp: Int,     // e.g. 4
@@ -47,6 +47,7 @@ object KeyboardTheme {
     // Asset file paths for PNG icons (placed in assets/icons/)
     const val SHIFT_ICON_FILE = "icons/shift_icon.png"
     const val DELETE_ICON_FILE = "icons/delete_icon.png"
+    const val LANGUAGE_ICON_FILE = "icons/icon_language.png"
     const val ENTER_ICON_FILE = "icons/enter_icon.png"
     const val SPACE_ICON_FILE = "icons/space_icon.png"
 

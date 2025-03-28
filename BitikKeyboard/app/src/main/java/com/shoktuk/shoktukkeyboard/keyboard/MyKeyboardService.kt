@@ -51,5 +51,4 @@ class MyKeyboardService : InputMethodService() {
 
         reloadKeyboard();
     }
-
 }
