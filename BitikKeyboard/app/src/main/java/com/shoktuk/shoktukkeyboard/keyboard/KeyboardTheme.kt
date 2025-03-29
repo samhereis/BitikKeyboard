@@ -11,12 +11,12 @@ import androidx.core.graphics.toColorInt
  * A data class holding all style properties for a button.
  */
 data class ButtonStyle(
-    var fillColor: String,       // e.g. "#3A3A3C"
-    val borderColor: String,     // e.g. "#888888"
-    val borderWidthDp: Int,      // e.g. 2
-    val cornerRadiusDp: Int,     // e.g. 4
-    val textColor: String,       // e.g. "#FFFFFF"
-    val textSizeSp: Float        // Base text size; will be scaled.
+    var fillColor: String,
+    val borderColor: String,
+    val borderWidthDp: Int,
+    val cornerRadiusDp: Int,
+    val textColor: String,
+    val textSizeSp: Float
 )
 
 private const val i = 343537
@@ -36,7 +36,6 @@ object KeyboardTheme {
     private const val BASE_LETTER_BUTTON_WIDTH_DP = 85
     private const val BASE_SYSTEM_BUTTON_WIDTH_DP = 125
 
-    // Base text sizes for buttons
     private const val BASE_LETTER_TEXT_SIZE_SP = 22f
     private const val BASE_HINT_TEXT_SIZE_SP = 10f
     private const val BASE_SYSTEM_TEXT_SIZE_SP = 17f
@@ -109,10 +108,6 @@ object KeyboardTheme {
         }
     }
 
-    /**
-     * Loads a PNG from assets/icons and returns it as a Drawable.
-     * Returns null if loading fails.
-     */
     fun loadAssetDrawable(context: Context, assetPath: String): Drawable? {
         return try {
             context.assets.open(assetPath).use { input ->
@@ -125,7 +120,6 @@ object KeyboardTheme {
         }
     }
 
-    // Responsive styles for letter and system keys.
     fun getLetterButtonStyle(context: Context): ButtonStyle {
         return ButtonStyle(
             fillColor = "#535353",     // dark gray

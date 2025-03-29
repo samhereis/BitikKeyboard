@@ -1,37 +1,48 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
+import android.graphics.Color
+import android.graphics.drawable.GradientDrawable
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
 import android.os.Looper
-import android.util.Log
+import android.util.TypedValue
 import android.view.Gravity
+import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
+import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.keyboard.KeyboardTheme.dpToPx
 
 class KeyView(
     context: Context,
     private val key: KeyEntry,
-    private val isCaps: Boolean,
+    private var isCaps: Boolean,
     private val buttonHeight: Int,
     private val margin: Int,
     private val onKeyClick: (String) -> Unit,
     private val onLongPress: (String?) -> Unit
 ) : FrameLayout(context) {
 
-    private var overlayView: View? = null
-    private var popupWindow: PopupWindow? = null
     private val handler = Handler(Looper.getMainLooper())
-    private val overlayHideDelay = 100L // ms
+    private val longPressDelay = 500L
+    private val overlayHideDelay = 100L
+
+    private var isTouchInBounds = false
+    private var isLongPressed = false
+    private var currentBackgroundColorIndex = 0
+    private var popupWindow: PopupWindow? = null
+
+    // State properties
+    private lateinit var mainText: TextView
+    private lateinit var subText: TextView
     private var style = KeyboardTheme.getLetterButtonStyle(context)
 
     init {
@@ -39,8 +50,7 @@ class KeyView(
         applyStyle()
         setupContent()
         setupTouchHandling()
-
-        cleanup()
+        setupClickListeners()
     }
 
     private fun setupView() {
@@ -50,128 +60,290 @@ class KeyView(
             marginStart = margin
             marginEnd = margin
         }
+        foregroundGravity = Gravity.CENTER
         setPadding(0, 0, 0, 0)
     }
 
     private fun applyStyle() {
-        style = KeyboardTheme.getLetterButtonStyle(context).apply {
-            if (isCaps && key.backgroundColorIndex_uppercase != null && key.backgroundColorIndex_uppercase >= 0) {
-                fillColor = KeyboardTheme.colorIndexes[key.backgroundColorIndex_uppercase]
-            } else if (!isCaps && key.backgroundColorIndex_lowercase != null && key.backgroundColorIndex_lowercase >= 0) {
-                fillColor = KeyboardTheme.colorIndexes[key.backgroundColorIndex_lowercase]
-            }
+        currentBackgroundColorIndex = when {
+            isCaps -> key.backgroundColorIndex_uppercase ?: 0
+            else -> key.backgroundColorIndex_lowercase ?: 0
         }
+
+        style = KeyboardTheme.getLetterButtonStyle(context).copy(
+            fillColor = KeyboardTheme.colorIndexes[currentBackgroundColorIndex]
+        )
         background = KeyboardTheme.createDrawableFromStyle(context, style)
     }
 
     private fun setupContent() {
+        removeAllViews()
         val view = LayoutInflater.from(context).inflate(R.layout.keyboard_key, this, true)
-        val mainText = view.findViewById<TextView>(R.id.mainText)
-        val subText = view.findViewById<TextView>(R.id.subText)
+        mainText = view.findViewById(R.id.mainText)
+        subText = view.findViewById(R.id.subText)
+        updateContent()
+        addHoldIndicatorIfNeeded(view)
+    }
 
-        mainText.text = if (isCaps) key.uppercase else key.lowercase
+    private fun updateContent() {
+        mainText.text = getCurrentMainText()
         mainText.setTextColor(style.textColor.toColorInt())
-        mainText.textSize = style.textSizeSp
+        mainText.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp)
 
-        subText.text = if (isCaps) key.upperCaseRomanization ?: "" else key.lowerCaseRomanization ?: ""
-        subText.setTextColor(Color.White.toArgb())
-        subText.textSize = KeyboardTheme.getHintButtonTextSize(context)
+        subText.text = getCurrentSubText()
+        subText.setTextColor(Color.WHITE)
+        subText.setTextSize(TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context))
+        subText.visibility = if (subText.text.isNullOrEmpty()) View.GONE else View.VISIBLE
+    }
+
+    private fun setupClickListeners() {
+        setOnClickListener {
+            var text = getCurrentMainText()
+            if (isLongPressed) {
+                text = getCurrentMainText_Hold()
+            }
+
+            text = text?.replace("\uD803\\", "")
+
+            onKeyClick(text!!)
+        }
     }
 
     private fun setupTouchHandling() {
+        val longPressRunnable = Runnable {
+            var hasHoldValue: Boolean = false;
+
+            if (isCaps && key.upperCaseHold != null) {
+                hasHoldValue = true
+            }
+            if (!isCaps && key.lowerCaseHold != null) {
+                hasHoldValue = true
+            }
+
+            if (isTouchInBounds && hasHoldValue) {
+                isLongPressed = true
+                performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                onLongPress(getCurrentMainText_Hold())
+                applyStyle()
+                updateContent()
+                updateOverlay()
+            }
+        }
+
         setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    isTouchInBounds = true
+                    handler.postDelayed(longPressRunnable, longPressDelay)
                     showOverlay()
+                    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_PRESS)
                     true
                 }
 
-                MotionEvent.ACTION_UP -> {
-                    handler.postDelayed(::removeOverlay, overlayHideDelay)
-                    if (isWithinBounds(event)) {
-                        performClick()
+                MotionEvent.ACTION_MOVE -> {
+                    val inBounds = event.x in 0f..width.toFloat() && event.y in 0f..height.toFloat()
+                    if (isTouchInBounds != inBounds) {
+                        isTouchInBounds = inBounds
+                        if (!isTouchInBounds) {
+                            handler.removeCallbacks(longPressRunnable)
+                            dismissOverlay()
+                        }
                     }
                     true
                 }
 
-                MotionEvent.ACTION_CANCEL -> {
-                    handler.postDelayed(::removeOverlay, overlayHideDelay)
+                MotionEvent.ACTION_UP -> {
+                    handler.removeCallbacks(longPressRunnable)
+                    dismissOverlay()
+                    if (isTouchInBounds && !isLongPressed) {
+                        performClick()
+                    }
+                    resetState()
                     true
                 }
 
-                else -> {
-                    false
+                MotionEvent.ACTION_CANCEL -> {
+                    handler.removeCallbacks(longPressRunnable)
+                    dismissOverlay()
+                    resetState()
+                    true
                 }
-            }
-        }
-        setOnClickListener {
-            val letter = (if (isCaps) key.uppercase else key.lowercase)?.replace("\uD803\\", "") ?: ""
-            onKeyClick(letter)
-        }
 
-        if (key.lowerCaseHold != null || key.upperCaseHold != null) {
-            setOnLongClickListener {
-                val letter = if (isCaps) key.upperCaseHold else key.lowerCaseHold
-                onLongPress(letter)
-                removeOverlay()
-                true
+                else -> false
             }
         }
     }
 
     private fun showOverlay() {
-        removeOverlay()
+        dismissOverlay()
 
-        val overlayStyle = style.copy(
-            textSizeSp = style.textSizeSp * 1.5f, fillColor = style.fillColor
-        )
-        val overlayView = LayoutInflater.from(context).inflate(R.layout.keyboard_key, null, false).apply {
-            findViewById<TextView>(R.id.mainText).apply {
-                text = if (isCaps) key.uppercase else key.lowercase
-                setTextColor(overlayStyle.textColor.toColorInt())
-                textSize = overlayStyle.textSizeSp
-            }
-            findViewById<TextView>(R.id.subText).visibility = View.GONE
-            background = this@KeyView.background.constantState?.newDrawable()
+        if (isCaps) {
+            if (key.upperCaseHold == null) {
+                return; }
+        } else {
+            if (key.lowerCaseHold == null) {
+                return; }
         }
-        val overlayWidth = (width * 1.5f).toInt()
-        val overlayHeight = (height * 1.5f).toInt()
 
-        popupWindow = PopupWindow(overlayView, overlayWidth, overlayHeight).apply {
+        val overlayView = createOverlayView().apply {
+            layoutParams = LayoutParams(
+                width,  // Match key width
+                height  // Match key height
+            )
+        }
+
+        // Create popup with same dimensions as key
+        popupWindow = PopupWindow(
+            overlayView, (width * 1.25f).toInt(),  // Scale both dimensions equally
+            (height * 1.25f).toInt()  // Maintain aspect ratio
+        ).apply {
             isOutsideTouchable = true
             isFocusable = false
+            elevation = 24f
         }
 
         val location = IntArray(2)
         getLocationInWindow(location)
 
-        Log.d("KeyView", "Location for key: ${key.lowercase} x:${location[0]} y: ${location[1]}")
-        val x = location[0] - (overlayWidth - width) / 2
-        val y = location[1] - overlayHeight - 20
+        popupWindow?.showAtLocation(
+            (context as? InputMethodService)?.window?.window?.decorView, Gravity.START or Gravity.TOP, location[0] - (popupWindow!!.width - width) / 2,  // Center horizontally
+            location[1] - popupWindow!!.height - dpToPx(context, 16)  // Position above
+        )
+    }
 
-        (context as? InputMethodService)?.window?.window?.decorView?.post {
-            Log.d("KeyView", "popupWindow?.showAtLocation called for key: ${key.lowercase} x: $x y: $y")
-            popupWindow?.showAtLocation(
-                (context as? InputMethodService)?.window?.window?.decorView,
-                Gravity.NO_GRAVITY,
-                x,
-                y
+    private fun createOverlayView(): View {
+        return LayoutInflater.from(context).inflate(R.layout.keyboard_key, null).apply {
+            layoutParams = LayoutParams(
+                LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT
             )
+
+            findViewById<TextView>(R.id.mainText).apply {
+                text = getCurrentMainText()
+
+                setTextColor(style.textColor.toColorInt())
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, style.textSizeSp * resources.displayMetrics.density * 1.5f)
+            }
+
+            findViewById<TextView>(R.id.subText).apply {
+                text = getCurrentSubText()
+                setTextColor(style.textColor.toColorInt())
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context))
+            }
+            background = KeyboardTheme.createDrawableFromStyle(context, style)
         }
     }
 
-    private fun removeOverlay() {
-        handler.removeCallbacksAndMessages(null)
+    private fun updateOverlay() {
+        popupWindow?.contentView?.findViewById<TextView>(R.id.mainText)?.text = " " + getCurrentMainText_Hold() + " "
+        popupWindow?.contentView?.findViewById<TextView>(R.id.subText)?.text = " " + getCurrentSubText_Hold() + " "
+
+        var colorIndex: Int = 0;
+        var colorToSet: Int = KeyboardTheme.colorIndexes[0].toColorInt()
+
+        if (isCaps) {
+            if (key.backgroundColorIndex_uppercase_Hold != null) {
+                colorIndex = key.backgroundColorIndex_uppercase_Hold
+            }
+
+            if (key.backgroundColorIndex_uppercase_Hold != null) {
+                colorToSet = KeyboardTheme.colorIndexes[key.backgroundColorIndex_uppercase_Hold].toColorInt()
+            } else if (key.backgroundColorIndex_lowercase != null) {
+                colorToSet = KeyboardTheme.colorIndexes[key.backgroundColorIndex_lowercase].toColorInt()
+            }
+        } else {
+            if (key.backgroundColorIndex_lowercase_Hold != null) {
+                colorIndex = key.backgroundColorIndex_lowercase_Hold
+            }
+
+            if (key.backgroundColorIndex_lowercase_Hold != null) {
+                colorToSet = KeyboardTheme.colorIndexes[key.backgroundColorIndex_lowercase_Hold].toColorInt()
+            } else if (key.backgroundColorIndex_lowercase != null) {
+                colorToSet = KeyboardTheme.colorIndexes[key.backgroundColorIndex_lowercase].toColorInt()
+            }
+        }
+        popupWindow?.contentView?.setBackgroundColor(colorToSet)
+    }
+
+    private fun addHoldIndicatorIfNeeded(root: View) {
+        // Check if this key has any hold variants
+        val hasHoldVariant = if (isCaps) {
+            key.upperCaseHold != null
+        } else {
+            key.lowerCaseHold != null
+        }
+
+        if (hasHoldVariant) {
+            val indicatorSize = dpToPx(context, 4) // 4dp dot
+            val margin = dpToPx(context, 2) // 2dp offset from corner
+
+            val indicator = View(context).apply {
+                layoutParams = FrameLayout.LayoutParams(
+                    indicatorSize, indicatorSize
+                ).apply {
+                    gravity = Gravity.TOP or Gravity.END
+                    topMargin = margin
+                    marginEnd = margin
+                }
+
+                background = GradientDrawable().apply {
+                    shape = GradientDrawable.OVAL
+                    setColor(Color.WHITE)
+                    setSize(indicatorSize, indicatorSize)
+                }
+            }
+
+            // Add to the root view (which is the keyboard_key.xml FrameLayout)
+            (root as ViewGroup).addView(indicator)
+        }
+    }
+
+    private fun getCurrentMainText(): String? {
+        if (isCaps) {
+            return key.uppercase
+        } else {
+            return key.lowercase
+        }
+    }
+
+    private fun getCurrentSubText(): CharSequence? {
+        if (isCaps) {
+            return key.upperCaseRomanization
+        } else {
+            return key.lowerCaseRomanization
+        }
+    }
+
+    private fun getCurrentMainText_Hold(): String? {
+        if (isCaps) {
+            return key.upperCaseHold
+        } else {
+            return key.lowerCaseHold
+        }
+    }
+
+    private fun getCurrentSubText_Hold(): CharSequence? {
+        if (isCaps) {
+            return key.upperCaseHoldHint ?: ""
+        } else {
+            return key.lowerCaseHoldHint ?: ""
+        }
+    }
+
+    private fun dismissOverlay() {
         popupWindow?.dismiss()
         popupWindow = null
     }
 
-    private fun isWithinBounds(event: MotionEvent): Boolean {
-        return event.x >= 0 && event.x < width && event.y >= 0 && event.y < height
+    private fun resetState() {
+        handler.postDelayed({
+            isLongPressed = false
+            applyStyle()
+            updateContent()
+        }, overlayHideDelay)
     }
 
     fun cleanup() {
-        removeOverlay()
+        dismissOverlay()
         handler.removeCallbacksAndMessages(null)
     }
 }
