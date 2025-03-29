@@ -95,7 +95,8 @@ object TopRowBuilder {
 
     private fun updateLastWord(inputConnection: InputConnection?, textView: TextView) {
         inputConnection?.getTextBeforeCursor(100, 0)?.let { textBeforeCursor ->
-            val lastWord = textBeforeCursor.split("[\\s:]+".toRegex()).lastOrNull() ?: ""
+            // Split by space, colon, period, and comma
+            val lastWord = textBeforeCursor.split("[\\s:.,]+".toRegex()).lastOrNull() ?: ""
             textView.text = lastWord
         }
     }

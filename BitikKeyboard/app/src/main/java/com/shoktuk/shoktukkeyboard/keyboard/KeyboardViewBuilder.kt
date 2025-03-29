@@ -11,8 +11,6 @@ object KeyboardViewBuilder {
     fun buildKeyboardView(
         service: InputMethodService, layout: KeyboardLayout, isCaps: Boolean, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit, onLangChange: () -> Unit
     ): LinearLayout {
-        lateinit var letterKeyBuilder: LetterKeyBuilder
-
         val margin = KeyboardTheme.dpToPx(service, KeyboardTheme.KEY_MARGIN_DP)
 
         val screenWidthPx = service.resources.displayMetrics.widthPixels
@@ -51,7 +49,6 @@ object KeyboardViewBuilder {
             container.addView(
                 createRowLayout(
                     service, row, layout, KeyboardTheme.getButtonHeight(), margin,
-                    // Calculate a fixed key width for system keys if needed.
                     isCaps, onCapsChange
                 )
             )

@@ -82,6 +82,20 @@ object BottomRowBuilder {
             )
 
             bottomRow.addView(
+                createSystemAssetButton(
+                    service,
+                    null,
+                    ".",
+                    buttonHeight,
+                    margin,
+                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
+                    onClick = {
+                        service.currentInputConnection?.commitText(". ", 1)
+                        TopRowBuilder.onTypedListener?.invoke()
+                    })
+            )
+
+            bottomRow.addView(
                 createExpandableAssetButton(
                     service, KeyboardTheme.SPACE_ICON_FILE, "", buttonHeight, margin, " "
                 )
@@ -92,7 +106,21 @@ object BottomRowBuilder {
                     service, null, ":", buttonHeight, margin, ":"
                 )
             )
-            // 5) Enter
+
+            bottomRow.addView(
+                createSystemAssetButton(
+                    service,
+                    null,
+                    ",",
+                    buttonHeight,
+                    margin,
+                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
+                    onClick = {
+                        service.currentInputConnection?.commitText(", ", 1)
+                        TopRowBuilder.onTypedListener?.invoke()
+                    })
+            )
+
             bottomRow.addView(
                 createSystemAssetButton(
                     service,

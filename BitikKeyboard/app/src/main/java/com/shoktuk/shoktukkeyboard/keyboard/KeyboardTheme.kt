@@ -29,8 +29,8 @@ object KeyboardTheme {
     // Maximum scale factor to avoid oversized keys on very wide screens.
     private const val MAX_SCALE_FACTOR = 1.5f
 
-    // Basic dimensions (base design values)
     private const val BUTTON_HEIGHT_DP = 140
+    private const val SYSTEM_BUTTON_HEIGHT_DP = 140
     const val KEY_MARGIN_DP = 4
 
     private const val BASE_LETTER_BUTTON_WIDTH_DP = 85
@@ -73,11 +73,15 @@ object KeyboardTheme {
     }
 
     fun getSystemButtonWidth(context: Context): Int {
-        return getLetterButtonWidth(context) + (getLetterButtonWidth(context) / 2)
+        return getLetterButtonWidth(context) + (getLetterButtonWidth(context) / 4)
     }
 
     fun getButtonHeight(): Int {
         return BUTTON_HEIGHT_DP
+    }
+
+    fun getSystemButtonHeight(): Int {
+        return SYSTEM_BUTTON_HEIGHT_DP
     }
 
     fun getKeyMargin(context: Context): Int = dpToPx(context, KEY_MARGIN_DP)
