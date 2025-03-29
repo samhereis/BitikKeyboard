@@ -6,171 +6,182 @@
   "rows": [
     [
       {
-        "name": "qı",
-        "lowercase": "𐰷",
-        "uppercase": "𐰶",
-        "lowerCaseHint": "qı/ıq",
-        "upperCaseHint": "qı/ıq",
-        "lowerCaseColor": 1,
-        "upperCaseColor": 1
+        "name": "qı, ıq",
+        "lowercase": "𐰶",
+        "lowerCaseRomanization": "qı",
+        "backgroundColorIndex_lowercase": 2,
+        "uppercase": "𐰷",
+        "upperCaseRomanization": "ıq",
+        "backgroundColorIndex_uppercase": 2
       },
       {
         "name": "ñ",
         "lowercase": "𐰬",
+        "lowerCaseRomanization": "aÑ",
+        "lowerCaseHold": "𐰧",
+        "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰭",
-        "lowercaseHold": "𐰧",
-        "uppercaseHold": "𐰮",
-        "lowerCaseHint": "aÑ",
-        "upperCaseHint": "eÑ"
+        "upperCaseRomanization": "eÑ",
+        "upperCaseHold": "𐰮",
+        "backgroundColorIndex_uppercase": 2
       },
       {
         "name": "a",
         "lowercase": "𐰁",
+        "lowerCaseRomanization": "a",
+        "lowerCaseHold": "𐰀",
+        "backgroundColorIndex_lowercase": 1,
         "uppercase": "𐰅",
-        "lowercaseHold": "𐰀",
-        "uppercaseHold": "𐰂",
-        "lowerCaseHint": "a",
-        "upperCaseHint": "e",
-        "lowerCaseColor": 0,
-        "upperCaseColor": 0
+        "upperCaseRomanization": "e",
+        "upperCaseHold": "𐰂",
+        "backgroundColorIndex_uppercase": 1
       },
       {
         "name": "r",
         "lowercase": "𐰺",
+        "lowerCaseRomanization": "aR",
         "uppercase": "𐰼",
-        "lowerCaseHint": "aR",
-        "upperCaseHint": "eR"
+        "upperCaseRomanization": "eR"
       },
       {
         "name": "t",
         "lowercase": "𐱄",
+        "lowerCaseRomanization": "aT",
+        "lowerCaseHold": "𐱇",
+        "lowerCaseHoldHint": "ot",
+        "backgroundColorIndex_lowercase_Hold": 2,
         "uppercase": "𐱅",
-        "lowerCaseHint": "aT",
-        "upperCaseHint": "eT"
+        "upperCaseRomanization": "eT"
       },
       {
         "name": "y",
         "lowercase": "𐰖",
+        "lowerCaseRomanization": "aY",
+        "lowerCaseHold": "𐰗",
+        "lowerCaseHoldHint": "ay",
+        "backgroundColorIndex_lowercase_Hold": 2,
         "uppercase": "𐰘",
-        "lowercaseHold": "𐰗",
-        "lowerCaseHint": "aY",
-        "upperCaseHint": "eY"
+        "upperCaseRomanization": "eY"
       },
       {
-        "name": "ou",
-        "lowercase": "𐰆",
-        "uppercase": "𐰈",
-        "lowercaseHold": "𐰩",
-        "uppercaseHold": "𐰇",
-        "lowerCaseHint": "o/u",
-        "upperCaseHint": "ö/ü",
-        "lowerCaseColor": 0,
-        "upperCaseColor": 0
+        "name": "u",
+        "lowercase": "𐰩",
+        "lowerCaseRomanization": "u",
+        "backgroundColorIndex_lowercase": 1,
+        "uppercase": "𐰇",
+        "upperCaseRomanization": "ü",
+        "backgroundColorIndex_uppercase": 1
       },
       {
         "name": "i",
         "lowercase": "𐰃",
+        "lowerCaseRomanization": "ı",
+        "backgroundColorIndex_lowercase": 1,
         "uppercase": "𐰄",
-        "lowerCaseHint": "ı",
-        "upperCaseHint": "i",
-        "lowerCaseColor": 0,
-        "upperCaseColor": 0
+        "upperCaseRomanization": "i",
+        "backgroundColorIndex_uppercase": 1
       },
       {
-        "name": "çi, ot",
-        "lowercase": "𐰱",
-        "uppercase": "𐱇",
-        "lowerCaseHint": "çı/çi",
-        "upperCaseHint": "ot",
-        "lowerCaseColor": 1,
-        "upperCaseColor": 1
+        "name": "o/u",
+        "lowercase": "𐰆",
+        "lowerCaseRomanization": "o",
+        "backgroundColorIndex_lowercase": 1,
+        "uppercase": "𐰈",
+        "upperCaseRomanization": "ö",
+        "backgroundColorIndex_uppercase": 1
       },
       {
         "name": "p",
         "lowercase": "𐰯",
+        "lowerCaseRomanization": "p",
+        "lowerCaseHold": "𐰊",
+        "lowerCaseHoldHint": "f",
         "uppercase": "𐰯",
-        "lowercaseHold": "𐰊",
-        "uppercaseHold": "𐰊",
-        "lowerCaseHint": "p",
-        "upperCaseHint": "p"
+        "upperCaseRomanization": "p",
+        "upperCaseHold": "𐰊",
+        "upperCaseHoldHint": "f"
       }
     ],
     [
       {
         "name": "oq, uq",
         "lowercase": "𐰹",
+        "lowerCaseRomanization": "oq",
+        "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰸",
-        "lowerCaseHint": "oq/uq",
-        "upperCaseHint": "oq/uq",
-        "lowerCaseColor": 1,
-        "upperCaseColor": 1
+        "upperCaseRomanization": "uq",
+        "backgroundColorIndex_uppercase": 2
       },
       {
         "name": "s",
         "lowercase": "𐱂",
+        "lowerCaseRomanization": "aS",
+        "lowerCaseHold": "𐰽",
+        "lowerCaseHoldHint": "su",
+        "backgroundColorIndex_lowercase_Hold": 2,
         "uppercase": "𐰾",
-        "lowercaseHold": "𐰽",
-        "lowerCaseHint": "aS",
-        "upperCaseHint": "eS"
+        "upperCaseRomanization": "eS"
       },
       {
         "name": "d",
         "lowercase": "𐰑",
+        "lowerCaseRomanization": "aD",
+        "lowerCaseHold": "𐰒",
         "uppercase": "𐰓",
-        "lowercaseHold": "𐰒",
-        "lowerCaseHint": "aD",
-        "upperCaseHint": "eD"
+        "upperCaseRomanization": "eD"
       },
       {
         "name": "nt, nç",
         "lowercase": "𐰦",
+        "lowerCaseRomanization": "nt",
+        "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰨",
-        "lowerCaseHint": "nt",
-        "upperCaseHint": "nç",
-        "lowerCaseColor": 1,
-        "upperCaseColor": 1
+        "upperCaseRomanization": "nç",
+        "backgroundColorIndex_uppercase": 2
       },
       {
         "name": "g",
         "lowercase": "𐰍",
+        "lowerCaseRomanization": "aĞ",
+        "lowerCaseHold": "𐰎",
         "uppercase": "𐰏",
-        "lowercaseHold": "𐰎",
-        "uppercaseHold": "𐰐",
-        "lowerCaseHint": "aĞ",
-        "upperCaseHint": "eG"
+        "upperCaseRomanization": "eG",
+        "upperCaseHold": "𐰐"
       },
       {
         "name": "rt, lt",
         "lowercase": "𐱈",
+        "lowerCaseRomanization": "rt",
+        "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰡",
-        "lowerCaseHint": "rt",
-        "upperCaseHint": "lt",
-        "lowerCaseColor": 1,
-        "upperCaseColor": 1
+        "upperCaseRomanization": "lt",
+        "backgroundColorIndex_uppercase": 2
       },
       {
         "name": "j",
         "lowercase": "𐰳",
+        "lowerCaseRomanization": "aJ",
         "uppercase": "𐰙",
-        "lowerCaseHint": "aJ",
-        "upperCaseHint": "eJ"
+        "upperCaseRomanization": "eJ"
       },
       {
         "name": "k",
         "lowercase": "𐰴",
+        "lowerCaseRomanization": "aQ",
+        "lowerCaseHold": "𐰛",
+        "lowerCaseHoldHint": "h",
         "uppercase": "𐰚",
-        "lowercaseHold": "𐰛",
-        "uppercaseHold": "𐰛",
-        "lowerCaseHint": "aQ",
-        "upperCaseHint": "eK"
+        "upperCaseRomanization": "eK",
+        "upperCaseHold": "𐰛",
+        "upperCaseHoldHint": "h"
       },
       {
         "name": "l",
         "lowercase": "𐰞",
+        "lowerCaseRomanization": "aL",
+        "lowerCaseHold": "𐰟",
         "uppercase": "𐰠",
-        "lowercaseHold": "𐰟",
-        "lowerCaseHint": "aL",
-        "upperCaseHint": "eL"
+        "upperCaseRomanization": "eL"
       }
     ],
     [
@@ -180,58 +191,63 @@
       {
         "name": "z",
         "lowercase": "𐰕",
+        "lowerCaseRomanization": "z",
         "uppercase": "𐰕",
-        "lowerCaseHint": "z",
-        "upperCaseHint": "z"
+        "upperCaseRomanization": "z"
       },
       {
         "name": "ş",
         "lowercase": "𐱀",
-        "uppercase": "𐱀",
-        "uppercaseHold": "𐰿",
-        "lowerCaseHint": "ş",
-        "upperCaseHint": "ş"
+        "lowerCaseRomanization": "aŞ",
+        "uppercase": "𐰿",
+        "upperCaseRomanization": "eŞ"
       },
       {
         "name": "ç",
         "lowercase": "𐰲",
+        "lowerCaseRomanization": "ç",
+        "lowerCaseHold": "𐰱",
+        "lowerCaseHoldHint": "çı",
+        "backgroundColorIndex_lowercase_Hold": 2,
         "uppercase": "𐰲",
-        "lowerCaseHint": "ç",
-        "upperCaseHint": "ç"
+        "upperCaseRomanization": "ç",
+        "upperCaseHold": "𐰱",
+        "upperCaseHoldHint": "çi",
+        "backgroundColorIndex_uppercase_Hold": 2
       },
       {
         "name": "ök, ük",
         "lowercase": "𐰜",
+        "lowerCaseRomanization": "ük",
+        "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰝",
-        "lowerCaseHint": "ök/ük",
-        "upperCaseHint": "ök/ük",
-        "lowerCaseColor": 1,
-        "upperCaseColor": 1
+        "upperCaseRomanization": "ök",
+        "backgroundColorIndex_uppercase": 2
       },
       {
         "name": "b",
         "lowercase": "𐰉",
+        "lowerCaseRomanization": "aB",
+        "lowerCaseHold": "𐰋",
+        "lowerCaseHoldHint": "v",
         "uppercase": "𐰌",
-        "lowercaseHold": "𐰋",
-        "uppercaseHold": "𐰋",
-        "lowerCaseHint": "aB",
-        "upperCaseHint": "eB"
+        "upperCaseRomanization": "eB",
+        "upperCaseHold": "𐰋",
+        "upperCaseHoldHint": "v"
       },
       {
         "name": "n",
         "lowercase": "𐰣",
+        "lowerCaseRomanization": "aN",
         "uppercase": "𐰥",
-        "lowercaseHold": "𐰪",
-        "uppercaseHold": "𐰫",
-        "lowerCaseHint": "aN",
-        "upperCaseHint": "eN"
+        "upperCaseRomanization": "eN"
       },
       {
-        "name": "b",
+        "name": "m",
         "lowercase": "𐰢",
+        "lowerCaseRomanization": "m",
         "uppercase": "𐰢",
-        "lowerCaseHint": "m",
-        "upperCaseHint": "m"
+        "upperCaseRomanization": "m"
       },
       {
         "name": "Del"

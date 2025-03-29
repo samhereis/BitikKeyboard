@@ -4,8 +4,8 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import androidx.core.graphics.toColorInt
 import androidx.core.graphics.drawable.toDrawable
+import androidx.core.graphics.toColorInt
 
 /**
  * A data class holding all style properties for a button.
@@ -22,7 +22,7 @@ data class ButtonStyle(
 private const val i = 343537
 
 object KeyboardTheme {
-    val colorIndexes: List<String> = listOf("#0b84fe", "#806642", "#31d159")
+    val colorIndexes: List<String> = listOf("#535353", "#0b84fe", "#806642", "#31d159")
 
     private const val BASE_SCREEN_WIDTH_DP = 350f
 

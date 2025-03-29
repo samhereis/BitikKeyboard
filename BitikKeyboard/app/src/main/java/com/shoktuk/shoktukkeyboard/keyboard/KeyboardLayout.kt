@@ -13,11 +13,16 @@ data class KeyboardLayout(
 data class KeyEntry(
     val name: String,
     val lowercase: String,
+    val lowerCaseRomanization: String? = null,
+    val lowerCaseHold: String? = null,
+    val lowerCaseHoldHint: String? = null,
+    val backgroundColorIndex_lowercase: Int? = 0,
+    val backgroundColorIndex_lowercase_Hold: Int? = 0,
+
     val uppercase: String? = null,
-    val lowercaseHold: String? = null,
-    val uppercaseHold: String? = null,
-    val lowerCaseHint: String? = null,
-    val upperCaseHint: String? = null,
-    val lowerCaseColor: Int? = null,
-    val upperCaseColor: Int? = null
+    val upperCaseRomanization: String? = null,
+    val upperCaseHold: String? = null,
+    val upperCaseHoldHint: String? = null,
+    val backgroundColorIndex_uppercase: Int? = 0,
+    val backgroundColorIndex_uppercase_Hold: Int? = 0
 )
