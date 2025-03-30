@@ -50,12 +50,12 @@ fun BasicInfo_Screen(navController: NavController) {
         NavigationItem(title = BasicInfoScreens.ORIGINAL_TAMGAS.title.localized("loc_basicInfo", context)) {
             navController.navigate(BasicInfoScreens.ORIGINAL_TAMGAS.id)
         }
-        NavigationItem(title = BasicInfoScreens.MODERNIZED_TAMGAS.title.localized("loc_basicInfo", context)) {
-            navController.navigate(BasicInfoScreens.MODERNIZED_TAMGAS.id)
-        }
-        NavigationItem(title = BasicInfoScreens.RULES_OF_WRITING.title.localized("loc_basicInfo", context)) {
-            navController.navigate(BasicInfoScreens.RULES_OF_WRITING.id)
-        }
+        //NavigationItem(title = BasicInfoScreens.MODERNIZED_TAMGAS.title.localized("loc_basicInfo", context)) {
+        //    navController.navigate(BasicInfoScreens.MODERNIZED_TAMGAS.id)
+        //}
+        //NavigationItem(title = BasicInfoScreens.RULES_OF_WRITING.title.localized("loc_basicInfo", context)) {
+        //    navController.navigate(BasicInfoScreens.RULES_OF_WRITING.id)
+        //}
         Spacer(modifier = Modifier.weight(1f))
     }
 }

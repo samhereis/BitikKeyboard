@@ -5,16 +5,18 @@ import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Icon
 import androidx.compose.ui.graphics.vector.ImageVector
 
 enum class MainScreens(val id: String) {
-    HOW_TO_ENABLE("HowToEnable_Screen"), TEST_KEYBOARD("TestKeyboard_Screen"), BASIC_INFO("BasicInfo_Screen");
+    HOW_TO_ENABLE("HowToEnable_Screen"), TEST_KEYBOARD("TestKeyboard_Screen"), BASIC_INFO("BasicInfo_Screen"), SETTINGS("Settings_Screen");
 
     val title: String
         get() = when (this) {
             HOW_TO_ENABLE -> "sideBar_howToEbable"
             TEST_KEYBOARD -> "sideBar_testTheKeyboard"
             BASIC_INFO -> "sideBar_basicInfo"
+            SETTINGS -> "sideBar_settings"
             else -> "sideBar_howToEbable"
         }
 
@@ -23,6 +25,7 @@ enum class MainScreens(val id: String) {
             HOW_TO_ENABLE -> Icons.Filled.Settings
             TEST_KEYBOARD -> Icons.Filled.CheckCircle
             BASIC_INFO -> Icons.Filled.Info
+            SETTINGS -> Icons.Filled.Settings
             else -> Icons.Default.KeyboardArrowUp
         }
 }

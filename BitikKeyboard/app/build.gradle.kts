@@ -44,6 +44,15 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.gson)
 
+    implementation(libs.hilt.android)
+
+// DataStore)
+    implementation(libs.androidx.datastore.preferences)
+
+// Compose
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+
     implementation(libs.kotlin.csv.jvm)
 
     implementation(libs.androidx.core.ktx)
@@ -57,4 +66,5 @@ dependencies {
     implementation(libs.androidx.lifecycle.service)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.ui.tooling)
 }

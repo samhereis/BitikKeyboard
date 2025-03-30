@@ -54,6 +54,8 @@ object TopRowBuilder {
             )
         )
 
+        updateLastWord(service.currentInputConnection, lastWordTextView)
+
         return rowLayout
     }
 
@@ -95,9 +97,10 @@ object TopRowBuilder {
 
     private fun updateLastWord(inputConnection: InputConnection?, textView: TextView) {
         inputConnection?.getTextBeforeCursor(100, 0)?.let { textBeforeCursor ->
-            // Split by space, colon, period, and comma
             val lastWord = textBeforeCursor.split("[\\s:.,]+".toRegex()).lastOrNull() ?: ""
-            textView.text = lastWord
+
+            var text = CorrectText().getTranscription(lastWord) ?: lastWord
+            textView.text = text
         }
     }
 }

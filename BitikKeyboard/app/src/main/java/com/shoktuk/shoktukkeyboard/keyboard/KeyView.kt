@@ -128,6 +128,8 @@ class KeyView(
                 updateContent()
                 updateOverlay()
             }
+
+            TopRowBuilder.onTypedListener?.invoke()
         }
 
         setOnTouchListener { _, event ->

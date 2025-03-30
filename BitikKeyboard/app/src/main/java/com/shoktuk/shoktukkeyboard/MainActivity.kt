@@ -1,5 +1,6 @@
 package com.shoktuk.shoktukkeyboard
 
+import LocalizationManager
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent

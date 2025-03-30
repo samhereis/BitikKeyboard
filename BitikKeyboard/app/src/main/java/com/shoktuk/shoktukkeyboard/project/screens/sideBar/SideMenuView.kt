@@ -48,6 +48,7 @@ import androidx.navigation.compose.rememberNavController
 import com.shoktuk.shoktukkeyboard.project.data.BasicInfoScreens
 import com.shoktuk.shoktukkeyboard.project.data.MainScreens
 import com.shoktuk.shoktukkeyboard.project.data.SideMenuItem
+import com.shoktuk.shoktukkeyboard.project.screens.settings.SettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.testKeyboard.TestKeyboard_Screen
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import kotlinx.coroutines.launch
@@ -56,21 +57,22 @@ import localized
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SideMenuView() {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val drawerState = rememberDrawerState(DrawerValue.Open)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
 
     val mainScreens = listOf(
-        MainScreens.HOW_TO_ENABLE.id, MainScreens.TEST_KEYBOARD.id, MainScreens.BASIC_INFO.id
+        MainScreens.HOW_TO_ENABLE.id, MainScreens.TEST_KEYBOARD.id, MainScreens.BASIC_INFO.id, MainScreens.SETTINGS.id
     )
 
     // Drawer items – these are your main screen routes.
     val items = listOf(
         SideMenuItem(MainScreens.HOW_TO_ENABLE, MainScreens.HOW_TO_ENABLE.systemImageName),
         SideMenuItem(MainScreens.TEST_KEYBOARD, MainScreens.TEST_KEYBOARD.systemImageName),
-        SideMenuItem(MainScreens.BASIC_INFO, MainScreens.BASIC_INFO.systemImageName)
+        SideMenuItem(MainScreens.BASIC_INFO, MainScreens.BASIC_INFO.systemImageName),
+        SideMenuItem(MainScreens.SETTINGS, MainScreens.SETTINGS.systemImageName)
     )
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -98,6 +100,7 @@ fun SideMenuView() {
                                 0 -> MainScreens.HOW_TO_ENABLE.id
                                 1 -> MainScreens.TEST_KEYBOARD.id
                                 2 -> MainScreens.BASIC_INFO.id
+                                3 -> MainScreens.SETTINGS.id
                                 else -> MainScreens.HOW_TO_ENABLE.id
                             }
                             navController.navigate(route) {
@@ -161,6 +164,7 @@ fun SideMenuView() {
                 composable(MainScreens.HOW_TO_ENABLE.id) { HowToEnable_Screen() }
                 composable(MainScreens.TEST_KEYBOARD.id) { TestKeyboard_Screen() }
                 composable(MainScreens.BASIC_INFO.id) { BasicInfo_Screen(navController) }
+                composable(MainScreens.SETTINGS.id) { SettingsScreen() }
 
                 composable(BasicInfoScreens.ORIGINAL_TAMGAS.id) { OriginalTamgasView() }
                 composable(BasicInfoScreens.MODERNIZED_TAMGAS.id) { ModernizedTamgasView() }
