@@ -46,6 +46,8 @@ dependencies {
 
     implementation(libs.hilt.android)
 
+    implementation(libs.rhino)
+
 // DataStore)
     implementation(libs.androidx.datastore.preferences)
 

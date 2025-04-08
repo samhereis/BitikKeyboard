@@ -7,6 +7,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.project.systems.JSTranscriber
 
 object TopRowBuilder {
     var onTypedListener: (() -> Unit)? = null
@@ -14,6 +15,8 @@ object TopRowBuilder {
     fun createTopRow(
         service: InputMethodService, layout: KeyboardLayout, buttonHeight: Int, margin: Int, onModeChange: (String) -> Unit, onLangChange: () -> Unit
     ): LinearLayout {
+        val jsTranscriber = JSTranscriber(service)
+
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -40,7 +43,7 @@ object TopRowBuilder {
         val lastWordTextView = createLastWordTextView(service, buttonHeight, margin)
         rowLayout.addView(lastWordTextView)
 
-        onTypedListener = { updateLastWord(service.currentInputConnection, lastWordTextView) }
+        onTypedListener = { updateLastWord(service.currentInputConnection, lastWordTextView, jsTranscriber) }
 
         rowLayout.addView(
             createSystemAssetButton(
@@ -54,7 +57,7 @@ object TopRowBuilder {
             )
         )
 
-        updateLastWord(service.currentInputConnection, lastWordTextView)
+        updateLastWord(service.currentInputConnection, lastWordTextView, jsTranscriber)
 
         return rowLayout
     }
@@ -95,11 +98,11 @@ object TopRowBuilder {
         }
     }
 
-    private fun updateLastWord(inputConnection: InputConnection?, textView: TextView) {
+    private fun updateLastWord(inputConnection: InputConnection?, textView: TextView, transcriber: JSTranscriber) {
         inputConnection?.getTextBeforeCursor(100, 0)?.let { textBeforeCursor ->
             val lastWord = textBeforeCursor.split("[\\s:.,]+".toRegex()).lastOrNull() ?: ""
 
-            var text = CorrectText().getTranscription(lastWord) ?: lastWord
+            var text = transcriber.getTranscription(lastWord) ?: lastWord
             textView.text = text
         }
     }
