@@ -15,15 +15,16 @@ class JSTranscriber(private val context: Context) {
         rhino.optimizationLevel = -1 // Disable optimizations for Android
         scope = rhino.initStandardObjects()
 
-        // Load JS file
+        // Load the ES5-compatible JS file (transcriber.js) from the assets folder
         val jsCode = context.assets.open("transcriber.js").bufferedReader().use { it.readText() }
-        rhino.evaluateString(scope, jsCode, "transcriber.js", 1, null) // ERROR HERE
+        // Evaluate the JS file in the Rhino context
+        rhino.evaluateString(scope, jsCode, "transcriber.js", 1, null)
     }
 
     fun getTranscription(inputText: String): String {
-        // Instantiate JS class and call method
+        // Instantiate the JS class and call the GetTranscription method
         val result = rhino.evaluateString(
-            scope, "new CorrentText().getTranscription('$inputText')", "getTranscription", 1, null
+            scope, "new CorrentText().GetTranscription('$inputText')", "GetTranscription", 1, null
         )
         return result.toString()
     }
