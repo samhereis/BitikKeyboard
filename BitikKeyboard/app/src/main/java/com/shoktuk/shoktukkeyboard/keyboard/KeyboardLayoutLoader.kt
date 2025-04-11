@@ -12,11 +12,7 @@ object KeyboardLayoutLoader {
         if (mode == "symbols") {
             fileName = "langs/keyboard_symbols.json"
         } else {
-            fileName = when (language) {
-                "enesay" -> "langs/enesay.json"
-                "orhon" -> "langs/orhon.json"
-                else -> "langs/enesay.json"
-            }
+            fileName = "langs/${language}.json"
         }
 
         context.assets.open(fileName).use { inputStream ->
