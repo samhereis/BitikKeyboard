@@ -28,7 +28,6 @@ fun VowelsAndCharactersView() {
         BulletItem(text = "А/E - 𐰁/𐰀"), BulletItem(text = "E - 𐰅"), BulletItem(text = "Ə - 𐰂"), BulletItem(text = "И/Ы - 𐰄 ,𐰃"), BulletItem(text = "О/U - 𐰆"), BulletItem(text = "Ө/Ү - 𐰇/𐰈")
     )
     val colRight = listOf(
-        BulletItem(text = "Su - 𐰽"),
         BulletItem(text = "Uq, Oq - 𐰹, 𐰸"),
         BulletItem(text = "Qı, Ιq - 𐰷 ,𐰶"),
         BulletItem(text = "Ük, Ök - 𐰝, 𐰜"),

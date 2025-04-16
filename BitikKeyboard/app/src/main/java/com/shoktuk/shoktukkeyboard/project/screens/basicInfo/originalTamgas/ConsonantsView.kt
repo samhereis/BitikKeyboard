@@ -36,16 +36,16 @@ fun ConsonantsView() {
         BulletItem(text = "aY - 𐰗 ,𐰖"),
         BulletItem(text = "aS - 𐰽 ,𐱂"),
         BulletItem(text = "aD - 𐰒 ,𐰑"),
-        BulletItem(text = "aĞ - 𐰍 ,𐰎"),
+        BulletItem(text = "aĞ - 𐰎 ,𐰍"),
         BulletItem(text = "aQ - 𐰴"),
         BulletItem(text = "aL - 𐰟 ,𐰞"),
-        BulletItem(text = "aŞ - 𐱁 ,𐱀"),
-        BulletItem(text = "aÇ - 𐰱 ,𐰲"),
         BulletItem(text = "aB - 𐰊 ,𐰉"),
         BulletItem(text = "aN - 𐰣"),
         BulletItem(text = "", needBullet = false),
         BulletItem(text = "P - 𐰯"),
         BulletItem(text = "Z - 𐰕"),
+        BulletItem(text = "Ş - 𐱁 ,𐰿 ,𐱀"),
+        BulletItem(text = "Ç - 𐰳 ,𐰲"),
         BulletItem(text = "M - 𐰢")
     )
     val topRight = listOf(
@@ -55,12 +55,10 @@ fun ConsonantsView() {
         BulletItem(text = "eY - 𐰙 ,𐰘"),
         BulletItem(text = "eS - 𐰾"),
         BulletItem(text = "eD - 𐰓"),
-        BulletItem(text = "eĞ - 𐰐 ,𐰏"),
+        BulletItem(text = "eG - 𐰐 ,𐰏"),
         BulletItem(text = "eQ - 𐰛 ,𐰚"),
         BulletItem(text = "eL - 𐰠"),
-        BulletItem(text = "eŞ - 𐰿"),
-        BulletItem(text = "üÇ - 𐰳 ,𐰲"),
-        BulletItem(text = "eB - 𐰌 ,𐰋"),
+        BulletItem(text = "eB - 𐰋 ,𐰌"),
         BulletItem(text = "eN - 𐰤 ,𐰥")
     )
 

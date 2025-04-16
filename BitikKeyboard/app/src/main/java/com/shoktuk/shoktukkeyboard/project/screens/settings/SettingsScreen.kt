@@ -34,6 +34,7 @@ import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
 import com.shoktuk.shoktukkeyboard.project.data.TranscriptionAlphabet
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
+import localized
 
 @Composable
 fun SettingsScreen() {
@@ -64,28 +65,28 @@ fun SettingsScreen() {
                 colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
             ) {
                 ListItem(
-                    headlineContent = { Text("Keyboard Variant", style = MaterialTheme.typography.titleMedium) },
-                    supportingContent = { Text(keyboardVariant.name, style = MaterialTheme.typography.bodyMedium) })
+                    headlineContent = { Text("settings_keyboardVariant".localized("loc_settings", context), style = MaterialTheme.typography.titleMedium) },
+                    supportingContent = { Text(keyboardVariant.id.localized("loc_settings", context), style = MaterialTheme.typography.bodyMedium) })
             }
 
             // Transcription Alphabet Setting Card
-            Card(
-                shape = RoundedCornerShape(8.dp),
-                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { showAlphabetDialog = true },
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-            ) {
-                ListItem(
-                    headlineContent = { Text("Transcription Alphabet", style = MaterialTheme.typography.titleMedium) },
-                    supportingContent = { Text(transcriptionAlphabet.name, style = MaterialTheme.typography.bodyMedium) })
-            }
+            //Card(
+            //    shape = RoundedCornerShape(8.dp),
+            //    border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary),
+            //    modifier = Modifier
+            //        .fillMaxWidth()
+            //        .clickable { showAlphabetDialog = true },
+            //    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+            //) {
+            //    ListItem(
+            //        headlineContent = { Text("Transcription Alphabet", style = MaterialTheme.typography.titleMedium) },
+            //        supportingContent = { Text(transcriptionAlphabet.name, style = MaterialTheme.typography.bodyMedium) })
+            //}
         }
 
         // Dialog for selecting Keyboard Variant.
         if (showVariantDialog) {
-            AlertDialog(onDismissRequest = { showVariantDialog = false }, title = { Text("Select Keyboard Variant") }, text = {
+            AlertDialog(onDismissRequest = { showVariantDialog = false }, title = { Text("settings_keyboardVariant".localized("loc_settings", context)) }, text = {
                 Column {
                     KeyboardVariant.values().forEach { variant ->
                         Row(modifier = Modifier
@@ -101,7 +102,7 @@ fun SettingsScreen() {
                                 selected = variant == keyboardVariant, onClick = null // The Row handles selection.
                             )
                             Spacer(modifier = Modifier.width(8.dp))
-                            Text(text = variant.name)
+                            Text(text = variant.id.localized("loc_settings", context))
                         }
                     }
                 }

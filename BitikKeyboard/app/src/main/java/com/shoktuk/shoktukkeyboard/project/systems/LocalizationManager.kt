@@ -24,7 +24,7 @@ object LocalizationManager {
     // Call this once, for example in your Application onCreate
     fun init(context: Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val savedLangCode = prefs.getString(KEY_LANGUAGE, null)
+        val savedLangCode = prefs.getString(KEY_LANGUAGE, Language.KY.code)
         savedLangCode?.let { langCode ->
             Language.entries.find { it.code == langCode }?.let {
                 currentLanguage = it

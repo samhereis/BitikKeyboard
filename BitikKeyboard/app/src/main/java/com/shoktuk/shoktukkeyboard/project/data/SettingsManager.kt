@@ -2,8 +2,8 @@ package com.shoktuk.shoktukkeyboard.project.data
 
 import android.content.Context
 
-enum class KeyboardVariant {
-    CLASSIC, SAMAGAN
+enum class KeyboardVariant(val id: String) {
+    CLASSIC("settings_keyboardVariant_Classic"), SAMAGAN("settings_keyboardVariant_Modern")
 }
 
 enum class TranscriptionAlphabet {
