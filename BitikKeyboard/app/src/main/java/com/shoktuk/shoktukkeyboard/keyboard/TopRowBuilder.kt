@@ -1,15 +1,12 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import android.graphics.Color
 import android.inputmethodservice.InputMethodService
-import android.text.SpannableStringBuilder
-import android.text.Spanned
-import android.text.style.AbsoluteSizeSpan
-import android.text.style.ForegroundColorSpan
-import android.text.style.RelativeSizeSpan
-import android.text.style.SuperscriptSpan
 import android.view.Gravity
+import android.view.View
 import android.view.inputmethod.InputConnection
 import android.widget.Button
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.graphics.toColorInt
@@ -19,150 +16,174 @@ object TopRowBuilder {
     var onTypedListener: (() -> Unit)? = null
 
     fun createTopRow(
-        service: InputMethodService, layout: KeyboardLayout, buttonHeight: Int, margin: Int, onModeChange: (String) -> Unit, onLangChange: () -> Unit
+        service: InputMethodService,
+        layout: KeyboardLayout,
+        buttonHeight: Int,
+        margin: Int,
+        onModeChange: (String) -> Unit,
+        onLangChange: () -> Unit
     ): LinearLayout {
         val jsTranscriber = JSTranscriber(service)
+
+        // Row container
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 topMargin = margin
                 bottomMargin = margin
             }
         }
 
-        // Button to change language (or to display language code)
+        // Language button
         rowLayout.addView(
             createSystemAssetButton(
-                service = service,
-                assetPath = null,
-                textToSet = layout.languageCode,
-                buttonHeight = buttonHeight,
-                margin = margin,
+                service, null, layout.languageCode,
+                buttonHeight, margin,
                 onClick = { onLangChange() },
                 buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
             )
         )
 
-        // Create the TextView that will display our two-floor text
-        val lastWordTextView = createLastWordTextView(service, buttonHeight, margin)
-        rowLayout.addView(lastWordTextView)
+        // Container for per-letter stacks; disable clipping here
+        val lastWordContainer = createLastWordContainer(service, buttonHeight, margin).apply {
+            clipChildren = false
+            clipToPadding = false
+        }
+        rowLayout.addView(lastWordContainer)
 
-        // Set a listener to update the text whenever typing occurs
+        // Update on each keystroke
         onTypedListener = {
             updateLastWord(
-                inputConnection = service.currentInputConnection, textView = lastWordTextView, transcriber = jsTranscriber
+                service,
+                service.currentInputConnection,
+                lastWordContainer,
+                jsTranscriber
             )
         }
 
-        // Button to change mode (e.g., switch to symbols)
+        // Symbols/mode button
         rowLayout.addView(
             createSystemAssetButton(
-                service = service,
-                assetPath = null,
-                textToSet = "123",
-                buttonHeight = buttonHeight,
-                margin = margin,
+                service, null, "123",
+                buttonHeight, margin,
                 onClick = { onModeChange("symbols") },
                 buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
             )
         )
 
-        // Initial update of the text in the TextView
-        updateLastWord(
-            inputConnection = service.currentInputConnection, textView = lastWordTextView, transcriber = jsTranscriber
-        )
-
+        // Initial render
+        updateLastWord(service, service.currentInputConnection, lastWordContainer, jsTranscriber)
         return rowLayout
     }
 
     private fun createSystemAssetButton(
-        service: InputMethodService, assetPath: String?, textToSet: String, buttonHeight: Int, margin: Int, onClick: () -> Unit, buttonStyle: ButtonStyle
-    ): Button {
-        return Button(service).apply {
-            text = textToSet
-            gravity = Gravity.CENTER
-            textSize = buttonStyle.textSizeSp
-            setTextColor(buttonStyle.textColor.toColorInt())
-            background = KeyboardTheme.createDrawableFromStyle(service, buttonStyle)
-            layoutParams = LinearLayout.LayoutParams(
-                KeyboardTheme.getSystemButtonWidth(service), buttonHeight
-            ).apply {
-                marginStart = margin
-                marginEnd = margin
-            }
-            setOnClickListener { onClick() }
+        service: InputMethodService,
+        assetPath: String?,
+        textToSet: String,
+        buttonHeight: Int,
+        margin: Int,
+        onClick: () -> Unit,
+        buttonStyle: ButtonStyle
+    ): Button = Button(service).apply {
+        text = textToSet
+        gravity = Gravity.CENTER
+        textSize = buttonStyle.textSizeSp
+        setTextColor(buttonStyle.textColor.toColorInt())
+        background = KeyboardTheme.createDrawableFromStyle(service, buttonStyle)
+        layoutParams = LinearLayout.LayoutParams(
+            KeyboardTheme.getSystemButtonWidth(service),
+            buttonHeight
+        ).apply {
+            marginStart = margin
+            marginEnd = margin
+        }
+        setOnClickListener { onClick() }
+    }
+
+    /** Horizontal container for per-letter FrameLayouts */
+    private fun createLastWordContainer(
+        service: InputMethodService,
+        buttonHeight: Int,
+        margin: Int
+    ): LinearLayout = LinearLayout(service).apply {
+        orientation = LinearLayout.HORIZONTAL
+        gravity = Gravity.CENTER_VERTICAL
+        layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f).apply {
+            marginStart = margin
+            marginEnd = margin
         }
     }
 
-    private fun createLastWordTextView(
-        service: InputMethodService, buttonHeight: Int, margin: Int
-    ): TextView {
-        return TextView(service).apply {
-            gravity = Gravity.CENTER
-            // Use the desired font size of 14sp for a uniform appearance
-            textSize = 14f
-            // Adjust line spacing to bring the two floors closer together.
-            // The extra spacing is reduced (can be negative) to pull the lines nearer.
-            setLineSpacing(-4f, 1f)
-            setTextColor(KeyboardTheme.getSystemButtonStyle(service).textColor.toColorInt())
-            background = KeyboardTheme.createDrawableFromStyle(
-                service, KeyboardTheme.getLetterButtonStyle(service)
-            )
-            layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f).apply {
-                marginStart = margin
-                marginEnd = margin
-            }
-        }
-    }
-
+    /**
+     * Rebuilds the container: for each character, either:
+     *  • If the alt (top) text differs, stack top & base in a FrameLayout;
+     *  • Otherwise, show a single full‑size TextView.
+     */
     private fun updateLastWord(
+        service: InputMethodService,
         inputConnection: InputConnection?,
-        textView: TextView,
+        container: LinearLayout,
         transcriber: JSTranscriber
     ) {
-        inputConnection?.getTextBeforeCursor(100, 0)?.let { textBeforeCursor ->
-            // Extract the last word
-            val lastWord = textBeforeCursor.split("[\\s:.,]+".toRegex()).lastOrNull() ?: ""
-            // Fallback to original if no transcription is available.
-            val transcription = transcriber.getTranscription(lastWord) ?: lastWord
+        inputConnection?.getTextBeforeCursor(100, 0)?.let { textBefore ->
+            val lastWord = textBefore.split("\\s+".toRegex()).lastOrNull() ?: ""
+            val topText  = transcriber.getTranscription_Alternative(lastWord) ?: lastWord
+            val baseText = transcriber.getTranscription(lastWord) ?: lastWord
 
-            // Use the same transcription for both floors.
-            val baseText = transcription
-            val topText = transcription
+            // Clear old views
+            container.removeAllViews()
 
-            // Combine the two floors; newline separates top from bottom.
-            val combinedText = "$topText\n$baseText"
-            val spannable = SpannableStringBuilder(combinedText)
+            // Define sizes in sp
+            val FULL_SP = 40f
+            val HALF_SP = FULL_SP / 2
 
-            // Apply SuperscriptSpan to shift the top line upward.
-            spannable.setSpan(
-                SuperscriptSpan(),
-                0, topText.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            for (i in baseText.indices) {
+                if (i < topText.length && topText[i] != baseText[i]) {
+                    // Stack differing letters
+                    val stack = FrameLayout(container.context).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.WRAP_CONTENT,
+                            LinearLayout.LayoutParams.WRAP_CONTENT
+                        )
+                        clipChildren = false
+                        clipToPadding = false
+                    }
 
-            // Use a RelativeSizeSpan of 1.0 to force the top line to be the same size as the bottom.
-            spannable.setSpan(
-                RelativeSizeSpan(1.0f),
-                0, topText.length,
-                Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+                    // Base letter (bottom)
+                    val baseLetter = TextView(container.context).apply {
+                        text = baseText[i].toString()
+                        textSize = HALF_SP
+                        gravity = Gravity.CENTER
+                        setBackgroundColor(Color.TRANSPARENT)
+                    }
+                    stack.addView(baseLetter)
 
-            // Make every second character (odd indexes) in the top floor transparent.
-            for (i in topText.indices) {
-                if (i % 2 == 1) {
-                    spannable.setSpan(
-                        ForegroundColorSpan(0x00000000),
-                        i, i + 1,
-                        Spanned.SPAN_EXCLUSIVE_EXCLUSIVE
-                    )
+                    // Top letter (superscript)
+                    val topLetter = TextView(container.context).apply {
+                        text = topText[i].toString()
+                        textSize = HALF_SP
+                        gravity = Gravity.CENTER
+                        setBackgroundColor(Color.TRANSPARENT)
+                        translationY = -this.textSize
+                    }
+                    stack.addView(topLetter)
+
+                    container.addView(stack)
+                } else {
+                    // Matching letter: full size
+                    val letter = TextView(container.context).apply {
+                        text = baseText[i].toString()
+                        textSize = FULL_SP
+                        gravity = Gravity.CENTER
+                        setBackgroundColor(Color.TRANSPARENT)
+                    }
+                    container.addView(letter)
                 }
             }
-
-            textView.text = spannable
         }
     }
 }

@@ -36,8 +36,8 @@ object KeyboardTheme {
     private const val BASE_LETTER_BUTTON_WIDTH_DP = 85
     private const val BASE_SYSTEM_BUTTON_WIDTH_DP = 125
 
-    private const val BASE_LETTER_TEXT_SIZE_SP = 22f
-    private const val BASE_HINT_TEXT_SIZE_SP = 10f
+    public const val BASE_LETTER_TEXT_SIZE_SP = 22f
+    public const val BASE_HINT_TEXT_SIZE_SP = 10f
     private const val BASE_SYSTEM_TEXT_SIZE_SP = 17f
 
     // Container background color

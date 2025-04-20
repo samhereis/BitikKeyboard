@@ -31,9 +31,10 @@
         "lowerCaseRomanization": "а",
         "lowerCaseHold": "𐰀",
         "backgroundColorIndex_lowercase": 1,
-        "uppercase": "𐰅",
+        "uppercase": "𐰁",
         "upperCaseRomanization": "е",
-        "upperCaseHold": "𐰂",
+        "upperCaseHold": "𐰅",
+        "uooerCaseHoldHint": "e",
         "backgroundColorIndex_uppercase": 1
       },
       {
@@ -74,8 +75,10 @@
         "lowercase": "𐰃",
         "lowerCaseRomanization": "ы",
         "backgroundColorIndex_lowercase": 1,
-        "uppercase": "𐰄",
+        "uppercase": "𐰃",
         "upperCaseRomanization": "и",
+        "upperCaseHold": "𐰄",
+        "uooerCaseHoldHint": "и",
         "backgroundColorIndex_uppercase": 1
       },
       {

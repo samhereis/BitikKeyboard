@@ -18,19 +18,38 @@ class JSTranscriber(private val context: Context) {
         scope = rhino.initStandardObjects()
 
         var fileName = "transcriber.js"
-        if (SettingsManager.getKeyboardVariant(context) == KeyboardVariant.CLASSIC) {
+        if (getIsClassic()) {
             fileName = "transcriber_old.js"
         }
 
         val jsCode = context.assets.open(fileName).bufferedReader().use { it.readText() }
-        // Evaluate the JS file in the Rhino context
         rhino.evaluateString(scope, jsCode, fileName, 1, null)
     }
 
+    fun getIsClassic(): Boolean {
+        return SettingsManager.getKeyboardVariant(context) == KeyboardVariant.CLASSIC;
+    }
+
     fun getTranscription(inputText: String): String {
-        // Instantiate the JS class and call the GetTranscription method
+        var methodCall = "new CorrentText().GetTranscription('$inputText')";
+        if (getIsClassic()) {
+            methodCall = "new CorrentText_Old().GetTranscription('$inputText')";
+        }
+
         val result = rhino.evaluateString(
-            scope, "new CorrentText().GetTranscription('$inputText')", "GetTranscription", 1, null
+            scope, methodCall, "GetTranscription", 1, null
+        )
+        return result.toString()
+    }
+
+    fun getTranscription_Alternative(inputText: String): String {
+        var methodCall = "new CorrentText().GetTranscription_Alternative('$inputText')";
+        if (getIsClassic()) {
+            methodCall = "new CorrentText_Old().GetTranscription_Alternative('$inputText')";
+        }
+
+        val result = rhino.evaluateString(
+            scope, methodCall, "GetTranscription_Alternative", 1, null
         )
         return result.toString()
     }
