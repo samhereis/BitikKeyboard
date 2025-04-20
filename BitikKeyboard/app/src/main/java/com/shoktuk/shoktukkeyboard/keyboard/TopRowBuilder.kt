@@ -139,7 +139,7 @@ object TopRowBuilder {
 
             // Define sizes in sp
             val FULL_SP = 40f
-            val HALF_SP = FULL_SP / 2
+            val HALF_SP = 22f
 
             for (i in baseText.indices) {
                 if (i < topText.length && topText[i] != baseText[i]) {
@@ -151,6 +151,7 @@ object TopRowBuilder {
                         )
                         clipChildren = false
                         clipToPadding = false
+                        setPadding(0,38,0,0)
                     }
 
                     // Base letter (bottom)
@@ -159,6 +160,7 @@ object TopRowBuilder {
                         textSize = HALF_SP
                         gravity = Gravity.CENTER
                         setBackgroundColor(Color.TRANSPARENT)
+                        setPadding(0,0,0,8)
                     }
                     stack.addView(baseLetter)
 
@@ -169,6 +171,7 @@ object TopRowBuilder {
                         gravity = Gravity.CENTER
                         setBackgroundColor(Color.TRANSPARENT)
                         translationY = -this.textSize
+                        setPadding(0,8,0,0)
                     }
                     stack.addView(topLetter)
 
