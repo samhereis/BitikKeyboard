@@ -95,7 +95,7 @@ object SystemKeyBuilder {
                         ic.deleteSurroundingText(1, 0)
                     }
                 }
-                TopRowBuilder.onTypedListener?.invoke()
+                TopRowBuilder_Old.onTypedListener?.invoke()
             }
         }
 

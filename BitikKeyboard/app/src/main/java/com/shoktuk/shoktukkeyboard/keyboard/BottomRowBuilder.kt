@@ -1,7 +1,6 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
-import android.graphics.Color
 import android.inputmethodservice.InputMethodService
 import android.view.Gravity
 import android.view.inputmethod.InputMethodManager
@@ -63,7 +62,7 @@ object BottomRowBuilder {
                     service, KeyboardTheme.DELETE_ICON_FILE, "", buttonHeight, margin,
                     onClick = {
                         service.currentInputConnection?.deleteSurroundingText(2, 0)
-                        TopRowBuilder.onTypedListener?.invoke()
+                        TopRowBuilder_Old.onTypedListener?.invoke()
                     },
                     buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
                 )
@@ -75,7 +74,7 @@ object BottomRowBuilder {
                     onClick = {
                         val imm = service.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                         imm.showInputMethodPicker()
-                        TopRowBuilder.onTypedListener?.invoke()
+                        TopRowBuilder_Old.onTypedListener?.invoke()
                     },
                     buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
                 )
@@ -91,7 +90,7 @@ object BottomRowBuilder {
                     buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
                     onClick = {
                         service.currentInputConnection?.commitText(". ", 1)
-                        TopRowBuilder.onTypedListener?.invoke()
+                        TopRowBuilder_Old.onTypedListener?.invoke()
                     })
             )
 
@@ -117,7 +116,7 @@ object BottomRowBuilder {
                     buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
                     onClick = {
                         service.currentInputConnection?.commitText(", ", 1)
-                        TopRowBuilder.onTypedListener?.invoke()
+                        TopRowBuilder_Old.onTypedListener?.invoke()
                     })
             )
 
@@ -131,7 +130,7 @@ object BottomRowBuilder {
                     buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
                     onClick = {
                         service.currentInputConnection?.commitText("\n", 1)
-                        TopRowBuilder.onTypedListener?.invoke()
+                        TopRowBuilder_Old.onTypedListener?.invoke()
                     })
             )
         }
@@ -177,7 +176,7 @@ object BottomRowBuilder {
             }
             setOnClickListener {
                 onClick()
-                TopRowBuilder.onTypedListener?.invoke()
+                TopRowBuilder_Old.onTypedListener?.invoke()
             }
         }
     }
@@ -216,7 +215,7 @@ object BottomRowBuilder {
             }
             setOnClickListener {
                 service.currentInputConnection?.commitText(textToCommit, 1)
-                TopRowBuilder.onTypedListener?.invoke()
+                TopRowBuilder_Old.onTypedListener?.invoke()
             }
         }
     }

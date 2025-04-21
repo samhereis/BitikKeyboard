@@ -44,7 +44,7 @@ object LocalizationManager {
         }
         val translations = csvCache[csvFileName]
         val translationForKey = translations?.get(key)
-        return translationForKey?.get(currentLanguage) ?: key
+        return translationForKey?.get(Language.KY) ?: key
     }
 
     private fun loadLocalizations(csvFileName: String, context: Context) {

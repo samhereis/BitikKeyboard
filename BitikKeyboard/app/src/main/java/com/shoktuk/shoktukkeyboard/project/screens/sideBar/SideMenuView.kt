@@ -57,7 +57,7 @@ import localized
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SideMenuView() {
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
+    val drawerState = rememberDrawerState(DrawerValue.Open)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
     var selectedItemIndex by remember { mutableIntStateOf(0) }
@@ -124,7 +124,7 @@ fun SideMenuView() {
                 }
 
                 Spacer(modifier = Modifier.weight(1f))
-                ChangeLanguageWidget()
+                //ChangeLanguageWidget()
                 Spacer(modifier = Modifier.weight(1f))
             }
         }) {

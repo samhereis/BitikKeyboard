@@ -10,8 +10,8 @@
         "lowercase": "𐰶",
         "lowerCaseRomanization": "қы",
         "backgroundColorIndex_lowercase": 2,
-        "uppercase": "𐰷",
-        "upperCaseRomanization": "ық",
+        "uppercase": "𐰦",
+        "upperCaseRomanization": "нт",
         "backgroundColorIndex_uppercase": 2
       },
       {
@@ -103,11 +103,11 @@
     [
       {
         "name": "oq, uq",
-        "lowercase": "𐰹",
-        "lowerCaseRomanization": "оқ",
+        "lowercase": "𐰷",
+        "lowerCaseRomanization": "ық",
         "backgroundColorIndex_lowercase": 2,
-        "uppercase": "𐰸",
-        "upperCaseRomanization": "уқ",
+        "uppercase": "𐱈",
+        "upperCaseRomanization": "рт",
         "backgroundColorIndex_uppercase": 2
       },
       {
@@ -129,11 +129,11 @@
       },
       {
         "name": "nt, nç",
-        "lowercase": "𐰦",
-        "lowerCaseRomanization": "нт",
+        "lowercase": "𐰸",
+        "lowerCaseRomanization": "уқ",
         "backgroundColorIndex_lowercase": 2,
-        "uppercase": "𐰨",
-        "upperCaseRomanization": "нч",
+        "uppercase": "𐰜",
+        "upperCaseRomanization": "үк",
         "backgroundColorIndex_uppercase": 2
       },
       {
@@ -147,11 +147,11 @@
       },
       {
         "name": "rt, lt",
-        "lowercase": "𐱈",
-        "lowerCaseRomanization": "рт",
+        "lowercase": "𐰹",
+        "lowerCaseRomanization": "оқ",
         "backgroundColorIndex_lowercase": 2,
-        "uppercase": "𐰡",
-        "upperCaseRomanization": "лт",
+        "uppercase": "𐰝",
+        "upperCaseRomanization": "өк",
         "backgroundColorIndex_uppercase": 2
       },
       {
@@ -214,11 +214,11 @@
       },
       {
         "name": "ök, ük",
-        "lowercase": "𐰜",
-        "lowerCaseRomanization": "үк",
+        "lowercase": "𐰨",
+        "lowerCaseRomanization": "нч",
         "backgroundColorIndex_lowercase": 2,
-        "uppercase": "𐰝",
-        "upperCaseRomanization": "өк",
+        "uppercase": "𐰡",
+        "upperCaseRomanization": "лт",
         "backgroundColorIndex_uppercase": 2
       },
       {

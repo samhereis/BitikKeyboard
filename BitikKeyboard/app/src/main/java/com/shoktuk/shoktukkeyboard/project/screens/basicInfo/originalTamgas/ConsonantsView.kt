@@ -30,36 +30,36 @@ fun ConsonantsView() {
     var context = LocalContext.current
 
     val topLeft = listOf(
-        BulletItem(text = "aÑ - 𐰧 ,𐰬"),
-        BulletItem(text = "aR - 𐰺"),
-        BulletItem(text = "aT - 𐱃 ,𐱄"),
-        BulletItem(text = "aY - 𐰗 ,𐰖"),
-        BulletItem(text = "aS - 𐰽 ,𐱂"),
-        BulletItem(text = "aD - 𐰒 ,𐰑"),
-        BulletItem(text = "aĞ - 𐰎 ,𐰍"),
-        BulletItem(text = "aQ - 𐰴"),
-        BulletItem(text = "aL - 𐰟 ,𐰞"),
-        BulletItem(text = "aB - 𐰊 ,𐰉"),
-        BulletItem(text = "aN - 𐰣"),
+        BulletItem(text = "аҢ - 𐰧 ,𐰬"),
+        BulletItem(text = "аР - 𐰺"),
+        BulletItem(text = "аТ - 𐱃 ,𐱄"),
+        BulletItem(text = "аЙ/аЖ - 𐰖"),
+        BulletItem(text = "аС - 𐰽 ,𐱂"),
+        BulletItem(text = "аД - 𐰒 ,𐰑"),
+        BulletItem(text = "аҒ - 𐰎 ,𐰍"),
+        BulletItem(text = "аҚ - 𐰴"),
+        BulletItem(text = "аЛ - 𐰟 ,𐰞"),
+        BulletItem(text = "аБ - 𐰊 ,𐰉"),
+        BulletItem(text = "аН - 𐰣"),
         BulletItem(text = "", needBullet = false),
-        BulletItem(text = "P - 𐰯"),
-        BulletItem(text = "Z - 𐰕"),
-        BulletItem(text = "Ş - 𐱁 ,𐰿 ,𐱀"),
-        BulletItem(text = "Ç - 𐰳 ,𐰲"),
-        BulletItem(text = "M - 𐰢")
+        BulletItem(text = "П - 𐰯"),
+        BulletItem(text = "З - 𐰕"),
+        BulletItem(text = "Ш - 𐱁 ,𐰿 ,𐱀"),
+        BulletItem(text = "Ч - 𐰳 ,𐰲"),
+        BulletItem(text = "М - 𐰢")
     )
     val topRight = listOf(
-        BulletItem(text = "eÑ - 𐰮 ,𐰭"),
-        BulletItem(text = "eR - 𐰼"),
-        BulletItem(text = "eT - 𐱅"),
-        BulletItem(text = "eY - 𐰙 ,𐰘"),
-        BulletItem(text = "eS - 𐰾"),
-        BulletItem(text = "eD - 𐰓"),
-        BulletItem(text = "eG - 𐰐 ,𐰏"),
-        BulletItem(text = "eQ - 𐰛 ,𐰚"),
-        BulletItem(text = "eL - 𐰠"),
-        BulletItem(text = "eB - 𐰋 ,𐰌"),
-        BulletItem(text = "eN - 𐰤 ,𐰥")
+        BulletItem(text = "еҢ - 𐰮 ,𐰭"),
+        BulletItem(text = "еР - 𐰼"),
+        BulletItem(text = "еТ - 𐱅"),
+        BulletItem(text = "еЙ/еЖ - 𐰙 ,𐰘"),
+        BulletItem(text = "еС - 𐰾"),
+        BulletItem(text = "еД - 𐰓"),
+        BulletItem(text = "еГ - 𐰐 ,𐰏"),
+        BulletItem(text = "еК - 𐰛 ,𐰚"),
+        BulletItem(text = "еЛ - 𐰠"),
+        BulletItem(text = "еБ - 𐰋 ,𐰌"),
+        BulletItem(text = "еН - 𐰤 ,𐰥")
     )
 
     Column(

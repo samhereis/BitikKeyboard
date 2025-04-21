@@ -129,7 +129,7 @@ class KeyView(
                 updateOverlay()
             }
 
-            TopRowBuilder.onTypedListener?.invoke()
+            TopRowBuilder_Old.onTypedListener?.invoke()
         }
 
         setOnTouchListener { _, event ->

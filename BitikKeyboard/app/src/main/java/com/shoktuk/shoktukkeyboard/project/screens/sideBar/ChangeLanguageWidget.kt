@@ -83,9 +83,9 @@ fun ChangeLanguageWidget() {
                         flag = flag, isSelected = flag.language == currentLanguage
                     ) {
                         LocalizationManager.setLanguage(context, flag.language)
+                        }
                     }
                 }
-            }
         }
     }
 }

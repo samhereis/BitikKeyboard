@@ -5,6 +5,8 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
 
 object KeyboardViewBuilder {
 
@@ -38,11 +40,22 @@ object KeyboardViewBuilder {
         }
 
         if (layout.name != "symbols") {
-            container.addView(
-                TopRowBuilder.createTopRow(
-                    service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), margin, onModeChange, onLangChange = onLangChange
+
+            if(SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC)
+            {
+                container.addView(
+                    TopRowBuilder_Old.createTopRow(
+                        service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), margin, onModeChange, onLangChange = onLangChange
+                    )
                 )
-            )
+            }
+            else{
+                container.addView(
+                    TopRowBuilder.createTopRow(
+                        service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), margin, onModeChange, onLangChange = onLangChange
+                    )
+                )
+            }
         }
 
         layout.rows.forEach { row ->
@@ -100,7 +113,7 @@ object KeyboardViewBuilder {
                     service.currentInputConnection?.commitText("\u202B", 1)
                 }
                 service.currentInputConnection?.commitText(letter, 1)
-                TopRowBuilder.onTypedListener?.invoke()
+                TopRowBuilder_Old.onTypedListener?.invoke()
             }, onLongPress = { letter ->
                 letter?.let { service.currentInputConnection?.commitText(it, 1) }
             }))

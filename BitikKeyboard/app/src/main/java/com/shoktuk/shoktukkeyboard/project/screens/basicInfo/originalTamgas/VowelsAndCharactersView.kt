@@ -25,19 +25,24 @@ fun VowelsAndCharactersView() {
     var context = LocalContext.current
 
     val colLeft = listOf(
-        BulletItem(text = "А/E - 𐰁/𐰀"), BulletItem(text = "E - 𐰅"), BulletItem(text = "Ə - 𐰂"), BulletItem(text = "И/Ы - 𐰄 ,𐰃"), BulletItem(text = "О/U - 𐰆"), BulletItem(text = "Ө/Ү - 𐰇/𐰈")
+        BulletItem(text = "А/E - 𐰁/𐰀"),
+        BulletItem(text = "E - 𐰅"),
+        BulletItem(text = "Ə - 𐰂"),
+        BulletItem(text = "Ы/И - 𐰄 ,𐰃"),
+        BulletItem(text = "О/U - 𐰆"),
+        BulletItem(text = "Ө/Ү - 𐰇/𐰈")
     )
     val colRight = listOf(
-        BulletItem(text = "Uq, Oq - 𐰹, 𐰸"),
-        BulletItem(text = "Qı, Ιq - 𐰷 ,𐰶"),
-        BulletItem(text = "Ük, Ök - 𐰝, 𐰜"),
-        BulletItem(text = "Lt - 𐰡"),
-        BulletItem(text = "Nt - 𐰦, 𐰧"),
-        BulletItem(text = "Nç - 𐰩 ,𐰨"),
-        BulletItem(text = "Ot - 𐱇"),
-        BulletItem(text = "Cı/Çi - 𐰱"),
-        BulletItem(text = "Baş/Rt/Rd - 𐱈"),
-        BulletItem(text = "An, En - 𐰪, 𐰫")
+        BulletItem(text = "УҚ/ОҚ - 𐰹, 𐰸"),
+        BulletItem(text = "ҚЫ/ЫҚ - 𐰷 ,𐰶"),
+        BulletItem(text = "ҮК/ӨК - 𐰝, 𐰜"),
+        BulletItem(text = "ЧЫ/ЧИ - 𐰱"),
+        BulletItem(text = "РТ/Баш - 𐱈"),
+        BulletItem(text = "ЛТ - 𐰡"),
+        BulletItem(text = "НТ - 𐰦, 𐰧"),
+        BulletItem(text = "НЧ - 𐰩 ,𐰨"),
+        BulletItem(text = "ОТ - 𐱇"),
+        BulletItem(text = "АН - 𐰪, 𐰫")
     )
     Row(
         modifier = Modifier
