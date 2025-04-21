@@ -180,7 +180,7 @@ function CorrentText_Old() {
                     new TranscriptionEntry("𐰺", "аР", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐱄", "аТ", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐱃", "аТ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐱇", "ОТ", CharacterType.HardCharacter, "O"),
+                    new TranscriptionEntry("𐱇", "ОТ", CharacterType.HardCharacter),
                     new TranscriptionEntry("𐰖", "аЖ", CharacterType.HardConsonant, "аЙ"),
                     new TranscriptionEntry("𐰗", "аЖ", CharacterType.HardConsonant, "аЙ"),
                     new TranscriptionEntry("𐰆", "У", CharacterType.HardVowel, "О"),

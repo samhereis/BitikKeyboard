@@ -21,7 +21,7 @@ object SystemKeyBuilder {
             compoundDrawablePadding = 0
 
             // Style setup
-            textSize = KeyboardTheme.getSystemButtonStyle(service).textSizeSp
+            textSize = KeyboardTheme.getSystemButtonStyle(service).textSizeSp.value
             setTextColor(KeyboardTheme.getSystemButtonStyle(service).textColor.toColorInt())
             layoutParams = android.widget.LinearLayout.LayoutParams(
                 KeyboardTheme.getSystemButtonWidth(service), buttonHeight

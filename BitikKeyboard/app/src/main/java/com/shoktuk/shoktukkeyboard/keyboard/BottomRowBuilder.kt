@@ -11,19 +11,13 @@ import androidx.core.graphics.toColorInt
 
 object BottomRowBuilder {
     fun createBottomRow(
-        service: InputMethodService,
-        layout: KeyboardLayout,
-        buttonHeight: Int,
-        margin: Int,
-        onModeChange: (String) -> Unit,
-        onLangChange: () -> Unit
+        service: InputMethodService, layout: KeyboardLayout, buttonHeight: Int, margin: Int, onModeChange: (String) -> Unit, onLangChange: () -> Unit
     ): LinearLayout {
         val bottomRow = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 topMargin = margin
                 bottomMargin = margin
@@ -33,15 +27,9 @@ object BottomRowBuilder {
         if (layout.name == "symbols") {
             bottomRow.addView(
                 createSystemAssetButton(
-                    service = service,
-                    assetPath = null,
-                    textToSet = "ABC",
-                    buttonHeight = buttonHeight,
-                    margin = margin,
-                    onClick = {
+                    service = service, assetPath = null, textToSet = "ABC", buttonHeight = buttonHeight, margin = margin, onClick = {
                         onModeChange("letters")
-                    },
-                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
+                    }, buttonStyle = KeyboardTheme.getSystemButtonStyle(service), bigText = false
                 )
             )
 
@@ -82,13 +70,7 @@ object BottomRowBuilder {
 
             bottomRow.addView(
                 createSystemAssetButton(
-                    service,
-                    null,
-                    ".",
-                    buttonHeight,
-                    margin,
-                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
-                    onClick = {
+                    service, null, ".", buttonHeight, margin, buttonStyle = KeyboardTheme.getSystemButtonStyle(service), onClick = {
                         service.currentInputConnection?.commitText(". ", 1)
                         TopRowBuilder_Old.onTypedListener?.invoke()
                     })
@@ -108,13 +90,7 @@ object BottomRowBuilder {
 
             bottomRow.addView(
                 createSystemAssetButton(
-                    service,
-                    null,
-                    ",",
-                    buttonHeight,
-                    margin,
-                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
-                    onClick = {
+                    service, null, ",", buttonHeight, margin, buttonStyle = KeyboardTheme.getSystemButtonStyle(service), onClick = {
                         service.currentInputConnection?.commitText(", ", 1)
                         TopRowBuilder_Old.onTypedListener?.invoke()
                     })
@@ -122,13 +98,7 @@ object BottomRowBuilder {
 
             bottomRow.addView(
                 createSystemAssetButton(
-                    service,
-                    KeyboardTheme.ENTER_ICON_FILE,
-                    "",
-                    buttonHeight,
-                    margin,
-                    buttonStyle = KeyboardTheme.getSystemButtonStyle(service),
-                    onClick = {
+                    service, KeyboardTheme.ENTER_ICON_FILE, "", buttonHeight, margin, buttonStyle = KeyboardTheme.getSystemButtonStyle(service), onClick = {
                         service.currentInputConnection?.commitText("\n", 1)
                         TopRowBuilder_Old.onTypedListener?.invoke()
                     })
@@ -138,23 +108,16 @@ object BottomRowBuilder {
     }
 
     private fun createSystemAssetButton(
-        service: InputMethodService,
-        assetPath: String?,
-        textToSet: String,
-        buttonHeight: Int,
-        margin: Int,
-        onClick: () -> Unit,
-        buttonStyle: ButtonStyle,
+        service: InputMethodService, assetPath: String?, textToSet: String, buttonHeight: Int, margin: Int, onClick: () -> Unit, buttonStyle: ButtonStyle, bigText: Boolean = true
     ): Button {
         return Button(service).apply {
             text = textToSet
             gravity = Gravity.CENTER
             setPadding(0, 0, 0, 0)
             compoundDrawablePadding = 0
-            textSize = buttonStyle.textSizeSp
+            textSize = if (bigText) KeyboardTheme.getLetterButtonStyle(service).textSizeSp.value else KeyboardTheme.getHintButtonTextSize(service).value
             setTextColor(buttonStyle.textColor.toColorInt())
-            background =
-                KeyboardTheme.createDrawableFromStyle(service, buttonStyle)
+            background = KeyboardTheme.createDrawableFromStyle(service, buttonStyle)
             layoutParams = LinearLayout.LayoutParams(KeyboardTheme.getSystemButtonWidth(service), buttonHeight).apply {
                 marginStart = margin
                 marginEnd = margin
@@ -165,8 +128,7 @@ object BottomRowBuilder {
                 iconDrawable?.let { d ->
                     val tintedIcon = DrawableCompat.wrap(d).mutate()
                     DrawableCompat.setTint(
-                        tintedIcon,
-                        buttonStyle.textColor.toColorInt()
+                        tintedIcon, buttonStyle.textColor.toColorInt()
                     )
                     val iconSize = buttonHeight / 2
                     tintedIcon.setBounds(0, 0, iconSize, iconSize)
@@ -182,22 +144,16 @@ object BottomRowBuilder {
     }
 
     private fun createExpandableAssetButton(
-        service: InputMethodService,
-        assetPath: String?,
-        textToSet: String,
-        buttonHeight: Int,
-        margin: Int,
-        textToCommit: String
+        service: InputMethodService, assetPath: String?, textToSet: String, buttonHeight: Int, margin: Int, textToCommit: String
     ): Button {
         return Button(service).apply {
             text = textToSet
             gravity = Gravity.CENTER
             setPadding(0, 0, 0, 0)
             compoundDrawablePadding = 0
-            textSize = KeyboardTheme.getSystemButtonStyle(service).textSizeSp
+            textSize = KeyboardTheme.getSystemButtonStyle(service).textSizeSp.value
             setTextColor(KeyboardTheme.getSystemButtonStyle(service).textColor.toColorInt())
-            background =
-                KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getLetterButtonStyle(service))
+            background = KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getLetterButtonStyle(service))
             layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f).apply {
                 marginStart = margin
                 marginEnd = margin

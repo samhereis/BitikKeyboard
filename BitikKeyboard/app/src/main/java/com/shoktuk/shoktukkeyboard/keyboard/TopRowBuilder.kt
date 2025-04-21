@@ -10,19 +10,13 @@ import androidx.core.graphics.toColorInt
 
 object TopRowBuilder {
     fun createTopRow(
-        service: InputMethodService,
-        layout: KeyboardLayout,
-        buttonHeight: Int,
-        margin: Int,
-        onModeChange: (String) -> Unit,
-        onLangChange: () -> Unit
+        service: InputMethodService, layout: KeyboardLayout, buttonHeight: Int, margin: Int, onModeChange: (String) -> Unit, onLangChange: () -> Unit
     ): LinearLayout {
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
             layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
+                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
                 topMargin = margin
                 bottomMargin = margin
@@ -32,27 +26,19 @@ object TopRowBuilder {
         // first button
         rowLayout.addView(
             createSystemAssetButton(
-                service,
-                null,
-                layout.languageCode,
-                buttonHeight,
-                margin,
-                onClick = { onLangChange() },
-                buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
+                service, null, layout.languageCode, buttonHeight, margin, onClick = { onLangChange() }, buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
             )
         )
 
         // middle text – now with weight=1 so it stays between the buttons
         val textView = TextView(rowLayout.context).apply {
             text = "Сиз расмий эмес, өзгөртүлгөн, жаңыланган битик колдонуудасыз!"
-            textSize = 20f
+            textSize = KeyboardTheme.getHintButtonTextSize(service).value * 1.5f
             setSingleLine(false)
             gravity = Gravity.CENTER
             setBackgroundColor(Color.TRANSPARENT)
             layoutParams = LinearLayout.LayoutParams(
-                0,
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                1f
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
             ).apply {
                 marginStart = margin
                 marginEnd = margin
@@ -63,13 +49,7 @@ object TopRowBuilder {
         // last button
         rowLayout.addView(
             createSystemAssetButton(
-                service,
-                null,
-                "123",
-                buttonHeight,
-                margin,
-                onClick = { onModeChange("symbols") },
-                buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
+                service, null, "123", buttonHeight, margin, onClick = { onModeChange("symbols") }, buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
             )
         )
 
@@ -77,33 +57,25 @@ object TopRowBuilder {
     }
 
     private fun createSystemAssetButton(
-        service: InputMethodService,
-        assetPath: String?,
-        textToSet: String,
-        buttonHeight: Int,
-        margin: Int,
-        onClick: () -> Unit,
-        buttonStyle: ButtonStyle
+        service: InputMethodService, assetPath: String?, textToSet: String, buttonHeight: Int, margin: Int, onClick: () -> Unit, buttonStyle: ButtonStyle
     ): Button = Button(service).apply {
         text = textToSet
         gravity = Gravity.CENTER
-        textSize = buttonStyle.textSizeSp
+        textSize = KeyboardTheme.getHintButtonTextSize(service).value * 1.25f
         setTextColor(buttonStyle.textColor.toColorInt())
         background = KeyboardTheme.createDrawableFromStyle(service, buttonStyle)
         layoutParams = LinearLayout.LayoutParams(
-            KeyboardTheme.getSystemButtonWidth(service),
-            buttonHeight
+            KeyboardTheme.getSystemButtonWidth(service), buttonHeight
         ).apply {
-            marginStart = margin
-            marginEnd = margin
+            marginStart = 0
+            marginEnd = 0
         }
         setOnClickListener { onClick() }
+        setPadding(0,0,0,0)
     }
 
     private fun createLastWordContainer(
-        service: InputMethodService,
-        buttonHeight: Int,
-        margin: Int
+        service: InputMethodService, buttonHeight: Int, margin: Int
     ): LinearLayout = LinearLayout(service).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL

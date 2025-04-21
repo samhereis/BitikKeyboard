@@ -27,10 +27,11 @@ class KeyView(
     private var isCaps: Boolean,
     private val buttonHeight: Int,
     private val margin: Int,
+    private val isCLassic: Boolean,
+    private val symbol: Boolean,
     private val onKeyClick: (String) -> Unit,
     private val onLongPress: (String?) -> Unit
 ) : FrameLayout(context) {
-
     private val handler = Handler(Looper.getMainLooper())
     private val longPressDelay = 500L
     private val overlayHideDelay = 100L
@@ -88,12 +89,31 @@ class KeyView(
     private fun updateContent() {
         mainText.text = getCurrentMainText()
         mainText.setTextColor(style.textColor.toColorInt())
-        mainText.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp)
+        mainText.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp.value)
+        mainText.setPadding(0, if (isCLassic && !symbol) -10 else 0, 0, if (isCLassic && !symbol) -20 else 0)
 
-        subText.text = getCurrentSubText()
-        subText.setTextColor(Color.WHITE)
-        subText.setTextSize(TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context))
-        subText.visibility = if (subText.text.isNullOrEmpty()) View.GONE else View.VISIBLE
+        val firstText = getCurrentSubText()?.toString().orEmpty()
+        val secontText = getCurrentSubText_Alt()?.toString().orEmpty()
+
+        var twoFloors = firstText
+        if (isCLassic) {
+            twoFloors = "$firstText\n$secontText"
+        }
+
+        var lines = 1;
+        if (isCLassic) {
+            lines = 2
+        }
+
+        subText.apply {
+            text = twoFloors
+            maxLines = lines
+            setLineSpacing(0.75f, 0.75f)
+            setTextColor(Color.WHITE)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context).value)
+            setPadding(0, if (isCLassic) 0 else -5, 0, KeyboardTheme.getHintButtonTextSize(context).value.toInt())
+            visibility = if (firstText.isBlank()) View.GONE else View.VISIBLE
+        }
     }
 
     private fun setupClickListeners() {
@@ -177,39 +197,26 @@ class KeyView(
     }
 
     private fun showOverlay() {
+        // 1) always dismiss any old one
         dismissOverlay()
 
-        if (isCaps) {
-            if (key.upperCaseHold == null) {
-                return; }
-        } else {
-            if (key.lowerCaseHold == null) {
-                return; }
-        }
-
+        // 2) inflate & size
         val overlayView = createOverlayView().apply {
-            layoutParams = LayoutParams(
-                width,  // Match key width
-                height  // Match key height
-            )
+            layoutParams = LayoutParams(width, height)
         }
 
-        // Create popup with same dimensions as key
         popupWindow = PopupWindow(
-            overlayView, (width * 1.25f).toInt(),  // Scale both dimensions equally
-            (height * 1.25f).toInt()  // Maintain aspect ratio
+            overlayView, (width * 1.25f).toInt(), (height * 1.25f).toInt()
         ).apply {
             isOutsideTouchable = true
             isFocusable = false
             elevation = 24f
         }
 
-        val location = IntArray(2)
-        getLocationInWindow(location)
-
-        popupWindow?.showAtLocation(
-            (context as? InputMethodService)?.window?.window?.decorView, Gravity.START or Gravity.TOP, location[0] - (popupWindow!!.width - width) / 2,  // Center horizontally
-            location[1] - popupWindow!!.height - dpToPx(context, 16)  // Position above
+        val loc = IntArray(2)
+        getLocationInWindow(loc)
+        popupWindow!!.showAtLocation(
+            (context as? InputMethodService)?.window?.window?.decorView, Gravity.START or Gravity.TOP, loc[0] - (popupWindow!!.width - width) / 2, loc[1] - popupWindow!!.height - dpToPx(context, 16)
         )
     }
 
@@ -223,21 +230,40 @@ class KeyView(
                 text = getCurrentMainText()
 
                 setTextColor(style.textColor.toColorInt())
-                setTextSize(TypedValue.COMPLEX_UNIT_PX, style.textSizeSp * resources.displayMetrics.density * 1.5f)
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, style.textSizeSp.value * resources.displayMetrics.density * 1.5f)
             }
 
             findViewById<TextView>(R.id.subText).apply {
-                text = getCurrentSubText()
+                var subText = if (isLongPressed) {
+                    " " + getCurrentSubText_Hold() + " "
+                } else {
+                    " " + getCurrentSubText() + " "
+                }
+
+                text = subText
+                maxLines = 2
                 setTextColor(style.textColor.toColorInt())
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context))
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context).value)
+                setPadding(0, 0, 0, KeyboardTheme.getHintButtonTextSize(context).value.toInt())
             }
             background = KeyboardTheme.createDrawableFromStyle(context, style)
         }
     }
 
     private fun updateOverlay() {
-        popupWindow?.contentView?.findViewById<TextView>(R.id.mainText)?.text = " " + getCurrentMainText_Hold() + " "
-        popupWindow?.contentView?.findViewById<TextView>(R.id.subText)?.text = " " + getCurrentSubText_Hold() + " "
+        var mainText = if (isLongPressed) {
+            " " + getCurrentMainText_Hold() + " "
+        } else {
+            " " + getCurrentMainText() + " "
+        }
+        var subText = if (isLongPressed) {
+            " " + getCurrentSubText_Hold() + " "
+        } else {
+            " " + getCurrentSubText() + " "
+        }
+
+        popupWindow?.contentView?.findViewById<TextView>(R.id.mainText)?.text = mainText
+        popupWindow?.contentView?.findViewById<TextView>(R.id.subText)?.text = subText
 
         var colorIndex: Int = 0;
         var colorToSet: Int = KeyboardTheme.colorIndexes[0].toColorInt()
@@ -312,6 +338,14 @@ class KeyView(
             return key.upperCaseRomanization
         } else {
             return key.lowerCaseRomanization
+        }
+    }
+
+    private fun getCurrentSubText_Alt(): CharSequence? {
+        if (isCaps) {
+            return key.upperCaseRomanization_Alt
+        } else {
+            return key.lowerCaseRomanization_Alt
         }
     }
 

@@ -104,7 +104,7 @@ object KeyboardViewBuilder {
             layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f)
         }
         middleKeys.forEach { key ->
-            middleContainer.addView(LetterKeyBuilder.createLetterKey(service, key, layout, buttonHeight, margin, isCaps, onKeyClick = { letter ->
+            middleContainer.addView(LetterKeyBuilder.createLetterKey(service, key, layout, buttonHeight, margin, isCaps, symbol = layout.name == "symbols", onKeyClick = { letter ->
                 if (ensureRTLContext(service)) {
                     service.currentInputConnection?.commitText("\u202B", 1)
                 }

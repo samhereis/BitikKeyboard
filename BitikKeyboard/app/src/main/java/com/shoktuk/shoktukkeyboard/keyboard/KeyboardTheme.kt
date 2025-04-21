@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.BitmapFactory
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
 
@@ -16,7 +18,7 @@ data class ButtonStyle(
     val borderWidthDp: Int,
     val cornerRadiusDp: Int,
     val textColor: String,
-    val textSizeSp: Float
+    val textSizeSp: TextUnit
 )
 
 private const val i = 343537
@@ -36,9 +38,9 @@ object KeyboardTheme {
     private const val BASE_LETTER_BUTTON_WIDTH_DP = 85
     private const val BASE_SYSTEM_BUTTON_WIDTH_DP = 125
 
-    public const val BASE_LETTER_TEXT_SIZE_SP = 22f
-    public const val BASE_HINT_TEXT_SIZE_SP = 10f
-    private const val BASE_SYSTEM_TEXT_SIZE_SP = 17f
+    private val BASE_LETTER_TEXT_SIZE_SP = 22.sp
+    private val BASE_HINT_TEXT_SIZE_SP = 8.sp
+    private val BASE_SYSTEM_TEXT_SIZE_SP = 17.sp
 
     // Container background color
     const val CONTAINER_BACKGROUND_COLOR = "#000000" // black
@@ -86,17 +88,17 @@ object KeyboardTheme {
 
     fun getKeyMargin(context: Context): Int = dpToPx(context, KEY_MARGIN_DP)
 
-    private fun getLetterButtonTextSize(context: Context): Float {
+    private fun getLetterButtonTextSize(context: Context): TextUnit {
         val scaleFactor = getScaleFactor(context)
         return BASE_LETTER_TEXT_SIZE_SP * scaleFactor
     }
 
-    fun getHintButtonTextSize(context: Context): Float {
+    fun getHintButtonTextSize(context: Context): TextUnit {
         val scaleFactor = getScaleFactor(context)
         return BASE_HINT_TEXT_SIZE_SP * scaleFactor
     }
 
-    private fun getSystemButtonTextSize(context: Context): Float {
+    private fun getSystemButtonTextSize(context: Context): TextUnit {
         val scaleFactor = getScaleFactor(context)
         return BASE_SYSTEM_TEXT_SIZE_SP * scaleFactor
     }
