@@ -224,6 +224,7 @@ function CorrentText_Old() {
                     new TranscriptionEntry("𐰐", "еГ", CharacterType.SoftConsonant),
                     new TranscriptionEntry("𐰡", "ЛТ", CharacterType.Character),
                     new TranscriptionEntry("𐰚", "еК", CharacterType.SoftConsonant),
+                    new TranscriptionEntry("𐰛", "еК", CharacterType.SoftConsonant),
                     new TranscriptionEntry("𐰠", "еЛ", CharacterType.SoftConsonant),
 
                     // Third Row

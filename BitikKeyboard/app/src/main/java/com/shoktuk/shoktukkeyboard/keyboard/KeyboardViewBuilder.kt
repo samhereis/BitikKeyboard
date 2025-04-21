@@ -40,16 +40,13 @@ object KeyboardViewBuilder {
         }
 
         if (layout.name != "symbols") {
-
-            if(SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC)
-            {
+            if (SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC) {
                 container.addView(
                     TopRowBuilder_Old.createTopRow(
                         service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), margin, onModeChange, onLangChange = onLangChange
                     )
                 )
-            }
-            else{
+            } else {
                 container.addView(
                     TopRowBuilder.createTopRow(
                         service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), margin, onModeChange, onLangChange = onLangChange
@@ -61,8 +58,7 @@ object KeyboardViewBuilder {
         layout.rows.forEach { row ->
             container.addView(
                 createRowLayout(
-                    service, row, layout, KeyboardTheme.getButtonHeight(), margin,
-                    isCaps, onCapsChange
+                    service, row, layout, KeyboardTheme.getButtonHeight(), margin, isCaps, onCapsChange
                 )
             )
         }

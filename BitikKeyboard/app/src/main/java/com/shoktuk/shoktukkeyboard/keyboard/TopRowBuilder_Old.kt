@@ -117,11 +117,6 @@ object TopRowBuilder_Old {
         }
     }
 
-    /**
-     * Rebuilds the container: for each character, either:
-     *  • If the alt (top) text differs, stack top & base in a FrameLayout;
-     *  • Otherwise, show a single full‑size TextView.
-     */
     private fun updateLastWord(
         service: InputMethodService,
         inputConnection: InputConnection?,
@@ -129,7 +124,10 @@ object TopRowBuilder_Old {
         transcriber: JSTranscriber
     ) {
         inputConnection?.getTextBeforeCursor(100, 0)?.let { textBefore ->
-            val lastWord = textBefore.split("\\s+".toRegex()).lastOrNull() ?: ""
+            val lastWord = textBefore
+                .split("[^\\p{L}\\p{N}]+".toRegex())
+                .lastOrNull()
+                .orEmpty()
             val topText  = transcriber.getTranscription_Alternative(lastWord) ?: lastWord
             val baseText = transcriber.getTranscription(lastWord) ?: lastWord
 

@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
@@ -39,7 +40,7 @@ fun HowToEnable_Screen() {
         ) {
             // Screen Header
             Text(
-                text = "How to Enable Shoktuk Keyboard",
+                text = "hte_HowToEnable".localized("loc_howToEnable", context),
                 style = MaterialTheme.typography.titleLarge,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth(),
@@ -51,7 +52,7 @@ fun HowToEnable_Screen() {
                 modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp), horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "1. Activate 'Shoktuk Keyboard'",
+                    text = "hte_ActivateShoktukKeyboard".localized("loc_howToEnable", context),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.fillMaxWidth(),
@@ -61,9 +62,11 @@ fun HowToEnable_Screen() {
                     onClick = {
                         val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
                         context.startActivity(intent)
-                    }, modifier = Modifier.fillMaxWidth(0.6f)
+                    }, modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text(text = "Open Keyboard Settings")
+                    Text(
+                        text = "hte_openKeyboardSettings".localized("loc_howToEnable", context), modifier = Modifier.fillMaxWidth(), fontSize = 20.sp, textAlign = TextAlign.Center
+                    )
                 }
             }
 
@@ -72,7 +75,7 @@ fun HowToEnable_Screen() {
                 modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp), horizontalAlignment = Alignment.Start
             ) {
                 Text(
-                    text = "2. Change the language to 'Shoktuk Keyboard'",
+                    text = "hte_ChangeTheLanguage".localized("loc_howToEnable", context),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground,
                     modifier = Modifier.fillMaxWidth(),

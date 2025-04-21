@@ -21,11 +21,9 @@
         "lowercase": "𐰬",
         "lowerCaseRomanization": "аҢ",
         "lowerCaseHold": "𐰧",
-        "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰭",
-        "upperCaseRomanization": "аҢ",
-        "upperCaseHold": "𐰮",
-        "backgroundColorIndex_uppercase": 2
+        "upperCaseRomanization": "еҢ",
+        "upperCaseHold": "𐰮"
       },
       {
         "name": "а",
@@ -69,7 +67,7 @@
         "backgroundColorIndex_lowercase": 1,
         "uppercase": "𐰈",
         "upperCaseHold": "𐰇",
-        "upperCaseRomanization": "Ү/Ө",
+        "upperCaseRomanization": "ү/ө",
         "backgroundColorIndex_uppercase": 1
       },
       {

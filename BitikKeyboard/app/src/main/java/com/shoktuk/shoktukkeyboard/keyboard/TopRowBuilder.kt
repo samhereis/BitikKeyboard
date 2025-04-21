@@ -3,13 +3,10 @@ package com.shoktuk.shoktukkeyboard.keyboard
 import android.graphics.Color
 import android.inputmethodservice.InputMethodService
 import android.view.Gravity
-import android.view.inputmethod.InputConnection
 import android.widget.Button
-import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.graphics.toColorInt
-import com.shoktuk.shoktukkeyboard.project.systems.JSTranscriber
 
 object TopRowBuilder {
     fun createTopRow(
@@ -32,39 +29,49 @@ object TopRowBuilder {
             }
         }
 
+        // first button
         rowLayout.addView(
             createSystemAssetButton(
-                service, null, layout.languageCode,
-                buttonHeight, margin,
+                service,
+                null,
+                layout.languageCode,
+                buttonHeight,
+                margin,
                 onClick = { onLangChange() },
                 buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
             )
         )
 
-        val lastWordContainer = createLastWordContainer(service, buttonHeight, margin).apply {
-            clipChildren = false
-            clipToPadding = false
-        }
-        rowLayout.addView(lastWordContainer)
-        val stack = FrameLayout(lastWordContainer.context).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            )
-            clipChildren = false
-            clipToPadding = false
-            setPadding(0,38,0,0)
-        }
-
-        // Base letter (bottom)
-        val baseLetter = TextView(lastWordContainer.context).apply {
+        // middle text – now with weight=1 so it stays between the buttons
+        val textView = TextView(rowLayout.context).apply {
             text = "Сиз расмий эмес, өзгөртүлгөн, жаңыланган битик колдонуудасыз!"
-            textSize = 25f
+            textSize = 20f
+            setSingleLine(false)
             gravity = Gravity.CENTER
             setBackgroundColor(Color.TRANSPARENT)
-            setPadding(0,0,0,8)
+            layoutParams = LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+            ).apply {
+                marginStart = margin
+                marginEnd = margin
+            }
         }
-        stack.addView(baseLetter)
+        rowLayout.addView(textView)
+
+        // last button
+        rowLayout.addView(
+            createSystemAssetButton(
+                service,
+                null,
+                "123",
+                buttonHeight,
+                margin,
+                onClick = { onModeChange("symbols") },
+                buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
+            )
+        )
 
         return rowLayout
     }
@@ -93,7 +100,6 @@ object TopRowBuilder {
         setOnClickListener { onClick() }
     }
 
-    /** Horizontal container for per-letter FrameLayouts */
     private fun createLastWordContainer(
         service: InputMethodService,
         buttonHeight: Int,
