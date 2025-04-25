@@ -49,6 +49,7 @@
       {
         "name": "t",
         "lowercase": "𐱄",
+        "lowerCaseHold": "𐱃",
         "lowerCaseRomanization": "аТ",
         "uppercase": "𐱅",
         "upperCaseRomanization": "еТ"
