@@ -70,8 +70,8 @@ object BottomRowBuilder {
 
             bottomRow.addView(
                 createSystemAssetButton(
-                    service, null, ".", buttonHeight, margin, buttonStyle = KeyboardTheme.getSystemButtonStyle(service), onClick = {
-                        service.currentInputConnection?.commitText(". ", 1)
+                    service, null, "·", buttonHeight, margin, buttonStyle = KeyboardTheme.getSystemButtonStyle(service), onClick = {
+                        service.currentInputConnection?.commitText("·", 1)
                         TopRowBuilder_Old.onTypedListener?.invoke()
                     })
             )
@@ -91,7 +91,7 @@ object BottomRowBuilder {
             bottomRow.addView(
                 createSystemAssetButton(
                     service, null, ",", buttonHeight, margin, buttonStyle = KeyboardTheme.getSystemButtonStyle(service), onClick = {
-                        service.currentInputConnection?.commitText(", ", 1)
+                        service.currentInputConnection?.commitText(",", 1)
                         TopRowBuilder_Old.onTypedListener?.invoke()
                     })
             )
