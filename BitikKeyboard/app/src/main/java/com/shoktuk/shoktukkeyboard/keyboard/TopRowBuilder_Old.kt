@@ -1,6 +1,7 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.inputmethodservice.InputMethodService
+import android.util.TypedValue
 import android.view.Gravity
 import android.view.inputmethod.InputConnection
 import android.widget.Button
@@ -9,6 +10,7 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.project.systems.JSTranscriber
 
@@ -112,7 +114,11 @@ object TopRowBuilder_Old {
     }
 
     private fun updateLastWord(
-        service: InputMethodService, inputConnection: InputConnection?, container: LinearLayout, transcriber: JSTranscriber, buttonStyle: ButtonStyle
+        service: InputMethodService,
+        inputConnection: InputConnection?,
+        container: LinearLayout,
+        transcriber: JSTranscriber,
+        buttonStyle: ButtonStyle
     ) {
         container.removeAllViews()
 
@@ -120,50 +126,56 @@ object TopRowBuilder_Old {
         if (before.isEmpty()) return
 
         val lastWord = before.split("[^\\p{L}\\p{N}]+".toRegex()).lastOrNull().orEmpty()
-        val topText = transcriber.getTranscription_Alternative(lastWord).orEmpty().ifEmpty { lastWord }
-        val baseText = transcriber.getTranscription(lastWord).orEmpty().ifEmpty { lastWord }
+        val topText = transcriber.getTranscription_Alternative(lastWord)
+            .orEmpty().ifEmpty { lastWord }
+        val baseText = transcriber.getTranscription(lastWord)
+            .orEmpty().ifEmpty { lastWord }
 
         val fullSp = buttonStyle.textSizeSp.value
         val halfSp = fullSp / 2f
 
         baseText.forEachIndexed { i, baseChar ->
-
             if (i < topText.length && topText[i] != baseChar) {
+                // stack with superscript
                 val stack = FrameLayout(container.context).apply {
                     layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                        LinearLayout.LayoutParams.WRAP_CONTENT,
+                        LinearLayout.LayoutParams.WRAP_CONTENT
                     )
                     clipChildren = false
                     clipToPadding = false
-                    setPadding(0, halfSp.toInt(), 0, 0)
+                    // vertical padding to make room for the superscript
+                    setPadding(0, halfSp.toInt(), 0, 5)
                 }
 
-                // Base letter
+                // Base letter (bottom)
                 TextView(container.context).apply {
                     text = baseChar.toString()
-                    textSize = halfSp
+                    // SP units
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, halfSp)
+                    // explicit color
+                    setTextColor(ContextCompat.getColor(service, android.R.color.white))
                     gravity = Gravity.CENTER
-                    setBackgroundColor(Color.Transparent.toArgb())
-                    setPadding(0, halfSp.toInt(), 0, 0)
+                    setPadding(0, fullSp.toInt(), 0, 0)
                 }.also(stack::addView)
 
-                // Superscript letter
+                // Superscript letter (top)
                 TextView(container.context).apply {
                     text = topText[i].toString()
-                    textSize = halfSp
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, halfSp)
+                    setTextColor(ContextCompat.getColor(service, android.R.color.white))
                     gravity = Gravity.CENTER
-                    setBackgroundColor(Color.Transparent.toArgb())
-                    // translationY with halfSp works more reliably than view.textSize
-                    translationY = -halfSp
+                    setPadding(0, 0, 0, halfSp.toInt() + 10)
                 }.also(stack::addView)
 
                 container.addView(stack)
             } else {
+                // Normal letter
                 TextView(container.context).apply {
                     text = baseChar.toString()
-                    textSize = fullSp
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
+                    setTextColor(ContextCompat.getColor(service, android.R.color.white))
                     gravity = Gravity.CENTER
-                    setBackgroundColor(Color.Transparent.toArgb())
                 }.also(container::addView)
             }
         }
