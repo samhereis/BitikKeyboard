@@ -1,6 +1,5 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
-import android.graphics.Color
 import android.inputmethodservice.InputMethodService
 import android.view.Gravity
 import android.view.inputmethod.InputConnection
@@ -8,6 +7,8 @@ import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.project.systems.JSTranscriber
 
@@ -19,7 +20,7 @@ object TopRowBuilder_Old {
     ): LinearLayout {
         val jsTranscriber = JSTranscriber(service)
 
-        // Row container
+        // 1) Row container
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -31,36 +32,51 @@ object TopRowBuilder_Old {
             }
         }
 
-        // Language button
+        // 2) Left: language switch button
         rowLayout.addView(
             createSystemAssetButton(
-                service, null, layout.languageCode, buttonHeight, margin, onClick = { onLangChange() }, buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
+                service = service,
+                assetPath = null,
+                textToSet = layout.languageCode,
+                buttonHeight = buttonHeight,
+                margin = margin,
+                onClick = onLangChange,
+                buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
             )
         )
 
-        // Container for per-letter stacks; disable clipping here
+        // 3) Center: dynamic letter-stack container
         val lastWordContainer = createLastWordContainer(service, buttonHeight, margin).apply {
             clipChildren = false
             clipToPadding = false
         }
         rowLayout.addView(lastWordContainer)
 
-        // Update on each keystroke
+        // 4) Hook up the refresh callback (fires on each keystroke/selection)
         onTypedListener = {
-            updateLastWord(
-                service, service.currentInputConnection, lastWordContainer, jsTranscriber, buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
-            )
+            // post to ensure we're on the UI thread, then redraw
+            lastWordContainer.post {
+                updateLastWord(
+                    service, service.currentInputConnection, lastWordContainer, jsTranscriber, KeyboardTheme.getSystemButtonStyle(service)
+                )
+                lastWordContainer.requestLayout()
+                lastWordContainer.invalidate()
+            }
         }
 
-        // Symbols/mode button
+        // 5) Right: symbols/mode toggle button
         rowLayout.addView(
             createSystemAssetButton(
-                service, null, "123", buttonHeight, margin, onClick = { onModeChange("symbols") }, buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
+                service = service,
+                assetPath = null,
+                textToSet = "123",
+                buttonHeight = buttonHeight,
+                margin = margin,
+                onClick = { onModeChange("symbols") },
+                buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
             )
         )
 
-        // Initial render
-        updateLastWord(service, service.currentInputConnection, lastWordContainer, jsTranscriber, buttonStyle = KeyboardTheme.getSystemButtonStyle(service))
         return rowLayout
     }
 
@@ -79,16 +95,17 @@ object TopRowBuilder_Old {
             marginEnd = 0
         }
         setOnClickListener { onClick() }
-        setPadding(0,0,0,0)
+        setPadding(0, 0, 0, 0)
     }
 
-    /** Horizontal container for per-letter FrameLayouts */
     private fun createLastWordContainer(
         service: InputMethodService, buttonHeight: Int, margin: Int
     ): LinearLayout = LinearLayout(service).apply {
         orientation = LinearLayout.HORIZONTAL
         gravity = Gravity.CENTER_VERTICAL
-        layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f).apply {
+        layoutParams = LinearLayout.LayoutParams(
+            0, buttonHeight, 1f
+        ).apply {
             marginStart = margin
             marginEnd = margin
         }
@@ -97,62 +114,57 @@ object TopRowBuilder_Old {
     private fun updateLastWord(
         service: InputMethodService, inputConnection: InputConnection?, container: LinearLayout, transcriber: JSTranscriber, buttonStyle: ButtonStyle
     ) {
-        inputConnection?.getTextBeforeCursor(100, 0)?.let { textBefore ->
-            val lastWord = textBefore.split("[^\\p{L}\\p{N}]+".toRegex()).lastOrNull().orEmpty()
-            val topText = transcriber.getTranscription_Alternative(lastWord) ?: lastWord
-            val baseText = transcriber.getTranscription(lastWord) ?: lastWord
+        container.removeAllViews()
 
-            // Clear old views
-            container.removeAllViews()
+        val before = inputConnection?.getTextBeforeCursor(100, 0)?.toString().orEmpty()
+        if (before.isEmpty()) return
 
-            // Define sizes in sp
-            val FULL_SP = buttonStyle.textSizeSp.value
-            val HALF_SP = buttonStyle.textSizeSp.value / 2
+        val lastWord = before.split("[^\\p{L}\\p{N}]+".toRegex()).lastOrNull().orEmpty()
+        val topText = transcriber.getTranscription_Alternative(lastWord).orEmpty().ifEmpty { lastWord }
+        val baseText = transcriber.getTranscription(lastWord).orEmpty().ifEmpty { lastWord }
 
-            for (i in baseText.indices) {
-                if (i < topText.length && topText[i] != baseText[i]) {
-                    // Stack differing letters
-                    val stack = FrameLayout(container.context).apply {
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
-                        )
-                        clipChildren = false
-                        clipToPadding = false
-                        setPadding(0, HALF_SP.toInt(), 0, 0)
-                    }
+        val fullSp = buttonStyle.textSizeSp.value
+        val halfSp = fullSp / 2f
 
-                    // Base letter (bottom)
-                    val baseLetter = TextView(container.context).apply {
-                        text = baseText[i].toString()
-                        textSize = HALF_SP
-                        gravity = Gravity.CENTER
-                        setBackgroundColor(Color.TRANSPARENT)
-                        setPadding(0, HALF_SP.toInt(), 0, 0)
-                    }
-                    stack.addView(baseLetter)
+        baseText.forEachIndexed { i, baseChar ->
 
-                    // Top letter (superscript)
-                    val topLetter = TextView(container.context).apply {
-                        text = topText[i].toString()
-                        textSize = HALF_SP
-                        gravity = Gravity.CENTER
-                        setBackgroundColor(Color.TRANSPARENT)
-                        translationY = -this.textSize
-                        setPadding(0, 8, 0, 0)
-                    }
-                    stack.addView(topLetter)
-
-                    container.addView(stack)
-                } else {
-                    // Matching letter: full size
-                    val letter = TextView(container.context).apply {
-                        text = baseText[i].toString()
-                        textSize = FULL_SP
-                        gravity = Gravity.CENTER
-                        setBackgroundColor(Color.TRANSPARENT)
-                    }
-                    container.addView(letter)
+            if (i < topText.length && topText[i] != baseChar) {
+                val stack = FrameLayout(container.context).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                    )
+                    clipChildren = false
+                    clipToPadding = false
+                    setPadding(0, halfSp.toInt(), 0, 0)
                 }
+
+                // Base letter
+                TextView(container.context).apply {
+                    text = baseChar.toString()
+                    textSize = halfSp
+                    gravity = Gravity.CENTER
+                    setBackgroundColor(Color.Transparent.toArgb())
+                    setPadding(0, halfSp.toInt(), 0, 0)
+                }.also(stack::addView)
+
+                // Superscript letter
+                TextView(container.context).apply {
+                    text = topText[i].toString()
+                    textSize = halfSp
+                    gravity = Gravity.CENTER
+                    setBackgroundColor(Color.Transparent.toArgb())
+                    // translationY with halfSp works more reliably than view.textSize
+                    translationY = -halfSp
+                }.also(stack::addView)
+
+                container.addView(stack)
+            } else {
+                TextView(container.context).apply {
+                    text = baseChar.toString()
+                    textSize = fullSp
+                    gravity = Gravity.CENTER
+                    setBackgroundColor(Color.Transparent.toArgb())
+                }.also(container::addView)
             }
         }
     }

@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.shoktuk.shoktukkeyboard"
-        minSdk = 33
+        minSdk = 28
         targetSdk = 35
         versionCode = 1
         versionName = "0.1.2"
