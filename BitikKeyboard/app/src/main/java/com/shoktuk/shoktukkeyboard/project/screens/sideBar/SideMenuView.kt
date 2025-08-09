@@ -1,11 +1,11 @@
 package com.shoktuk.shoktukkeyboard
 
 import BasicInfo_Screen
-import ChangeLanguageWidget
 import HowToEnable_Screen
 import ModernizedTamgasView
 import OriginalTamgasView
 import SideMenuHeader
+import SupportScreen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -64,15 +64,15 @@ fun SideMenuView() {
     val context = LocalContext.current
 
     val mainScreens = listOf(
-        MainScreens.HOW_TO_ENABLE.id, MainScreens.TEST_KEYBOARD.id, MainScreens.BASIC_INFO.id, MainScreens.SETTINGS.id
+        MainScreens.HOW_TO_ENABLE.id, MainScreens.TEST_KEYBOARD.id, MainScreens.BASIC_INFO.id, MainScreens.SETTINGS.id, MainScreens.SUPPORT.id
     )
 
-    // Drawer items – these are your main screen routes.
     val items = listOf(
         SideMenuItem(MainScreens.HOW_TO_ENABLE, MainScreens.HOW_TO_ENABLE.systemImageName),
         SideMenuItem(MainScreens.TEST_KEYBOARD, MainScreens.TEST_KEYBOARD.systemImageName),
         SideMenuItem(MainScreens.BASIC_INFO, MainScreens.BASIC_INFO.systemImageName),
-        SideMenuItem(MainScreens.SETTINGS, MainScreens.SETTINGS.systemImageName)
+        SideMenuItem(MainScreens.SETTINGS, MainScreens.SETTINGS.systemImageName),
+        SideMenuItem(MainScreens.SUPPORT, MainScreens.SUPPORT.systemImageName)
     )
 
     val currentBackStackEntry by navController.currentBackStackEntryAsState()
@@ -101,6 +101,7 @@ fun SideMenuView() {
                                 1 -> MainScreens.TEST_KEYBOARD.id
                                 2 -> MainScreens.BASIC_INFO.id
                                 3 -> MainScreens.SETTINGS.id
+                                4 -> MainScreens.SUPPORT.id
                                 else -> MainScreens.HOW_TO_ENABLE.id
                             }
                             navController.navigate(route) {
@@ -165,6 +166,7 @@ fun SideMenuView() {
                 composable(MainScreens.TEST_KEYBOARD.id) { TestKeyboard_Screen() }
                 composable(MainScreens.BASIC_INFO.id) { BasicInfo_Screen(navController) }
                 composable(MainScreens.SETTINGS.id) { SettingsScreen() }
+                composable(MainScreens.SUPPORT.id) { SupportScreen() }
 
                 composable(BasicInfoScreens.ORIGINAL_TAMGAS.id) { OriginalTamgasView() }
                 composable(BasicInfoScreens.MODERNIZED_TAMGAS.id) { ModernizedTamgasView() }

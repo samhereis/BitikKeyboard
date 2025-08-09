@@ -1,28 +1,31 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import android.graphics.Color
 import android.inputmethodservice.InputMethodService
 import android.util.TypedValue
 import android.view.Gravity
+import android.view.View
 import android.view.inputmethod.InputConnection
 import android.widget.Button
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 import com.shoktuk.shoktukkeyboard.project.systems.JSTranscriber
 
 object TopRowBuilder_Old {
     var onTypedListener: (() -> Unit)? = null
+    var margin = 10;
+    var textTranscription = true
 
     fun createTopRow(
-        service: InputMethodService, layout: KeyboardLayout, buttonHeight: Int, margin: Int, onModeChange: (String) -> Unit, onLangChange: () -> Unit
+        service: InputMethodService, buttonHeight: Int, textTranscription: TextTranscription, margin: Int, onModeChange: (String) -> Unit
     ): LinearLayout {
-        val jsTranscriber = JSTranscriber(service)
+        this.margin = margin;
+        this.textTranscription = textTranscription == TextTranscription.On
 
-        // 1) Row container
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -34,39 +37,31 @@ object TopRowBuilder_Old {
             }
         }
 
-        // 2) Left: language switch button
-        rowLayout.addView(
-            createSystemAssetButton(
-                service = service,
-                assetPath = null,
-                textToSet = layout.languageCode,
-                buttonHeight = buttonHeight,
-                margin = margin,
-                onClick = onLangChange,
-                buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
-            )
-        )
-
-        // 3) Center: dynamic letter-stack container
-        val lastWordContainer = createLastWordContainer(service, buttonHeight, margin).apply {
-            clipChildren = false
-            clipToPadding = false
-        }
-        rowLayout.addView(lastWordContainer)
-
-        // 4) Hook up the refresh callback (fires on each keystroke/selection)
-        onTypedListener = {
-            // post to ensure we're on the UI thread, then redraw
-            lastWordContainer.post {
-                updateLastWord(
-                    service, service.currentInputConnection, lastWordContainer, jsTranscriber, KeyboardTheme.getSystemButtonStyle(service)
-                )
-                lastWordContainer.requestLayout()
-                lastWordContainer.invalidate()
+        if (textTranscription == TextTranscription.On) {
+            val lastWordContainer = createLastWordContainer(service, buttonHeight, margin).apply {
+                clipChildren = false
+                clipToPadding = false
             }
+
+            rowLayout.addView(lastWordContainer)
+
+            val jsTranscriber = JSTranscriber(service)
+            onTypedListener = {
+                lastWordContainer.post {
+                    updateLastWord(
+                        service, service.currentInputConnection, lastWordContainer, jsTranscriber, KeyboardTheme.getSystemButtonStyle(service)
+                    )
+                    lastWordContainer.requestLayout()
+                    lastWordContainer.invalidate()
+                }
+            }
+
+            lastWordContainer.addView(getPlaceholderText(service, lastWordContainer))
+        }
+        else{
+            rowLayout.addView(getPlaceholderText(service, rowLayout))
         }
 
-        // 5) Right: symbols/mode toggle button
         rowLayout.addView(
             createSystemAssetButton(
                 service = service,
@@ -114,63 +109,59 @@ object TopRowBuilder_Old {
     }
 
     private fun updateLastWord(
-        service: InputMethodService,
-        inputConnection: InputConnection?,
-        container: LinearLayout,
-        transcriber: JSTranscriber,
-        buttonStyle: ButtonStyle
+        service: InputMethodService, inputConnection: InputConnection?, container: LinearLayout, transcriber: JSTranscriber, buttonStyle: ButtonStyle
     ) {
         container.removeAllViews()
 
         val before = inputConnection?.getTextBeforeCursor(100, 0)?.toString().orEmpty()
-        if (before.isEmpty()) return
+        if (before.isEmpty()) {
+            container.addView(getPlaceholderText(service, container))
+            return
+        }
 
         val lastWord = before.split("[^\\p{L}\\p{N}]+".toRegex()).lastOrNull().orEmpty()
-        val topText = transcriber.getTranscription_Alternative(lastWord)
-            .orEmpty().ifEmpty { lastWord }
-        val baseText = transcriber.getTranscription(lastWord)
-            .orEmpty().ifEmpty { lastWord }
+        val topText = transcriber.getTranscription_Alternative(lastWord).orEmpty().ifEmpty { lastWord }
+        val baseText = transcriber.getTranscription(lastWord).orEmpty().ifEmpty { lastWord }
 
         val fullSp = buttonStyle.textSizeSp.value
         val halfSp = fullSp / 2f
 
+        TextView(container.context).apply {
+            text = "   ~ "
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
+            setTextColor(ContextCompat.getColor(service, android.R.color.white))
+            gravity = Gravity.CENTER
+        }.also(container::addView)
+
         baseText.forEachIndexed { i, baseChar ->
             if (i < topText.length && topText[i] != baseChar) {
-                // stack with superscript
                 val stack = FrameLayout(container.context).apply {
                     layoutParams = LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.WRAP_CONTENT,
-                        LinearLayout.LayoutParams.WRAP_CONTENT
+                        LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
                     )
                     clipChildren = false
                     clipToPadding = false
-                    // vertical padding to make room for the superscript
                     setPadding(0, halfSp.toInt(), 0, 5)
                 }
 
-                // Base letter (bottom)
                 TextView(container.context).apply {
                     text = baseChar.toString()
-                    // SP units
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, halfSp)
-                    // explicit color
                     setTextColor(ContextCompat.getColor(service, android.R.color.white))
                     gravity = Gravity.CENTER
-                    setPadding(0, fullSp.toInt(), 0, 0)
+                    setPadding(0, halfSp.toInt() + 12, 0, 0)
                 }.also(stack::addView)
 
-                // Superscript letter (top)
                 TextView(container.context).apply {
                     text = topText[i].toString()
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, halfSp)
                     setTextColor(ContextCompat.getColor(service, android.R.color.white))
                     gravity = Gravity.CENTER
-                    setPadding(0, 0, 0, halfSp.toInt() + 10)
+                    setPadding(0, 0, 0, halfSp.toInt() + 12)
                 }.also(stack::addView)
 
                 container.addView(stack)
             } else {
-                // Normal letter
                 TextView(container.context).apply {
                     text = baseChar.toString()
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
@@ -179,5 +170,44 @@ object TopRowBuilder_Old {
                 }.also(container::addView)
             }
         }
+
+
+        TextView(container.context).apply {
+            text = " ~   "
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
+            setTextColor(ContextCompat.getColor(service, android.R.color.white))
+            gravity = Gravity.CENTER
+        }.also(container::addView)
+    }
+
+    fun getPlaceholderText(service: InputMethodService, rowLayout: LinearLayout): TextView {
+        val textView = TextView(rowLayout.context).apply {
+            text = if (textTranscription) "𐰖𐰕𐰃𐰬𐰕" else "𐱅𐰭𐰼𐰃 𐰅𐰠𐰢𐰚𐰁 𐰌𐰝𐰢𐰓𐰢"
+
+            isSingleLine = false
+            setLines(2)
+            ellipsize = null
+
+            setTextColor(ContextCompat.getColor(service, android.R.color.white))
+
+            val baseSp = KeyboardTheme.getHintButtonTextSize(service).value
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, baseSp * 1.35f)
+
+            gravity = Gravity.CENTER
+            textAlignment = View.TEXT_ALIGNMENT_CENTER
+
+            setBackgroundColor(Color.TRANSPARENT)
+
+            layoutParams = LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+            ).apply {
+                marginStart = margin
+                marginEnd = margin
+            }
+
+            visibility = View.VISIBLE
+        }
+
+        return textView
     }
 }

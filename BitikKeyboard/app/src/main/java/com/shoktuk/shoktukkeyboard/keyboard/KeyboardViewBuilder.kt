@@ -5,14 +5,31 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.E_Letter_Variannt
 import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
+import com.shoktuk.shoktukkeyboard.project.data.TamgaTranscription
+import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 
 object KeyboardViewBuilder {
+    var isCLassing = false;
+    var textTranscription = TextTranscription.On;
+    var letterTranscription = false;
+    var eE = false;
+    var aS_as_SU_Tamge = false;
+    var isTamga = true;
 
     fun buildKeyboardView(
-        service: InputMethodService, layout: KeyboardLayout, isCaps: Boolean, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit, onLangChange: () -> Unit
+        service: InputMethodService, layout: KeyboardLayout, isCaps: Boolean, isTamga: Boolean, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit
     ): LinearLayout {
+        isCLassing = SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC;
+        textTranscription = SettingsManager.getTextTranscription(service);
+        letterTranscription = SettingsManager.getLeterTranscription(service) == TamgaTranscription.On;
+        eE = SettingsManager.getEVariant(service) == E_Letter_Variannt.E_E;
+        aS_as_SU_Tamge = SettingsManager.getASVariant(service) == AS_Letter_Variant.AS_SU;
+        this.isTamga = isTamga;
+
         val margin = KeyboardTheme.dpToPx(service, KeyboardTheme.KEY_MARGIN_DP)
 
         val screenWidthPx = service.resources.displayMetrics.widthPixels
@@ -39,20 +56,18 @@ object KeyboardViewBuilder {
             insets
         }
 
-        if (layout.name != "symbols") {
-            if (SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC) {
-                container.addView(
-                    TopRowBuilder_Old.createTopRow(
-                        service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), margin, onModeChange, onLangChange = onLangChange
-                    )
+        if (SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC) {
+            container.addView(
+                TopRowBuilder_Old.createTopRow(
+                    service, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), textTranscription, margin, onModeChange
                 )
-            } else {
-                container.addView(
-                    TopRowBuilder.createTopRow(
-                        service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), margin, onModeChange, onLangChange = onLangChange
-                    )
+            )
+        } else {
+            container.addView(
+                TopRowBuilder.createTopRow(
+                    service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), margin, onModeChange
                 )
-            }
+            )
         }
 
         layout.rows.forEach { row ->
@@ -63,10 +78,9 @@ object KeyboardViewBuilder {
             )
         }
 
-        // Build bottom row, now with language button.
         container.addView(
             BottomRowBuilder.createBottomRow(
-                service, layout, KeyboardTheme.getButtonHeight(), margin, onModeChange, onLangChange = onLangChange
+                service, KeyboardTheme.getButtonHeight(), margin
             )
         )
         return container
@@ -104,7 +118,7 @@ object KeyboardViewBuilder {
             layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f)
         }
         middleKeys.forEach { key ->
-            middleContainer.addView(LetterKeyBuilder.createLetterKey(service, key, layout, buttonHeight, margin, isCaps, symbol = layout.name == "symbols", onKeyClick = { letter ->
+            middleContainer.addView(LetterKeyBuilder.createLetterKey(service, process(key), buttonHeight, margin, isCaps, isTamga, letterTranscription, onKeyClick = { letter ->
                 if (ensureRTLContext(service)) {
                     service.currentInputConnection?.commitText("\u202B", 1)
                 }
@@ -131,5 +145,30 @@ object KeyboardViewBuilder {
         val inputConnection = service.currentInputConnection ?: return false
         val textBefore = inputConnection.getTextBeforeCursor(1, 0)
         return textBefore.isNullOrEmpty() || textBefore.last() == '\n'
+    }
+
+    fun process(key: KeyEntry): KeyEntry {
+        var keyToSet = key;
+
+        if (key.name == "а" && isCLassing && eE) {
+            keyToSet = key.copy(
+                lowercase = "𐰁",
+                lowerCaseRomanization = "a",
+                lowerCaseRomanization_Alt = "",
+                lowerCaseHold = "𐰀",
+                uppercase = "𐰅",
+                upperCaseRomanization = "e",
+                upperCaseRomanization_Alt = "",
+                upperCaseHold = "𐰂",
+            )
+        }
+
+        if (key.name == "s" && aS_as_SU_Tamge) {
+            keyToSet = key.copy(
+                lowercase = "𐰽", lowerCaseHold = "𐱂"
+            )
+        }
+
+        return keyToSet
     }
 }

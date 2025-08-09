@@ -13,39 +13,28 @@ import androidx.core.graphics.toColorInt
  * A data class holding all style properties for a button.
  */
 data class ButtonStyle(
-    var fillColor: String,
-    val borderColor: String,
-    val borderWidthDp: Int,
-    val cornerRadiusDp: Int,
-    val textColor: String,
-    val textSizeSp: TextUnit
+    var fillColor: String, val borderColor: String, val borderWidthDp: Int, val cornerRadiusDp: Int, val textColor: String, val textSizeSp: TextUnit
 )
 
 private const val i = 343537
 
 object KeyboardTheme {
-    val colorIndexes: List<String> = listOf("#535353", "#0b84fe", "#806642", "#31d159")
+    val colorIndexes: List<String> = listOf("#545658", "#283e3d", "#313643", "#3cd3fe")
 
     private const val BASE_SCREEN_WIDTH_DP = 350f
 
-    // Maximum scale factor to avoid oversized keys on very wide screens.
     private const val MAX_SCALE_FACTOR = 1.5f
 
     private const val BUTTON_HEIGHT_DP = 140
-    private const val SYSTEM_BUTTON_HEIGHT_DP = 140
     const val KEY_MARGIN_DP = 4
 
-    private const val BASE_LETTER_BUTTON_WIDTH_DP = 85
-    private const val BASE_SYSTEM_BUTTON_WIDTH_DP = 125
-
-    private val BASE_LETTER_TEXT_SIZE_SP = 22.sp
+    private val BASE_LETTER_TEXT_SIZE_SP = 20.sp
+    private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 25.sp
     private val BASE_HINT_TEXT_SIZE_SP = 8.sp
     private val BASE_SYSTEM_TEXT_SIZE_SP = 17.sp
 
-    // Container background color
-    const val CONTAINER_BACKGROUND_COLOR = "#000000" // black
+    const val CONTAINER_BACKGROUND_COLOR = "#1b1b17"
 
-    // Asset file paths for PNG icons (placed in assets/icons/)
     const val SHIFT_ICON_FILE = "icons/shift_icon.png"
     const val DELETE_ICON_FILE = "icons/delete_icon.png"
     const val LANGUAGE_ICON_FILE = "icons/icon_language.png"
@@ -62,15 +51,10 @@ object KeyboardTheme {
 
     fun getLetterButtonWidth(context: Context): Int {
         val density = context.resources.displayMetrics.density
-        // Convert screen width from px to dp.
         val screenWidthDp = context.resources.displayMetrics.widthPixels / density
-        // Total margin: one margin at each end plus one margin between each button.
         val totalMarginDp = (10 + KEY_MARGIN_DP) * KEY_MARGIN_DP
-        // Available width in dp after subtracting margins.
         val availableWidthDp = screenWidthDp - totalMarginDp
-        // Width per button in dp.
         val buttonWidthDp = availableWidthDp / 10
-        // Convert to px.
         return (buttonWidthDp * density).toInt() - KEY_MARGIN_DP
     }
 
@@ -82,15 +66,14 @@ object KeyboardTheme {
         return BUTTON_HEIGHT_DP
     }
 
-    fun getSystemButtonHeight(): Int {
-        return SYSTEM_BUTTON_HEIGHT_DP
-    }
-
-    fun getKeyMargin(context: Context): Int = dpToPx(context, KEY_MARGIN_DP)
-
     private fun getLetterButtonTextSize(context: Context): TextUnit {
         val scaleFactor = getScaleFactor(context)
         return BASE_LETTER_TEXT_SIZE_SP * scaleFactor
+    }
+
+    private fun getLetterButtonTextSize_NoTranscription(context: Context): TextUnit {
+        val scaleFactor = getScaleFactor(context)
+        return BASE_LETTER_TEXT_SIZE_SP_NOHINT * scaleFactor
     }
 
     fun getHintButtonTextSize(context: Context): TextUnit {
@@ -126,16 +109,31 @@ object KeyboardTheme {
         }
     }
 
-    fun getLetterButtonStyle(context: Context): ButtonStyle {
+    fun getLetterButtonStyle_Normal(context: Context, showTranscription: Boolean = false): ButtonStyle {
+        var textSizeSp = getLetterButtonTextSize(context)
+        if (showTranscription == false) {
+            textSizeSp = getLetterButtonTextSize_NoTranscription(context)
+        }
+
         return ButtonStyle(
-            fillColor = "#535353",     // dark gray
-            borderColor = "#535353", borderWidthDp = 0, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = getLetterButtonTextSize(context)
+            fillColor = "#57595b", borderColor = "#57595b", borderWidthDp = 0, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = textSizeSp
+        )
+    }
+
+    fun getLetterButtonStyle_UpperCase(context: Context, showTranscription: Boolean = false): ButtonStyle {
+        var textSizeSp = getLetterButtonTextSize(context)
+        if (showTranscription == false) {
+            textSizeSp = getLetterButtonTextSize_NoTranscription(context)
+        }
+
+        return ButtonStyle(
+            fillColor = "#57595b", borderColor = "#57595b", borderWidthDp = 0, cornerRadiusDp = 10, textColor = "#3cd3fe", textSizeSp = textSizeSp
         )
     }
 
     fun getSystemButtonStyle(context: Context): ButtonStyle {
         return ButtonStyle(
-            fillColor = "#2d2d2d", borderColor = "#2d2d2d", borderWidthDp = 0, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = getSystemButtonTextSize(context)
+            fillColor = "#57595b", borderColor = "#57595b", borderWidthDp = 0, cornerRadiusDp = 10, textColor = "#FFFFFF", textSizeSp = getSystemButtonTextSize(context)
         )
     }
 }

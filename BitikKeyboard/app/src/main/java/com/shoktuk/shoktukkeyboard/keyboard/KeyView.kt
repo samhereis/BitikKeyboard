@@ -28,7 +28,8 @@ class KeyView(
     private val buttonHeight: Int,
     private val margin: Int,
     private val isCLassic: Boolean,
-    private val symbol: Boolean,
+    private val isTamga: Boolean,
+    private val showTranscription: Boolean,
     private val onKeyClick: (String) -> Unit,
     private val onLongPress: (String?) -> Unit
 ) : FrameLayout(context) {
@@ -41,12 +42,16 @@ class KeyView(
     private var currentBackgroundColorIndex = 0
     private var popupWindow: PopupWindow? = null
 
-    // State properties
     private lateinit var mainText: TextView
-    private lateinit var subText: TextView
-    private var style = KeyboardTheme.getLetterButtonStyle(context)
+    private lateinit var subText_bottom: TextView
+    private lateinit var subText_top: TextView
+    private var style = KeyboardTheme.getLetterButtonStyle_Normal(context, showTranscription)
 
     init {
+        if (isTamga && isCaps) {
+            style = KeyboardTheme.getLetterButtonStyle_UpperCase(context, showTranscription)
+        }
+
         setupView()
         applyStyle()
         setupContent()
@@ -71,9 +76,11 @@ class KeyView(
             else -> key.backgroundColorIndex_lowercase ?: 0
         }
 
-        style = KeyboardTheme.getLetterButtonStyle(context).copy(
-            fillColor = KeyboardTheme.colorIndexes[currentBackgroundColorIndex]
-        )
+        if (isTamga && isCaps) {
+            style = KeyboardTheme.getLetterButtonStyle_UpperCase(context, showTranscription)
+        }
+
+        style = style.copy(fillColor = KeyboardTheme.colorIndexes[currentBackgroundColorIndex])
         background = KeyboardTheme.createDrawableFromStyle(context, style)
     }
 
@@ -81,7 +88,8 @@ class KeyView(
         removeAllViews()
         val view = LayoutInflater.from(context).inflate(R.layout.keyboard_key, this, true)
         mainText = view.findViewById(R.id.mainText)
-        subText = view.findViewById(R.id.subText)
+        subText_bottom = view.findViewById(R.id.bottomSubText)
+        subText_top = view.findViewById(R.id.topSubText)
         updateContent()
         addHoldIndicatorIfNeeded(view)
     }
@@ -90,14 +98,13 @@ class KeyView(
         mainText.text = getCurrentMainText()
         mainText.setTextColor(style.textColor.toColorInt())
         mainText.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp.value)
-        mainText.setPadding(0, if (isCLassic && !symbol) -10 else 0, 0, if (isCLassic && !symbol) -20 else 0)
+        mainText.setPadding(0, 0, 0, 0)
 
-        val firstText = getCurrentSubText()?.toString().orEmpty()
-        val secontText = getCurrentSubText_Alt()?.toString().orEmpty()
+        var firstText = getCurrentSubText()?.toString().orEmpty()
+        var secontText = getCurrentSubText_Alt()?.toString().orEmpty()
 
-        var twoFloors = firstText
-        if (isCLassic) {
-            twoFloors = "$firstText\n$secontText"
+        if (isCLassic == false) {
+            secontText = ""
         }
 
         var lines = 1;
@@ -105,14 +112,30 @@ class KeyView(
             lines = 2
         }
 
-        subText.apply {
-            text = twoFloors
+        subText_bottom.apply {
+            text = firstText
             maxLines = lines
             setLineSpacing(0.75f, 0.75f)
             setTextColor(Color.WHITE)
             setTextSize(TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context).value)
-            setPadding(0, if (isCLassic) 0 else -5, 0, KeyboardTheme.getHintButtonTextSize(context).value.toInt())
+            setPadding(0, -5, 0, KeyboardTheme.getHintButtonTextSize(context).value.toInt())
             visibility = if (firstText.isBlank()) View.GONE else View.VISIBLE
+        }
+
+        subText_top.apply {
+            text = secontText
+            maxLines = lines
+            setLineSpacing(0.75f, 0.75f)
+            setTextColor(Color.WHITE)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context).value)
+            setPadding(0, KeyboardTheme.getHintButtonTextSize(context).value.toInt(), 0, -5)
+            visibility = if (firstText.isBlank()) View.GONE else View.VISIBLE
+        }
+
+        if (showTranscription == false) {
+            subText_top.text = ""
+            subText_bottom.text = ""
+            mainText.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp.value)
         }
     }
 
@@ -197,10 +220,8 @@ class KeyView(
     }
 
     private fun showOverlay() {
-        // 1) always dismiss any old one
         dismissOverlay()
 
-        // 2) inflate & size
         val overlayView = createOverlayView().apply {
             layoutParams = LayoutParams(width, height)
         }
@@ -233,7 +254,7 @@ class KeyView(
                 setTextSize(TypedValue.COMPLEX_UNIT_PX, style.textSizeSp.value * resources.displayMetrics.density * 1.5f)
             }
 
-            findViewById<TextView>(R.id.subText).apply {
+            findViewById<TextView>(R.id.bottomSubText).apply {
                 var subText = if (isLongPressed) {
                     " " + getCurrentSubText_Hold() + " "
                 } else {
@@ -263,7 +284,8 @@ class KeyView(
         }
 
         popupWindow?.contentView?.findViewById<TextView>(R.id.mainText)?.text = mainText
-        popupWindow?.contentView?.findViewById<TextView>(R.id.subText)?.text = subText
+        popupWindow?.contentView?.findViewById<TextView>(R.id.bottomSubText)?.text = subText
+        popupWindow?.contentView?.findViewById<TextView>(R.id.topSubText)?.text = ""
 
         var colorIndex: Int = 0;
         var colorToSet: Int = KeyboardTheme.colorIndexes[0].toColorInt()
@@ -320,7 +342,6 @@ class KeyView(
                 }
             }
 
-            // Add to the root view (which is the keyboard_key.xml FrameLayout)
             (root as ViewGroup).addView(indicator)
         }
     }
@@ -376,10 +397,5 @@ class KeyView(
             applyStyle()
             updateContent()
         }, overlayHideDelay)
-    }
-
-    fun cleanup() {
-        dismissOverlay()
-        handler.removeCallbacksAndMessages(null)
     }
 }

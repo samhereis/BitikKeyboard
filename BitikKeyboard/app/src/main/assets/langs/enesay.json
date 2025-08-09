@@ -8,7 +8,7 @@
       {
         "name": "qı, ıq",
         "lowercase": "𐰶",
-        "lowerCaseRomanization": "қы",
+        "lowerCaseRomanization": "кы",
         "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰦",
         "upperCaseRomanization": "нт",
@@ -45,9 +45,7 @@
         "name": "t",
         "lowercase": "𐱄",
         "lowerCaseRomanization": "аТ",
-        "lowerCaseHold": "𐱇",
-        "lowerCaseHoldHint": "от",
-        "backgroundColorIndex_lowercase_Hold": 2,
+        "lowerCaseHold": "𐱃",
         "uppercase": "𐱅",
         "upperCaseRomanization": "еТ"
       },
@@ -56,8 +54,6 @@
         "lowercase": "𐰖",
         "lowerCaseRomanization": "аЙ",
         "lowerCaseHold": "𐰗",
-        "lowerCaseHoldHint": "ай",
-        "backgroundColorIndex_lowercase_Hold": 2,
         "uppercase": "𐰘",
         "upperCaseRomanization": "еЙ"
       },
@@ -83,7 +79,10 @@
         "name": "o/u",
         "lowercase": "𐰆",
         "lowerCaseRomanization": "о",
+        "lowerCaseHold": "𐱇",
+        "lowerCaseHoldHint": "от",
         "backgroundColorIndex_lowercase": 1,
+        "backgroundColorIndex_lowercase_Hold": 2,
         "uppercase": "𐰈",
         "upperCaseRomanization": "ө",
         "backgroundColorIndex_uppercase": 1
@@ -92,19 +91,15 @@
         "name": "p",
         "lowercase": "𐰯",
         "lowerCaseRomanization": "П",
-        "lowerCaseHold": "𐰊",
-        "lowerCaseHoldHint": " Ф",
         "uppercase": "𐰯",
-        "upperCaseRomanization": "П",
-        "upperCaseHold": "𐰊",
-        "upperCaseHoldHint": "Ф"
+        "upperCaseRomanization": "П"
       }
     ],
     [
       {
         "name": "oq, uq",
         "lowercase": "𐰷",
-        "lowerCaseRomanization": "ық",
+        "lowerCaseRomanization": "ык",
         "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐱈",
         "upperCaseRomanization": "рт",
@@ -129,7 +124,7 @@
       {
         "name": "nt, nç",
         "lowercase": "𐰸",
-        "lowerCaseRomanization": "уқ",
+        "lowerCaseRomanization": "ук",
         "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰜",
         "upperCaseRomanization": "үк",
@@ -138,7 +133,7 @@
       {
         "name": "g",
         "lowercase": "𐰍",
-        "lowerCaseRomanization": "аҒ",
+        "lowerCaseRomanization": "аГ",
         "lowerCaseHold": "𐰎",
         "uppercase": "𐰏",
         "upperCaseRomanization": "еГ",
@@ -147,7 +142,7 @@
       {
         "name": "rt, lt",
         "lowercase": "𐰹",
-        "lowerCaseRomanization": "оқ",
+        "lowerCaseRomanization": "ок",
         "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰝",
         "upperCaseRomanization": "өк",
@@ -163,13 +158,10 @@
       {
         "name": "k",
         "lowercase": "𐰴",
-        "lowerCaseRomanization": "аҚ",
-        "lowerCaseHold": "𐰛",
-        "lowerCaseHoldHint": "х",
+        "lowerCaseRomanization": "аК",
         "uppercase": "𐰚",
         "upperCaseRomanization": "еК",
-        "upperCaseHold": "𐰛",
-        "upperCaseHoldHint": "х"
+        "upperCaseHold": "𐰛"
       },
       {
         "name": "l",
@@ -195,20 +187,21 @@
         "name": "ş",
         "lowercase": "𐱀",
         "lowerCaseRomanization": "аШ",
-        "uppercase": "𐰿",
-        "upperCaseRomanization": "еШ"
+        "uppercase": "𐱁",
+        "upperCaseRomanization": "еШ",
+        "upperCaseHold": "𐰿"
       },
       {
         "name": "ç",
         "lowercase": "𐰲",
         "lowerCaseRomanization": "Ч",
         "lowerCaseHold": "𐰱",
-        "lowerCaseHoldHint": "ЧЫ",
+        "lowerCaseHoldHint": "чы",
         "backgroundColorIndex_lowercase_Hold": 2,
         "uppercase": "𐰲",
         "upperCaseRomanization": "Ч",
         "upperCaseHold": "𐰱",
-        "upperCaseHoldHint": "ЧИ",
+        "upperCaseHoldHint": "чи",
         "backgroundColorIndex_uppercase_Hold": 2
       },
       {
@@ -224,18 +217,17 @@
         "name": "b",
         "lowercase": "𐰉",
         "lowerCaseRomanization": "аБ",
-        "lowerCaseHold": "𐰋",
-        "lowerCaseHoldHint": "В",
+        "lowerCaseHold": "𐰊",
         "uppercase": "𐰌",
         "upperCaseRomanization": "еБ",
-        "upperCaseHold": "𐰋",
-        "upperCaseHoldHint": "В"
+        "upperCaseHold": "𐰋"
       },
       {
         "name": "n",
         "lowercase": "𐰣",
         "lowerCaseRomanization": "аН",
         "uppercase": "𐰥",
+        "upperCaseHold": "𐰤",
         "upperCaseRomanization": "еН"
       },
       {

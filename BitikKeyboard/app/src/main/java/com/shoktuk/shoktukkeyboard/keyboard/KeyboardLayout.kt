@@ -7,18 +7,18 @@ data class KeyboardLayout(
 data class KeyEntry(
     val name: String,
     val lowercase: String,
-    val lowerCaseRomanization: String? = null,
-    val lowerCaseRomanization_Alt: String? = null,
-    val lowerCaseHold: String? = null,
-    val lowerCaseHoldHint: String? = null,
+    val lowerCaseRomanization: String? = "",
+    val lowerCaseRomanization_Alt: String? = "",
+    val lowerCaseHold: String? = "",
+    val lowerCaseHoldHint: String? = "",
     val backgroundColorIndex_lowercase: Int? = 0,
     val backgroundColorIndex_lowercase_Hold: Int? = 0,
 
-    val uppercase: String? = null,
-    val upperCaseRomanization: String? = null,
-    val upperCaseRomanization_Alt: String? = null,
-    val upperCaseHold: String? = null,
-    val upperCaseHoldHint: String? = null,
+    val uppercase: String? = "",
+    val upperCaseRomanization: String? = "",
+    val upperCaseRomanization_Alt: String? = "",
+    val upperCaseHold: String? = "",
+    val upperCaseHoldHint: String? = "",
     val backgroundColorIndex_uppercase: Int? = 0,
     val backgroundColorIndex_uppercase_Hold: Int? = 0
 )

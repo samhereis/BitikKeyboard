@@ -39,7 +39,6 @@ object SystemKeyBuilder {
                 else -> KeyboardTheme.createDrawableFromStyle(service, KeyboardTheme.getSystemButtonStyle(service))
             }
 
-            // Icon setup
             val assetPath = when (key.name) {
                 "Shift" -> KeyboardTheme.SHIFT_ICON_FILE
                 "Del" -> KeyboardTheme.DELETE_ICON_FILE
@@ -56,7 +55,6 @@ object SystemKeyBuilder {
                 }
             }
 
-            // Input handlers
             when (key.name) {
                 "Shift" -> setupShiftButton(onCapsChange, isCaps)
                 "Del" -> setupDeleteButton(service)

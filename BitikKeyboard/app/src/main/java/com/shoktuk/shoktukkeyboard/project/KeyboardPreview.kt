@@ -4,7 +4,8 @@ import android.content.Context
 import android.view.View
 import android.widget.TextView
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
@@ -19,25 +20,15 @@ class RealKeyboardServiceProvider(
     private val service: MyKeyboardService
 ) : KeyboardServiceProvider {
     override fun createKeyboardView(context: Context): View {
-        val layout = KeyboardLayoutLoader
-            .loadKeyboardLayout(context, service.currentMode, service.getLanguage())
+        val layout = KeyboardLayoutLoader.loadKeyboardLayout(context, service.currentMode, service.getLanguage())
 
-        return KeyboardViewBuilder.buildKeyboardView(
-            service       = service,
-            layout        = layout,
-            isCaps        = service.isCaps,
-            onCapsChange  = { newCaps ->
-                service.isCaps = newCaps
-                service.reloadKeyboard()
-            },
-            onModeChange  = { newMode ->
-                service.currentMode = newMode
-                service.reloadKeyboard()
-            },
-            onLangChange  = {
-                service.changeLanguage()
-            }
-        )
+        return KeyboardViewBuilder.buildKeyboardView(service = service, layout = layout, isCaps = service.isCaps, true, onCapsChange = { newCaps ->
+            service.isCaps = newCaps
+            service.reloadKeyboard()
+        }, onModeChange = { newMode ->
+            service.currentMode = newMode
+            service.reloadKeyboard()
+        })
     }
 }
 
@@ -74,8 +65,7 @@ fun TopRowWrapper() {
     AndroidView(
         factory = { ctx ->
             provider.createKeyboardView(ctx)
-        },
-        modifier = Modifier.fillMaxWidth()
+        }, modifier = Modifier.fillMaxWidth()
     )
 }
 

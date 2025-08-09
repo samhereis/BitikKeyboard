@@ -11,18 +11,27 @@ object LetterKeyBuilder {
     fun createLetterKey(
         service: InputMethodService,
         key: KeyEntry,
-        layout: KeyboardLayout,
         buttonHeight: Int,
         margin: Int,
         isCaps: Boolean,
-        symbol: Boolean,
+        isTamga: Boolean,
+        needTranscription: Boolean,
         onKeyClick: (String) -> Unit,
         onLongPress: (String?) -> Unit
     ): View {
         var isCLassing = SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC
 
         return KeyView(
-            context = service, key = key, isCaps = isCaps, buttonHeight = buttonHeight, margin = margin, isCLassic = isCLassing, symbol = symbol, onKeyClick = onKeyClick, onLongPress = onLongPress
+            context = service,
+            key = key,
+            isCaps = isCaps,
+            buttonHeight = buttonHeight,
+            margin = margin,
+            isCLassic = isCLassing,
+            isTamga = isTamga,
+            showTranscription = needTranscription,
+            onKeyClick = onKeyClick,
+            onLongPress = onLongPress
         )
     }
 }

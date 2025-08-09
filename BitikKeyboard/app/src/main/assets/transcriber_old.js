@@ -171,8 +171,8 @@ function CorrentText_Old() {
     new TranscriptionEntry("", "", CharacterType.epmty, ""),
 
                     // First Row
-                    new TranscriptionEntry("𐰶", "ҚЫ", CharacterType.HardCharacter, "ЫҚ"),
-                    new TranscriptionEntry("𐰷", "ЫҚ", CharacterType.HardCharacter, "ҚЫ"),
+                    new TranscriptionEntry("𐰶", "КЫ", CharacterType.HardCharacter, "ЫК"),
+                    new TranscriptionEntry("𐰷", "ЫК", CharacterType.HardCharacter, "КЫ"),
                     new TranscriptionEntry("𐰬", "аҢ", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐰧", "аҢ", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐰁", "А", CharacterType.HardVowel_HasSoftVariant, "E"),
@@ -202,17 +202,17 @@ function CorrentText_Old() {
                     new TranscriptionEntry("𐰄", "И", CharacterType.SoftVowel),
 
                     // Second Row
-                    new TranscriptionEntry("𐰹", "ОҚ", CharacterType.HardCharacter, "УҚ"),
-                    new TranscriptionEntry("𐰸", "УҚ", CharacterType.HardCharacter, "ОҚ"),
+                    new TranscriptionEntry("𐰹", "ОК", CharacterType.HardCharacter, "УК"),
+                    new TranscriptionEntry("𐰸", "УК", CharacterType.HardCharacter, "ОК"),
                     new TranscriptionEntry("𐱂", "аС", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐰽", "аС", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐰑", "аД", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐰒", "аД", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐰦", "НТ", CharacterType.Character),
-                    new TranscriptionEntry("𐰍", "аҒ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰎", "аҒ", CharacterType.HardConsonant),
+                    new TranscriptionEntry("𐰍", "аГ", CharacterType.HardConsonant),
+                    new TranscriptionEntry("𐰎", "аГ", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐱈", "РТ", CharacterType.Character),
-                    new TranscriptionEntry("𐰴", "аҚ", CharacterType.HardConsonant),
+                    new TranscriptionEntry("𐰴", "аК", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐰞", "аЛ", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐰟", "аЛ", CharacterType.HardConsonant),
 

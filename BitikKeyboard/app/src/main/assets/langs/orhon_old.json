@@ -8,8 +8,8 @@
       {
         "name": "qı, ıq",
         "lowercase": "𐰶",
-        "lowerCaseRomanization": "қы",
-        "lowerCaseRomanization_Alt": "ық",
+        "lowerCaseRomanization": "кы",
+        "lowerCaseRomanization_Alt": "ык",
         "lowerCaseHold": "𐰷",
         "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐱇",
@@ -50,6 +50,7 @@
         "name": "t",
         "lowercase": "𐱃",
         "lowerCaseRomanization": "аТ",
+        "lowerCaseHold": "𐱄",
         "uppercase": "𐱅",
         "upperCaseRomanization": "еТ"
       },
@@ -111,10 +112,10 @@
       {
         "name": "oq, uq",
         "lowercase": "𐰹",
-        "lowerCaseRomanization": "оқ",
-        "lowerCaseRomanization_Alt": "уқ",
+        "lowerCaseRomanization": "ок",
+        "lowerCaseRomanization_Alt": "ук",
         "lowerCaseHold": "𐰸",
-        "lowerCaseHoldHint": "уқ/оқ",
+        "lowerCaseHoldHint": "ук/ок",
         "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰜",
         "upperCaseRomanization": "өк",
@@ -151,7 +152,7 @@
       {
         "name": "g",
         "lowercase": "𐰍",
-        "lowerCaseRomanization": "аҒ",
+        "lowerCaseRomanization": "аГ",
         "lowerCaseHold": "𐰎",
         "uppercase": "𐰏",
         "upperCaseRomanization": "еГ",
@@ -178,7 +179,7 @@
       {
         "name": "k",
         "lowercase": "𐰴",
-        "lowerCaseRomanization": "аҚ",
+        "lowerCaseRomanization": "аК",
         "uppercase": "𐰚",
         "upperCaseRomanization": "еК",
         "upperCaseHold": "𐰛"
@@ -206,10 +207,10 @@
       {
         "name": "ş",
         "lowercase": "𐱁",
-        "lowerCaseHold": "𐰿",
+        "lowerCaseHold": "𐱀",
         "lowerCaseRomanization": "Ш",
         "uppercase": "𐱁",
-        "upperCaseHold":  "𐱀",
+        "upperCaseHold": "𐰿",
         "upperCaseRomanization": "Ш"
       },
       {
@@ -224,9 +225,11 @@
       {
         "name": "ök, ük",
         "lowercase": "𐰨",
+        "lowercaseHold": "𐰩",
         "lowerCaseRomanization": "нч",
         "backgroundColorIndex_lowercase": 2,
         "uppercase": "𐰨",
+        "uppercaseHold": "𐰩",
         "upperCaseRomanization": "нч",
         "backgroundColorIndex_uppercase": 2
       },
