@@ -4,14 +4,18 @@ import android.inputmethodservice.InputMethodService
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.KeyboardAlphabet
 import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
 
 class MyKeyboardService : InputMethodService() {
+    companion object {
+        var currentAlphabet: String = "bitik"
+    }
 
     var isCaps: Boolean = false
     var currentMode: String = "letters"
-    private var currentLanguage: String = "enesay"
+    var currentLanguage: String = "enesay"
     private var currentLayout: KeyboardLayout? = null
 
     override fun onEvaluateFullscreenMode(): Boolean {
@@ -19,6 +23,8 @@ class MyKeyboardService : InputMethodService() {
     }
 
     override fun onCreateInputView(): View {
+        currentAlphabet = SettingsManager.getBitikAlphabet(this).id
+
         currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, currentMode, getLanguage())
 
         return KeyboardViewBuilder.buildKeyboardView(service = this, layout = currentLayout!!, isCaps = isCaps, currentMode == "letters", onCapsChange = { newCaps ->
@@ -30,6 +36,14 @@ class MyKeyboardService : InputMethodService() {
             } else {
                 currentMode = "symbols"
             };
+            reloadKeyboard()
+        }, onAlphabetChange = { ->
+            if (currentAlphabet == "bitik") {
+                SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Latin)
+            } else {
+                SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Bitik)
+            };
+            currentAlphabet = SettingsManager.getBitikAlphabet(this).id
             reloadKeyboard()
         })
     }
@@ -67,11 +81,24 @@ class MyKeyboardService : InputMethodService() {
                         currentMode = "symbols"
                     };
                     reloadKeyboard()
+                },
+                onAlphabetChange = { ->
+                    if (currentAlphabet == "bitik") {
+                        SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Latin)
+                    } else {
+                        SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Bitik)
+                    };
+                    currentAlphabet = SettingsManager.getBitikAlphabet(this).id
+                    reloadKeyboard()
                 })
         )
     }
 
     fun getLanguage(): String {
+        if (currentAlphabet != "bitik") {
+            return currentAlphabet
+        }
+
         return if (SettingsManager.getKeyboardVariant(this) == KeyboardVariant.CLASSIC) {
             "${currentLanguage}_old"
         } else {

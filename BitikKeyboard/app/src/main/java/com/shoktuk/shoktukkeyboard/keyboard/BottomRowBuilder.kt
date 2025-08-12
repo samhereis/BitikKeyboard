@@ -50,11 +50,13 @@ object BottomRowBuilder {
             )
         )
 
-        bottomRow.addView(
-            createExpandableAssetButton(
-                service, null, ":", buttonHeight, margin, ":"
+        if (MyKeyboardService.currentAlphabet == "bitik") {
+            bottomRow.addView(
+                createExpandableAssetButton(
+                    service, null, ":", buttonHeight, margin, ":"
+                )
             )
-        )
+        }
 
         bottomRow.addView(
             createSystemAssetButton(

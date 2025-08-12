@@ -9,9 +9,6 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
 
-/**
- * A data class holding all style properties for a button.
- */
 data class ButtonStyle(
     var fillColor: String, val borderColor: String, val borderWidthDp: Int, val cornerRadiusDp: Int, val textColor: String, val textSizeSp: TextUnit
 )
@@ -41,7 +38,6 @@ object KeyboardTheme {
     const val ENTER_ICON_FILE = "icons/enter_icon.png"
     const val SPACE_ICON_FILE = "icons/space_icon.png"
 
-    // Calculate scale factor based on the device's screen width in dp.
     private fun getScaleFactor(context: Context): Float {
         val density = context.resources.displayMetrics.density
         val screenWidthDp = context.resources.displayMetrics.widthPixels / density
@@ -111,7 +107,7 @@ object KeyboardTheme {
 
     fun getLetterButtonStyle_Normal(context: Context, showTranscription: Boolean = false): ButtonStyle {
         var textSizeSp = getLetterButtonTextSize(context)
-        if (showTranscription == false) {
+        if (showTranscription == false || MyKeyboardService.currentAlphabet == "latin") {
             textSizeSp = getLetterButtonTextSize_NoTranscription(context)
         }
 
@@ -122,12 +118,17 @@ object KeyboardTheme {
 
     fun getLetterButtonStyle_UpperCase(context: Context, showTranscription: Boolean = false): ButtonStyle {
         var textSizeSp = getLetterButtonTextSize(context)
-        if (showTranscription == false) {
+        if (showTranscription == false || MyKeyboardService.currentAlphabet == "latin") {
             textSizeSp = getLetterButtonTextSize_NoTranscription(context)
         }
 
+        var color = "#3cd3fe"
+        if (MyKeyboardService.currentAlphabet == "latin") {
+            color = "#FFFFFF"
+        }
+
         return ButtonStyle(
-            fillColor = "#57595b", borderColor = "#57595b", borderWidthDp = 0, cornerRadiusDp = 10, textColor = "#3cd3fe", textSizeSp = textSizeSp
+            fillColor = "#57595b", borderColor = "#57595b", borderWidthDp = 0, cornerRadiusDp = 10, textColor = color, textSizeSp = textSizeSp
         )
     }
 

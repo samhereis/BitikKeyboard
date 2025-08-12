@@ -7,79 +7,99 @@
       {
         "name": "1",
         "lowercase": "1",
+        "lowerCaseRomanization": "@",
+        "lowerCaseHold": "@",
         "uppercase": "1"
       },
       {
         "name": "2",
         "lowercase": "2",
+        "lowerCaseRomanization": "#",
+        "lowerCaseHold": "#",
         "uppercase": "2"
       },
       {
         "name": "3",
         "lowercase": "3",
+        "lowerCaseRomanization": "%",
+        "lowerCaseHold": "%",
         "uppercase": "3"
       },
       {
         "name": "4",
         "lowercase": "4",
-        "uppercase": "4"
+        "lowerCaseRomanization": "&",
+        "lowerCaseHold": "&",
+        "uppercase": "&"
       },
       {
         "name": "5",
         "lowercase": "5",
+        "lowerCaseRomanization": "*",
+        "lowerCaseHold": "*",
         "uppercase": "5"
       },
       {
         "name": "6",
         "lowercase": "6",
+        "lowerCaseRomanization": "{",
+        "lowerCaseHold": "{",
         "uppercase": "6"
       },
       {
         "name": "7",
         "lowercase": "7",
+        "lowerCaseRomanization": "}",
+        "lowerCaseHold": "}",
         "uppercase": "7"
       },
       {
         "name": "8",
         "lowercase": "8",
+        "lowerCaseRomanization": "[",
+        "lowerCaseHold": "[",
         "uppercase": "8"
       },
       {
         "name": "9",
         "lowercase": "9",
+        "lowerCaseRomanization": "]",
+        "lowerCaseHold": "]",
         "uppercase": "9"
       },
       {
         "name": "0",
         "lowercase": "0",
+        "lowerCaseRomanization": "|",
+        "lowerCaseHold": "|",
         "uppercase": "0"
       }
     ],
     [
       {
         "name": "@",
-        "lowercase": "@",
-        "uppercase": "@"
+        "lowercase": "_",
+        "uppercase": "_"
       },
       {
         "name": "#",
-        "lowercase": "#",
-        "uppercase": "#"
+        "lowercase": ":",
+        "uppercase": ":"
       },
       {
         "name": "%",
-        "lowercase": "%",
-        "uppercase": "%"
+        "lowercase": ";",
+        "uppercase": ";"
       },
       {
         "name": "&",
-        "lowercase": "&",
-        "uppercase": "&"
+        "lowercase": "'",
+        "uppercase": "'"
       },
       {
         "name": "*",
-        "lowercase": "*",
-        "uppercase": "*"
+        "lowercase": "\"",
+        "uppercase": "\""
       },
       {
         "name": "(",
@@ -103,11 +123,18 @@
       },
       {
         "name": "\"",
-        "lowercase": "\"",
-        "uppercase": "\""
+        "lowercase": "~",
+        "uppercase": "~"
       }
     ],
     [
+      {
+        "name": "kg",
+        "lowercase": "🇰🇬",
+        "lowerCaseHold": "☀️",
+        "uppercase": "🇰🇬",
+        "upperCaseHold": "☀️"
+      },
       {
         "name": "<",
         "lowercase": "<",
@@ -117,11 +144,6 @@
         "name": ">",
         "lowercase": ">",
         "uppercase": ">"
-      },
-      {
-        "name": "_",
-        "lowercase": "_",
-        "uppercase": "_"
       },
       {
         "name": "-",

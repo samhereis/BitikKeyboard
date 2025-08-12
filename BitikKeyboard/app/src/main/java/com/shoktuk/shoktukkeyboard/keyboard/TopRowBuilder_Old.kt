@@ -21,7 +21,7 @@ object TopRowBuilder_Old {
     var textTranscription = true
 
     fun createTopRow(
-        service: InputMethodService, buttonHeight: Int, textTranscription: TextTranscription, margin: Int, onModeChange: (String) -> Unit
+        service: InputMethodService, buttonHeight: Int, textTranscription: TextTranscription, margin: Int, onModeChange: (String) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
         this.margin = margin;
         this.textTranscription = textTranscription == TextTranscription.On
@@ -36,6 +36,23 @@ object TopRowBuilder_Old {
                 bottomMargin = margin
             }
         }
+
+        var alphabetLabel = "𐰌"
+        if (MyKeyboardService.currentAlphabet == "latin") {
+            alphabetLabel = "A"
+        }
+
+        rowLayout.addView(
+            createSystemAssetButton(
+                service = service,
+                assetPath = null,
+                textToSet = alphabetLabel,
+                buttonHeight = buttonHeight,
+                margin = margin,
+                onClick = { onAlphabetChange() },
+                buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
+            )
+        )
 
         if (textTranscription == TextTranscription.On) {
             val lastWordContainer = createLastWordContainer(service, buttonHeight, margin).apply {
@@ -57,8 +74,7 @@ object TopRowBuilder_Old {
             }
 
             lastWordContainer.addView(getPlaceholderText(service, lastWordContainer))
-        }
-        else{
+        } else {
             rowLayout.addView(getPlaceholderText(service, rowLayout))
         }
 
@@ -82,7 +98,7 @@ object TopRowBuilder_Old {
     ): Button = Button(service).apply {
         text = textToSet
         gravity = Gravity.CENTER
-        textSize = KeyboardTheme.getHintButtonTextSize(service).value * 1.25f
+        textSize = KeyboardTheme.getHintButtonTextSize(service).value * 1.5f
         setTextColor(buttonStyle.textColor.toColorInt())
         background = KeyboardTheme.createDrawableFromStyle(service, buttonStyle)
         layoutParams = LinearLayout.LayoutParams(

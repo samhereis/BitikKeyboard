@@ -21,7 +21,7 @@ object KeyboardViewBuilder {
     var isTamga = true;
 
     fun buildKeyboardView(
-        service: InputMethodService, layout: KeyboardLayout, isCaps: Boolean, isTamga: Boolean, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit
+        service: InputMethodService, layout: KeyboardLayout, isCaps: Boolean, isTamga: Boolean, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
         isCLassing = SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC;
         textTranscription = SettingsManager.getTextTranscription(service);
@@ -59,13 +59,13 @@ object KeyboardViewBuilder {
         if (SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC) {
             container.addView(
                 TopRowBuilder_Old.createTopRow(
-                    service, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), textTranscription, margin, onModeChange
+                    service, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), textTranscription, margin, onModeChange, onAlphabetChange
                 )
             )
         } else {
             container.addView(
                 TopRowBuilder.createTopRow(
-                    service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), margin, onModeChange
+                    service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), margin, onModeChange, onAlphabetChange
                 )
             )
         }
@@ -102,7 +102,7 @@ object KeyboardViewBuilder {
 
         val shiftKey = row.find { it.name == "Shift" }
         val delKey = row.find { it.name == "Del" }
-        val middleKeys = row.filter { it.name != "Shift" && it.name != "Del" }
+        val middleKeys = row.filter { it.name != "Shift" && it.name != "Del" && it.name != "kgKey" }
 
         shiftKey?.let {
             rowLayout.addView(
@@ -150,23 +150,36 @@ object KeyboardViewBuilder {
     fun process(key: KeyEntry): KeyEntry {
         var keyToSet = key;
 
-        if (key.name == "а" && isCLassing && eE) {
-            keyToSet = key.copy(
-                lowercase = "𐰁",
-                lowerCaseRomanization = "a",
-                lowerCaseRomanization_Alt = "",
-                lowerCaseHold = "𐰀",
-                uppercase = "𐰅",
-                upperCaseRomanization = "e",
-                upperCaseRomanization_Alt = "",
-                upperCaseHold = "𐰂",
-            )
-        }
+        if (MyKeyboardService.currentAlphabet == "bitik") {
+            if (key.name == "а" && isCLassing && eE) {
+                keyToSet = key.copy(
+                    lowercase = "𐰁",
+                    lowerCaseRomanization = "a",
+                    lowerCaseRomanization_Alt = "",
+                    lowerCaseHold = "𐰀",
+                    uppercase = "𐰅",
+                    upperCaseRomanization = "e",
+                    upperCaseRomanization_Alt = "",
+                    upperCaseHold = "𐰂",
+                )
+            }
 
-        if (key.name == "s" && aS_as_SU_Tamge) {
-            keyToSet = key.copy(
-                lowercase = "𐰽", lowerCaseHold = "𐱂"
-            )
+            if (key.name == "s" && aS_as_SU_Tamge) {
+                keyToSet = key.copy(
+                    lowercase = "𐰽", lowerCaseHold = "𐱂"
+                )
+            }
+        } else {
+            if (key.name == "⸮") {
+                keyToSet = key.copy(
+                    lowercase = "?",
+                    lowerCaseHold = "⸮",
+                    lowerCaseRomanization = "",
+                    uppercase = "?",
+                    upperCaseHold = "⸮",
+                    upperCaseRomanization = ""
+                )
+            }
         }
 
         return keyToSet

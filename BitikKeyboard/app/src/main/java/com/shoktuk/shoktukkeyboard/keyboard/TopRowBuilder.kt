@@ -13,7 +13,7 @@ import androidx.core.graphics.toColorInt
 
 object TopRowBuilder {
     fun createTopRow(
-        service: InputMethodService, layout: KeyboardLayout, buttonHeight: Int, margin: Int, onModeChange: (String) -> Unit
+        service: InputMethodService, layout: KeyboardLayout, buttonHeight: Int, margin: Int, onModeChange: (String) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -25,6 +25,17 @@ object TopRowBuilder {
                 bottomMargin = margin
             }
         }
+
+        var alphabetLabel = "𐰌"
+        if (MyKeyboardService.currentAlphabet == "latin") {
+            alphabetLabel = "A"
+        }
+
+        rowLayout.addView(
+            createSystemAssetButton(
+                service, alphabetLabel, buttonHeight, onClick = { onAlphabetChange() }, buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
+            )
+        )
 
         val textView = TextView(rowLayout.context).apply {
             text = "Расмий эмес, жаңыланган битик колдонуудасыз!"
@@ -67,7 +78,7 @@ object TopRowBuilder {
     ): Button = Button(service).apply {
         text = textToSet
         gravity = Gravity.CENTER
-        textSize = KeyboardTheme.getHintButtonTextSize(service).value * 1.25f
+        textSize = KeyboardTheme.getHintButtonTextSize(service).value * 1.5f
         setTextColor(buttonStyle.textColor.toColorInt())
         background = KeyboardTheme.createDrawableFromStyle(service, buttonStyle)
         layoutParams = LinearLayout.LayoutParams(

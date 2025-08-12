@@ -48,7 +48,7 @@ class KeyView(
     private var style = KeyboardTheme.getLetterButtonStyle_Normal(context, showTranscription)
 
     init {
-        if (isTamga && isCaps) {
+        if (isTamga && isCaps && MyKeyboardService.currentAlphabet == "bitik") {
             style = KeyboardTheme.getLetterButtonStyle_UpperCase(context, showTranscription)
         }
 

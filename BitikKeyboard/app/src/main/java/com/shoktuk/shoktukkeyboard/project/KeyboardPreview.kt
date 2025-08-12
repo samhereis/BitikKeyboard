@@ -22,13 +22,16 @@ class RealKeyboardServiceProvider(
     override fun createKeyboardView(context: Context): View {
         val layout = KeyboardLayoutLoader.loadKeyboardLayout(context, service.currentMode, service.getLanguage())
 
-        return KeyboardViewBuilder.buildKeyboardView(service = service, layout = layout, isCaps = service.isCaps, true, onCapsChange = { newCaps ->
-            service.isCaps = newCaps
-            service.reloadKeyboard()
-        }, onModeChange = { newMode ->
-            service.currentMode = newMode
-            service.reloadKeyboard()
-        })
+        return KeyboardViewBuilder.buildKeyboardView(
+            service = service, layout = layout, isCaps = service.isCaps, true, onCapsChange = { newCaps ->
+                service.isCaps = newCaps
+                service.reloadKeyboard()
+            }, onModeChange = { newMode ->
+                service.currentMode = newMode
+                service.reloadKeyboard()
+            },
+            onAlphabetChange = {})
+
     }
 }
 

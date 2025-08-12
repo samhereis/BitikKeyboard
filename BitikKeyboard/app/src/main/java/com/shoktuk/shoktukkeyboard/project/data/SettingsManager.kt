@@ -27,6 +27,10 @@ enum class BitikDialect(val id: String) {
     Altay("Алтай"), Orkon("Оркон")
 }
 
+enum class KeyboardAlphabet(val id: String) {
+    Bitik("bitik"), Latin("latin")
+}
+
 
 object SettingsManager {
     private const val PREFS_NAME = "settings_prefs"
@@ -36,6 +40,7 @@ object SettingsManager {
     private const val LETTER_TRANSCRIPTION = "letter_transcription"
     private const val AS_VARIANT = "AS_variant"
     private const val BITIKDIALECT = "BitikDialect"
+    private const val BITIKALPHABET = "BitikAlphabet"
 
     // Variant
     fun getKeyboardVariant(context: Context): KeyboardVariant {
@@ -113,5 +118,18 @@ object SettingsManager {
     fun setBitikDialect(context: Context, variant: BitikDialect) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit { putString(BITIKDIALECT, variant.name) }
+    }
+
+    // Keyboard Alphabet
+    fun getBitikAlphabet(context: Context): KeyboardAlphabet {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return KeyboardAlphabet.valueOf(
+            prefs.getString(BITIKALPHABET, KeyboardAlphabet.Bitik.name) ?: KeyboardAlphabet.Bitik.name
+        )
+    }
+
+    fun setBitikAlphabet(context: Context, variant: KeyboardAlphabet) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putString(BITIKALPHABET, variant.name) }
     }
 }

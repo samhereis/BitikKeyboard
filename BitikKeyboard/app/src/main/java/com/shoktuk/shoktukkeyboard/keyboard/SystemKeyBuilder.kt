@@ -15,12 +15,11 @@ object SystemKeyBuilder {
         service: InputMethodService, key: KeyEntry, layout: KeyboardLayout, buttonHeight: Int, margin: Int, isCaps: Boolean, onCapsChange: (Boolean) -> Unit
     ): Button {
         return Button(service).apply {
-            text = ""
+            text = key.lowercase
             gravity = Gravity.CENTER
             setPadding(0, 0, 0, 0)
             compoundDrawablePadding = 0
 
-            // Style setup
             textSize = KeyboardTheme.getSystemButtonStyle(service).textSizeSp.value
             setTextColor(KeyboardTheme.getSystemButtonStyle(service).textColor.toColorInt())
             layoutParams = android.widget.LinearLayout.LayoutParams(
@@ -30,7 +29,6 @@ object SystemKeyBuilder {
                 marginEnd = margin
             }
 
-            // Background styling
             background = when {
                 key.name == "Shift" && isCaps -> KeyboardTheme.createDrawableFromStyle(
                     service, KeyboardTheme.getSystemButtonStyle(service).copy(fillColor = KeyboardTheme.colorIndexes[3])
@@ -58,7 +56,7 @@ object SystemKeyBuilder {
             when (key.name) {
                 "Shift" -> setupShiftButton(onCapsChange, isCaps)
                 "Del" -> setupDeleteButton(service)
-                else -> setOnClickListener { /* Other key handlers */ }
+                else -> setOnClickListener {  }
             }
         }
     }
