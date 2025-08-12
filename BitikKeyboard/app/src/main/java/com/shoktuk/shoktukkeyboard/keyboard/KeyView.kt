@@ -103,7 +103,7 @@ class KeyView(
         var firstText = getCurrentSubText()?.toString().orEmpty()
         var secontText = getCurrentSubText_Alt()?.toString().orEmpty()
 
-        if (isCLassic == false) {
+        if (isCLassic == false && MyKeyboardService.currentAlphabet == "bitik" && MyKeyboardService.currentMode == "letters") {
             secontText = ""
         }
 
@@ -132,7 +132,7 @@ class KeyView(
             visibility = if (firstText.isBlank()) View.GONE else View.VISIBLE
         }
 
-        if (showTranscription == false) {
+        if ( MyKeyboardService.currentAlphabet == "bitik" && MyKeyboardService.currentMode == "letters" && showTranscription == false) {
             subText_top.text = ""
             subText_bottom.text = ""
             mainText.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp.value)
@@ -356,17 +356,17 @@ class KeyView(
 
     private fun getCurrentSubText(): CharSequence? {
         if (isCaps) {
-            return key.upperCaseRomanization
+            return key.upperCaseRomanization ?: ""
         } else {
-            return key.lowerCaseRomanization
+            return key.lowerCaseRomanization ?: ""
         }
     }
 
     private fun getCurrentSubText_Alt(): CharSequence? {
         if (isCaps) {
-            return key.upperCaseRomanization_Alt
+            return key.upperCaseRomanization_Alt ?: ""
         } else {
-            return key.lowerCaseRomanization_Alt
+            return key.lowerCaseRomanization_Alt ?: ""
         }
     }
 

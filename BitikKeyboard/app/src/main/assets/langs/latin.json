@@ -18,7 +18,9 @@
       {
         "name": "а",
         "lowercase": "e",
-        "uppercase": "E"
+        "lowerCaseHold": "ə",
+        "uppercase": "E",
+        "upperCaseHold": "Ə"
       },
       {
         "name": "р",
@@ -38,12 +40,16 @@
       {
         "name": "o, u",
         "lowercase": "u",
-        "uppercase": "U"
+        "lowerCaseHold": "w",
+        "uppercase": "U",
+        "upperCaseHold": "W"
       },
       {
         "name": "i",
         "lowercase": "i",
-        "uppercase": "İ"
+        "lowerCaseHold": "ï",
+        "uppercase": "İ",
+        "upperCaseHold": "Ï"
       },
       {
         "name": "o/u",
@@ -53,7 +59,9 @@
       {
         "name": "p",
         "lowercase": "p",
-        "uppercase": "P"
+        "lowerCaseHold": "f",
+        "uppercase": "P",
+        "upperCaseHold": "F"
       }
     ],
     [
@@ -65,7 +73,9 @@
       {
         "name": "s",
         "lowercase": "s",
-        "uppercase": "S"
+        "lowerCaseHold": "x",
+        "uppercase": "S",
+        "upperCaseHold": "X"
       },
       {
         "name": "d",
@@ -80,7 +90,9 @@
       {
         "name": "g",
         "lowercase": "g",
-        "uppercase": "G"
+        "lowerCaseHold": "ğ",
+        "uppercase": "G",
+        "upperCaseHold": "Ğ"
       },
       {
         "name": "rt, lt",
@@ -95,7 +107,9 @@
       {
         "name": "k",
         "lowercase": "k",
-        "uppercase": "K"
+        "lowerCaseHold": "h",
+        "uppercase": "K",
+        "upperCaseHold": "H"
       },
       {
         "name": "l",
@@ -120,7 +134,9 @@
       {
         "name": "ç",
         "lowercase": "ç",
-        "uppercase": "Ç"
+        "lowerCaseHold": "c",
+        "uppercase": "Ç",
+        "upperCaseHold": "C"
       },
       {
         "name": "ök, ük",
@@ -130,7 +146,9 @@
       {
         "name": "b",
         "lowercase": "b",
-        "uppercase": "B"
+        "lowerCaseHold": "v",
+        "uppercase": "B",
+        "upperCaseHold": "V"
       },
       {
         "name": "n",

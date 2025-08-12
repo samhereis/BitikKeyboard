@@ -37,8 +37,13 @@ object TopRowBuilder {
             )
         )
 
+        var topLabel = "Расмий эмес, жаңыланган битик колдонуудасыз!"
+        if (MyKeyboardService.currentAlphabet == "latin") {
+            topLabel = "𐱅𐰭𐰼𐰃 𐰅𐰠𐰢𐰚𐰁 𐰌𐰝𐰢𐰓𐰢"
+        }
+
         val textView = TextView(rowLayout.context).apply {
-            text = "Расмий эмес, жаңыланган битик колдонуудасыз!"
+            text = topLabel
 
             isSingleLine = false
             setLines(2)

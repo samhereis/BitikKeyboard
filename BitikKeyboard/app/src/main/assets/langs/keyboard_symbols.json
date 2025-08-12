@@ -131,9 +131,7 @@
       {
         "name": "kg",
         "lowercase": "🇰🇬",
-        "lowerCaseHold": "☀️",
-        "uppercase": "🇰🇬",
-        "upperCaseHold": "☀️"
+        "uppercase": "🇰🇬"
       },
       {
         "name": "<",
@@ -168,10 +166,10 @@
       {
         "name": "⸮",
         "lowercase": "⸮",
-        "lowerCaseRomanization": "",
+        "lowerCaseRomanization": "?",
         "lowerCaseHold": "?",
         "uppercase": "⸮",
-        "upperCaseRomanization": "",
+        "upperCaseRomanization": "?",
         "upperCaseHold": "?"
       },
       {

@@ -66,7 +66,7 @@ object TopRowBuilder_Old {
             onTypedListener = {
                 lastWordContainer.post {
                     updateLastWord(
-                        service, service.currentInputConnection, lastWordContainer, jsTranscriber, KeyboardTheme.getSystemButtonStyle(service)
+                        service, service.currentInputConnection, jsTranscriber,lastWordContainer,  KeyboardTheme.getSystemButtonStyle(service)
                     )
                     lastWordContainer.requestLayout()
                     lastWordContainer.invalidate()
@@ -124,20 +124,23 @@ object TopRowBuilder_Old {
         }
     }
 
-    private fun updateLastWord(
-        service: InputMethodService, inputConnection: InputConnection?, container: LinearLayout, transcriber: JSTranscriber, buttonStyle: ButtonStyle
+    fun updateLastWord(
+        service: InputMethodService, inputConnection: InputConnection?,transcriber: JSTranscriber, container: LinearLayout?,  buttonStyle: ButtonStyle?
     ) {
-        container.removeAllViews()
-
         val before = inputConnection?.getTextBeforeCursor(100, 0)?.toString().orEmpty()
-        if (before.isEmpty()) {
-            container.addView(getPlaceholderText(service, container))
-            return
-        }
 
         val lastWord = before.split("[^\\p{L}\\p{N}]+".toRegex()).lastOrNull().orEmpty()
         val topText = transcriber.getTranscription_Alternative(lastWord).orEmpty().ifEmpty { lastWord }
         val baseText = transcriber.getTranscription(lastWord).orEmpty().ifEmpty { lastWord }
+
+        if(container == null) {return}
+        if(buttonStyle == null) {return}
+
+        container.removeAllViews()
+        if (before.isEmpty()) {
+            container.addView(getPlaceholderText(service, container))
+            return
+        }
 
         val fullSp = buttonStyle.textSizeSp.value
         val halfSp = fullSp / 2f

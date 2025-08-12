@@ -4,6 +4,7 @@ import android.inputmethodservice.InputMethodService
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.compose.runtime.traceEventEnd
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.E_Letter_Variannt
@@ -11,6 +12,7 @@ import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
 import com.shoktuk.shoktukkeyboard.project.data.TamgaTranscription
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
+import com.shoktuk.shoktukkeyboard.project.systems.JSTranscriber
 
 object KeyboardViewBuilder {
     var isCLassing = false;
@@ -56,7 +58,7 @@ object KeyboardViewBuilder {
             insets
         }
 
-        if (SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC) {
+        if (SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC && MyKeyboardService.currentAlphabet == "bitik") {
             container.addView(
                 TopRowBuilder_Old.createTopRow(
                     service, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), textTranscription, margin, onModeChange, onAlphabetChange
@@ -119,11 +121,17 @@ object KeyboardViewBuilder {
         }
         middleKeys.forEach { key ->
             middleContainer.addView(LetterKeyBuilder.createLetterKey(service, process(key), buttonHeight, margin, isCaps, isTamga, letterTranscription, onKeyClick = { letter ->
-                if (ensureRTLContext(service)) {
-                    service.currentInputConnection?.commitText("\u202B", 1)
+                if (MyKeyboardService.currentAlphabet == "bitik") {
+                    if (ensureRTLContext(service)) {
+                        service.currentInputConnection?.commitText("\u202B", 1)
+                    }
                 }
                 service.currentInputConnection?.commitText(letter, 1)
                 TopRowBuilder_Old.onTypedListener?.invoke()
+
+                if (MyKeyboardService.currentAlphabet != "bitik") {
+                    onCapsChange?.invoke(false)
+                }
             }, onLongPress = { letter ->
                 letter?.let { service.currentInputConnection?.commitText(it, 1) }
             }))
@@ -172,12 +180,7 @@ object KeyboardViewBuilder {
         } else {
             if (key.name == "⸮") {
                 keyToSet = key.copy(
-                    lowercase = "?",
-                    lowerCaseHold = "⸮",
-                    lowerCaseRomanization = "",
-                    uppercase = "?",
-                    upperCaseHold = "⸮",
-                    upperCaseRomanization = ""
+                    lowercase = "?", lowerCaseHold = "⸮", lowerCaseRomanization = "⸮", uppercase = "?", upperCaseHold = "⸮", upperCaseRomanization = "⸮"
                 )
             }
         }

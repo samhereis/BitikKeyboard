@@ -11,11 +11,11 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
 class MyKeyboardService : InputMethodService() {
     companion object {
         var currentAlphabet: String = "bitik"
+        var currentMode: String = "letters"
+        var currentLanguage: String = "enesay"
+        var isCaps: Boolean = false
     }
 
-    var isCaps: Boolean = false
-    var currentMode: String = "letters"
-    var currentLanguage: String = "enesay"
     private var currentLayout: KeyboardLayout? = null
 
     override fun onEvaluateFullscreenMode(): Boolean {

@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
+import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
 
 interface KeyboardServiceProvider {
     fun createKeyboardView(context: Context): View
@@ -20,14 +21,14 @@ class RealKeyboardServiceProvider(
     private val service: MyKeyboardService
 ) : KeyboardServiceProvider {
     override fun createKeyboardView(context: Context): View {
-        val layout = KeyboardLayoutLoader.loadKeyboardLayout(context, service.currentMode, service.getLanguage())
+        val layout = KeyboardLayoutLoader.loadKeyboardLayout(context, MyKeyboardService.currentMode, service.getLanguage())
 
         return KeyboardViewBuilder.buildKeyboardView(
-            service = service, layout = layout, isCaps = service.isCaps, true, onCapsChange = { newCaps ->
-                service.isCaps = newCaps
+            service = service, layout = layout, isCaps = MyKeyboardService.isCaps, true, onCapsChange = { newCaps ->
+                MyKeyboardService.isCaps = newCaps
                 service.reloadKeyboard()
             }, onModeChange = { newMode ->
-                service.currentMode = newMode
+                MyKeyboardService.currentMode = newMode
                 service.reloadKeyboard()
             },
             onAlphabetChange = {})
