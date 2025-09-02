@@ -8,4 +8,6 @@
     <string name="z">z</string>
     <string name="x">x</string>
     <string name="del">Del</string>
+
+    <string name="ime_name">Shoktuk Keyboard</string>
 </resources>

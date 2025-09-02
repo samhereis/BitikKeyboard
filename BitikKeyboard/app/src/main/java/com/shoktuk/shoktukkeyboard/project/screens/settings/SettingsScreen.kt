@@ -38,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.E_Letter_Variannt
@@ -79,13 +80,6 @@ fun SettingsScreen() {
         )
 
         CenteredDropdownPopup(
-            label = "Э тамга", options = E_Letter_Variannt.entries, selected = eVariant, onSelect = { alpha ->
-                eVariant = alpha
-                SettingsManager.setEVariant(context, alpha)
-            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
-        )
-
-        CenteredDropdownPopup(
             label = "Жазуу транскрипция", options = TextTranscription.entries, selected = textTranscription, onSelect = { alpha ->
                 textTranscription = alpha
                 SettingsManager.setTextTranscription(context, alpha)
@@ -99,6 +93,34 @@ fun SettingsScreen() {
             }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
         )
 
+        CenteredDropdownPopup(
+            label = "Э тамга", options = E_Letter_Variannt.entries, selected = eVariant, onSelect = { alpha ->
+                eVariant = alpha
+                SettingsManager.setEVariant(context, alpha)
+            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+        )
+
+        CenteredDropdownPopup(
+            label = "эБ тамга", options = E_Letter_Variannt.entries, selected = eVariant, onSelect = { alpha ->
+                eVariant = alpha
+                SettingsManager.setEVariant(context, alpha)
+            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+        )
+
+        CenteredDropdownPopup(
+            label = "эБ тамга", options = E_Letter_Variannt.entries, selected = eVariant, onSelect = { alpha ->
+                eVariant = alpha
+                SettingsManager.setEVariant(context, alpha)
+            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+        )
+
+        CenteredDropdownPopup(
+            label = "ӨК тамга", options = E_Letter_Variannt.entries, selected = eVariant, onSelect = { alpha ->
+                eVariant = alpha
+                SettingsManager.setEVariant(context, alpha)
+            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+        )
+
         HorizontalDivider()
 
         Text("Алтай варианты үчүн:")
@@ -108,6 +130,15 @@ fun SettingsScreen() {
                 SettingsManager.setASVariant(context, alpha)
             }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
         )
+
+        if (MyKeyboardService.isClassic == false) {
+            CenteredDropdownPopup(
+                label = "эШ тамга", options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
+                    asVariant = alpha
+                    SettingsManager.setASVariant(context, alpha)
+                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+            )
+        }
     }
 }
 

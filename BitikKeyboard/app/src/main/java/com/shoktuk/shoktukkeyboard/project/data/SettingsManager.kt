@@ -7,20 +7,12 @@ enum class KeyboardVariant(val id: String) {
     CLASSIC("settings_keyboardVariant_Classic"), SAMAGAN("settings_keyboardVariant_Modern")
 }
 
-enum class E_Letter_Variannt(val id: String) {
-    E_A("𐰁"), E_E("𐰅")
-}
-
 enum class TextTranscription(val id: String) {
     On("Жанык"), Off("Өчүк")
 }
 
 enum class TamgaTranscription(val id: String) {
     On("Жанык"), Off("Өчүк")
-}
-
-enum class AS_Letter_Variant(val id: String) {
-    AS_As("𐱂"), AS_SU("𐰽")
 }
 
 enum class BitikDialect(val id: String) {
@@ -31,6 +23,29 @@ enum class KeyboardAlphabet(val id: String) {
     Bitik("bitik"), Latin("latin")
 }
 
+enum class AS_Letter_Variant(val id: String) {
+    Default("𐱂"), Second("𐰽")
+}
+
+enum class ESH_Letter_Variant(val id: String) {
+    Default("𐱂"), Second("𐰽")
+}
+
+enum class EB_Letter_Variant(val id: String) {
+    Default("𐱂"), Second("𐰽")
+}
+
+enum class OEK_Letter_Variant(val id: String) {
+    Default("𐱂"), Second("𐰽")
+}
+
+enum class EN_Letter_Variant(val id: String) {
+    Default("𐱂"), Second("𐰽")
+}
+
+enum class E_Letter_Variannt(val id: String) {
+    Default("𐰁"), Second("𐰅")
+}
 
 object SettingsManager {
     private const val PREFS_NAME = "settings_prefs"
@@ -59,7 +74,7 @@ object SettingsManager {
     fun getEVariant(context: Context): E_Letter_Variannt {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return E_Letter_Variannt.valueOf(
-            prefs.getString(E_VARIANT, E_Letter_Variannt.E_E.name) ?: E_Letter_Variannt.E_E.name
+            prefs.getString(E_VARIANT, E_Letter_Variannt.Default.name) ?: E_Letter_Variannt.Default.name
         )
     }
 
@@ -98,7 +113,7 @@ object SettingsManager {
     fun getASVariant(context: Context): AS_Letter_Variant {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return AS_Letter_Variant.valueOf(
-            prefs.getString(AS_VARIANT, AS_Letter_Variant.AS_SU.name) ?: AS_Letter_Variant.AS_SU.name
+            prefs.getString(AS_VARIANT, AS_Letter_Variant.Default.name) ?: AS_Letter_Variant.Default.name
         )
     }
 

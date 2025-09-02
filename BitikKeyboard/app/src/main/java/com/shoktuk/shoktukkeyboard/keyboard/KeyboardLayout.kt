@@ -11,14 +11,14 @@ data class KeyEntry(
     val lowerCaseRomanization_Alt: String? = "",
     val lowerCaseHold: String? = "",
     val lowerCaseHoldHint: String? = "",
-    val backgroundColorIndex_lowercase: Int? = 0,
-    val backgroundColorIndex_lowercase_Hold: Int? = 0,
+    val backgroundColorIndex_lowercase: Int? = 1,
+    val backgroundColorIndex_lowercase_Hold: Int? = 1,
 
     val uppercase: String? = "",
     val upperCaseRomanization: String? = "",
     val upperCaseRomanization_Alt: String? = "",
     val upperCaseHold: String? = "",
     val upperCaseHoldHint: String? = "",
-    val backgroundColorIndex_uppercase: Int? = 0,
-    val backgroundColorIndex_uppercase_Hold: Int? = 0
+    val backgroundColorIndex_uppercase: Int? = 1,
+    val backgroundColorIndex_uppercase_Hold: Int? = 1
 )

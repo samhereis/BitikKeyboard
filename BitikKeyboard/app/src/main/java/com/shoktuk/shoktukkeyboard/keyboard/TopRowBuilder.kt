@@ -1,19 +1,20 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import android.content.Context
 import android.graphics.Color
 import android.inputmethodservice.InputMethodService
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
-import android.widget.Button
+import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
 object TopRowBuilder {
     fun createTopRow(
-        service: InputMethodService, layout: KeyboardLayout, buttonHeight: Int, margin: Int, onModeChange: (String) -> Unit, onAlphabetChange: () -> Unit
+        service: InputMethodService, layout: KeyboardLayout, buttonHeight: Int, onAlphabetChange: () -> Unit
     ): LinearLayout {
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -21,19 +22,19 @@ object TopRowBuilder {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT
             ).apply {
-                topMargin = margin
-                bottomMargin = margin
+                topMargin = MyKeyboardService.buttonMargin
+                bottomMargin = MyKeyboardService.buttonMargin
             }
         }
 
-        var alphabetLabel = "𐰌"
+        var alphabetLabel = "A"
         if (MyKeyboardService.currentAlphabet == "latin") {
-            alphabetLabel = "A"
+            alphabetLabel = "𐰌"
         }
 
         rowLayout.addView(
-            createSystemAssetButton(
-                service, alphabetLabel, buttonHeight, onClick = { onAlphabetChange() }, buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
+            SystemKeyBuilder.systemButton_Text(
+                service, alphabetLabel, buttonHeight, onClick = { onAlphabetChange() }
             )
         )
 
@@ -49,7 +50,7 @@ object TopRowBuilder {
             setLines(2)
             ellipsize = null
 
-            setTextColor(ContextCompat.getColor(service, android.R.color.white))
+            setTextColor(KeyboardTheme.getColor(2).toColorInt())
 
             val baseSp = KeyboardTheme.getHintButtonTextSize(service).value
             setTextSize(TypedValue.COMPLEX_UNIT_SP, baseSp * 1.35f)
@@ -61,39 +62,27 @@ object TopRowBuilder {
             layoutParams = LinearLayout.LayoutParams(
                 0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
             ).apply {
-                marginStart = margin
-                marginEnd = margin
+                marginStart = MyKeyboardService.buttonMargin
+                marginEnd = MyKeyboardService.buttonMargin
             }
 
             visibility = View.VISIBLE
         }
+
         rowLayout.addView(textView)
 
         rowLayout.addView(
-            createSystemAssetButton(
-                service, "123", buttonHeight, onClick = { onModeChange("symbols") }, buttonStyle = KeyboardTheme.getSystemButtonStyle(service)
+            SystemKeyBuilder.systemButton_Icon(
+                service, KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight,
+                onClick = {
+                    val imm = service.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showInputMethodPicker()
+                    TopRowBuilder_Old.onTypedListener?.invoke()
+                }
             )
         )
 
         return rowLayout
-    }
-
-    private fun createSystemAssetButton(
-        service: InputMethodService, textToSet: String, buttonHeight: Int, onClick: () -> Unit, buttonStyle: ButtonStyle
-    ): Button = Button(service).apply {
-        text = textToSet
-        gravity = Gravity.CENTER
-        textSize = KeyboardTheme.getHintButtonTextSize(service).value * 1.5f
-        setTextColor(buttonStyle.textColor.toColorInt())
-        background = KeyboardTheme.createDrawableFromStyle(service, buttonStyle)
-        layoutParams = LinearLayout.LayoutParams(
-            KeyboardTheme.getSystemButtonWidth(service), buttonHeight
-        ).apply {
-            marginStart = 0
-            marginEnd = 0
-        }
-        setOnClickListener { onClick() }
-        setPadding(0, 0, 0, 0)
     }
 
     private fun createLastWordContainer(

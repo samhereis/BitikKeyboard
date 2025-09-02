@@ -12,24 +12,15 @@ object LetterKeyBuilder {
         service: InputMethodService,
         key: KeyEntry,
         buttonHeight: Int,
-        margin: Int,
-        isCaps: Boolean,
         isTamga: Boolean,
-        needTranscription: Boolean,
         onKeyClick: (String) -> Unit,
         onLongPress: (String?) -> Unit
     ): View {
-        var isCLassing = SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC
-
         return KeyView(
             context = service,
             key = key,
-            isCaps = isCaps,
             buttonHeight = buttonHeight,
-            margin = margin,
-            isCLassic = isCLassing,
             isTamga = isTamga,
-            showTranscription = needTranscription,
             onKeyClick = onKeyClick,
             onLongPress = onLongPress
         )

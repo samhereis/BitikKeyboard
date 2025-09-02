@@ -24,7 +24,7 @@ class RealKeyboardServiceProvider(
         val layout = KeyboardLayoutLoader.loadKeyboardLayout(context, MyKeyboardService.currentMode, service.getLanguage())
 
         return KeyboardViewBuilder.buildKeyboardView(
-            service = service, layout = layout, isCaps = MyKeyboardService.isCaps, true, onCapsChange = { newCaps ->
+            service = service, layout = layout, onCapsChange = { newCaps ->
                 MyKeyboardService.isCaps = newCaps
                 service.reloadKeyboard()
             }, onModeChange = { newMode ->
