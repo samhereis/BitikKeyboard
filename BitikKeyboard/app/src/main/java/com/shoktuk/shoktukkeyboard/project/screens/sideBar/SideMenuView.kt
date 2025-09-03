@@ -135,11 +135,11 @@ fun SideMenuView() {
                     TopAppBar(
                         title = {
                             val menuTitle = items.find { it.path.id == currentRoute }?.path?.title?.localized("loc_sideBar", context) ?: ""
-                            Text(text = menuTitle, fontSize = 15.sp, color = Color.White)
+                            Text(text = menuTitle, fontSize = 15.sp)
                         }, navigationIcon = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
                                 Icon(
-                                    imageVector = Icons.Rounded.Menu, contentDescription = "Menu", tint = Color.White
+                                    imageVector = Icons.Rounded.Menu, contentDescription = "Menu"
                                 )
                             }
                         }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
@@ -148,11 +148,11 @@ fun SideMenuView() {
                     TopAppBar(
                         title = {
                             val menuTitle = BasicInfoScreens.entries.find { it.id == currentRoute }?.title?.localized("loc_basicInfo", context) ?: ""
-                            Text(text = menuTitle, fontSize = 15.sp, color = Color.White)
+                            Text(text = menuTitle, fontSize = 15.sp)
                         }, navigationIcon = {
                             IconButton(onClick = { navController.popBackStack() }) {
                                 Icon(
-                                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back", tint = Color.White
+                                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back"
                                 )
                             }
                         }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)

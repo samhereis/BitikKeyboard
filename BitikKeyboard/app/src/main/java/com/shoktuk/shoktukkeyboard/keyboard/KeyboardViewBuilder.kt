@@ -4,44 +4,32 @@ import android.inputmethodservice.InputMethodService
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.A_Letter_Variannt
+import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.E_Letter_Variannt
 import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
-import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 object KeyboardViewBuilder {
-    var isCLassing = false
-    var eE = false
-    var aS_as_SU_Tamge = false
-    var isTamga = true
+    var a_Def = SettingsManager.getA_Variant(MyKeyboardService.context) == A_Letter_Variannt.Default
+    var e_Def = SettingsManager.getE_Variant(MyKeyboardService.context) == E_Letter_Variannt.Default
+    var eb_Def = SettingsManager.getEB_Variant(MyKeyboardService.context) == EB_Letter_Variant.Default
+    var en_Def = SettingsManager.getEN_Variant(MyKeyboardService.context) == EN_Letter_Variant.Default
+    var as_Def = SettingsManager.getAS_Variant(MyKeyboardService.context) == AS_Letter_Variant.Default
+    var esh_Def = SettingsManager.getES_Variant(MyKeyboardService.context) == ESH_Letter_Variant.Default
 
     fun buildKeyboardView(
-        service: InputMethodService,
-        layout: KeyboardLayout,
-        onCapsChange: (Boolean) -> Unit,
-        onModeChange: (String) -> Unit,
-        onAlphabetChange: () -> Unit
+        service: InputMethodService, layout: KeyboardLayout, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
-        isCLassing = SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC
-        eE = SettingsManager.getEVariant(service) == E_Letter_Variannt.Default
-        aS_as_SU_Tamge = SettingsManager.getASVariant(service) == AS_Letter_Variant.Default
-        this.isTamga = isTamga
+        e_Def = SettingsManager.getE_Variant(MyKeyboardService.context) == E_Letter_Variannt.Default
+        eb_Def = SettingsManager.getEB_Variant(MyKeyboardService.context) == EB_Letter_Variant.Default
+        en_Def = SettingsManager.getEN_Variant(MyKeyboardService.context) == EN_Letter_Variant.Default
+        as_Def = SettingsManager.getAS_Variant(MyKeyboardService.context) == AS_Letter_Variant.Default
+        esh_Def = SettingsManager.getES_Variant(MyKeyboardService.context) == ESH_Letter_Variant.Default
 
         val screenWidthPx = service.resources.displayMetrics.widthPixels
         val baseDesignWidthDp = 360f
@@ -53,36 +41,26 @@ object KeyboardViewBuilder {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(
-                if (screenWidthPx > maxWidthPx) maxWidthPx else ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT
+                if (screenWidthPx > maxWidthPx) maxWidthPx else ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
             ).apply {
                 leftMargin = sideMarginPx
                 rightMargin = sideMarginPx
             }
             setBackgroundColor(KeyboardTheme.containerBg())
-            // CHANGED: mark as host so KeyView can find it
-            tag = KeyPreviewOverlay.TAG_HOST
         }
         container.clipChildren = false
         container.clipToPadding = false
-        KeyPreviewOverlay.ensureAttached(container)
 
         if (SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC && MyKeyboardService.currentAlphabet == "bitik") {
             container.addView(
                 TopRowBuilder_Old.createTopRow(
-                    service,
-                    (KeyboardTheme.getButtonHeight() / 1.5f).toInt(),
-                    onModeChange,
-                    onAlphabetChange
+                    service, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), onModeChange, onAlphabetChange
                 )
             )
         } else {
             container.addView(
                 TopRowBuilder.createTopRow(
-                    service,
-                    layout,
-                    (KeyboardTheme.getButtonHeight() / 1.5f).toInt(),
-                    onAlphabetChange
+                    service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), onAlphabetChange
                 )
             )
         }
@@ -137,7 +115,7 @@ object KeyboardViewBuilder {
             clipToPadding = false
         }
         middleKeys.forEach { key ->
-            middleContainer.addView(LetterKeyBuilder.createLetterKey(service, process(key), buttonHeight, isTamga, onKeyClick = { letter ->
+            middleContainer.addView(LetterKeyBuilder.createLetterKey(service, process(key), buttonHeight, onKeyClick = { letter ->
                 if (MyKeyboardService.currentAlphabet == "bitik") {
                     if (ensureRTLContext(service)) {
                         service.currentInputConnection?.commitText("\u202B", 1)
@@ -145,7 +123,7 @@ object KeyboardViewBuilder {
                 }
                 service.currentInputConnection?.commitText(letter, 1)
                 TopRowBuilder_Old.onTypedListener?.invoke()
-                if (MyKeyboardService.currentAlphabet != "bitik") {
+                if (MyKeyboardService.isCaps && MyKeyboardService.currentAlphabet != "bitik") {
                     onCapsChange.invoke(false)
                 }
             }, onLongPress = { letter ->
@@ -158,8 +136,6 @@ object KeyboardViewBuilder {
         val extraLeft = KeyboardTheme.dpToPx(service, 20)
         val extraRight = KeyboardTheme.dpToPx(service, 20)
         rowLayout.post {
-            //rowLayout.getChildAt(0)?.extendHorizontalHit(extraLeft, 0)
-            //rowLayout.getChildAt(rowLayout.childCount - 1)?.extendHorizontalHit(0, extraRight)
             if (middleContainer.childCount > 0) {
                 middleContainer.getChildAt(0)?.extendHorizontalHit(extraLeft, 0)
                 middleContainer.getChildAt(middleContainer.childCount - 1)?.extendHorizontalHit(0, extraRight)
@@ -184,59 +160,86 @@ object KeyboardViewBuilder {
 
     fun process(key: KeyEntry): KeyEntry {
         var keyToSet = key
+
         if (MyKeyboardService.currentAlphabet == "bitik") {
-            if (key.name == "а" && isCLassing && eE) {
-                keyToSet = key.copy(
-                    lowercase = "𐰁",
-                    lowerCaseRomanization = "a",
-                    lowerCaseRomanization_Alt = "",
-                    lowerCaseHold = "𐰀",
-                    uppercase = "𐰅",
-                    upperCaseRomanization = "e",
-                    upperCaseRomanization_Alt = "",
-                    upperCaseHold = "𐰂",
-                )
+            if (key.name == "a") {
+                if (!a_Def) {
+                    keyToSet = getA(keyToSet)
+                }
+                if (MyKeyboardService.isClassic && e_Def) {
+                    keyToSet = getE(keyToSet)
+                }
+
+                return keyToSet
             }
-            if (key.name == "s" && aS_as_SU_Tamge) {
-                keyToSet = key.copy(
-                    lowercase = "𐰽", lowerCaseHold = "𐱂"
-                )
+
+            if (key.name == "b" && !eb_Def) {
+                keyToSet = getEB(keyToSet)
+                return keyToSet
+            }
+            if (key.name == "n" && !en_Def) {
+                keyToSet = getEN(keyToSet)
+                return keyToSet
+            }
+
+            if (key.name == "s" && as_Def) {
+                keyToSet = getAS(keyToSet)
+                return keyToSet
+            }
+
+            if (key.name == "ş" && !esh_Def) {
+                if (!MyKeyboardService.isClassic && MyKeyboardService.currentLanguage == "enesay" && MyKeyboardService.currentVariant == KeyboardVariant.SAMAGAN) {
+                    keyToSet = getESH(keyToSet)
+                }
+                return keyToSet
             }
         } else {
             if (key.name == "⸮") {
                 keyToSet = key.copy(
                     lowercase = "?", lowerCaseHold = "⸮", lowerCaseRomanization = "⸮", uppercase = "?", upperCaseHold = "⸮", upperCaseRomanization = "⸮"
                 )
+                return keyToSet
             }
         }
         return keyToSet
     }
-}
 
-@Composable
-fun ColorPreviewBox(label: String) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(80.dp),
-            contentAlignment = Alignment.Center
-    ) {
-        Text(text = label)
+    private fun getA(key: KeyEntry): KeyEntry {
+        return key.copy(
+            lowercase = "𐰀", lowerCaseHold = "𐰁",
+        )
     }
-}
 
-@Preview(name = "Keyboard – Light", showBackground = true)
-@Composable
-fun PreviewKeyboard_Light() {
-    ShoktukKeyboardTheme(darkTheme = false) {
-        ColorPreviewBox("Light")
+    private fun getE(key: KeyEntry): KeyEntry {
+        return key.copy(
+            uppercase = "𐰅",
+            upperCaseRomanization = "e",
+            upperCaseRomanization_Alt = "",
+            upperCaseHold = "𐰂",
+        )
     }
-}
 
-@Preview(name = "Keyboard – Dark", showBackground = true)
-@Composable
-fun PreviewKeyboard_Dark() {
-    ShoktukKeyboardTheme(darkTheme = true) {
-        ColorPreviewBox("Dark")
+    private fun getEB(key: KeyEntry): KeyEntry {
+        return key.copy(
+            uppercase = "𐰋", upperCaseHold = "𐰌"
+        )
+    }
+
+    private fun getEN(key: KeyEntry): KeyEntry {
+        return key.copy(
+            uppercase = "𐰥", upperCaseHold = "𐰤"
+        )
+    }
+
+    private fun getAS(key: KeyEntry): KeyEntry {
+        return key.copy(
+            lowercase = "𐰽", lowerCaseHold = "𐱂"
+        )
+    }
+
+    private fun getESH(key: KeyEntry): KeyEntry {
+        return key.copy(
+            uppercase = "𐰿", upperCaseHold = "𐱁"
+        )
     }
 }

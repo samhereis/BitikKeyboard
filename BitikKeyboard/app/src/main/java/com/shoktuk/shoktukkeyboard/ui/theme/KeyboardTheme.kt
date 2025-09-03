@@ -34,16 +34,16 @@ object KeyboardTheme {
         "#ffffff", // 1 key bg
         "#1B1B17", // 2 key text
         "#1d192b",  // 3 accent text
-        "#e6e0e9",  // 4 soft tamga key bg
-        "#dce2f9",  // 5 special tamga key bg
+        "#dce2f9",  // 4 soft tamga key bg
+        "#e6e0e9",  // 5 special tamga key bg
     )
     private val colorIndexes_Dark = listOf(
         "#1a1b20", // 0 container
         "#2f3036", // 1 key bg
         "#FFFFFF", // 2 key text
         "#d8e2ff", // 3 accent text
-        "#2a3036",  // 4 soft tamga key bg
-        "#323036",  // 5 special tamga key bg
+        "#272c3a",  // 4 soft tamga key bg
+        "#362b2e",  // 5 special tamga key bg
     )
 
     private const val BASE_SCREEN_WIDTH_DP = 350f

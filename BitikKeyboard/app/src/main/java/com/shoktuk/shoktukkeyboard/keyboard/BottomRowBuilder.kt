@@ -49,7 +49,7 @@ object BottomRowBuilder {
         if (MyKeyboardService.currentAlphabet == "bitik") {
             bottomRow.addView(
                 SystemKeyBuilder.expandableSystemButton_Text(
-                    service, ":", buttonHeight,  ":"
+                    service, "⁚", buttonHeight,  "⁚"
                 )
             )
         }
@@ -57,7 +57,7 @@ object BottomRowBuilder {
         bottomRow.addView(
             SystemKeyBuilder.systemButton_Text(
                 service, ",", buttonHeight, onClick = {
-                    service.currentInputConnection?.commitText(",", 1)
+                    service.currentInputConnection?.commitText("⹁", 1)
                     TopRowBuilder_Old.onTypedListener?.invoke()
                 })
         )

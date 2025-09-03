@@ -19,8 +19,10 @@
         "name": "а",
         "lowercase": "e",
         "lowerCaseHold": "ə",
+        "backgroundColorIndex_lowercase": 4,
         "uppercase": "E",
-        "upperCaseHold": "Ə"
+        "upperCaseHold": "Ə",
+        "backgroundColorIndex_uppercase": 4
       },
       {
         "name": "р",
@@ -41,6 +43,7 @@
         "name": "o, u",
         "lowercase": "u",
         "lowerCaseHold": "w",
+        "backgroundColorIndex_lowercase": 4,
         "uppercase": "U",
         "upperCaseHold": "W"
       },
@@ -48,12 +51,14 @@
         "name": "i",
         "lowercase": "i",
         "lowerCaseHold": "ï",
+        "backgroundColorIndex_lowercase": 4,
         "uppercase": "İ",
         "upperCaseHold": "Ï"
       },
       {
         "name": "o/u",
         "lowercase": "o",
+        "backgroundColorIndex_lowercase": 4,
         "uppercase": "O"
       },
       {
@@ -85,6 +90,7 @@
       {
         "name": "nt, nç",
         "lowercase": "ü",
+        "backgroundColorIndex_lowercase": 4,
         "uppercase": "Ü"
       },
       {
@@ -97,6 +103,7 @@
       {
         "name": "rt, lt",
         "lowercase": "ö",
+        "backgroundColorIndex_lowercase": 4,
         "uppercase": "Ö"
       },
       {
@@ -141,6 +148,7 @@
       {
         "name": "ök, ük",
         "lowercase": "ı",
+        "backgroundColorIndex_lowercase": 4,
         "uppercase": "I"
       },
       {

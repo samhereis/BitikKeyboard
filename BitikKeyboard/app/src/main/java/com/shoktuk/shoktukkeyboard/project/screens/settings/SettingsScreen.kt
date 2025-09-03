@@ -38,9 +38,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.A_Letter_Variannt
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.E_Letter_Variannt
 import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
@@ -53,11 +56,16 @@ import localized
 fun SettingsScreen() {
     val context = LocalContext.current
     var keyboardVariant by remember { mutableStateOf(SettingsManager.getKeyboardVariant(context)) }
-    var eVariant by remember { mutableStateOf(SettingsManager.getEVariant(context)) }
+    var bitikDialect by remember { mutableStateOf(SettingsManager.getBitikDialect(context)) }
     var textTranscription by remember { mutableStateOf(SettingsManager.getTextTranscription(context)) }
     var letterTranscription by remember { mutableStateOf(SettingsManager.getLeterTranscription(context)) }
-    var asVariant by remember { mutableStateOf(SettingsManager.getASVariant(context)) }
-    var bitikDialect by remember { mutableStateOf(SettingsManager.getBitikDialect(context)) }
+
+    var aVariant by remember { mutableStateOf(SettingsManager.getA_Variant(context)) }
+    var eVariant by remember { mutableStateOf(SettingsManager.getE_Variant(context)) }
+    var ebVariant by remember { mutableStateOf(SettingsManager.getEB_Variant(context)) }
+    var eNariant by remember { mutableStateOf(SettingsManager.getEN_Variant(context)) }
+    var asVariant by remember { mutableStateOf(SettingsManager.getAS_Variant(context)) }
+    var eshVariant by remember { mutableStateOf(SettingsManager.getES_Variant(context)) }
 
     Column(
         Modifier
@@ -93,6 +101,14 @@ fun SettingsScreen() {
             }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
         )
 
+        HorizontalDivider()
+        CenteredDropdownPopup(
+            label = "A тамга", options = A_Letter_Variannt.entries, selected = aVariant, onSelect = { alpha ->
+                aVariant = alpha
+                SettingsManager.setAVariant(context, alpha)
+            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+        )
+
         CenteredDropdownPopup(
             label = "Э тамга", options = E_Letter_Variannt.entries, selected = eVariant, onSelect = { alpha ->
                 eVariant = alpha
@@ -101,23 +117,16 @@ fun SettingsScreen() {
         )
 
         CenteredDropdownPopup(
-            label = "эБ тамга", options = E_Letter_Variannt.entries, selected = eVariant, onSelect = { alpha ->
-                eVariant = alpha
-                SettingsManager.setEVariant(context, alpha)
+            label = "эБ тамга", options = EB_Letter_Variant.entries, selected = ebVariant, onSelect = { alpha ->
+                ebVariant = alpha
+                SettingsManager.setEB_Variant(context, alpha)
             }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
         )
 
         CenteredDropdownPopup(
-            label = "эБ тамга", options = E_Letter_Variannt.entries, selected = eVariant, onSelect = { alpha ->
-                eVariant = alpha
-                SettingsManager.setEVariant(context, alpha)
-            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
-        )
-
-        CenteredDropdownPopup(
-            label = "ӨК тамга", options = E_Letter_Variannt.entries, selected = eVariant, onSelect = { alpha ->
-                eVariant = alpha
-                SettingsManager.setEVariant(context, alpha)
+            label = "эН тамга", options = EN_Letter_Variant.entries, selected = eNariant, onSelect = { alpha ->
+                eNariant = alpha
+                SettingsManager.setEN_Variant(context, alpha)
             }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
         )
 
@@ -127,15 +136,15 @@ fun SettingsScreen() {
         CenteredDropdownPopup(
             label = "аС тамга", options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
                 asVariant = alpha
-                SettingsManager.setASVariant(context, alpha)
+                SettingsManager.setAS_Variant(context, alpha)
             }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
         )
 
-        if (MyKeyboardService.isClassic == false) {
+        if (SettingsManager.getKeyboardVariant(context) == KeyboardVariant.SAMAGAN) {
             CenteredDropdownPopup(
-                label = "эШ тамга", options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
-                    asVariant = alpha
-                    SettingsManager.setASVariant(context, alpha)
+                label = "эШ тамга", options = ESH_Letter_Variant.entries, selected = eshVariant, onSelect = { alpha ->
+                    eshVariant = alpha
+                    SettingsManager.setES_Variant(context, alpha)
                 }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
             )
         }

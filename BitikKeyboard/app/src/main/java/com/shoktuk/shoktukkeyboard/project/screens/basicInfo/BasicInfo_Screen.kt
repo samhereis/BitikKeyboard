@@ -13,11 +13,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
@@ -66,16 +66,16 @@ fun NavigationItem(title: String, onClick: () -> Unit) {
         modifier = Modifier
             .fillMaxWidth()
             .clip(shape = RoundedCornerShape(10.dp))
-            .background(Color.DarkGray)
+            .background(darkColorScheme().primary)
             .clickable(onClick = onClick)
             .padding(16.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(text = title, fontSize = 20.sp, color = Color.White)
+            Text(text = title, fontSize = 20.sp, color = darkColorScheme().surface)
             Image(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, colorFilter = ColorFilter.tint(Color.White)
+                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null, colorFilter = ColorFilter.tint(darkColorScheme().surface)
             )
         }
     }

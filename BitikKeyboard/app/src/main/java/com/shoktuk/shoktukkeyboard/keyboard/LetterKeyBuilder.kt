@@ -12,7 +12,6 @@ object LetterKeyBuilder {
         service: InputMethodService,
         key: KeyEntry,
         buttonHeight: Int,
-        isTamga: Boolean,
         onKeyClick: (String) -> Unit,
         onLongPress: (String?) -> Unit
     ): View {
@@ -20,7 +19,6 @@ object LetterKeyBuilder {
             context = service,
             key = key,
             buttonHeight = buttonHeight,
-            isTamga = isTamga,
             onKeyClick = onKeyClick,
             onLongPress = onLongPress
         )

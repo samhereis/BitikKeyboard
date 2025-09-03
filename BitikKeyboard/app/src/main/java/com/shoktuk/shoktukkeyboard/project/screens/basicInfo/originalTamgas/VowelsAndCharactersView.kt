@@ -26,8 +26,7 @@ fun VowelsAndCharactersView() {
 
     val colLeft = listOf(
         BulletItem(text = "А/E - 𐰁/𐰀"),
-        BulletItem(text = "E - 𐰅"),
-        BulletItem(text = "Ə - 𐰂"),
+        BulletItem(text = "E - 𐰅, 𐰂"),
         BulletItem(text = "Ы/И - 𐰄 ,𐰃"),
         BulletItem(text = "О/U - 𐰆"),
         BulletItem(text = "Ө/Ү - 𐰇/𐰈")
@@ -42,7 +41,7 @@ fun VowelsAndCharactersView() {
         BulletItem(text = "НТ - 𐰦, 𐰧"),
         BulletItem(text = "НЧ - 𐰩 ,𐰨"),
         BulletItem(text = "ОТ - 𐱇"),
-        BulletItem(text = "АН - 𐰪, 𐰫")
+        BulletItem(text = "НЙ - 𐰪, 𐰫")
     )
     Row(
         modifier = Modifier

@@ -23,39 +23,61 @@ enum class KeyboardAlphabet(val id: String) {
     Bitik("bitik"), Latin("latin")
 }
 
-enum class AS_Letter_Variant(val id: String) {
-    Default("𐱂"), Second("𐰽")
-}
+enum class A_Letter_Variannt(val id: String) {
+    Default("𐰁"), Second("𐰀");
 
-enum class ESH_Letter_Variant(val id: String) {
-    Default("𐱂"), Second("𐰽")
-}
-
-enum class EB_Letter_Variant(val id: String) {
-    Default("𐱂"), Second("𐰽")
-}
-
-enum class OEK_Letter_Variant(val id: String) {
-    Default("𐱂"), Second("𐰽")
-}
-
-enum class EN_Letter_Variant(val id: String) {
-    Default("𐱂"), Second("𐰽")
+    fun getKey(): String {
+        return "A_Letter_Variannt"
+    }
 }
 
 enum class E_Letter_Variannt(val id: String) {
-    Default("𐰁"), Second("𐰅")
+    Default("𐰅"), Second("𐰁");
+
+    fun getKey(): String {
+        return "e_variant"
+    }
+}
+
+enum class EB_Letter_Variant(val id: String) {
+    Default("𐰌"), Second("𐰋");
+
+    fun getKey(): String {
+        return "EB_Letter_Variant"
+    }
+}
+
+enum class EN_Letter_Variant(val id: String) {
+    Default("𐰤"), Second("𐰥");
+
+    fun getKey(): String {
+        return "EN_Letter_Variant"
+    }
+}
+
+enum class AS_Letter_Variant(val id: String) {
+    Default("𐰽"), Second("𐱂");
+
+    fun getKey(): String {
+        return "AS_variant"
+    }
+}
+
+enum class ESH_Letter_Variant(val id: String) {
+    Default("𐱁"), Second("𐰿");
+
+    fun getKey(): String {
+        return "ESH_Letter_Variant"
+    }
 }
 
 object SettingsManager {
     private const val PREFS_NAME = "settings_prefs"
     private const val KEY_VARIANT = "keyboard_variant"
-    private const val E_VARIANT = "e_variant"
-    private const val TEXT_TRANSCRIPTION = "text_transcription"
-    private const val LETTER_TRANSCRIPTION = "letter_transcription"
-    private const val AS_VARIANT = "AS_variant"
     private const val BITIKDIALECT = "BitikDialect"
     private const val BITIKALPHABET = "BitikAlphabet"
+    private const val TEXT_TRANSCRIPTION = "text_transcription"
+    private const val LETTER_TRANSCRIPTION = "letter_transcription"
 
     // Variant
     fun getKeyboardVariant(context: Context): KeyboardVariant {
@@ -70,17 +92,30 @@ object SettingsManager {
         prefs.edit { putString(KEY_VARIANT, variant.name) }
     }
 
-    // E Letter
-    fun getEVariant(context: Context): E_Letter_Variannt {
+    // Bitik Dialect
+    fun getBitikDialect(context: Context): BitikDialect {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return E_Letter_Variannt.valueOf(
-            prefs.getString(E_VARIANT, E_Letter_Variannt.Default.name) ?: E_Letter_Variannt.Default.name
+        return BitikDialect.valueOf(
+            prefs.getString(BITIKDIALECT, BitikDialect.Altay.name) ?: BitikDialect.Altay.name
         )
     }
 
-    fun setEVariant(context: Context, variant: E_Letter_Variannt) {
+    fun setBitikDialect(context: Context, variant: BitikDialect) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit { putString(E_VARIANT, variant.name) }
+        prefs.edit { putString(BITIKDIALECT, variant.name) }
+    }
+
+    // Keyboard Alphabet
+    fun getBitikAlphabet(context: Context): KeyboardAlphabet {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return KeyboardAlphabet.valueOf(
+            prefs.getString(BITIKALPHABET, KeyboardAlphabet.Bitik.name) ?: KeyboardAlphabet.Bitik.name
+        )
+    }
+
+    fun setBitikAlphabet(context: Context, variant: KeyboardAlphabet) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putString(BITIKALPHABET, variant.name) }
     }
 
     // Text transcription
@@ -109,42 +144,81 @@ object SettingsManager {
         prefs.edit { putString(LETTER_TRANSCRIPTION, variant.name) }
     }
 
+    // A Letter
+    fun getA_Variant(context: Context): A_Letter_Variannt {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return A_Letter_Variannt.valueOf(
+            prefs.getString(A_Letter_Variannt.Default.getKey(), A_Letter_Variannt.Default.name) ?: A_Letter_Variannt.Default.name
+        )
+    }
+
+    fun setAVariant(context: Context, variant: A_Letter_Variannt) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putString(A_Letter_Variannt.Default.getKey(), variant.name) }
+    }
+
+    // E Letter
+    fun getE_Variant(context: Context): E_Letter_Variannt {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return E_Letter_Variannt.valueOf(
+            prefs.getString(E_Letter_Variannt.Default.getKey(), E_Letter_Variannt.Default.name) ?: E_Letter_Variannt.Default.name
+        )
+    }
+
+    fun setEVariant(context: Context, variant: E_Letter_Variannt) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putString(E_Letter_Variannt.Default.getKey(), variant.name) }
+    }
+
+    // EB Letter
+    fun getEB_Variant(context: Context): EB_Letter_Variant {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return EB_Letter_Variant.valueOf(
+            prefs.getString(EB_Letter_Variant.Default.getKey(), EB_Letter_Variant.Default.name) ?: EB_Letter_Variant.Default.name
+        )
+    }
+
+    fun setEB_Variant(context: Context, variant: EB_Letter_Variant) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putString(EB_Letter_Variant.Default.getKey(), variant.name) }
+    }
+
+    // EN Letter
+    fun getEN_Variant(context: Context): EN_Letter_Variant {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        return EN_Letter_Variant.valueOf(
+            prefs.getString(EN_Letter_Variant.Default.getKey(), EN_Letter_Variant.Default.name) ?: EN_Letter_Variant.Default.name
+        )
+    }
+
+    fun setEN_Variant(context: Context, variant: EN_Letter_Variant) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit { putString(EN_Letter_Variant.Default.getKey(), variant.name) }
+    }
+
     // aS letter
-    fun getASVariant(context: Context): AS_Letter_Variant {
+    fun getAS_Variant(context: Context): AS_Letter_Variant {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
         return AS_Letter_Variant.valueOf(
-            prefs.getString(AS_VARIANT, AS_Letter_Variant.Default.name) ?: AS_Letter_Variant.Default.name
+            prefs.getString(AS_Letter_Variant.Default.getKey(), AS_Letter_Variant.Default.name) ?: AS_Letter_Variant.Default.name
         )
     }
 
-    fun setASVariant(context: Context, variant: AS_Letter_Variant) {
+    fun setAS_Variant(context: Context, variant: AS_Letter_Variant) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit { putString(AS_VARIANT, variant.name) }
+        prefs.edit { putString(AS_Letter_Variant.Default.getKey(), variant.name) }
     }
 
-    // aS letter
-    fun getBitikDialect(context: Context): BitikDialect {
+    // E Letter
+    fun getES_Variant(context: Context): ESH_Letter_Variant {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return BitikDialect.valueOf(
-            prefs.getString(BITIKDIALECT, BitikDialect.Altay.name) ?: BitikDialect.Altay.name
+        return ESH_Letter_Variant.valueOf(
+            prefs.getString(ESH_Letter_Variant.Default.getKey(), ESH_Letter_Variant.Default.name) ?: ESH_Letter_Variant.Default.name
         )
     }
 
-    fun setBitikDialect(context: Context, variant: BitikDialect) {
+    fun setES_Variant(context: Context, variant: ESH_Letter_Variant) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit { putString(BITIKDIALECT, variant.name) }
-    }
-
-    // Keyboard Alphabet
-    fun getBitikAlphabet(context: Context): KeyboardAlphabet {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return KeyboardAlphabet.valueOf(
-            prefs.getString(BITIKALPHABET, KeyboardAlphabet.Bitik.name) ?: KeyboardAlphabet.Bitik.name
-        )
-    }
-
-    fun setBitikAlphabet(context: Context, variant: KeyboardAlphabet) {
-        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit { putString(BITIKALPHABET, variant.name) }
+        prefs.edit { putString(ESH_Letter_Variant.Default.getKey(), variant.name) }
     }
 }

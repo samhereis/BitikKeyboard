@@ -1,15 +1,11 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
-import android.content.Context
 import android.inputmethodservice.InputMethodService
-import android.util.TypedValue
 import android.view.View
 import android.view.inputmethod.EditorInfo
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.view.ViewCompat // changed: used for insets
-import androidx.core.view.WindowInsetsCompat // changed: used for insets
-import androidx.core.view.doOnAttach // changed: apply insets immediately after attach
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.doOnAttach
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.KeyboardAlphabet
 import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
@@ -20,9 +16,6 @@ import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
 class MyKeyboardService : InputMethodService() {
     companion object {
-        var backgroundColor: Color = Color.DarkGray;
-        var textColor: Color = Color.DarkGray;
-
         var currentAlphabet: String = "bitik"
         var currentMode: String = "letters"
         var currentLanguage: String = "enesay"
@@ -40,7 +33,8 @@ class MyKeyboardService : InputMethodService() {
         val showLetterTranscription: Boolean get() = letterTranscription == TamgaTranscription.On
         val showTextTranscription: Boolean get() = textTranscription == TextTranscription.On
 
-        lateinit var context : MyKeyboardService
+        lateinit var context: MyKeyboardService
+        var bottomPadding: Int? = null
     }
 
     private var currentLayout: KeyboardLayout? = null
@@ -49,28 +43,29 @@ class MyKeyboardService : InputMethodService() {
         return false
     }
 
-    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
-        super.onConfigurationChanged(newConfig)
-        reloadKeyboard()
+    override fun onWindowShown() {
+        super.onWindowShown()
+
+        currentAlphabet = SettingsManager.getBitikAlphabet(this).id
+        currentVariant = SettingsManager.getKeyboardVariant(this)
+        letterTranscription = SettingsManager.getLeterTranscription(this)
+        textTranscription = SettingsManager.getTextTranscription(this)
+
+        if (currentLayout != null) {
+            reloadKeyboard()
+        }
     }
 
     override fun onCreateInputView(): View {
         context = this
 
         currentAlphabet = SettingsManager.getBitikAlphabet(this).id
-        currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, currentMode, getLanguage())
         currentVariant = SettingsManager.getKeyboardVariant(this)
         letterTranscription = SettingsManager.getLeterTranscription(this)
         textTranscription = SettingsManager.getTextTranscription(this)
+        updateDialect()
 
-        val typedValue = TypedValue()
-        val theme = this.theme
-
-        theme.resolveAttribute(android.R.attr.colorBackground, typedValue, true)
-        backgroundColor = Color(typedValue.data)
-
-        theme.resolveAttribute(android.R.attr.textColorPrimary, typedValue, true)
-        textColor = Color(typedValue.data)
+        currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, currentMode, getLanguage())
 
         val root = KeyboardViewBuilder.buildKeyboardView(service = this, layout = currentLayout!!, onCapsChange = { newCaps ->
             isCaps = newCaps
@@ -85,10 +80,11 @@ class MyKeyboardService : InputMethodService() {
                 SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Bitik)
             }
             currentAlphabet = SettingsManager.getBitikAlphabet(this).id
+            currentMode = "letter"
             reloadKeyboard()
         })
 
-        applyInsetsNowAndOnChange(root) // changed: ensure bottom padding right away and on future inset dispatches
+        applyInsetsNowAndOnChange(root)
         return root
     }
 
@@ -120,31 +116,40 @@ class MyKeyboardService : InputMethodService() {
                 SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Bitik)
             }
             currentAlphabet = SettingsManager.getBitikAlphabet(this).id
+            currentMode = "letter"
             reloadKeyboard()
         })
 
-        applyInsetsNowAndOnChange(root) // changed: re-apply insets on the newly built view
+        applyInsetsNowAndOnChange(root)
         setInputView(root)
     }
 
     private fun applyInsetsNowAndOnChange(view: View) {
         ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            val sys = insets.getInsets(
-                WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.systemGestures()
-            )
-            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, sys.bottom / 2)
-            insets
+            val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            if (bottomPadding == null) {
+                bottomPadding = nav.bottom + 50
+            }
+
+            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding!!)
+            insets // don't consume
         }
+
         view.doOnAttach {
-            val rootInsets = ViewCompat.getRootWindowInsets(it)
-            val sys = rootInsets?.getInsets(
-                WindowInsetsCompat.Type.navigationBars() or WindowInsetsCompat.Type.displayCutout() or WindowInsetsCompat.Type.systemGestures()
-            )
-            val bottom = sys?.bottom ?: 0
-            it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, bottom / 2)
+            val rootInsets = ViewCompat.getRootWindowInsets(it) ?: return@doOnAttach
+            val nav = rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+            if (bottomPadding == null) {
+                bottomPadding = nav.bottom
+            }
+
+            it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, bottomPadding!!)
         }
+
         ViewCompat.requestApplyInsets(view)
     }
+
 
     fun getLanguage(): String {
         if (currentAlphabet != "bitik") {

@@ -161,7 +161,9 @@
       {
         "name": "!",
         "lowercase": "!",
-        "uppercase": "!"
+        "lowerCaseHold": ",",
+        "uppercase": "!",
+        "upperCaseHold": ","
       },
       {
         "name": "⸮",
