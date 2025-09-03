@@ -15,6 +15,10 @@ object BottomRowBuilder {
     fun createBottomRow(
         service: InputMethodService, buttonHeight: Int, onModeChange: (String) -> Unit,
     ): LinearLayout {
+        var isBitik = MyKeyboardService.currentAlphabet == "bitik"
+        var comma = if (isBitik) "⹁" else ","
+        var dot = if (isBitik) "·" else "."
+
         val bottomRow = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -34,8 +38,8 @@ object BottomRowBuilder {
 
         bottomRow.addView(
             SystemKeyBuilder.systemButton_Text(
-                service, "·", buttonHeight, onClick = {
-                    service.currentInputConnection?.commitText("·", 1)
+                service, dot, buttonHeight, onClick = {
+                    service.currentInputConnection?.commitText(dot, 1)
                     TopRowBuilder_Old.onTypedListener?.invoke()
                 })
         )
@@ -46,7 +50,7 @@ object BottomRowBuilder {
             )
         )
 
-        if (MyKeyboardService.currentAlphabet == "bitik") {
+        if (isBitik) {
             bottomRow.addView(
                 SystemKeyBuilder.expandableSystemButton_Text(
                     service, "⁚", buttonHeight,  "⁚"
@@ -56,8 +60,8 @@ object BottomRowBuilder {
 
         bottomRow.addView(
             SystemKeyBuilder.systemButton_Text(
-                service, ",", buttonHeight, onClick = {
-                    service.currentInputConnection?.commitText("⹁", 1)
+                service, comma, buttonHeight, onClick = {
+                    service.currentInputConnection?.commitText(comma, 1)
                     TopRowBuilder_Old.onTypedListener?.invoke()
                 })
         )

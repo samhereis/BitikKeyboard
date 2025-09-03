@@ -13,14 +13,20 @@
       {
         "name": "ñ",
         "lowercase": "ñ",
-        "uppercase": "Ñ"
+        "lowerCaseRomanization_Alt":  "w",
+        "lowerCaseHold": "w",
+        "uppercase": "Ñ",
+        "upperCaseRomanization_Alt":"W",
+        "upperCaseHold": "W"
       },
       {
-        "name": "а",
+        "name": "a",
         "lowercase": "e",
+        "lowerCaseRomanization_Alt":  "ə",
         "lowerCaseHold": "ə",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "E",
+        "upperCaseRomanization_Alt":"Ə",
         "upperCaseHold": "Ə",
         "backgroundColorIndex_uppercase": 4
       },
@@ -42,45 +48,46 @@
       {
         "name": "o, u",
         "lowercase": "u",
-        "lowerCaseHold": "w",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "U",
-        "upperCaseHold": "W"
+        "backgroundColorIndex_uppercase": 4
       },
       {
         "name": "i",
         "lowercase": "i",
+        "lowerCaseRomanization_Alt":  "ï",
         "lowerCaseHold": "ï",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "İ",
-        "upperCaseHold": "Ï"
+        "upperCaseRomanization_Alt":"Ï",
+        "upperCaseHold": "Ï",
+        "backgroundColorIndex_uppercase": 4
       },
       {
         "name": "o/u",
         "lowercase": "o",
         "backgroundColorIndex_lowercase": 4,
-        "uppercase": "O"
+        "uppercase": "O",
+        "backgroundColorIndex_uppercase": 4
       },
       {
         "name": "p",
         "lowercase": "p",
-        "lowerCaseHold": "f",
-        "uppercase": "P",
-        "upperCaseHold": "F"
+        "uppercase": "P"
       }
     ],
     [
       {
         "name": "oq, uq",
         "lowercase": "a",
-        "uppercase": "A"
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "A",
+        "backgroundColorIndex_uppercase": 4
       },
       {
         "name": "s",
         "lowercase": "s",
-        "lowerCaseHold": "x",
-        "uppercase": "S",
-        "upperCaseHold": "X"
+        "uppercase": "S"
       },
       {
         "name": "d",
@@ -90,21 +97,29 @@
       {
         "name": "nt, nç",
         "lowercase": "ü",
+        "lowerCaseRomanization_Alt": "f",
+        "lowerCaseHold": "f",
         "backgroundColorIndex_lowercase": 4,
-        "uppercase": "Ü"
+        "uppercase": "Ü",
+        "upperCaseRomanization_Alt":"F",
+        "upperCaseHold": "F",
+        "backgroundColorIndex_uppercase": 4
       },
       {
         "name": "g",
         "lowercase": "g",
-        "lowerCaseHold": "ğ",
-        "uppercase": "G",
-        "upperCaseHold": "Ğ"
+        "uppercase": "G"
       },
       {
         "name": "rt, lt",
         "lowercase": "ö",
+        "lowerCaseRomanization_Alt": "h",
+        "lowerCaseHold": "h",
         "backgroundColorIndex_lowercase": 4,
-        "uppercase": "Ö"
+        "uppercase": "Ö",
+        "upperCaseRomanization_Alt": "H",
+        "upperCaseHold": "H",
+        "backgroundColorIndex_uppercase": 4
       },
       {
         "name": "j",
@@ -114,14 +129,17 @@
       {
         "name": "k",
         "lowercase": "k",
-        "lowerCaseHold": "h",
-        "uppercase": "K",
-        "upperCaseHold": "H"
+        "uppercase": "K"
       },
       {
         "name": "l",
         "lowercase": "l",
         "uppercase": "L"
+      },
+      {
+        "name": "ğ",
+        "lowercase": "ğ",
+        "uppercase": "Ğ"
       }
     ],
     [
@@ -136,27 +154,36 @@
       {
         "name": "ş",
         "lowercase": "ş",
-        "uppercase": "Ș"
+        "lowerCaseHold": "x",
+        "lowerCaseRomanization_Alt": "x",
+        "uppercase": "Ş",
+        "upperCaseHold": "X",
+        "upperCaseRomanization_Alt": "X"
       },
       {
         "name": "ç",
         "lowercase": "ç",
         "lowerCaseHold": "c",
+        "lowerCaseRomanization_Alt": "c",
         "uppercase": "Ç",
+        "upperCaseRomanization_Alt": "C",
         "upperCaseHold": "C"
       },
       {
         "name": "ök, ük",
         "lowercase": "ı",
+        "lowerCaseRomanization_Alt": "v",
+        "lowerCaseHold": "v",
         "backgroundColorIndex_lowercase": 4,
-        "uppercase": "I"
+        "uppercase": "I",
+        "upperCaseRomanization_Alt": "V",
+        "upperCaseHold": "V",
+        "backgroundColorIndex_uppercase": 4
       },
       {
         "name": "b",
         "lowercase": "b",
-        "lowerCaseHold": "v",
-        "uppercase": "B",
-        "upperCaseHold": "V"
+        "uppercase": "B"
       },
       {
         "name": "n",

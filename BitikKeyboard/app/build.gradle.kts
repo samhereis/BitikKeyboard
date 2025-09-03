@@ -10,10 +10,10 @@ android {
 
     defaultConfig {
         applicationId = "com.shoktuk.shoktukkeyboard"
-        minSdk = 28
+        minSdk = 25
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.1.7"
+        versionCode = 10
+        versionName = "1.1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -39,6 +39,8 @@ android {
 dependencies {
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("com.google.android.material:material:1.12.0")
+
+    implementation(libs.androidx.foundation)
 
     implementation(libs.ui)
     implementation(libs.androidx.compose.material3.material3)

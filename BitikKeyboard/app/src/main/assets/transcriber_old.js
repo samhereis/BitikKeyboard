@@ -178,6 +178,7 @@ function CorrentText_Old() {
                     new TranscriptionEntry("𐰁", "А", CharacterType.HardVowel_HasSoftVariant, "E"),
                     new TranscriptionEntry("𐰀", "А", CharacterType.HardVowel_HasSoftVariant, "E"),
                     new TranscriptionEntry("𐰺", "аР", CharacterType.HardConsonant),
+                    new TranscriptionEntry("𐰻", "аР", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐱄", "аТ", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐱃", "аТ", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐱇", "ОТ", CharacterType.HardCharacter),
@@ -235,6 +236,7 @@ function CorrentText_Old() {
                     new TranscriptionEntry("𐰲", "Ч", CharacterType.HardConsonant_Single),
                     new TranscriptionEntry("𐰳", "Ч", CharacterType.HardConsonant_Single),
                     new TranscriptionEntry("𐰜", "ҮК", CharacterType.SoftCharacter, "ӨК"),
+                    new TranscriptionEntry("𐰰", "ҮК", CharacterType.SoftCharacter, "ӨК"),
                     new TranscriptionEntry("𐰝", "ӨК", CharacterType.SoftCharacter, "ҮК"),
                     new TranscriptionEntry("𐰉", "аБ", CharacterType.HardConsonant),
                     new TranscriptionEntry("𐰊", "аБ", CharacterType.HardConsonant),
@@ -245,7 +247,9 @@ function CorrentText_Old() {
                     new TranscriptionEntry("𐰌", "еБ", CharacterType.SoftConsonant),
                     new TranscriptionEntry("𐰋", "еБ", CharacterType.SoftConsonant),
                     new TranscriptionEntry("𐰤", "еН", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰥", "еН", CharacterType.SoftConsonant)
+                    new TranscriptionEntry("𐰥", "еН", CharacterType.SoftConsonant),
+                    new TranscriptionEntry("𐰫", "НЙ", CharacterType.Character, "НЙ"),
+                    new TranscriptionEntry("𐰪", "НЙ", CharacterType.Character, "НЙ"),
     ];
     this.singleTranscriptionData = new SingleTranscriptionData();
 }

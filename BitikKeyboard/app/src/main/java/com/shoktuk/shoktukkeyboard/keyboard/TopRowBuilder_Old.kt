@@ -122,7 +122,7 @@ object TopRowBuilder_Old {
         TextView(container.context).apply {
             text = "   ~ "
             setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
-            setTextColor(ContextCompat.getColor(service, android.R.color.white))
+            setTextColor(KeyboardTheme.getColor(2).toColorInt())
             gravity = Gravity.CENTER
         }.also(container::addView)
 

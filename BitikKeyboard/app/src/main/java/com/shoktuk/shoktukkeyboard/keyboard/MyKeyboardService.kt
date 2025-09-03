@@ -129,7 +129,7 @@ class MyKeyboardService : InputMethodService() {
             val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
             if (bottomPadding == null) {
-                bottomPadding = nav.bottom + 50
+                bottomPadding = nav.bottom + 25
             }
 
             v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding!!)
@@ -141,7 +141,7 @@ class MyKeyboardService : InputMethodService() {
             val nav = rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
             if (bottomPadding == null) {
-                bottomPadding = nav.bottom
+                bottomPadding = nav.bottom + 25
             }
 
             it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, bottomPadding!!)

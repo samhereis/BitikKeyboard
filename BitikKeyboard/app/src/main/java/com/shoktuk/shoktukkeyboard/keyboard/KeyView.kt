@@ -3,7 +3,6 @@ package com.shoktuk.shoktukkeyboard.keyboard
 import android.content.Context
 import android.graphics.Color
 import android.graphics.drawable.GradientDrawable
-import android.inputmethodservice.InputMethodService
 import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
@@ -22,6 +21,8 @@ import androidx.core.widget.TextViewCompat
 import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
+import kotlin.math.max
+import kotlin.math.roundToInt
 
 class KeyView(
     context: Context, private val key: KeyEntry, private val buttonHeight: Int, private val onKeyClick: (String) -> Unit, private val onLongPress: (String?) -> Unit
@@ -43,6 +44,23 @@ class KeyView(
     private lateinit var visualContainer: FrameLayout
     private val visualInsetPx = dpToPx(context, 4)
 
+    // NEW:
+    private var lastErrorAt = 0L
+    private var overlayMainText: TextView? = null
+
+    // NEW:
+    private fun notifyError(message: String, t: Throwable? = null) {
+        val now = System.currentTimeMillis()
+        if (now - lastErrorAt >= 1000) {
+            lastErrorAt = now
+            try {
+                android.widget.Toast.makeText(context.applicationContext, message, android.widget.Toast.LENGTH_SHORT).show()
+            } catch (_: Throwable) {
+            }
+        }
+        t?.printStackTrace()
+    }
+
     init {
         if (MyKeyboardService.isTamga && MyKeyboardService.isCaps && MyKeyboardService.currentAlphabet == "bitik") {
             style = KeyboardTheme.getLetterButtonStyle_UpperCase(context, MyKeyboardService.showLetterTranscription)
@@ -51,6 +69,11 @@ class KeyView(
         setupContent()
         setupTouchHandling()
         setupClickListeners()
+    }
+
+    override fun onDetachedFromWindow() {
+        super.onDetachedFromWindow()
+        dismissOverlay() // CHANGED: ensure cleanup on detach
     }
 
     private fun setupView() {
@@ -105,15 +128,20 @@ class KeyView(
     }
 
     private fun updateContent() {
+        var mainTextSize = style.textSizeSp.value;
+        if (MyKeyboardService.currentAlphabet == "latin" && MyKeyboardService.isCaps) {
+            mainTextSize = style.textSizeSp.value / 1.1f;
+        }
+
         mainText.apply {
             text = getCurrentMainText()
             setTextColor(style.textColor.toColorInt())
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp.value)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, mainTextSize)
             setPadding(0, 0, 0, 0)
             maxLines = 1
             ellipsize = null
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                this, 1, style.textSizeSp.value.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
+                this, 1, mainTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
             )
         }
 
@@ -233,104 +261,113 @@ class KeyView(
     }
 
 
-    private fun showOverlay() {
-        dismissOverlay()
+    fun showOverlay() {
+        try {
+            dismissOverlay()
 
-        val decor = (context as? InputMethodService)?.window?.window?.decorView ?: return
-        val overlayView = createOverlayView().apply {
-            layoutParams = LayoutParams(width, height)
+            if (!androidx.core.view.ViewCompat.isAttachedToWindow(this)) return // CHANGED
+
+            val w = kotlin.math.max(1, width)   // CHANGED
+            val h = kotlin.math.max(1, height)  // CHANGED
+            if (w <= 0 || h <= 0) return
+
+            val overlayView = createOverlayView().apply {
+                layoutParams = LayoutParams(w, h)
+            }
+
+            popupWindow = PopupWindow(overlayView, w, h, false).apply {
+                isOutsideTouchable = false
+                isFocusable = false
+                elevation = 24f
+                setClippingEnabled(true)
+                animationStyle = 0
+            }
+
+            val xOff = (width - w) / 2
+            val yOff = -h - dpToPxInt(50)
+
+            try {
+                popupWindow?.showAsDropDown(this, xOff, yOff, Gravity.START) // CHANGED
+            } catch (e: android.view.WindowManager.BadTokenException) {      // CHANGED
+                popupWindow?.dismiss()
+                popupWindow = null
+                notifyError("Can't show key preview on this device (window token).", e) // CHANGED
+            } catch (e: Throwable) {                                         // CHANGED
+                popupWindow?.dismiss()
+                popupWindow = null
+                notifyError("Failed to show key preview.", e)                 // CHANGED
+            }
+        } catch (e: Throwable) {
+            notifyError("Unexpected error while showing preview.", e)         // CHANGED
         }
-
-        popupWindow = PopupWindow(
-            overlayView, (width * 1.25f).toInt(), (height * 1.25f).toInt()
-        ).apply {
-            isOutsideTouchable = false
-            isFocusable = false
-            elevation = 24f
-            setClippingEnabled(true)
-            setTouchInterceptor { _, _ -> false }
-        }
-
-        val loc = IntArray(2)
-        getLocationInWindow(loc)
-        popupWindow?.showAtLocation(
-            decor, Gravity.START or Gravity.TOP, loc[0] - ((popupWindow!!.width - width) / 2), loc[1] - popupWindow!!.height - dpToPx(context, 16)
-        )
     }
 
-    private fun createOverlayView(): View {
-        return LayoutInflater.from(context).inflate(R.layout.keyboard_key, null).apply {
-            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+    private fun dpToPxInt(dp: Int): Int = max(
+        1, (resources.displayMetrics.density * dp).roundToInt()
+    )
 
-            findViewById<TextView>(R.id.mainText).apply {
+    private fun createOverlayView(): View {
+        return FrameLayout(context).apply {
+            layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
+            background = com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.createDrawableFromStyle(context, style) // CHANGED
+
+            val pad = dpToPxInt(6) // CHANGED
+            setPadding(pad, pad, pad, pad) // CHANGED
+
+            val column = android.widget.LinearLayout(context).apply { // CHANGED
+                orientation = android.widget.LinearLayout.VERTICAL
+                gravity = Gravity.CENTER
+            }
+
+            val main = TextView(context).apply { // CHANGED
                 text = getCurrentMainText()
                 setTextColor(style.textColor.toColorInt())
-                setTextSize(
-                    TypedValue.COMPLEX_UNIT_PX, style.textSizeSp.value * resources.displayMetrics.density * 1.5f
-                )
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp.value)
                 maxLines = 1
-                ellipsize = null
-                TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                    this, 10, (style.textSizeSp.value * 1.5f).toInt(), 1, TypedValue.COMPLEX_UNIT_SP
-                )
+                isAllCaps = false
             }
 
-            findViewById<TextView>(R.id.bottomSubText).apply {
-                val subText = if (isLongPressed) {
-                    " " + getCurrentSubText_Hold() + " "
-                } else {
-                    " " + getCurrentSubText() + " "
-                }
-                text = subText
-                maxLines = 2
-                setTextColor(style.textColor.toColorInt())
-                setTextSize(
-                    TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context).value
+            column.addView(
+                main, android.widget.LinearLayout.LayoutParams(
+                    android.widget.LinearLayout.LayoutParams.WRAP_CONTENT, android.widget.LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-                TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                    this, 8, KeyboardTheme.getHintButtonTextSize(context).value.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
-                )
-            }
+            )
 
-            background = KeyboardTheme.createDrawableFromStyle(context, style)
+            addView(
+                column, FrameLayout.LayoutParams(
+                    FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT, Gravity.CENTER
+                )
+            )
+
+            overlayMainText = main
         }
     }
 
     private fun updateOverlay() {
-        val mainText = if (isLongPressed) {
-            " " + getCurrentMainText_Hold() + " "
-        } else {
-            " " + getCurrentMainText() + " "
-        }
-        val subText = if (isLongPressed) {
-            " " + getCurrentSubText_Hold() + " "
-        } else {
-            " " + getCurrentSubText() + " "
-        }
+        try {
+            val main = if (isLongPressed) getCurrentMainText_Hold() else getCurrentMainText()
+            val hint = if (isLongPressed) getCurrentSubText_Hold() else getCurrentSubText()
 
-        popupWindow?.contentView?.findViewById<TextView>(R.id.mainText)?.text = mainText
-        popupWindow?.contentView?.findViewById<TextView>(R.id.bottomSubText)?.text = subText
-        popupWindow?.contentView?.findViewById<TextView>(R.id.topSubText)?.text = ""
+            overlayMainText?.text = (main ?: "").toString()
 
-        var colorToSet: Int = KeyboardTheme.getColor(1).toColorInt()
-        colorToSet = if (MyKeyboardService.isCaps) {
-            when {
-                key.backgroundColorIndex_uppercase_Hold != null -> KeyboardTheme.getColor(key.backgroundColorIndex_uppercase_Hold!!).toColorInt()
-
-                key.backgroundColorIndex_lowercase != null -> KeyboardTheme.getColor(key.backgroundColorIndex_lowercase!!).toColorInt()
-
-                else -> colorToSet
+            var colorToSet: Int = KeyboardTheme.getColor(1).toColorInt()
+            colorToSet = if (MyKeyboardService.isCaps) {
+                when {
+                    key.backgroundColorIndex_uppercase_Hold != null -> KeyboardTheme.getColor(key.backgroundColorIndex_uppercase_Hold!!).toColorInt()
+                    key.backgroundColorIndex_lowercase != null -> KeyboardTheme.getColor(key.backgroundColorIndex_lowercase!!).toColorInt()
+                    else -> colorToSet
+                }
+            } else {
+                when {
+                    key.backgroundColorIndex_lowercase_Hold != null -> KeyboardTheme.getColor(key.backgroundColorIndex_lowercase_Hold!!).toColorInt()
+                    key.backgroundColorIndex_lowercase != null -> KeyboardTheme.getColor(key.backgroundColorIndex_lowercase!!).toColorInt()
+                    else -> colorToSet
+                }
             }
-        } else {
-            when {
-                key.backgroundColorIndex_lowercase_Hold != null -> KeyboardTheme.getColor(key.backgroundColorIndex_lowercase_Hold!!).toColorInt()
-
-                key.backgroundColorIndex_lowercase != null -> KeyboardTheme.getColor(key.backgroundColorIndex_lowercase!!).toColorInt()
-
-                else -> colorToSet
-            }
+            popupWindow?.contentView?.setBackgroundColor(colorToSet)
+        } catch (e: Throwable) {
+            notifyError("Failed to update preview.", e) // CHANGED
         }
-        popupWindow?.contentView?.setBackgroundColor(colorToSet)
     }
 
     private fun addHoldIndicatorIfNeeded(root: View) {
@@ -339,25 +376,38 @@ class KeyView(
         } else {
             key.lowerCaseHold != null
         }
+        if (!hasHoldVariant) return
 
-        if (hasHoldVariant) {
-            val indicatorSize = dpToPx(context, 4)
-            val margin = dpToPx(context, 2)
+        val radius = dpToPx(context, 6).toFloat()
+        val clipToParentOutline = true
+        val topPadding = dpToPx(context, 0)
+        val indicatorColor = KeyboardTheme.getColor(3).toColorInt()
+        val indicatorHeight = dpToPx(context, 1)
 
-            val indicator = View(context).apply {
-                layoutParams = FrameLayout.LayoutParams(indicatorSize, indicatorSize).apply {
-                    gravity = Gravity.TOP or Gravity.END
-                    topMargin = margin
-                    marginEnd = margin
-                }
-                background = GradientDrawable().apply {
-                    shape = GradientDrawable.OVAL
-                    setColor(KeyboardTheme.getColor(3).toColorInt())
-                    setSize(indicatorSize, indicatorSize)
-                }
-            }
-            (root as ViewGroup).addView(indicator)
+        if (clipToParentOutline && android.os.Build.VERSION.SDK_INT >= 21) {
+            (root as? ViewGroup)?.clipToPadding = false
+            root.clipToOutline = true
         }
+
+        val indicator = View(context).apply {
+            layoutParams = FrameLayout.LayoutParams(
+                FrameLayout.LayoutParams.MATCH_PARENT, indicatorHeight
+            ).apply {
+                gravity = Gravity.TOP
+                topMargin = topPadding
+            }
+
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                setColor(indicatorColor)
+
+                cornerRadii = floatArrayOf(
+                    radius, radius, radius, radius, 0f, 0f, 0f, 0f
+                )
+            }
+        }
+
+        (root as ViewGroup).addView(indicator)
     }
 
     private fun getCurrentMainText(): String? = if (MyKeyboardService.isCaps) key.uppercase else key.lowercase
@@ -370,12 +420,15 @@ class KeyView(
 
     private fun getCurrentSubText_Hold(): CharSequence? = if (MyKeyboardService.isCaps) key.upperCaseHoldHint ?: "" else key.lowerCaseHoldHint ?: ""
 
-    private fun dismissOverlay() {
+    fun dismissOverlay() {
         try {
             popupWindow?.dismiss()
-        } catch (_: Throwable) {
+        } catch (e: Throwable) {
+            notifyError("Failed to hide key preview.", e) // CHANGED
+        } finally {
+            popupWindow = null
+            overlayMainText = null
         }
-        popupWindow = null
     }
 
     private fun resetState() {

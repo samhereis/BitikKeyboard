@@ -83,7 +83,7 @@ object SystemKeyBuilder {
         service: InputMethodService, key: KeyEntry, buttonHeight: Int, onCapsChange: (Boolean) -> Unit
     ): View {
         val baseStyle = KeyboardTheme.getSystemButtonStyle(service)
-        val style = if (key.name == "Shift" && MyKeyboardService.isCaps) baseStyle.copy(fillColor = KeyboardTheme.getColor(1), textColor = KeyboardTheme.getColor(3))
+        val style = if (key.name == "Shift" && MyKeyboardService.isCaps) baseStyle.copy(fillColor = KeyboardTheme.getColor(3), textColor = KeyboardTheme.getColor(1))
         else baseStyle
 
         val root = newContainer(service, style, buttonHeight)

@@ -25,6 +25,7 @@ object KeyboardViewBuilder {
     fun buildKeyboardView(
         service: InputMethodService, layout: KeyboardLayout, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
+        a_Def = SettingsManager.getA_Variant(MyKeyboardService.context) == A_Letter_Variannt.Default
         e_Def = SettingsManager.getE_Variant(MyKeyboardService.context) == E_Letter_Variannt.Default
         eb_Def = SettingsManager.getEB_Variant(MyKeyboardService.context) == EB_Letter_Variant.Default
         en_Def = SettingsManager.getEN_Variant(MyKeyboardService.context) == EN_Letter_Variant.Default
