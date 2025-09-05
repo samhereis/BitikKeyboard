@@ -42,7 +42,7 @@ class KeyView(
     private var style = KeyboardTheme.getLetterButtonStyle_Normal(context, MyKeyboardService.showLetterTranscription)
 
     private lateinit var visualContainer: FrameLayout
-    private val visualInsetPx = dpToPx(context, 4)
+    private val visualInsetPx = dpToPx(context, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual)
 
     // NEW:
     private var lastErrorAt = 0L

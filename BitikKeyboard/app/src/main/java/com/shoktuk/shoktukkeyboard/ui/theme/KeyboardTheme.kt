@@ -50,6 +50,7 @@ object KeyboardTheme {
     private const val MAX_SCALE_FACTOR = 1.5f
     private const val BUTTON_HEIGHT_DP = 175
     const val KEY_MARGIN_DP = 0
+    const val KEY_MARGIN_DP_OnlyVisual = 4
 
     private val BASE_LETTER_TEXT_SIZE_SP = 20.sp
     private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 25.sp
