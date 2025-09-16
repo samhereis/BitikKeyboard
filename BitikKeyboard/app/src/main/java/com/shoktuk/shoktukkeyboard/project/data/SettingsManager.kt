@@ -20,7 +20,7 @@ enum class BitikDialect(val id: String) {
 }
 
 enum class KeyboardAlphabet(val id: String) {
-    Bitik("bitik"), Latin("latin")
+    Bitik("bitik"), Latin("latin"), Kiril("kiril")
 }
 
 enum class A_Letter_Variannt(val id: String) {

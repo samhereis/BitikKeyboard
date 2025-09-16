@@ -101,11 +101,16 @@ object KeyboardViewBuilder {
         val middleKeys = row.filter { it.name != "Shift" && it.name != "Del" && it.name != "kgKey" }
 
         shiftKey?.let {
-            rowLayout.addView(
-                SystemKeyBuilder.forKey(
-                    service, it, buttonHeight, onCapsChange
-                )
+            val view = SystemKeyBuilder.forKey(
+                service, it, buttonHeight, onCapsChange
             )
+
+            val params = LinearLayout.LayoutParams(
+                (KeyboardTheme.getSystemButtonWidth(service) / 1.3f).toInt(), buttonHeight
+            )
+            view.layoutParams = params
+
+            rowLayout.addView(view)
         }
 
         val middleContainer = LinearLayout(service).apply {
@@ -115,6 +120,7 @@ object KeyboardViewBuilder {
             clipChildren = false
             clipToPadding = false
         }
+
         middleKeys.forEach { key ->
             middleContainer.addView(LetterKeyBuilder.createLetterKey(service, process(key), buttonHeight, onKeyClick = { letter ->
                 if (MyKeyboardService.currentAlphabet == "bitik") {
@@ -134,8 +140,14 @@ object KeyboardViewBuilder {
 
         rowLayout.addView(middleContainer)
 
-        val extraLeft = KeyboardTheme.dpToPx(service, 20)
-        val extraRight = KeyboardTheme.dpToPx(service, 20)
+        var extraLeft = KeyboardTheme.dpToPx(service, 20)
+        var extraRight = KeyboardTheme.dpToPx(service, 20)
+
+        if (MyKeyboardService.currentMode == "letters" && MyKeyboardService.currentAlphabet == "kiril") {
+            extraLeft = 0
+            extraRight = 0
+        }
+
         rowLayout.post {
             if (middleContainer.childCount > 0) {
                 middleContainer.getChildAt(0)?.extendHorizontalHit(extraLeft, 0)
@@ -144,11 +156,12 @@ object KeyboardViewBuilder {
         }
 
         delKey?.let {
-            rowLayout.addView(
-                SystemKeyBuilder.forKey(
-                    service, it, buttonHeight, onCapsChange
-                )
+            val view = SystemKeyBuilder.forKey(service, it, buttonHeight, onCapsChange)
+            val params = LinearLayout.LayoutParams(
+                (KeyboardTheme.getSystemButtonWidth(service) / 1.3f).toInt(), buttonHeight
             )
+            view.layoutParams = params
+            rowLayout.addView(view)
         }
         return rowLayout
     }

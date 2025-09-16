@@ -1,0 +1,209 @@
+{
+  "languageCode": "𐱄",
+  "languageColor": "#800d1a",
+  "spaceKey": ":",
+  "directionality": 1,
+  "rows": [
+    [
+      {
+        "name": "qı, ıq",
+        "lowercase": "й",
+        "uppercase": "Й"
+      },
+      {
+        "name": "s",
+        "lowercase": "ң",
+        "uppercase": "Ң"
+      },
+      {
+        "name": "ñ",
+        "lowercase": "у",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "У",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "a",
+        "lowercase": "к",
+        "lowerCaseHold": "қ",
+        "uppercase": "К",
+        "upperCaseHold": "Қ"
+      },
+      {
+        "name": "r",
+        "lowercase": "е",
+        "lowerCaseHold": "ə",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "Е",
+        "upperCaseHold": "Ə",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "t",
+        "lowercase": "н",
+        "uppercase": "Н"
+      },
+      {
+        "name": "y",
+        "lowercase": "г",
+        "lowerCaseHold": "ғ",
+        "uppercase": "Г",
+        "upperCaseHold": "Ғ"
+      },
+      {
+        "name": "u",
+        "lowercase": "ш",
+        "lowerCaseHold": "щ",
+        "uppercase": "Ш",
+        "upperCaseHold": "Щ"
+      },
+      {
+        "name": "s",
+        "lowercase": "ү",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "Ү",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "i",
+        "lowercase": "з",
+        "uppercase": "З"
+      },
+      {
+        "name": "i",
+        "lowercase": "х",
+        "uppercase": "х"
+      }
+    ],
+    [
+      {
+        "name": "i",
+        "lowercase": "ф",
+        "uppercase": "Ф"
+      },
+      {
+        "name": "nt, nç",
+        "lowercase": "ы",
+        "lowerCaseHold": "ъ",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "Ы",
+        "upperCaseHold": "Ъ",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "i",
+        "lowercase": "в",
+        "uppercase": "В"
+      },
+      {
+        "name": "s",
+        "lowercase": "а",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "А",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "d",
+        "lowercase": "п",
+        "uppercase": "П"
+      },
+      {
+        "name": "oq, uq",
+        "lowercase": "р",
+        "uppercase": "Р"
+      },
+      {
+        "name": "g",
+        "lowercase": "о",
+        "lowerCaseHold": "ё",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "О",
+        "upperCaseHold": "Ё",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "ök, ük",
+        "lowercase": "л",
+        "uppercase": "Л"
+      },
+      {
+        "name": "j",
+        "lowercase": "д",
+        "uppercase": "Д"
+      },
+      {
+        "name": "k",
+        "lowercase": "ж",
+        "uppercase": "Ж"
+      },
+      {
+        "name": "l",
+        "lowercase": "э",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "Э",
+        "backgroundColorIndex_uppercase": 4
+      }
+    ],
+    [
+      {
+        "name": "Shift"
+      },
+      {
+        "name": "z",
+        "lowercase": "я",
+        "uppercase": "Я"
+      },
+      {
+        "name": "z",
+        "lowercase": "ч",
+        "uppercase": "Ч"
+      },
+      {
+        "name": "ş",
+        "lowercase": "с",
+        "lowerCaseHold": "ц",
+        "uppercase": "С",
+        "upperCaseHold": "Ц"
+      },
+      {
+        "name": "ç",
+        "lowercase": "м",
+        "uppercase": "М"
+      },
+      {
+        "name": "c",
+        "lowercase": "и",
+        "lowerCaseHold": "ь",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "И",
+        "upperCaseHold": "Ь",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "b",
+        "lowercase": "т",
+        "uppercase": "Т"
+      },
+      {
+        "name": "s",
+        "lowercase": "ө",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "Ө",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "n",
+        "lowercase": "б",
+        "uppercase": "Б"
+      },
+      {
+        "name": "b",
+        "lowercase": "ю",
+        "uppercase": "ю"
+      },
+      {
+        "name": "Del"
+      }
+    ]
+  ]
+}

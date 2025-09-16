@@ -1,14 +1,8 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
-import android.content.Context
 import android.inputmethodservice.InputMethodService
 import android.view.Gravity
-import android.view.inputmethod.InputMethodManager
-import android.widget.Button
 import android.widget.LinearLayout
-import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.graphics.toColorInt
-import com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
 object BottomRowBuilder {
@@ -31,9 +25,11 @@ object BottomRowBuilder {
         }
 
         bottomRow.addView(
-            SystemKeyBuilder.systemButton_Text(
-                service, "123", buttonHeight, onClick = { onModeChange("symbols") }
-            )
+            SystemKeyBuilder.systemButton_Text(service, "123", buttonHeight, onClick = {
+                onModeChange("symbols")
+            }, onLongClick = {
+                onModeChange("emojis")
+            })
         )
 
         bottomRow.addView(
@@ -53,7 +49,7 @@ object BottomRowBuilder {
         if (isBitik) {
             bottomRow.addView(
                 SystemKeyBuilder.expandableSystemButton_Text(
-                    service, "⁚", buttonHeight,  "⁚"
+                    service, "⁚", buttonHeight, "⁚"
                 )
             )
         }

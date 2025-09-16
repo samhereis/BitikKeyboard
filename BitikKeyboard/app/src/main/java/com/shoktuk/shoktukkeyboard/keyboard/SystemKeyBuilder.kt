@@ -4,7 +4,6 @@ import android.graphics.drawable.InsetDrawable
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
 import android.os.Looper
-import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
@@ -24,15 +23,32 @@ import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
 
 object SystemKeyBuilder {
     fun systemButton_Text(
-        service: InputMethodService, text: String, buttonHeight: Int, style: ButtonStyle = KeyboardTheme.getSystemButtonStyle(service), onClick: (() -> Unit)? = null, weight: Float = 0f
+        service: InputMethodService,
+        text: String,
+        buttonHeight: Int,
+        style: ButtonStyle = KeyboardTheme.getSystemButtonStyle(service),
+        onClick: (() -> Unit)? = null,
+        onLongClick: (() -> Unit)? = null,
+        weight: Float = 0f
     ): View {
-        val root = newContainer(service, style, buttonHeight, weight)
+        val root = newContainer(service, style, buttonHeight, weight).apply {
+            isHapticFeedbackEnabled = true
+        }
+
         root.addView(makeCenteredContent(service, style, buttonHeight, textToSet = text))
+
         root.setOnClickListener {
             it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
             onClick?.invoke()
             TopRowBuilder_Old.onTypedListener?.invoke()
         }
+
+        root.setOnLongClickListener {
+            it.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+            onLongClick?.invoke()
+            true
+        }
+
         return root
     }
 
@@ -121,19 +137,13 @@ object SystemKeyBuilder {
     }
 
     private fun makeCenteredContent(
-        service: InputMethodService,
-        style: ButtonStyle,
-        buttonHeight: Int,
-        textToSet: String? = null,
-        iconAssetPath: String? = null
+        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, textToSet: String? = null, iconAssetPath: String? = null
     ): View {
         val container = LinearLayout(service).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER
             layoutParams = FrameLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                ViewGroup.LayoutParams.MATCH_PARENT,
-                Gravity.CENTER
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, Gravity.CENTER
             )
         }
         val textColorInt = style.textColor.toColorInt()
@@ -163,8 +173,7 @@ object SystemKeyBuilder {
                 ellipsize = null // CHANGED: allow shrink instead of ellipsize
                 textSize = KeyboardTheme.getLetterButtonStyle_Normal(service).textSizeSp.value
                 layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply { gravity = Gravity.CENTER }
                 text = textToSet
             }

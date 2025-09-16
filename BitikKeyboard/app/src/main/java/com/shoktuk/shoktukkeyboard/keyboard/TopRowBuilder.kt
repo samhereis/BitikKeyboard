@@ -27,15 +27,17 @@ object TopRowBuilder {
             }
         }
 
-        var alphabetLabel = "A"
+        var alphabetLabel = "𐰌"
         if (MyKeyboardService.currentAlphabet == "latin") {
-            alphabetLabel = "𐰌"
+            alphabetLabel = "А"
+        }
+        if (MyKeyboardService.currentAlphabet == "kiril") {
+            alphabetLabel = "Ж"
         }
 
         rowLayout.addView(
             SystemKeyBuilder.systemButton_Text(
-                service, alphabetLabel, buttonHeight, onClick = { onAlphabetChange() }
-            )
+                service, alphabetLabel, buttonHeight, onClick = { onAlphabetChange() })
         )
 
         var topLabel = "Расмий эмес, жаңыланган битик колдонуудасыз!"
@@ -73,13 +75,11 @@ object TopRowBuilder {
 
         rowLayout.addView(
             SystemKeyBuilder.systemButton_Icon(
-                service, KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight,
-                onClick = {
+                service, KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight, onClick = {
                     val imm = service.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.showInputMethodPicker()
                     TopRowBuilder_Old.onTypedListener?.invoke()
-                }
-            )
+                })
         )
 
         return rowLayout
