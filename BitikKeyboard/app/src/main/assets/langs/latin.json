@@ -11,22 +11,22 @@
         "uppercase": "Q"
       },
       {
-        "name": "ñ",
-        "lowercase": "ñ",
-        "lowerCaseRomanization_Alt":  "w",
+        "name": "ş",
+        "lowercase": "ş",
         "lowerCaseHold": "w",
-        "uppercase": "Ñ",
-        "upperCaseRomanization_Alt":"W",
-        "upperCaseHold": "W"
+        "lowerCaseRomanization_Alt": "w",
+        "uppercase": "Ş",
+        "upperCaseHold": "W",
+        "upperCaseRomanization_Alt": "W"
       },
       {
         "name": "a",
         "lowercase": "e",
-        "lowerCaseRomanization_Alt":  "ə",
+        "lowerCaseRomanization": "ə",
         "lowerCaseHold": "ə",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "E",
-        "upperCaseRomanization_Alt":"Ə",
+        "upperCaseRomanization": "Ə",
         "upperCaseHold": "Ə",
         "backgroundColorIndex_uppercase": 4
       },
@@ -55,12 +55,8 @@
       {
         "name": "i",
         "lowercase": "i",
-        "lowerCaseRomanization_Alt":  "ï",
-        "lowerCaseHold": "ï",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "İ",
-        "upperCaseRomanization_Alt":"Ï",
-        "upperCaseHold": "Ï",
         "backgroundColorIndex_uppercase": 4
       },
       {
@@ -97,11 +93,11 @@
       {
         "name": "nt, nç",
         "lowercase": "ü",
-        "lowerCaseRomanization_Alt": "f",
+        "lowerCaseRomanization": "f",
         "lowerCaseHold": "f",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "Ü",
-        "upperCaseRomanization_Alt":"F",
+        "upperCaseRomanization": "F",
         "upperCaseHold": "F",
         "backgroundColorIndex_uppercase": 4
       },
@@ -113,11 +109,11 @@
       {
         "name": "rt, lt",
         "lowercase": "ö",
-        "lowerCaseRomanization_Alt": "h",
+        "lowerCaseRomanization": "h",
         "lowerCaseHold": "h",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "Ö",
-        "upperCaseRomanization_Alt": "H",
+        "upperCaseRomanization": "H",
         "upperCaseHold": "H",
         "backgroundColorIndex_uppercase": 4
       },
@@ -152,13 +148,13 @@
         "uppercase": "Z"
       },
       {
-        "name": "ş",
-        "lowercase": "ş",
+        "name": "ñ",
+        "lowercase": "ñ",
+        "lowerCaseRomanization": "x",
         "lowerCaseHold": "x",
-        "lowerCaseRomanization_Alt": "x",
-        "uppercase": "Ş",
-        "upperCaseHold": "X",
-        "upperCaseRomanization_Alt": "X"
+        "uppercase": "Ñ",
+        "upperCaseRomanization": "X",
+        "upperCaseHold": "X"
       },
       {
         "name": "ç",
@@ -172,11 +168,11 @@
       {
         "name": "ök, ük",
         "lowercase": "ı",
-        "lowerCaseRomanization_Alt": "v",
+        "lowerCaseRomanization": "v",
         "lowerCaseHold": "v",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "I",
-        "upperCaseRomanization_Alt": "V",
+        "upperCaseRomanization": "V",
         "upperCaseHold": "V",
         "backgroundColorIndex_uppercase": 4
       },

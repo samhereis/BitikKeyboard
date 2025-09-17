@@ -1,8 +1,6 @@
 package com.shoktuk.shoktukkeyboard.project.systems
 
 import android.content.Context
-import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
 import org.mozilla.javascript.ScriptableObject
 import org.mozilla.javascript.Context as RhinoContext
 
@@ -20,10 +18,6 @@ class JSTranscriber(private val context: Context) {
 
         val jsCode = context.assets.open(fileName).bufferedReader().use { it.readText() }
         rhino.evaluateString(scope, jsCode, fileName, 1, null)
-    }
-
-    fun getIsClassic(): Boolean {
-        return SettingsManager.getKeyboardVariant(context) == KeyboardVariant.CLASSIC;
     }
 
     fun getTranscription(inputText: String): String {

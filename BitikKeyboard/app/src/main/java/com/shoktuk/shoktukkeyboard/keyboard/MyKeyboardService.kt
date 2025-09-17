@@ -10,38 +10,53 @@ import androidx.core.view.doOnAttach
 import com.shoktuk.shoktukkeyboard.emoji.EmojisData
 import com.shoktuk.shoktukkeyboard.emoji.EmojisViewBuilder
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
-import com.shoktuk.shoktukkeyboard.project.data.KeyboardAlphabet
-import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
-import com.shoktuk.shoktukkeyboard.project.data.TamgaTranscription
+import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
+import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
+
+enum class KeyboardMode(val id: String) {
+    Main("Main"), Symbols("Symbols"), Emojis("Emojis"), SavedStrings("SavedStrings");
+}
 
 class MyKeyboardService : InputMethodService() {
     companion object {
-        var currentAlphabet: String = "bitik"
-        var currentMode: String = "letters"
-        var currentLanguage: String = "enesay"
-        var isEmoji: Boolean = false
+        lateinit var context: MyKeyboardService
 
-        var currentVariant: KeyboardVariant = KeyboardVariant.CLASSIC
-        var letterTranscription: TamgaTranscription = TamgaTranscription.On
-        var textTranscription: TextTranscription = TextTranscription.On
+        var current_bitikVariant: BitikVariant = BitikVariant.CLASSIC
+        var current_bitikDialect: BitikDialect = BitikDialect.Altay
+        var current_writingSystem: WritingSystem = WritingSystem.Bitik
+        var current_letterTranscription: LetterTranscription = LetterTranscription.On
+        var current_textTranscription: TextTranscription = TextTranscription.On
+
+        var keyboardMode: KeyboardMode = KeyboardMode.Main
 
         var isCaps: Boolean = false
 
         val buttonMargin: Int = KeyboardTheme.KEY_MARGIN_DP
 
-        val isClassic: Boolean get() = currentVariant == KeyboardVariant.CLASSIC
-        val isTamga: Boolean get() = currentMode == "letters"
-        val showLetterTranscription: Boolean get() = letterTranscription == TamgaTranscription.On
-        val showTextTranscription: Boolean get() = textTranscription == TextTranscription.On
+        val isClassic: Boolean get() = current_bitikVariant == BitikVariant.CLASSIC
+        val isTamga: Boolean get() = keyboardMode == KeyboardMode.Main
+        val showLetterTranscription: Boolean get() = current_letterTranscription == LetterTranscription.On
+        val showTextTranscription: Boolean get() = current_textTranscription == TextTranscription.On
 
-        lateinit var context: MyKeyboardService
         var bottomPadding: Int? = null
+        var maxButtonInOneRow: Int = 10
     }
 
     private var currentLayout: KeyboardLayout? = null
+
+    var root: LinearLayout? = null
+    var root_ShiftOn: LinearLayout? = null
+    var root_ShiftOff: LinearLayout? = null
+    var root_Symbols: LinearLayout? = null
+    var root_Emojis: LinearLayout? = null
 
     override fun onEvaluateFullscreenMode(): Boolean {
         return false
@@ -50,64 +65,20 @@ class MyKeyboardService : InputMethodService() {
     override fun onWindowShown() {
         super.onWindowShown()
 
-        currentAlphabet = SettingsManager.getBitikAlphabet(this).id
-        currentVariant = SettingsManager.getKeyboardVariant(this)
-        letterTranscription = SettingsManager.getLeterTranscription(this)
-        textTranscription = SettingsManager.getTextTranscription(this)
-
         if (currentLayout != null) {
             reloadKeyboard()
         }
     }
 
-    override fun onCreateInputView(): View {
+    override fun onCreateInputView(): View? {
         context = this
 
-        currentAlphabet = SettingsManager.getBitikAlphabet(this).id
-        currentVariant = SettingsManager.getKeyboardVariant(this)
-        letterTranscription = SettingsManager.getLeterTranscription(this)
-        textTranscription = SettingsManager.getTextTranscription(this)
-        updateDialect()
+        reloadKeyboard()
 
-        currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, currentMode, getLanguage())
-
-        var root: LinearLayout
-
-        if (isEmoji) {
-            root = EmojisViewBuilder.create(service = this, EmojisData.defaultCategories(), onKeyPress = {
-                this.currentInputConnection?.commitText(it, 1)
-            }, onABC = {
-                isEmoji = false
-                reloadKeyboard()
-            }, onBackspace = {
-                this.currentInputConnection?.deleteSurroundingText(1, 1)
-            })
-        } else {
-            root = KeyboardViewBuilder.buildKeyboardView(service = this, layout = currentLayout!!, onCapsChange = { newCaps ->
-                isCaps = newCaps
-                reloadKeyboard()
-            }, onModeChange = {
-                if (it == "emojis") {
-                    isEmoji = true
-                } else {
-                    currentMode = if (currentMode == "letters") "symbols" else "letters"
-                }
-                reloadKeyboard()
-            }, onAlphabetChange = {
-                if (currentAlphabet == "bitik") {
-                    SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Latin)
-                } else if (currentAlphabet == "latin") {
-                    SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Kiril)
-                } else {
-                    SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Bitik)
-                }
-                currentAlphabet = SettingsManager.getBitikAlphabet(this).id
-                currentMode = "letter"
-                reloadKeyboard()
-            })
+        if (root != null) {
+            applyInsetsNowAndOnChange(root!!)
         }
 
-        applyInsetsNowAndOnChange(root)
         return root
     }
 
@@ -125,46 +96,121 @@ class MyKeyboardService : InputMethodService() {
         TopRowBuilder_Old.onTypedListener?.invoke()
     }
 
-    fun reloadKeyboard() {
-        updateDialect()
-        currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, currentMode, getLanguage())
-        var root: LinearLayout
+    fun applyKeyboard() {
+        if (keyboardMode == KeyboardMode.Symbols) {
+            root = root_Symbols
+        } else if (keyboardMode == KeyboardMode.Emojis) {
+            root = root_Emojis
+        } else {
+            if (isCaps) {
+                root = root_ShiftOn
+            } else {
+                root = root_ShiftOff
+            }
+        }
 
-        if (isEmoji) {
-            root = EmojisViewBuilder.create(service = this, EmojisData.defaultCategories(), onKeyPress = {
+        if (root != null) {
+            applyInsetsNowAndOnChange(root!!)
+            setInputView(root)
+        }
+    }
+
+    fun reloadKeyboard() {
+        current_bitikVariant = context.keyboardVariant
+        current_bitikDialect = context.bitikDialect
+        current_writingSystem = context.writingSystem
+        current_letterTranscription = context.letterTranscription
+        current_textTranscription = context.textTranscription
+
+        maxButtonInOneRow = 10
+        if (current_writingSystem == WritingSystem.Kiril) {
+            maxButtonInOneRow = 11
+            current_letterTranscription = LetterTranscription.On
+        } else if (current_writingSystem == WritingSystem.Latin) {
+            current_letterTranscription = LetterTranscription.On
+        }
+
+        fillRoots()
+        applyKeyboard()
+    }
+
+    private fun fillRoots() {
+        currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, keyboardMode, getLanguage())
+
+        if (root_Emojis == null) {
+            root_Emojis = EmojisViewBuilder.create(service = this, EmojisData.defaultCategories(), onKeyPress = {
                 this.currentInputConnection?.commitText(it, 1)
             }, onABC = {
-                isEmoji = false
+                keyboardMode = KeyboardMode.Main
                 reloadKeyboard()
             }, onBackspace = {
                 this.currentInputConnection?.deleteSurroundingText(1, 1)
             })
-        } else {
-            root = KeyboardViewBuilder.buildKeyboardView(service = this, layout = currentLayout!!, onCapsChange = { isCaps = it; reloadKeyboard() }, onModeChange = {
-                if (it == "emojis") {
-                    isEmoji = true
-                } else {
-                    currentMode = if (currentMode == "letters") "symbols" else "letters"
-                }
-                reloadKeyboard()
-            }, onAlphabetChange = {
-                if (currentAlphabet == "bitik") {
-                    SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Latin)
-                } else if (currentAlphabet == "latin") {
-                    SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Kiril)
-                } else {
-                    SettingsManager.setBitikAlphabet(this, KeyboardAlphabet.Bitik)
-                }
-
-                currentAlphabet = SettingsManager.getBitikAlphabet(this).id
-                currentMode = "letter"
-                reloadKeyboard()
-            })
         }
 
+        root_Symbols = KeyboardViewBuilder.buildKeyboardView(
+            service = this,
+            layout = KeyboardLayoutLoader.loadKeyboardLayout(this, KeyboardMode.Symbols, getLanguage()),
+            false,
+            maxKeyCount = 10,
+            onCapsChange = { isCaps = it; applyKeyboard() },
+            onModeChange = {
+                if (it == "emojis") {
+                    keyboardMode = KeyboardMode.Emojis
+                } else {
+                    keyboardMode = if (keyboardMode == KeyboardMode.Main) KeyboardMode.Symbols else KeyboardMode.Main
+                }
+                applyKeyboard()
+            },
+            onAlphabetChange = {
+                if (current_writingSystem == WritingSystem.Bitik) {
+                    context.writingSystem = WritingSystem.Latin
+                } else if (current_writingSystem == WritingSystem.Latin) {
+                    context.writingSystem = WritingSystem.Kiril
+                } else {
+                    context.writingSystem = WritingSystem.Bitik
+                }
+                keyboardMode = KeyboardMode.Main
+                reloadKeyboard()
+            })
 
-        applyInsetsNowAndOnChange(root)
-        setInputView(root)
+        root_ShiftOn = KeyboardViewBuilder.buildKeyboardView(service = this, layout = currentLayout!!, true, maxButtonInOneRow, onCapsChange = { isCaps = it; applyKeyboard() }, onModeChange = {
+            if (it == "emojis") {
+                keyboardMode = KeyboardMode.Emojis
+            } else {
+                keyboardMode = if (keyboardMode == KeyboardMode.Main) KeyboardMode.Symbols else KeyboardMode.Main
+            }
+            applyKeyboard()
+        }, onAlphabetChange = {
+            if (current_writingSystem == WritingSystem.Bitik) {
+                context.writingSystem = WritingSystem.Latin
+            } else if (current_writingSystem == WritingSystem.Latin) {
+                context.writingSystem = WritingSystem.Kiril
+            } else {
+                context.writingSystem = WritingSystem.Bitik
+            }
+            keyboardMode = KeyboardMode.Main
+            reloadKeyboard()
+        })
+
+        root_ShiftOff = KeyboardViewBuilder.buildKeyboardView(service = this, layout = currentLayout!!, false, maxButtonInOneRow, onCapsChange = { isCaps = it; applyKeyboard() }, onModeChange = {
+            if (it == "emojis") {
+                keyboardMode = KeyboardMode.Emojis
+            } else {
+                keyboardMode = if (keyboardMode == KeyboardMode.Main) KeyboardMode.Symbols else KeyboardMode.Main
+            }
+            applyKeyboard()
+        }, onAlphabetChange = {
+            if (current_writingSystem == WritingSystem.Bitik) {
+                context.writingSystem = WritingSystem.Latin
+            } else if (current_writingSystem == WritingSystem.Latin) {
+                context.writingSystem = WritingSystem.Kiril
+            } else {
+                context.writingSystem = WritingSystem.Bitik
+            }
+            keyboardMode = KeyboardMode.Main
+            reloadKeyboard()
+        })
     }
 
     private fun applyInsetsNowAndOnChange(view: View) {
@@ -195,21 +241,16 @@ class MyKeyboardService : InputMethodService() {
 
 
     fun getLanguage(): String {
-        if (currentAlphabet != "bitik") {
-            return currentAlphabet
+        if (current_writingSystem != WritingSystem.Bitik) {
+            return current_writingSystem.id
         }
-        return if (SettingsManager.getKeyboardVariant(this) == KeyboardVariant.CLASSIC) {
-            "${currentLanguage}_old"
-        } else {
-            currentLanguage
-        }
-    }
 
-    fun updateDialect() {
-        if (SettingsManager.getBitikDialect(this) == BitikDialect.Orkon) {
-            currentLanguage = "orhon"
+        var dialect = if (current_bitikDialect == BitikDialect.Altay) "enesay" else "orhon"
+
+        return if (keyboardVariant == BitikVariant.CLASSIC) {
+            "${dialect}_old"
         } else {
-            currentLanguage = "enesay"
+            dialect
         }
     }
 }

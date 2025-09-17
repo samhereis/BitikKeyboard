@@ -16,20 +16,21 @@
         "backgroundColorIndex_uppercase": 5
       },
       {
-        "name": "ñ",
-        "lowercase": "𐰬",
-        "lowerCaseRomanization": "Ң",
-        "lowerCaseHold": "𐰧",
-        "uppercase": "𐰭",
-        "upperCaseRomanization": "Ң",
-        "upperCaseHold": "𐰮"
+        "name": "ş",
+        "lowercase": "𐱁",
+        "lowerCaseRomanization": "Ш",
+        "lowerCaseHold": "𐱀",
+        "lowerCaseHoldHint": "Ш",
+        "uppercase": "𐱁",
+        "upperCaseRomanization": "Ш",
+        "upperCaseHold": "𐰿",
+        "upperCaseHoldHint": "Ш"
       },
       {
         "name": "a",
-        "lowercase": "𐰁",
-        "lowerCaseRomanization": "а",
-        "lowerCaseHold": "𐰀",
-        "backgroundColorIndex_lowercase": 4,
+        "lowercase": "𐰷",
+        "lowerCaseRomanization": "ык",
+        "backgroundColorIndex_lowercase": 5,
         "uppercase": "𐰅",
         "upperCaseRomanization": "е",
         "upperCaseHold": "𐰂",
@@ -38,7 +39,7 @@
       {
         "name": "r",
         "lowercase": "𐰺",
-        "lowerCaseHold":"𐰻",
+        "lowerCaseHold": "𐰻",
         "lowerCaseRomanization": "аР",
         "uppercase": "𐰼",
         "upperCaseRomanization": "еР"
@@ -101,9 +102,10 @@
     [
       {
         "name": "oq, uq",
-        "lowercase": "𐰷",
-        "lowerCaseRomanization": "ык",
-        "backgroundColorIndex_lowercase": 5,
+        "lowercase": "𐰀",
+        "lowerCaseRomanization": "а",
+        "lowerCaseHold": "𐰁",
+        "backgroundColorIndex_lowercase": 4,
         "uppercase": "𐱈",
         "upperCaseRomanization": "рт",
         "backgroundColorIndex_uppercase": 5
@@ -189,15 +191,13 @@
         "upperCaseRomanization": "З"
       },
       {
-        "name": "ş",
-        "lowercase": "𐱁",
-        "lowerCaseRomanization": "Ш",
-        "lowerCaseHold": "𐱀",
-        "lowerCaseHoldHint": "Ш",
-        "uppercase": "𐱁",
-        "upperCaseRomanization": "Ш",
-        "upperCaseHold": "𐰿",
-        "upperCaseHoldHint": "Ш"
+        "name": "ñ",
+        "lowercase": "𐰬",
+        "lowerCaseRomanization": "Ң",
+        "lowerCaseHold": "𐰧",
+        "uppercase": "𐰭",
+        "upperCaseRomanization": "Ң",
+        "upperCaseHold": "𐰮"
       },
       {
         "name": "ç",

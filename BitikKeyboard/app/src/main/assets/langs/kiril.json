@@ -25,16 +25,20 @@
       {
         "name": "a",
         "lowercase": "к",
+        "lowerCaseRomanization": "қ",
         "lowerCaseHold": "қ",
         "uppercase": "К",
+        "upperCaseRomanization": "Қ",
         "upperCaseHold": "Қ"
       },
       {
         "name": "r",
         "lowercase": "е",
+        "lowerCaseRomanization": "ə",
         "lowerCaseHold": "ə",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "Е",
+        "upperCaseRomanization": "Ə",
         "upperCaseHold": "Ə",
         "backgroundColorIndex_uppercase": 4
       },
@@ -46,15 +50,19 @@
       {
         "name": "y",
         "lowercase": "г",
+        "lowerCaseRomanization": "ғ",
         "lowerCaseHold": "ғ",
         "uppercase": "Г",
+        "upperCaseRomanization": "Ғ",
         "upperCaseHold": "Ғ"
       },
       {
         "name": "u",
         "lowercase": "ш",
+        "lowerCaseRomanization": "щ",
         "lowerCaseHold": "щ",
         "uppercase": "Ш",
+        "upperCaseRomanization": "Щ",
         "upperCaseHold": "Щ"
       },
       {
@@ -84,9 +92,11 @@
       {
         "name": "nt, nç",
         "lowercase": "ы",
+        "lowerCaseRomanization": "ъ",
         "lowerCaseHold": "ъ",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "Ы",
+        "upperCaseRomanization": "Ъ",
         "upperCaseHold": "Ъ",
         "backgroundColorIndex_uppercase": 4
       },
@@ -115,9 +125,11 @@
       {
         "name": "g",
         "lowercase": "о",
+        "lowerCaseRomanization": "ё",
         "lowerCaseHold": "ё",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "О",
+        "upperCaseRomanization": "Ё",
         "upperCaseHold": "Ё",
         "backgroundColorIndex_uppercase": 4
       },
@@ -161,8 +173,10 @@
       {
         "name": "ş",
         "lowercase": "с",
+        "lowerCaseRomanization": "ц",
         "lowerCaseHold": "ц",
         "uppercase": "С",
+        "upperCaseRomanization": "Ц",
         "upperCaseHold": "Ц"
       },
       {
@@ -173,9 +187,11 @@
       {
         "name": "c",
         "lowercase": "и",
+        "lowerCaseRomanization": "ь",
         "lowerCaseHold": "ь",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "И",
+        "upperCaseRomanization": "Ь",
         "upperCaseHold": "Ь",
         "backgroundColorIndex_uppercase": 4
       },

@@ -10,11 +10,12 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
 object TopRowBuilder {
     fun createTopRow(
-        service: InputMethodService, layout: KeyboardLayout, buttonHeight: Int, onAlphabetChange: () -> Unit
+        service: InputMethodService, buttonHeight: Int, onAlphabetChange: () -> Unit
     ): LinearLayout {
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -28,10 +29,10 @@ object TopRowBuilder {
         }
 
         var alphabetLabel = "𐰌"
-        if (MyKeyboardService.currentAlphabet == "latin") {
+        if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) {
             alphabetLabel = "А"
         }
-        if (MyKeyboardService.currentAlphabet == "kiril") {
+        if (MyKeyboardService.current_writingSystem == WritingSystem.Kiril) {
             alphabetLabel = "Ж"
         }
 
@@ -41,7 +42,7 @@ object TopRowBuilder {
         )
 
         var topLabel = "Расмий эмес, жаңыланган битик колдонуудасыз!"
-        if (MyKeyboardService.currentAlphabet == "latin") {
+        if (MyKeyboardService.current_writingSystem != WritingSystem.Bitik) {
             topLabel = "𐱅𐰭𐰼𐰃 𐰅𐰠𐰢𐰚𐰁 𐰌𐰝𐰢𐰓𐰢"
         }
 

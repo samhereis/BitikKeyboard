@@ -6,10 +6,10 @@ import java.io.InputStreamReader
 
 object KeyboardLayoutLoader {
 
-    fun loadKeyboardLayout(context: Context, mode: String, language: String): KeyboardLayout {
+    fun loadKeyboardLayout(context: Context, mode: KeyboardMode, language: String): KeyboardLayout {
         var fileName = ""
 
-        if (mode == "symbols") {
+        if (mode == KeyboardMode.Symbols) {
             fileName = "langs/keyboard_symbols.json"
         } else {
             fileName = "langs/${language}.json"

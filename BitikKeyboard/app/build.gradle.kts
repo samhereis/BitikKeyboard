@@ -13,7 +13,7 @@ android {
         minSdk = 25
         targetSdk = 36
         versionCode = 10
-        versionName = "1.1.1"
+        versionName = "1.2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,8 +37,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.appcompat:appcompat:1.7.0")
-    implementation("com.google.android.material:material:1.12.0")
+    implementation("com.google.android.material:material:1.13.0")
 
     implementation(libs.androidx.foundation)
 

@@ -11,9 +11,9 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.content.ContextCompat
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.systems.JSTranscriber
 import com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
@@ -36,7 +36,7 @@ object TopRowBuilder_Old {
         }
 
         var alphabetLabel = "A"
-        if (MyKeyboardService.currentAlphabet == "latin") {
+        if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) {
             alphabetLabel = "𐰌"
         }
 
@@ -45,7 +45,7 @@ object TopRowBuilder_Old {
                 service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() })
         )
 
-        if (MyKeyboardService.textTranscription == TextTranscription.On) {
+        if (MyKeyboardService.current_textTranscription == TextTranscription.On) {
             val lastWordContainer = createLastWordContainer(service, buttonHeight).apply {
                 clipChildren = false
                 clipToPadding = false

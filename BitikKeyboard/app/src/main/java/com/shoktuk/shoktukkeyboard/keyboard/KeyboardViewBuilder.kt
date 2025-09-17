@@ -4,33 +4,36 @@ import android.inputmethodservice.InputMethodService
 import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.Companion.context
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
-import com.shoktuk.shoktukkeyboard.project.data.A_Letter_Variannt
+import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
-import com.shoktuk.shoktukkeyboard.project.data.E_Letter_Variannt
-import com.shoktuk.shoktukkeyboard.project.data.KeyboardVariant
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
 object KeyboardViewBuilder {
-    var a_Def = SettingsManager.getA_Variant(MyKeyboardService.context) == A_Letter_Variannt.Default
-    var e_Def = SettingsManager.getE_Variant(MyKeyboardService.context) == E_Letter_Variannt.Default
-    var eb_Def = SettingsManager.getEB_Variant(MyKeyboardService.context) == EB_Letter_Variant.Default
-    var en_Def = SettingsManager.getEN_Variant(MyKeyboardService.context) == EN_Letter_Variant.Default
-    var as_Def = SettingsManager.getAS_Variant(MyKeyboardService.context) == AS_Letter_Variant.Default
-    var esh_Def = SettingsManager.getES_Variant(MyKeyboardService.context) == ESH_Letter_Variant.Default
+    var eb_Def = context.ebVariant == EB_Letter_Variant.Default
+    var en_Def = context.enVariant == EN_Letter_Variant.Default
+    var as_Def = context.asVariant == AS_Letter_Variant.Default
+    var esh_Def = context.eshVariant == ESH_Letter_Variant.Default
 
     fun buildKeyboardView(
-        service: InputMethodService, layout: KeyboardLayout, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit, onAlphabetChange: () -> Unit
+        service: InputMethodService, layout: KeyboardLayout, isCaps: Boolean, maxKeyCount: Int, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
-        a_Def = SettingsManager.getA_Variant(MyKeyboardService.context) == A_Letter_Variannt.Default
-        e_Def = SettingsManager.getE_Variant(MyKeyboardService.context) == E_Letter_Variannt.Default
-        eb_Def = SettingsManager.getEB_Variant(MyKeyboardService.context) == EB_Letter_Variant.Default
-        en_Def = SettingsManager.getEN_Variant(MyKeyboardService.context) == EN_Letter_Variant.Default
-        as_Def = SettingsManager.getAS_Variant(MyKeyboardService.context) == AS_Letter_Variant.Default
-        esh_Def = SettingsManager.getES_Variant(MyKeyboardService.context) == ESH_Letter_Variant.Default
+        eb_Def = context.ebVariant == EB_Letter_Variant.Default
+        en_Def = context.enVariant == EN_Letter_Variant.Default
+        as_Def = context.asVariant == AS_Letter_Variant.Default
+        esh_Def = context.eshVariant == ESH_Letter_Variant.Default
+
+        var systemKeybHeight = (KeyboardTheme.getButtonHeight() / 1.5f).toInt()
 
         val screenWidthPx = service.resources.displayMetrics.widthPixels
         val baseDesignWidthDp = 360f
@@ -52,16 +55,16 @@ object KeyboardViewBuilder {
         container.clipChildren = false
         container.clipToPadding = false
 
-        if (SettingsManager.getKeyboardVariant(service) == KeyboardVariant.CLASSIC && MyKeyboardService.currentAlphabet == "bitik") {
+        if (context.keyboardVariant == BitikVariant.CLASSIC && MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
             container.addView(
                 TopRowBuilder_Old.createTopRow(
-                    service, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), onModeChange, onAlphabetChange
+                    service, systemKeybHeight, onModeChange, onAlphabetChange
                 )
             )
         } else {
             container.addView(
                 TopRowBuilder.createTopRow(
-                    service, layout, (KeyboardTheme.getButtonHeight() / 1.5f).toInt(), onAlphabetChange
+                    service, systemKeybHeight, onAlphabetChange
                 )
             )
         }
@@ -69,7 +72,7 @@ object KeyboardViewBuilder {
         layout.rows.forEach { row ->
             container.addView(
                 createRowLayout(
-                    service, row, layout, KeyboardTheme.getButtonHeight(), onCapsChange
+                    service, row, isCaps, KeyboardTheme.getButtonHeight(), maxKeyCount, onCapsChange
                 )
             )
         }
@@ -83,8 +86,14 @@ object KeyboardViewBuilder {
     }
 
     private fun createRowLayout(
-        service: InputMethodService, row: List<KeyEntry>, layout: KeyboardLayout, buttonHeight: Int, onCapsChange: (Boolean) -> Unit
+        service: InputMethodService, row: List<KeyEntry>, isCaps: Boolean, buttonHeight: Int, maxKeyCount: Int, onCapsChange: (Boolean) -> Unit
     ): LinearLayout {
+        var keybWidth = KeyboardTheme.getLetterButtonWidth(context, maxKeyCount)
+        var systemKeybWidth = KeyboardTheme.getSystemButtonWidth(service)
+        if (MyKeyboardService.maxButtonInOneRow > 10) {
+            systemKeybWidth = keybWidth
+        }
+
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_HORIZONTAL
@@ -102,11 +111,11 @@ object KeyboardViewBuilder {
 
         shiftKey?.let {
             val view = SystemKeyBuilder.forKey(
-                service, it, buttonHeight, onCapsChange
+                service, it, isCaps, buttonHeight, maxKeyCount, onCapsChange
             )
 
             val params = LinearLayout.LayoutParams(
-                (KeyboardTheme.getSystemButtonWidth(service) / 1.3f).toInt(), buttonHeight
+                systemKeybWidth, buttonHeight
             )
             view.layoutParams = params
 
@@ -122,20 +131,22 @@ object KeyboardViewBuilder {
         }
 
         middleKeys.forEach { key ->
-            middleContainer.addView(LetterKeyBuilder.createLetterKey(service, process(key), buttonHeight, onKeyClick = { letter ->
-                if (MyKeyboardService.currentAlphabet == "bitik") {
-                    if (ensureRTLContext(service)) {
-                        service.currentInputConnection?.commitText("\u202B", 1)
+            middleContainer.addView(
+                LetterKeyBuilder.createLetterKey(service, process(key), isCaps, buttonHeight, keybWidth, onKeyClick = { letter ->
+                    if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
+                        if (ensureRTLContext(service)) {
+                            service.currentInputConnection?.commitText("\u202B", 1)
+                        }
                     }
-                }
-                service.currentInputConnection?.commitText(letter, 1)
-                TopRowBuilder_Old.onTypedListener?.invoke()
-                if (MyKeyboardService.isCaps && MyKeyboardService.currentAlphabet != "bitik") {
-                    onCapsChange.invoke(false)
-                }
-            }, onLongPress = { letter ->
-                letter?.let { service.currentInputConnection?.commitText(it, 1) }
-            }))
+                    service.currentInputConnection?.commitText(letter, 1)
+                    TopRowBuilder_Old.onTypedListener?.invoke()
+                    if (isCaps && MyKeyboardService.current_writingSystem != WritingSystem.Bitik) {
+                        onCapsChange.invoke(false)
+                    }
+                }, onLongPress = { letter ->
+                    letter?.let { service.currentInputConnection?.commitText(it, 1) }
+                })
+            )
         }
 
         rowLayout.addView(middleContainer)
@@ -143,7 +154,7 @@ object KeyboardViewBuilder {
         var extraLeft = KeyboardTheme.dpToPx(service, 20)
         var extraRight = KeyboardTheme.dpToPx(service, 20)
 
-        if (MyKeyboardService.currentMode == "letters" && MyKeyboardService.currentAlphabet == "kiril") {
+        if (MyKeyboardService.keyboardMode == KeyboardMode.Main && MyKeyboardService.current_writingSystem == WritingSystem.Kiril) {
             extraLeft = 0
             extraRight = 0
         }
@@ -156,9 +167,9 @@ object KeyboardViewBuilder {
         }
 
         delKey?.let {
-            val view = SystemKeyBuilder.forKey(service, it, buttonHeight, onCapsChange)
+            val view = SystemKeyBuilder.forKey(service, it, isCaps, buttonHeight, maxKeyCount, onCapsChange)
             val params = LinearLayout.LayoutParams(
-                (KeyboardTheme.getSystemButtonWidth(service) / 1.3f).toInt(), buttonHeight
+                systemKeybWidth, buttonHeight
             )
             view.layoutParams = params
             rowLayout.addView(view)
@@ -175,18 +186,7 @@ object KeyboardViewBuilder {
     fun process(key: KeyEntry): KeyEntry {
         var keyToSet = key
 
-        if (MyKeyboardService.currentAlphabet == "bitik") {
-            if (key.name == "a") {
-                if (!a_Def) {
-                    keyToSet = getA(keyToSet)
-                }
-                if (MyKeyboardService.isClassic && e_Def) {
-                    keyToSet = getE(keyToSet)
-                }
-
-                return keyToSet
-            }
-
+        if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
             if (key.name == "b" && !eb_Def) {
                 keyToSet = getEB(keyToSet)
                 return keyToSet
@@ -202,7 +202,7 @@ object KeyboardViewBuilder {
             }
 
             if (key.name == "ş" && !esh_Def) {
-                if (!MyKeyboardService.isClassic && MyKeyboardService.currentLanguage == "enesay" && MyKeyboardService.currentVariant == KeyboardVariant.SAMAGAN) {
+                if (!MyKeyboardService.isClassic && MyKeyboardService.current_bitikDialect == BitikDialect.Altay && MyKeyboardService.current_bitikVariant == BitikVariant.SAMAGAN) {
                     keyToSet = getESH(keyToSet)
                 }
                 return keyToSet
@@ -216,21 +216,6 @@ object KeyboardViewBuilder {
             }
         }
         return keyToSet
-    }
-
-    private fun getA(key: KeyEntry): KeyEntry {
-        return key.copy(
-            lowercase = "𐰀", lowerCaseHold = "𐰁",
-        )
-    }
-
-    private fun getE(key: KeyEntry): KeyEntry {
-        return key.copy(
-            uppercase = "𐰅",
-            upperCaseRomanization = "e",
-            upperCaseRomanization_Alt = "",
-            upperCaseHold = "𐰂",
-        )
     }
 
     private fun getEB(key: KeyEntry): KeyEntry {

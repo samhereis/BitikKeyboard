@@ -19,13 +19,20 @@ import android.widget.TextView
 import androidx.core.graphics.toColorInt
 import androidx.core.widget.TextViewCompat
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
 import kotlin.math.max
 import kotlin.math.roundToInt
 
 class KeyView(
-    context: Context, private val key: KeyEntry, private val buttonHeight: Int, private val onKeyClick: (String) -> Unit, private val onLongPress: (String?) -> Unit
+    context: Context,
+    private val key: KeyEntry,
+    private val isCaps: Boolean,
+    private val buttonHeight: Int,
+    private val buttonWidth: Int,
+    private val onKeyClick: (String) -> Unit,
+    private val onLongPress: (String?) -> Unit
 ) : FrameLayout(context) {
 
     private val handler = Handler(Looper.getMainLooper())
@@ -48,6 +55,8 @@ class KeyView(
     private var lastErrorAt = 0L
     private var overlayMainText: TextView? = null
 
+    private var hintButtonTextSize = KeyboardTheme.getHintButtonTextSize(context).value
+
     // NEW:
     private fun notifyError(message: String, t: Throwable? = null) {
         val now = System.currentTimeMillis()
@@ -62,7 +71,7 @@ class KeyView(
     }
 
     init {
-        if (MyKeyboardService.isTamga && MyKeyboardService.isCaps && MyKeyboardService.currentAlphabet == "bitik") {
+        if (MyKeyboardService.isTamga && isCaps && MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
             style = KeyboardTheme.getLetterButtonStyle_UpperCase(context, MyKeyboardService.showLetterTranscription)
         }
         setupView()
@@ -78,7 +87,7 @@ class KeyView(
 
     private fun setupView() {
         layoutParams = LinearLayout.LayoutParams(
-            KeyboardTheme.getLetterButtonWidth(context), buttonHeight
+            buttonWidth, buttonHeight
         ).apply {
             marginStart = 0
             marginEnd = 0
@@ -89,14 +98,10 @@ class KeyView(
     }
 
     private fun applyStyle() {
-        currentBackgroundColorIndex = if (MyKeyboardService.isCaps) {
+        currentBackgroundColorIndex = if (isCaps) {
             key.backgroundColorIndex_uppercase ?: 1
         } else {
             key.backgroundColorIndex_lowercase ?: 1
-        }
-
-        if (MyKeyboardService.isTamga && MyKeyboardService.isCaps) {
-            style = KeyboardTheme.getLetterButtonStyle_UpperCase(context, MyKeyboardService.showLetterTranscription)
         }
 
         style = style.copy(fillColor = KeyboardTheme.getColor(currentBackgroundColorIndex))
@@ -129,7 +134,7 @@ class KeyView(
 
     private fun updateContent() {
         var mainTextSize = style.textSizeSp.value;
-        if (MyKeyboardService.currentAlphabet == "latin" && MyKeyboardService.isCaps) {
+        if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && isCaps) {
             mainTextSize = style.textSizeSp.value / 1.1f;
         }
 
@@ -154,11 +159,11 @@ class KeyView(
             maxLines = lines
             setLineSpacing(0.75f, 0.75f)
             setTextColor(style.textColor.toColorInt())
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context).value)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, hintButtonTextSize)
             setPadding(0, 0, 0, 0)
             ellipsize = null
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                this, 1, KeyboardTheme.getHintButtonTextSize(context).value.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
+                this, 1, hintButtonTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
             )
         }
 
@@ -167,11 +172,11 @@ class KeyView(
             maxLines = lines
             setLineSpacing(0.75f, 0.75f)
             setTextColor(style.textColor.toColorInt())
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, KeyboardTheme.getHintButtonTextSize(context).value)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, hintButtonTextSize)
             setPadding(0, 0, 0, 0)
             ellipsize = null
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                this, 1, KeyboardTheme.getHintButtonTextSize(context).value.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
+                this, 1, hintButtonTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
             )
         }
 
@@ -197,10 +202,10 @@ class KeyView(
         val longPressRunnable = Runnable {
             var hasHoldValue: Boolean = false;
 
-            if (MyKeyboardService.isCaps && key.upperCaseHold != null) {
+            if (isCaps && key.upperCaseHold != null) {
                 hasHoldValue = true
             }
-            if (!MyKeyboardService.isCaps && key.lowerCaseHold != null) {
+            if (!isCaps && key.lowerCaseHold != null) {
                 hasHoldValue = true
             }
 
@@ -351,7 +356,7 @@ class KeyView(
             overlayMainText?.text = (main ?: "").toString()
 
             var colorToSet: Int = KeyboardTheme.getColor(1).toColorInt()
-            colorToSet = if (MyKeyboardService.isCaps) {
+            colorToSet = if (isCaps) {
                 when {
                     key.backgroundColorIndex_uppercase_Hold != null -> KeyboardTheme.getColor(key.backgroundColorIndex_uppercase_Hold!!).toColorInt()
                     key.backgroundColorIndex_lowercase != null -> KeyboardTheme.getColor(key.backgroundColorIndex_lowercase!!).toColorInt()
@@ -371,7 +376,7 @@ class KeyView(
     }
 
     private fun addHoldIndicatorIfNeeded(root: View) {
-        val hasHoldVariant = if (MyKeyboardService.isCaps) {
+        val hasHoldVariant = if (isCaps) {
             key.upperCaseHold != null
         } else {
             key.lowerCaseHold != null
@@ -410,15 +415,15 @@ class KeyView(
         (root as ViewGroup).addView(indicator)
     }
 
-    private fun getCurrentMainText(): String? = if (MyKeyboardService.isCaps) key.uppercase else key.lowercase
+    private fun getCurrentMainText(): String? = if (isCaps) key.uppercase else key.lowercase
 
-    private fun getCurrentSubText(): CharSequence? = if (MyKeyboardService.isCaps) key.upperCaseRomanization ?: "" else key.lowerCaseRomanization ?: ""
+    private fun getCurrentSubText(): CharSequence? = if (isCaps) key.upperCaseRomanization ?: "" else key.lowerCaseRomanization ?: ""
 
-    private fun getCurrentSubText_Alt(): CharSequence? = if (MyKeyboardService.isCaps) key.upperCaseRomanization_Alt ?: "" else key.lowerCaseRomanization_Alt ?: ""
+    private fun getCurrentSubText_Alt(): CharSequence? = if (isCaps) key.upperCaseRomanization_Alt ?: "" else key.lowerCaseRomanization_Alt ?: ""
 
-    private fun getCurrentMainText_Hold(): String? = if (MyKeyboardService.isCaps) key.upperCaseHold else key.lowerCaseHold
+    private fun getCurrentMainText_Hold(): String? = if (isCaps) key.upperCaseHold else key.lowerCaseHold
 
-    private fun getCurrentSubText_Hold(): CharSequence? = if (MyKeyboardService.isCaps) key.upperCaseHoldHint ?: "" else key.lowerCaseHoldHint ?: ""
+    private fun getCurrentSubText_Hold(): CharSequence? = if (isCaps) key.upperCaseHoldHint ?: "" else key.lowerCaseHoldHint ?: ""
 
     fun dismissOverlay() {
         try {

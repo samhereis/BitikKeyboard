@@ -9,6 +9,7 @@ import android.view.Gravity
 import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TableLayout
@@ -19,6 +20,7 @@ import androidx.core.view.updateLayoutParams
 import com.shoktuk.shoktukkeyboard.keyboard.SystemKeyBuilder
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import org.json.JSONArray
+import kotlin.math.abs
 import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.max
@@ -52,7 +54,7 @@ object EmojisViewBuilder {
     fun create(
         service: InputMethodService, emojiByType: List<EmojiCategory>, onKeyPress: (String) -> Unit, onABC: () -> Unit, onBackspace: () -> Unit
     ): LinearLayout {
-        var buttonHeight = (KeyboardTheme.getButtonHeight())
+        val buttonHeight = KeyboardTheme.getButtonHeight()
         val tabOrder: IntArray = IntArray(emojiByType.size) { it }
 
         val root = LinearLayout(service).apply {
@@ -65,7 +67,7 @@ object EmojisViewBuilder {
 
         // --- Divider (top) ---
         root.addView(View(service).apply {
-            setBackgroundColor(KeyboardTheme.getColor(5).toColorInt()) // use your palette
+            setBackgroundColor(KeyboardTheme.getColor(5).toColorInt())
             layoutParams = LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, dp(service, 1f)
             )
@@ -119,9 +121,8 @@ object EmojisViewBuilder {
         rebuildRecents()
         root.addView(recentsScroll)
 
-        // --- Emoji sections: horizontal scroll of 4-row grids ---
         val rowsCount = 4
-        val gridAreaHeight = buttonHeight * 3 // mirrors SwiftUI .frame(height: KeyboardStyle.rowHeight * 3)
+        val gridAreaHeight = buttonHeight * 3
         val mainHScroll = HorizontalScrollView(service).apply {
             isHorizontalScrollBarEnabled = false
             layoutParams = LinearLayout.LayoutParams(
@@ -136,9 +137,14 @@ object EmojisViewBuilder {
         }
         mainHScroll.addView(hStack)
 
-        // Keep section left positions so we can jump by tabs
         val sectionLeftX = hashMapOf<Int, Int>()
+        val sectionCenterX = hashMapOf<Int, Int>()
+
         var selectedType = tabOrder.firstOrNull() ?: 0
+
+// Flicker control
+        var isProgrammaticScroll = false
+        var targetScrollX: Int? = null
 
         fun registerRecent(emoji: String) {
             recents.remove(emoji)
@@ -150,27 +156,20 @@ object EmojisViewBuilder {
             rebuildRecents()
         }
 
-        // Build each section (4-row grid packed vertically, repeated horizontally)
         for (type in tabOrder) {
             val cat = emojiByType.firstOrNull { it.type == type } ?: continue
             if (cat.emojis.isEmpty()) continue
 
-            // cell side: divide available height by rowsCount
             val cellSide = max(1, floor(gridAreaHeight.toFloat() / rowsCount.toFloat()).toInt())
 
             val section = LinearLayout(service).apply {
                 orientation = LinearLayout.VERTICAL
                 layoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT
-                ).apply {
-                    setMargins(dp(service, 2f), 0, dp(service, 2f), 0)
-                }
-                // Tag by type for later lookup
+                ).apply { setMargins(dp(service, 2f), 0, dp(service, 2f), 0) }
                 tag = "section_type_$type"
             }
 
-            // create a grid with rowsCount rows; we’ll fill columns as needed
-            // simplest portable approach: use TableLayout of rows
             val table = TableLayout(service).apply {
                 layoutParams = TableLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
@@ -179,7 +178,6 @@ object EmojisViewBuilder {
                 isStretchAllColumns = false
             }
 
-            // Split emojis into rows (row-major fill)
             val perCol = ceil(cat.emojis.size / rowsCount.toFloat()).toInt().coerceAtLeast(1)
             val rows = Array(rowsCount) { mutableListOf<String>() }
             for ((idx, e) in cat.emojis.withIndex()) {
@@ -213,18 +211,22 @@ object EmojisViewBuilder {
             }
 
             section.addView(table)
-            // measure after layout to record leftX; we can compute on first layout pass
-            section.viewTreeObserver.addOnGlobalLayoutListener {
-                val x = section.left
-                sectionLeftX[type] = x
-            }
+
+            section.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+                override fun onGlobalLayout() {
+                    section.viewTreeObserver.removeOnGlobalLayoutListener(this)
+                    val left = section.left
+                    val center = left + section.width / 2
+                    sectionLeftX[type] = left
+                    sectionCenterX[type] = center
+                }
+            })
 
             hStack.addView(section)
         }
 
         root.addView(mainHScroll)
 
-        // --- Bottom bar: ABC | tabs | backspace ---
         val bottom = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER_VERTICAL
@@ -233,18 +235,11 @@ object EmojisViewBuilder {
             )
         }
 
-        // ABC
         bottom.addView(
             SystemKeyBuilder.systemButton_Text(
-                service = service, text = "ABC", buttonHeight = buttonHeight / 2, onClick = {
-                    onABC()
-                }).apply {
-                updateLayoutParams<LinearLayout.LayoutParams> {
-                    weight = 0f
-                }
-                scaleX = 1.5f
-                scaleY = 1.5f
-            })
+            service = service, text = "ABC", buttonHeight = buttonHeight, onClick = { onABC() }).apply {
+            updateLayoutParams<LinearLayout.LayoutParams> { weight = 0f }
+        })
 
         // Tabs (chips)
         val tabsScroll = HorizontalScrollView(service).apply {
@@ -254,63 +249,80 @@ object EmojisViewBuilder {
         val tabsRow = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
+            layoutParams = LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT
+            )
         }
         tabsScroll.addView(tabsRow)
+
+        fun scrollSectionToCenter(type: Int) {
+            // If we know the exact center → align it to viewport center
+            val knownCenter = sectionCenterX[type]
+            val viewportW = mainHScroll.width
+            if (knownCenter != null && viewportW > 0) {
+                val target = (knownCenter - viewportW / 2).coerceAtLeast(0)
+                mainHScroll.smoothScrollTo(target, 0)
+                return
+            }
+            // Fallback: use left edge
+            val left = sectionLeftX[type] ?: return
+            mainHScroll.smoothScrollTo(left, 0)
+        }
 
         fun rebuildTabs() {
             tabsRow.removeAllViews()
             for (type in tabOrder) {
                 val label = emojiByType.firstOrNull { it.type == type }?.displayName ?: "?"
+                val isSelected = (selectedType == type)
                 val chip = TextView(service).apply {
                     text = label
                     setTextColor(KeyboardTheme.getColor(1).toColorInt())
                     setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonHeight / 4f)
-                    typeface = Typeface.DEFAULT_BOLD
+                    typeface = if (isSelected) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
                     gravity = Gravity.CENTER
                     val side = (buttonHeight / 2.5f).toInt()
-                    layoutParams = LinearLayout.LayoutParams(side, side).apply {
-                        setMargins(dp(service, 4f), dp(service, 2f), dp(service, 4f), dp(service, 2f))
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, side
+                    ).apply {
+                        setMargins(dp(service, 6f), dp(service, 2f), dp(service, 6f), dp(service, 2f))
                     }
-                    setPadding(0, 0, 0, 0)
-                    alpha = if (selectedType == type) 1f else 0.6f
+                    setPadding(dp(service, 10f), 0, dp(service, 10f), 0)
+                    alpha = if (isSelected) 1f else 0.6f
                 }
                 chip.setOnClickListener {
                     it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
                     selectedType = type
-                    sectionLeftX[type]?.let { left ->
-                        mainHScroll.smoothScrollTo(left, 0)
-                    }
+                    scrollSectionToCenter(type)   // ← center on tap
                     rebuildTabs()
                 }
                 tabsRow.addView(chip)
             }
+            // center chips in the strip when content doesn't overflow
+            tabsRow.gravity = Gravity.CENTER
         }
         rebuildTabs()
         bottom.addView(tabsScroll)
 
         bottom.addView(
             SystemKeyBuilder.systemButton_Icon(
-                service = service, assetPath = KeyboardTheme.DELETE_ICON_FILE, buttonHeight = buttonHeight / 2, onClick = {
-                    onBackspace()
-                }).apply {
-                updateLayoutParams<LinearLayout.LayoutParams> {
-                    weight = 0f
-                }
-                scaleX = 1.5f
-                scaleY = 1.5f
-            })
+            service = service, assetPath = KeyboardTheme.DELETE_ICON_FILE, buttonHeight = buttonHeight, onClick = {
+                onBackspace()
+            }).apply {
+            updateLayoutParams<LinearLayout.LayoutParams> { weight = 0f }
+        })
 
         root.addView(bottom)
 
+        // --- Track current section using center proximity for accurate active tab
         mainHScroll.viewTreeObserver.addOnScrollChangedListener {
-            if (sectionLeftX.isNotEmpty()) {
-                val scrollX = mainHScroll.scrollX
+            if (sectionCenterX.isNotEmpty() && mainHScroll.width > 0) {
+                val viewportCenter = mainHScroll.scrollX + mainHScroll.width / 2
                 var nearestType = selectedType
-                var nearestDx = Int.MAX_VALUE
-                for ((type, left) in sectionLeftX) {
-                    val dx = max(0, left - scrollX)
-                    if (dx < nearestDx) {
-                        nearestDx = dx
+                var best = Int.MAX_VALUE
+                for ((type, center) in sectionCenterX) {
+                    val d = abs(center - viewportCenter)
+                    if (d < best) {
+                        best = d
                         nearestType = type
                     }
                 }
@@ -319,6 +331,57 @@ object EmojisViewBuilder {
                     rebuildTabs()
                 }
             }
+        }
+
+        // Center initial section once layout is ready
+        mainHScroll.post {
+            scrollSectionToCenter(selectedType)
+            rebuildTabs()
+        }
+
+        fun updateTabStyles() {
+            for (type in tabOrder) {
+                val chip = tabsRow.findViewWithTag<TextView>("tab_$type") ?: continue
+                val isSelected = (type == selectedType)
+                chip.typeface = if (isSelected) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+                chip.alpha = if (isSelected) 1f else 0.6f
+                chip.setTextColor(KeyboardTheme.getColor(1).toColorInt())
+            }
+        }
+
+        fun buildTabsOnce() {
+            tabsRow.removeAllViews()
+            for (type in tabOrder) {
+                val label = emojiByType.firstOrNull { it.type == type }?.displayName ?: "?"
+                val chip = TextView(service).apply {
+                    text = label
+                    setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonHeight / 4f)
+                    gravity = Gravity.CENTER
+                    val side = (buttonHeight / 2.5f).toInt()
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT, side
+                    ).apply {
+                        setMargins(dp(service, 6f), dp(service, 2f), dp(service, 6f), dp(service, 2f))
+                    }
+                    setPadding(dp(service, 10f), 0, dp(service, 10f), 0)
+                    tag = "tab_$type"
+                    isHapticFeedbackEnabled = true
+                }
+                chip.setOnClickListener {
+                    it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    if (selectedType != type) {
+                        selectedType = type
+                        updateTabStyles()
+                        scrollSectionToCenter(type) // programmatic scroll
+                    } else {
+                        // still center if user taps the already-selected tab
+                        scrollSectionToCenter(type)
+                    }
+                }
+                tabsRow.addView(chip)
+            }
+            tabsRow.gravity = Gravity.CENTER
+            updateTabStyles()
         }
 
         return root

@@ -22,6 +22,8 @@ import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
 
 object SystemKeyBuilder {
+    private const val LONG_PRESS_DELAY = 250L // 0.25 seconds
+    var longPressRunnable: Runnable? = null
     fun systemButton_Text(
         service: InputMethodService,
         text: String,
@@ -91,22 +93,21 @@ object SystemKeyBuilder {
         return root
     }
 
-    // OPTIONAL: use this to keep Shift/Del logic uniform
     fun forKey(
-        service: InputMethodService, key: KeyEntry, buttonHeight: Int, onCapsChange: (Boolean) -> Unit
+        service: InputMethodService, key: KeyEntry, isCaps: Boolean, buttonHeight: Int, maxKeyCount: Int, onCapsChange: (Boolean) -> Unit
     ): View {
         val baseStyle = KeyboardTheme.getSystemButtonStyle(service)
-        val style = if (key.name == "Shift" && MyKeyboardService.isCaps) baseStyle.copy(fillColor = KeyboardTheme.getColor(3), textColor = KeyboardTheme.getColor(1))
+        val style = if (key.name == "Shift" && isCaps) baseStyle.copy(fillColor = KeyboardTheme.getColor(3), textColor = KeyboardTheme.getColor(1))
         else baseStyle
 
-        val root = newContainer(service, style, buttonHeight)
+        val root = newContainer(service, style, buttonHeight, maxKeyCount = maxKeyCount)
 
         val icon = when (key.name) {
             "Shift" -> KeyboardTheme.SHIFT_ICON_FILE
             "Del" -> KeyboardTheme.DELETE_ICON_FILE
             else -> null
         }
-        root.addView(makeCenteredContent(service, style, buttonHeight, textToSet = key.lowercase.orEmpty(), iconAssetPath = icon))
+        root.addView(makeCenteredContent(service, style, buttonHeight, textToSet = key.lowercase, iconAssetPath = icon))
 
         when (key.name) {
             "Shift" -> wireShift(root, onCapsChange)
@@ -117,7 +118,7 @@ object SystemKeyBuilder {
     }
 
     private fun newContainer(
-        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, weight: Float = 0f
+        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, weight: Float = 0f, maxKeyCount: Int = 10
     ): FrameLayout {
         return FrameLayout(service).apply {
             isClickable = true
@@ -195,11 +196,6 @@ object SystemKeyBuilder {
         root.setOnClickListener {
             it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
             onCapsChange(!MyKeyboardService.isCaps)
-        }
-        root.setOnLongClickListener {
-            it.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-            onCapsChange(true)
-            true
         }
     }
 

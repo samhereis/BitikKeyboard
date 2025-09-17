@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 
 data class ButtonStyle(
     var fillColor: String, val borderColor: String, val borderWidthDp: Int, val cornerRadiusDp: Int, val textColor: String, val textSizeSp: TextUnit
@@ -55,8 +56,14 @@ object KeyboardTheme {
     const val SHIFT_ICON_FILE = "icons/shift_icon.png"
     const val DELETE_ICON_FILE = "icons/delete_icon.png"
     const val LANGUAGE_ICON_FILE = "icons/icon_language.png"
-    const val ENTER_ICON_FILE = "icons/enter_icon.png"
     const val SPACE_ICON_FILE = "icons/space_icon.png"
+
+    const val ENTER_ICON_FILE = "icons/enter_icon.png"
+    const val ENTER_SEARCH_ICON_FILE = "icons/enter_search_icon.png"
+    const val ENTER_GO_ICON_FILE = "icons/enter_enter_go_icon.png"
+    const val ENTER_SEND_ICON_FILE = "icons/enter_send_icon.png"
+    const val ENTER_DONE_ICON_FILE = "icons/enter_done_icon.png"
+    const val ENTER_NEXT_ICON_FILE = "icons/enter_next_icon.png"
 
     private fun isNight(): Boolean = (MyKeyboardService.context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
@@ -73,13 +80,7 @@ object KeyboardTheme {
         return scaleFactor.coerceAtMost(MAX_SCALE_FACTOR)
     }
 
-    fun getLetterButtonWidth(context: Context): Int {
-        var maxKeyCount: Int = 10
-
-        if (MyKeyboardService.currentMode == "letters" && MyKeyboardService.currentAlphabet == "kiril") {
-            maxKeyCount = 11
-        }
-
+    fun getLetterButtonWidth(context: Context, maxKeyCount: Int = 10): Int {
         val density = context.resources.displayMetrics.density
         val screenWidthDp = context.resources.displayMetrics.widthPixels / density
         val totalMarginDp = (maxKeyCount + KEY_MARGIN_DP) * KEY_MARGIN_DP
@@ -88,8 +89,8 @@ object KeyboardTheme {
         return (buttonWidthDp * density).toInt() - KEY_MARGIN_DP
     }
 
-    fun getSystemButtonWidth(context: Context): Int {
-        return getLetterButtonWidth(context) + (getLetterButtonWidth(context) / 4)
+    fun getSystemButtonWidth(context: Context, maxKeyCount: Int = 10): Int {
+        return getLetterButtonWidth(context, maxKeyCount) + (getLetterButtonWidth(context) / 4)
     }
 
     fun getButtonHeight(): Int = BUTTON_HEIGHT_DP
@@ -137,7 +138,7 @@ object KeyboardTheme {
     }
 
     fun getLetterButtonStyle_Normal(context: Context, showTranscription: Boolean = false): ButtonStyle {
-        val textSizeSp = if (!showTranscription || MyKeyboardService.currentAlphabet == "latin") getLetterButtonTextSize_NoTranscription(context)
+        val textSizeSp = if (!showTranscription || MyKeyboardService.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
         else getLetterButtonTextSize(context)
 
         return ButtonStyle(
@@ -146,10 +147,10 @@ object KeyboardTheme {
     }
 
     fun getLetterButtonStyle_UpperCase(context: Context, showTranscription: Boolean = false): ButtonStyle {
-        val textSizeSp = if (!showTranscription || MyKeyboardService.currentAlphabet == "latin") getLetterButtonTextSize_NoTranscription(context)
+        val textSizeSp = if (!showTranscription || MyKeyboardService.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
         else getLetterButtonTextSize(context)
 
-        val textColorHex = if (MyKeyboardService.currentAlphabet == "latin") getColor(2) // normal text color for Latin
+        val textColorHex = if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) getColor(2) // normal text color for Latin
         else getColor(3) // accent when Bitik uppercase
 
         return ButtonStyle(
