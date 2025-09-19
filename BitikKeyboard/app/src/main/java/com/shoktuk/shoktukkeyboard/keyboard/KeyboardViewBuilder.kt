@@ -26,7 +26,14 @@ object KeyboardViewBuilder {
     var esh_Def = context.eshVariant == ESH_Letter_Variant.Default
 
     fun buildKeyboardView(
-        service: InputMethodService, layout: KeyboardLayout, isCaps: Boolean, maxKeyCount: Int, onCapsChange: (Boolean) -> Unit, onModeChange: (String) -> Unit, onAlphabetChange: () -> Unit
+        service: InputMethodService,
+        layout: KeyboardLayout,
+        isCaps: Boolean,
+        mode: KeyboardMode,
+        maxKeyCount: Int,
+        onCapsChange: (Boolean) -> Unit,
+        onModeChange: (KeyboardMode) -> Unit,
+        onAlphabetChange: () -> Unit
     ): LinearLayout {
         eb_Def = context.ebVariant == EB_Letter_Variant.Default
         en_Def = context.enVariant == EN_Letter_Variant.Default
@@ -79,7 +86,7 @@ object KeyboardViewBuilder {
 
         container.addView(
             BottomRowBuilder.createBottomRow(
-                service, KeyboardTheme.getButtonHeight(), onModeChange
+                service, isCaps, mode, KeyboardTheme.getButtonHeight(), onModeChange
             )
         )
         return container

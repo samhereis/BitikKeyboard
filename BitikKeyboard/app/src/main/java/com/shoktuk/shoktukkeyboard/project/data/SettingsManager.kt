@@ -13,6 +13,14 @@ enum class BitikVariant(val id: String) {
     }
 }
 
+enum class BitikDialect(val id: String) {
+    Altay("Алтай"), Orkon("Оркон");
+
+    companion object {
+        const val KEY = "BitikDialect"
+    }
+}
+
 enum class TextTranscription(val id: String) {
     On("Жанык"), Off("Өчүк");
 
@@ -29,19 +37,11 @@ enum class LetterTranscription(val id: String) {
     }
 }
 
-enum class BitikDialect(val id: String) {
-    Altay("Алтай"), Orkon("Оркон");
+enum class WordSeparator(val id: String) {
+    Off("Жок"), NoSpace("⁚"), SpaceBefore("{ }⁚"), ArroundSpace("{ }⁚{ }");
 
     companion object {
-        const val KEY = "BitikDialect"
-    }
-}
-
-enum class WritingSystem(val id: String) {
-    Bitik("Bitik"), Latin("latin"), Kiril("kiril");
-
-    companion object {
-        const val KEY = "WritingSystem"
+        const val KEY = "WordSeparator"
     }
 }
 
@@ -77,6 +77,46 @@ enum class ESH_Letter_Variant(val id: String) {
     }
 }
 
+enum class Kirilisa_Status(val id: String) {
+    Off("Өчүк"), On("Жанык");
+
+    companion object {
+        const val KEY = "Kirilisa_Status"
+    }
+}
+
+enum class Latin_Status(val id: String) {
+    Off("Өчүк"), On("Жанык");
+
+    companion object {
+        const val KEY = "Latin_Status"
+    }
+}
+
+enum class Vibrations(val id: String) {
+    Off("Өчүк"), On("Жанык");
+
+    companion object {
+        const val KEY = "Vibrations"
+    }
+}
+
+enum class Sounds(val id: String) {
+    Off("Өчүк"), On("Жанык");
+
+    companion object {
+        const val KEY = "Sounds"
+    }
+}
+
+enum class WritingSystem(val id: String) {
+    Bitik("Bitik"), Latin("latin"), Kiril("kiril");
+
+    companion object {
+        const val KEY = "WritingSystem"
+    }
+}
+
 // ---------- Settings Manager ----------
 object SettingsManager {
     private const val PREFS_NAME = "settings_prefs"
@@ -98,10 +138,6 @@ object SettingsManager {
         get() = prefs().getEnum(BitikDialect.KEY, BitikDialect.Altay)
         set(v) = prefs().setEnum(BitikDialect.KEY, v)
 
-    var Context.writingSystem: WritingSystem
-        get() = prefs().getEnum(WritingSystem.KEY, WritingSystem.Bitik)
-        set(v) = prefs().setEnum(WritingSystem.KEY, v)
-
     var Context.textTranscription: TextTranscription
         get() = prefs().getEnum(TextTranscription.KEY, TextTranscription.On)
         set(v) = prefs().setEnum(TextTranscription.KEY, v)
@@ -109,6 +145,10 @@ object SettingsManager {
     var Context.letterTranscription: LetterTranscription
         get() = prefs().getEnum(LetterTranscription.KEY, LetterTranscription.On)
         set(v) = prefs().setEnum(LetterTranscription.KEY, v)
+
+    var Context.wordSeparator: WordSeparator
+        get() = prefs().getEnum(WordSeparator.KEY, WordSeparator.NoSpace)
+        set(v) = prefs().setEnum(WordSeparator.KEY, v)
 
     var Context.ebVariant: EB_Letter_Variant
         get() = prefs().getEnum(EB_Letter_Variant.KEY, EB_Letter_Variant.Default)
@@ -125,4 +165,24 @@ object SettingsManager {
     var Context.eshVariant: ESH_Letter_Variant
         get() = prefs().getEnum(ESH_Letter_Variant.KEY, ESH_Letter_Variant.Default)
         set(v) = prefs().setEnum(ESH_Letter_Variant.KEY, v)
+
+    var Context.kirilisaStatus: Kirilisa_Status
+        get() = prefs().getEnum(Kirilisa_Status.KEY, Kirilisa_Status.Off)
+        set(v) = prefs().setEnum(Kirilisa_Status.KEY, v)
+
+    var Context.latinStatus: Latin_Status
+        get() = prefs().getEnum(Latin_Status.KEY, Latin_Status.Off)
+        set(v) = prefs().setEnum(Latin_Status.KEY, v)
+
+    var Context.vibrations: Vibrations
+        get() = prefs().getEnum(Vibrations.KEY, Vibrations.Off)
+        set(v) = prefs().setEnum(Vibrations.KEY, v)
+
+    var Context.sounds: Sounds
+        get() = prefs().getEnum(Sounds.KEY, Sounds.Off)
+        set(v) = prefs().setEnum(Sounds.KEY, v)
+
+    var Context.writingSystem: WritingSystem
+        get() = prefs().getEnum(WritingSystem.KEY, WritingSystem.Bitik)
+        set(v) = prefs().setEnum(WritingSystem.KEY, v)
 }

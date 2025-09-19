@@ -5,12 +5,14 @@ import android.text.InputType
 import android.view.Gravity
 import android.view.inputmethod.EditorInfo
 import android.widget.LinearLayout
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
+import com.shoktuk.shoktukkeyboard.project.data.WordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
 object BottomRowBuilder {
     fun createBottomRow(
-        service: InputMethodService, buttonHeight: Int, onModeChange: (String) -> Unit,
+        service: InputMethodService, isCaps: Boolean, mode: KeyboardMode, buttonHeight: Int, onModeChange: (KeyboardMode) -> Unit,
     ): LinearLayout {
         var isBitik = MyKeyboardService.current_writingSystem == WritingSystem.Bitik
         var comma = if (isBitik) "⹁" else ","
@@ -38,10 +40,14 @@ object BottomRowBuilder {
         }
 
         bottomRow.addView(
-            SystemKeyBuilder.systemButton_Text(service, "123", buttonHeight, onClick = {
-                onModeChange("symbols")
+            SystemKeyBuilder.systemButton_Text(service, if (mode == KeyboardMode.Main) "⓬😀" else "🅰😀", buttonHeight, onClick = {
+                if (MyKeyboardService.keyboardMode == KeyboardMode.Main) {
+                    onModeChange(KeyboardMode.Symbols)
+                } else {
+                    onModeChange(KeyboardMode.Main)
+                }
             }, onLongClick = {
-                onModeChange("emojis")
+                onModeChange(KeyboardMode.Emojis)
             })
         )
 
@@ -55,14 +61,18 @@ object BottomRowBuilder {
 
         bottomRow.addView(
             SystemKeyBuilder.expandableSystemButton_Icon(
-                service, KeyboardTheme.SPACE_ICON_FILE, " ", buttonHeight,
-            )
+                service, KeyboardTheme.SPACE_ICON_FILE, " ", buttonHeight, onLongClick = {
+                    service.currentInputConnection?.commitText("⁚", 1)
+                    TopRowBuilder_Old.onTypedListener?.invoke()
+                })
         )
 
-        if (isBitik) {
+        if (isBitik && MyKeyboardService.context.wordSeparator != WordSeparator.Off) {
+            var wp = MyKeyboardService.context.wordSeparator.id.replace("{", "").replace("}", "").reversed()
+
             bottomRow.addView(
                 SystemKeyBuilder.expandableSystemButton_Text(
-                    service, "⁚", buttonHeight, "⁚"
+                    service, "⁚", buttonHeight, wp
                 )
             )
         }

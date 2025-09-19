@@ -34,26 +34,36 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
-import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
+import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
+import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
+import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.sounds
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
-import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.vibrations
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
+import com.shoktuk.shoktukkeyboard.project.data.Vibrations
+import com.shoktuk.shoktukkeyboard.project.data.WordSeparator
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import localized
 
@@ -64,11 +74,18 @@ fun SettingsScreen() {
     var bitikDialect by remember { mutableStateOf(context.bitikDialect) }
     var textTranscription by remember { mutableStateOf(context.textTranscription) }
     var letterTranscription by remember { mutableStateOf(context.letterTranscription) }
+    var wordSeparator by remember { mutableStateOf(context.wordSeparator) }
 
     var ebVariant by remember { mutableStateOf(context.ebVariant) }
     var eNariant by remember { mutableStateOf(context.enVariant) }
     var asVariant by remember { mutableStateOf(context.asVariant) }
     var eshVariant by remember { mutableStateOf(context.eshVariant) }
+
+    var kirilisaStatus by remember { mutableStateOf(context.kirilisaStatus) }
+    var latinStatus by remember { mutableStateOf(context.latinStatus) }
+
+    var vibrations by remember { mutableStateOf(context.vibrations) }
+    var sounds by remember { mutableStateOf(context.sounds) }
 
 // in SettingsScreen() Column modifier:
     Column(
@@ -76,71 +93,181 @@ fun SettingsScreen() {
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
-            .verticalScroll(rememberScrollState()),   // ✅ real scroll
-        verticalArrangement = Arrangement.spacedBy(16.dp)
+            .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        CenteredDropdownPopup(
-            label = "Битик түрү".localized("loc_settings", context), options = BitikVariant.entries, selected = keyboardVariant, onSelect = { variant ->
-                keyboardVariant = variant
-                context.keyboardVariant = variant
-            }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
-        )
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            color = MaterialTheme.colorScheme.tertiary
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Жөндөө", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                )
 
-        CenteredDropdownPopup(
-            label = "Битик диалект", options = BitikDialect.entries, selected = bitikDialect, onSelect = { alpha ->
-                bitikDialect = alpha
-                context.bitikDialect = alpha
-            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
-        )
+                CenteredDropdownPopup(
+                    label = "Битик түрү".localized("loc_settings", context), options = BitikVariant.entries, selected = keyboardVariant, onSelect = { variant ->
+                        keyboardVariant = variant
+                        context.keyboardVariant = variant
+                    }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
+                )
 
-        CenteredDropdownPopup(
-            label = "Жазуу транскрипция", options = TextTranscription.entries, selected = textTranscription, onSelect = { alpha ->
-                textTranscription = alpha
-                context.textTranscription = alpha
-            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
-        )
+                CenteredDropdownPopup(
+                    label = "Битик диалект", options = BitikDialect.entries, selected = bitikDialect, onSelect = { alpha ->
+                        bitikDialect = alpha
+                        context.bitikDialect = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                )
 
-        CenteredDropdownPopup(
-            label = "Тамга транскрипция", options = LetterTranscription.entries, selected = letterTranscription, onSelect = { alpha ->
-                letterTranscription = alpha
-                context.letterTranscription = alpha
-            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
-        )
+                if (keyboardVariant == BitikVariant.CLASSIC) {
+                    EnumSwitchSetting(
+                        label = "Жазуу транскрипция", selected = textTranscription, optionOn = TextTranscription.On, optionOff = TextTranscription.Off, onSelect = {
+                            context.textTranscription = if (it == TextTranscription.On) TextTranscription.On else TextTranscription.Off
+                            textTranscription = context.textTranscription
+                        }, modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
-        HorizontalDivider()
+                EnumSwitchSetting(
+                    label = "Тамга транскрипция", selected = letterTranscription, optionOn = LetterTranscription.On, optionOff = LetterTranscription.Off, onSelect = {
+                        context.letterTranscription = if (it == LetterTranscription.On) LetterTranscription.On else LetterTranscription.Off
+                        letterTranscription = context.letterTranscription
+                    }, modifier = Modifier.fillMaxWidth()
+                )
 
-        CenteredDropdownPopup(
-            label = "эБ тамга", options = EB_Letter_Variant.entries, selected = ebVariant, onSelect = { alpha ->
-                ebVariant = alpha
-                context.ebVariant = alpha
-            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
-        )
-
-        CenteredDropdownPopup(
-            label = "эН тамга", options = EN_Letter_Variant.entries, selected = eNariant, onSelect = { alpha ->
-                eNariant = alpha
-                context.enVariant = alpha
-            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
-        )
-
-        HorizontalDivider()
-
-        Text("Алтай варианты үчүн:")
-        CenteredDropdownPopup(
-            label = "аС тамга", options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
-                asVariant = alpha
-                context.asVariant = alpha
-            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
-        )
-
-        if (context.keyboardVariant == BitikVariant.SAMAGAN) {
-            CenteredDropdownPopup(
-                label = "эШ тамга", options = ESH_Letter_Variant.entries, selected = eshVariant, onSelect = { alpha ->
-                    eshVariant = alpha
-                    context.eshVariant = alpha
-                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
-            )
+                CenteredDropdownPopup(
+                    label = "Эки чекит", options = WordSeparator.entries, selected = wordSeparator, onSelect = { alpha ->
+                        context.wordSeparator = alpha
+                        wordSeparator = context.wordSeparator
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
+
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            color = MaterialTheme.colorScheme.primary
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Сезилиш", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                )
+
+                EnumSwitchSetting(
+                    label = "Дирилдөө", selected = vibrations, optionOn = Vibrations.On, optionOff = Vibrations.Off, onSelect = {
+                        context.vibrations = if (it == Vibrations.On) Vibrations.On else Vibrations.Off
+                        vibrations = context.vibrations
+                    }, modifier = Modifier.fillMaxWidth()
+                )
+
+                //EnumSwitchSetting(
+                //    label = "Тыбыш", selected = sounds, optionOn = Sounds.On, optionOff = Sounds.Off, onSelect = {
+                //        context.sounds = if (it == Sounds.On) Sounds.On else Sounds.Off
+                //        sounds = context.sounds
+                //    }, modifier = Modifier.fillMaxWidth()
+                //)
+            }
+        }
+
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            color = MaterialTheme.colorScheme.secondary
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Тамгалар", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                )
+                CenteredDropdownPopup(
+                    label = "эБ тамга", options = EB_Letter_Variant.entries, selected = ebVariant, onSelect = { alpha ->
+                        ebVariant = alpha
+                        context.ebVariant = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                )
+
+                CenteredDropdownPopup(
+                    label = "эН тамга", options = EN_Letter_Variant.entries, selected = eNariant, onSelect = { alpha ->
+                        eNariant = alpha
+                        context.enVariant = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                )
+
+                if (bitikDialect == BitikDialect.Altay) {
+                    Text("Алтай варианты үчүн:")
+                    CenteredDropdownPopup(
+                        label = "аС тамга", options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
+                            asVariant = alpha
+                            context.asVariant = alpha
+                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    )
+
+                    if (keyboardVariant == BitikVariant.SAMAGAN && bitikDialect == BitikDialect.Altay) {
+                        CenteredDropdownPopup(
+                            label = "эШ тамга", options = ESH_Letter_Variant.entries, selected = eshVariant, onSelect = { alpha ->
+                                eshVariant = alpha
+                                context.eshVariant = alpha
+                            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+                }
+            }
+        }
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            color = MaterialTheme.colorScheme.inverseOnSurface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Кошумча ариптер", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                )
+
+                EnumSwitchSetting(
+                    label = "Кирил жазуусу", selected = kirilisaStatus, optionOn = Kirilisa_Status.On, optionOff = Kirilisa_Status.Off, onSelect = {
+                        context.kirilisaStatus = if (it == Kirilisa_Status.On) Kirilisa_Status.On else Kirilisa_Status.Off
+                        kirilisaStatus = context.kirilisaStatus
+                    }, modifier = Modifier.fillMaxWidth()
+                )
+
+                EnumSwitchSetting(
+                    label = "Латын жазуусу", selected = latinStatus, optionOn = Latin_Status.On, optionOff = Latin_Status.Off, onSelect = {
+                        context.latinStatus = if (it == Latin_Status.On) Latin_Status.On else Latin_Status.Off
+                        latinStatus = context.latinStatus
+                    }, modifier = Modifier.fillMaxWidth()
+                )
+            }
+        }
+
+
     }
 }
 
@@ -226,6 +353,30 @@ fun <T> CenteredDropdownPopup(
                     }
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun <T> EnumSwitchSetting(
+    label: String, selected: T, optionOn: T, optionOff: T, onSelect: (T) -> Unit, modifier: Modifier = Modifier
+) {
+    val isOn = selected == optionOn
+    Surface(
+        modifier = modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), tonalElevation = 0.dp, shadowElevation = 0.dp, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .heightIn(min = 56.dp)
+                .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(Modifier.weight(1f)) {
+                Text(label, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Spacer(Modifier.heightIn(min = 2.dp))
+            }
+            androidx.compose.material3.Switch(
+                checked = isOn, onCheckedChange = { checked -> onSelect(if (checked) optionOn else optionOff) })
         }
     }
 }

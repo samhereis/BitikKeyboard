@@ -49,7 +49,8 @@ class KeyView(
     private var style = KeyboardTheme.getLetterButtonStyle_Normal(context, MyKeyboardService.showLetterTranscription)
 
     private lateinit var visualContainer: FrameLayout
-    private val visualInsetPx = dpToPx(context, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual)
+    private val visualInsetPx_H = dpToPx(context, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_H)
+    private val visualInsetPx_V = dpToPx(context, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_V)
 
     // NEW:
     private var lastErrorAt = 0L
@@ -116,7 +117,7 @@ class KeyView(
 
         visualContainer = FrameLayout(context).apply {
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT).apply {
-                (this as MarginLayoutParams).setMargins(visualInsetPx, visualInsetPx, visualInsetPx, visualInsetPx)
+                (this as MarginLayoutParams).setMargins(visualInsetPx_H, visualInsetPx_V, visualInsetPx_H, visualInsetPx_V)
             }
         }
         addView(visualContainer)
@@ -211,7 +212,7 @@ class KeyView(
 
             if (isTouchInBounds && hasHoldValue) {
                 isLongPressed = true
-                performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                Haptics.perform(this, HapticFeedbackConstants.LONG_PRESS)
                 onLongPress(getCurrentMainText_Hold())
                 applyStyle()
                 updateContent()
@@ -227,7 +228,7 @@ class KeyView(
                     isTouchInBounds = true
                     handler.postDelayed(longPressRunnable, longPressDelay)
                     showOverlay()
-                    performHapticFeedback(HapticFeedbackConstants.KEYBOARD_PRESS)
+                    Haptics.perform(this, HapticFeedbackConstants.KEYBOARD_PRESS)
                     true
                 }
 

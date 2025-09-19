@@ -46,7 +46,8 @@ object KeyboardTheme {
     private const val MAX_SCALE_FACTOR = 1.5f
     private const val BUTTON_HEIGHT_DP = 175
     const val KEY_MARGIN_DP = 0
-    const val KEY_MARGIN_DP_OnlyVisual = 2
+    const val KEY_MARGIN_DP_OnlyVisual_H = 2
+    const val KEY_MARGIN_DP_OnlyVisual_V = 5
 
     private val BASE_LETTER_TEXT_SIZE_SP = 20.sp
     private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 25.sp
@@ -150,8 +151,8 @@ object KeyboardTheme {
         val textSizeSp = if (!showTranscription || MyKeyboardService.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
         else getLetterButtonTextSize(context)
 
-        val textColorHex = if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) getColor(2) // normal text color for Latin
-        else getColor(3) // accent when Bitik uppercase
+        val textColorHex = if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) getColor(2)
+        else getColor(3)
 
         return ButtonStyle(
             fillColor = getColor(1), borderColor = getColor(1), borderWidthDp = 0, cornerRadiusDp = 10, textColor = textColorHex, textSizeSp = textSizeSp

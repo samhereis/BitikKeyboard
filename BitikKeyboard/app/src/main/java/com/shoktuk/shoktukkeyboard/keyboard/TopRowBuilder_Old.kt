@@ -12,6 +12,11 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.Companion.context
+import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
+import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.systems.JSTranscriber
@@ -22,7 +27,7 @@ object TopRowBuilder_Old {
     var onTypedListener: (() -> Unit)? = null
 
     fun createTopRow(
-        service: InputMethodService, buttonHeight: Int, onModeChange: (String) -> Unit, onAlphabetChange: () -> Unit
+        service: InputMethodService, buttonHeight: Int, onModeChange: (KeyboardMode) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -35,15 +40,22 @@ object TopRowBuilder_Old {
             }
         }
 
-        var alphabetLabel = "A"
-        if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) {
-            alphabetLabel = "𐰌"
+        var alphabetLabel = "𐰌"
+
+        if (context.latinStatus == Latin_Status.Off && context.kirilisaStatus == Kirilisa_Status.Off) {
+            alphabetLabel = "😎"
+        } else {
+            if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) {
+                alphabetLabel = "А"
+            }
+            if (MyKeyboardService.current_writingSystem == WritingSystem.Kiril) {
+                alphabetLabel = "ж"
+            }
         }
 
-        rowLayout.addView(
-            SystemKeyBuilder.systemButton_Text(
-                service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() })
-        )
+        var switchLanguageView = SystemKeyBuilder.systemButton_Text(
+            service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() })
+        rowLayout.addView(switchLanguageView)
 
         if (MyKeyboardService.current_textTranscription == TextTranscription.On) {
             val lastWordContainer = createLastWordContainer(service, buttonHeight).apply {

@@ -1,5 +1,6 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import Haptics
 import android.graphics.drawable.InsetDrawable
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
@@ -31,22 +32,23 @@ object SystemKeyBuilder {
         style: ButtonStyle = KeyboardTheme.getSystemButtonStyle(service),
         onClick: (() -> Unit)? = null,
         onLongClick: (() -> Unit)? = null,
+        textId: Int? = null,
         weight: Float = 0f
     ): View {
         val root = newContainer(service, style, buttonHeight, weight).apply {
             isHapticFeedbackEnabled = true
         }
 
-        root.addView(makeCenteredContent(service, style, buttonHeight, textToSet = text))
+        root.addView(makeCenteredContent(service, style, buttonHeight, textId, textToSet = text))
 
         root.setOnClickListener {
-            it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
             onClick?.invoke()
             TopRowBuilder_Old.onTypedListener?.invoke()
         }
 
         root.setOnLongClickListener {
-            it.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+            Haptics.perform(it, HapticFeedbackConstants.LONG_PRESS)
             onLongClick?.invoke()
             true
         }
@@ -60,7 +62,7 @@ object SystemKeyBuilder {
         val root = newContainer(service, style, buttonHeight, weight)
         root.addView(makeCenteredContent(service, style, buttonHeight, iconAssetPath = assetPath))
         root.setOnClickListener {
-            it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
             onClick?.invoke()
             TopRowBuilder_Old.onTypedListener?.invoke()
         }
@@ -73,7 +75,7 @@ object SystemKeyBuilder {
         val root = newContainer(service, style, buttonHeight, weight = 1f)
         root.addView(makeCenteredContent(service, style, buttonHeight, textToSet = text))
         root.setOnClickListener {
-            it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
             service.currentInputConnection?.commitText(textToCommit, 1)
             TopRowBuilder_Old.onTypedListener?.invoke()
         }
@@ -81,14 +83,25 @@ object SystemKeyBuilder {
     }
 
     fun expandableSystemButton_Icon(
-        service: InputMethodService, assetPath: String, textToCommit: String, buttonHeight: Int, style: ButtonStyle = KeyboardTheme.getLetterButtonStyle_Normal(service)
+        service: InputMethodService,
+        assetPath: String,
+        textToCommit: String,
+        buttonHeight: Int,
+        onLongClick: (() -> Unit)? = null,
+        style: ButtonStyle = KeyboardTheme.getLetterButtonStyle_Normal(service)
     ): View {
         val root = newContainer(service, style, buttonHeight, weight = 1f)
         root.addView(makeCenteredContent(service, style, buttonHeight, iconAssetPath = assetPath))
         root.setOnClickListener {
-            it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
             service.currentInputConnection?.commitText(textToCommit, 1)
             TopRowBuilder_Old.onTypedListener?.invoke()
+        }
+
+        root.setOnLongClickListener {
+            Haptics.perform(it, HapticFeedbackConstants.LONG_PRESS)
+            onLongClick?.invoke()
+            true
         }
         return root
     }
@@ -112,7 +125,7 @@ object SystemKeyBuilder {
         when (key.name) {
             "Shift" -> wireShift(root, onCapsChange)
             "Del" -> wireDelete(root, service)
-            else -> root.setOnClickListener { it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP) }
+            else -> root.setOnClickListener { Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP) }
         }
         return root
     }
@@ -131,14 +144,15 @@ object SystemKeyBuilder {
             } else {
                 LinearLayout.LayoutParams(0, buttonHeight, weight)
             }
-            val inset = dpToPx(service, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual)
+            val inset_h = dpToPx(service, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_H)
+            val inset_v = dpToPx(service, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_V)
             val pill = KeyboardTheme.createDrawableFromStyle(service, style)
-            background = InsetDrawable(pill, inset, inset, inset, inset) // inner visual padding; full cell clickable
+            background = InsetDrawable(pill, inset_h, inset_v, inset_h, inset_v)
         }
     }
 
     private fun makeCenteredContent(
-        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, textToSet: String? = null, iconAssetPath: String? = null
+        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, textId: Int? = null, textToSet: String? = null, iconAssetPath: String? = null
     ): View {
         val container = LinearLayout(service).apply {
             orientation = LinearLayout.VERTICAL
@@ -171,12 +185,15 @@ object SystemKeyBuilder {
                 setTextColor(textColorInt)
                 setSingleLine(false)
                 maxLines = 1
-                ellipsize = null // CHANGED: allow shrink instead of ellipsize
-                textSize = KeyboardTheme.getLetterButtonStyle_Normal(service).textSizeSp.value
+                ellipsize = null
+                textSize = buttonHeight / 6f
                 layoutParams = LinearLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply { gravity = Gravity.CENTER }
                 text = textToSet
+                if (textId != null) {
+                    id = textId
+                }
             }
 
             // CHANGED: enable AutoSize so text scales down to fit
@@ -194,7 +211,7 @@ object SystemKeyBuilder {
 
     private fun wireShift(root: View, onCapsChange: (Boolean) -> Unit) {
         root.setOnClickListener {
-            it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+            Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
             onCapsChange(!MyKeyboardService.isCaps)
         }
     }
@@ -211,7 +228,7 @@ object SystemKeyBuilder {
         root.setOnTouchListener { v, e ->
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    Haptics.perform(root, HapticFeedbackConstants.KEYBOARD_TAP)
                     performDelete(service)
                     handler.postDelayed(repeater, interval)
                     true

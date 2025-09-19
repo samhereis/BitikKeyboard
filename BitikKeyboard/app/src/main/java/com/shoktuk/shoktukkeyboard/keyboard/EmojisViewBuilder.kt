@@ -1,5 +1,6 @@
 package com.shoktuk.shoktukkeyboard.emoji
 
+import Haptics
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Typeface
@@ -111,7 +112,7 @@ object EmojisViewBuilder {
                         setTextColor(KeyboardTheme.getColor(1).toColorInt())
                     }
                     b.setOnClickListener {
-                        it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
                         onKeyPress(e)
                     }
                     recentsContainer.addView(b)
@@ -201,7 +202,7 @@ object EmojisViewBuilder {
                         layoutParams = TableRow.LayoutParams(cellSide, cellSide)
                     }
                     btn.setOnClickListener {
-                        it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                        Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
                         onKeyPress(e)
                         registerRecent(e)
                     }
@@ -290,7 +291,7 @@ object EmojisViewBuilder {
                     alpha = if (isSelected) 1f else 0.6f
                 }
                 chip.setOnClickListener {
-                    it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
                     selectedType = type
                     scrollSectionToCenter(type)   // ← center on tap
                     rebuildTabs()
@@ -368,7 +369,7 @@ object EmojisViewBuilder {
                     isHapticFeedbackEnabled = true
                 }
                 chip.setOnClickListener {
-                    it.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
+                    Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
                     if (selectedType != type) {
                         selectedType = type
                         updateTabStyles()
