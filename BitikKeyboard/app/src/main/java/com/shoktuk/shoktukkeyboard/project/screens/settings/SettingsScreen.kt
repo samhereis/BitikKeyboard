@@ -9,22 +9,19 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
-import androidx.compose.material3.Card
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,8 +34,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.ui.window.Dialog
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
@@ -53,6 +48,8 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
@@ -68,7 +65,7 @@ import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import localized
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
     val context = LocalContext.current
     var keyboardVariant by remember { mutableStateOf(context.keyboardVariant) }
     var bitikDialect by remember { mutableStateOf(context.bitikDialect) }
@@ -81,13 +78,16 @@ fun SettingsScreen() {
     var asVariant by remember { mutableStateOf(context.asVariant) }
     var eshVariant by remember { mutableStateOf(context.eshVariant) }
 
-    var kirilisaStatus by remember { mutableStateOf(context.kirilisaStatus) }
-    var latinStatus by remember { mutableStateOf(context.latinStatus) }
-
     var vibrations by remember { mutableStateOf(context.vibrations) }
     var sounds by remember { mutableStateOf(context.sounds) }
 
-// in SettingsScreen() Column modifier:
+    var freeTamga_Click by remember { mutableStateOf(context.freeTamga_Click) }
+    var freeTamga_Hold by remember { mutableStateOf(context.freeTamga_Hold) }
+
+
+    var kirilisaStatus by remember { mutableStateOf(context.kirilisaStatus) }
+    var latinStatus by remember { mutableStateOf(context.latinStatus) }
+
     Column(
         Modifier
             .fillMaxSize()
@@ -109,21 +109,21 @@ fun SettingsScreen() {
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Жөндөө", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    text = "Жөндөө", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
                 CenteredDropdownPopup(
                     label = "Битик түрү".localized("loc_settings", context), options = BitikVariant.entries, selected = keyboardVariant, onSelect = { variant ->
-                        keyboardVariant = variant
-                        context.keyboardVariant = variant
-                    }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
+                    keyboardVariant = variant
+                    context.keyboardVariant = variant
+                }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
                     label = "Битик диалект", options = BitikDialect.entries, selected = bitikDialect, onSelect = { alpha ->
-                        bitikDialect = alpha
-                        context.bitikDialect = alpha
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    bitikDialect = alpha
+                    context.bitikDialect = alpha
+                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 if (keyboardVariant == BitikVariant.CLASSIC) {
@@ -144,9 +144,9 @@ fun SettingsScreen() {
 
                 CenteredDropdownPopup(
                     label = "Эки чекит", options = WordSeparator.entries, selected = wordSeparator, onSelect = { alpha ->
-                        context.wordSeparator = alpha
-                        wordSeparator = context.wordSeparator
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    context.wordSeparator = alpha
+                    wordSeparator = context.wordSeparator
+                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -165,7 +165,7 @@ fun SettingsScreen() {
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Сезилиш", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    text = "Сезилиш", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
                 EnumSwitchSetting(
@@ -198,42 +198,43 @@ fun SettingsScreen() {
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Тамгалар", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    text = "Тамгалар", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
                 CenteredDropdownPopup(
                     label = "эБ тамга", options = EB_Letter_Variant.entries, selected = ebVariant, onSelect = { alpha ->
-                        ebVariant = alpha
-                        context.ebVariant = alpha
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    ebVariant = alpha
+                    context.ebVariant = alpha
+                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
                     label = "эН тамга", options = EN_Letter_Variant.entries, selected = eNariant, onSelect = { alpha ->
-                        eNariant = alpha
-                        context.enVariant = alpha
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    eNariant = alpha
+                    context.enVariant = alpha
+                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 if (bitikDialect == BitikDialect.Altay) {
                     Text("Алтай варианты үчүн:")
                     CenteredDropdownPopup(
                         label = "аС тамга", options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
-                            asVariant = alpha
-                            context.asVariant = alpha
-                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        asVariant = alpha
+                        context.asVariant = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                     )
 
                     if (keyboardVariant == BitikVariant.SAMAGAN && bitikDialect == BitikDialect.Altay) {
                         CenteredDropdownPopup(
                             label = "эШ тамга", options = ESH_Letter_Variant.entries, selected = eshVariant, onSelect = { alpha ->
-                                eshVariant = alpha
-                                context.eshVariant = alpha
-                            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                            eshVariant = alpha
+                            context.eshVariant = alpha
+                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }
             }
         }
+
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -248,14 +249,42 @@ fun SettingsScreen() {
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Кошумча ариптер", modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    text = "Жеткиликтүүлүк", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
-                EnumSwitchSetting(
-                    label = "Кирил жазуусу", selected = kirilisaStatus, optionOn = Kirilisa_Status.On, optionOff = Kirilisa_Status.Off, onSelect = {
-                        context.kirilisaStatus = if (it == Kirilisa_Status.On) Kirilisa_Status.On else Kirilisa_Status.Off
-                        kirilisaStatus = context.kirilisaStatus
-                    }, modifier = Modifier.fillMaxWidth()
+                HorizontalDivider()
+                FreeButtonStringsSection(freeTamga_Click, {
+                    if (!it.isEmpty()) {
+                        context.freeTamga_Click = it
+                    }
+                    freeTamga_Click = it
+                }, freeTamga_Hold, {
+                    if (!it.isEmpty()) {
+                        context.freeTamga_Hold = it
+                    }
+                    freeTamga_Hold = it
+                })
+
+                HorizontalDivider()
+                SavabledSetting({ onOpenSavedStrings() })
+            }
+        }
+
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            color = MaterialTheme.colorScheme.inverseOnSurface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = "Кошумча ариптер", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
                 EnumSwitchSetting(
@@ -264,10 +293,15 @@ fun SettingsScreen() {
                         latinStatus = context.latinStatus
                     }, modifier = Modifier.fillMaxWidth()
                 )
+
+                EnumSwitchSetting(
+                    label = "Кирил жазуусу", selected = kirilisaStatus, optionOn = Kirilisa_Status.On, optionOff = Kirilisa_Status.Off, onSelect = {
+                        context.kirilisaStatus = if (it == Kirilisa_Status.On) Kirilisa_Status.On else Kirilisa_Status.Off
+                        kirilisaStatus = context.kirilisaStatus
+                    }, modifier = Modifier.fillMaxWidth()
+                )
             }
         }
-
-
     }
 }
 
@@ -275,108 +309,8 @@ fun SettingsScreen() {
 @Composable
 fun SettingsScreenPreview() {
     ShoktukKeyboardTheme {
-        SettingsScreen()
-    }
-}
+        SettingsScreen(onOpenSavedStrings = {
 
-@Composable
-fun <T> CenteredDropdownPopup(
-    modifier: Modifier = Modifier, label: String, options: List<T>, selected: T, onSelect: (T) -> Unit, optionLabel: (T) -> String = { it.toString() }
-) {
-    var showPopup by remember { mutableStateOf(false) }
-    val shape = RoundedCornerShape(12.dp)
-
-    Surface(
-        modifier = modifier.fillMaxWidth(), shape = shape, tonalElevation = 0.dp, shadowElevation = 0.dp, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 56.dp) // text-field-like height
-                .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-            // LEFT: label (non-clickable)
-            Text(
-                label, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f)
-            )
-
-            // RIGHT: value + chevron (clickable, uses default M3 ripple)
-            Row(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(10.dp)) // keeps ripple nicely bounded
-                    .clickable { showPopup = true }
-                    .padding(horizontal = 8.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(optionLabel(selected), fontSize = 15.sp)
-                Spacer(Modifier.width(6.dp))
-                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
-            }
-        }
-    }
-
-    if (showPopup) {
-        Dialog(onDismissRequest = { showPopup = false }) {
-            Card(
-                shape = RoundedCornerShape(14.dp), modifier = Modifier
-                    .fillMaxWidth(0.92f)
-                    .wrapContentHeight()
-                    .heightIn(max = 520.dp)
-            ) {
-                // Optional header
-                Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                    Text(label, style = MaterialTheme.typography.titleMedium)
-                }
-                HorizontalDivider()
-
-                androidx.compose.foundation.lazy.LazyColumn(
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 8.dp)
-                ) {
-                    items(options.size) { idx ->
-                        val option = options[idx]
-                        val isSel = option == selected
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clickable {
-                                    onSelect(option)
-                                    showPopup = false
-                                }
-                                .padding(horizontal = 8.dp, vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                            RadioButton(selected = isSel, onClick = null)
-                            Spacer(Modifier.width(12.dp))
-                            Text(
-                                optionLabel(option), style = MaterialTheme.typography.bodyLarge, color = if (isSel) MaterialTheme.colorScheme.primary
-                                else MaterialTheme.colorScheme.onSurface
-                            )
-                        }
-                        if (idx != options.lastIndex) HorizontalDivider()
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun <T> EnumSwitchSetting(
-    label: String, selected: T, optionOn: T, optionOff: T, onSelect: (T) -> Unit, modifier: Modifier = Modifier
-) {
-    val isOn = selected == optionOn
-    Surface(
-        modifier = modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), tonalElevation = 0.dp, shadowElevation = 0.dp, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 56.dp)
-                .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(Modifier.weight(1f)) {
-                Text(label, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                Spacer(Modifier.heightIn(min = 2.dp))
-            }
-            androidx.compose.material3.Switch(
-                checked = isOn, onCheckedChange = { checked -> onSelect(if (checked) optionOn else optionOff) })
-        }
+        })
     }
 }

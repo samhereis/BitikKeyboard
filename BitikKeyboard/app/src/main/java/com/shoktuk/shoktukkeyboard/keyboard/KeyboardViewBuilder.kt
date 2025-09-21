@@ -15,6 +15,8 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
@@ -62,24 +64,10 @@ object KeyboardViewBuilder {
         container.clipChildren = false
         container.clipToPadding = false
 
-        if (context.keyboardVariant == BitikVariant.CLASSIC && MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
-            container.addView(
-                TopRowBuilder_Old.createTopRow(
-                    service, systemKeybHeight, onModeChange, onAlphabetChange
-                )
-            )
-        } else {
-            container.addView(
-                TopRowBuilder.createTopRow(
-                    service, systemKeybHeight, onAlphabetChange
-                )
-            )
-        }
-
         layout.rows.forEach { row ->
             container.addView(
                 createRowLayout(
-                    service, row, isCaps, KeyboardTheme.getButtonHeight(), maxKeyCount, onCapsChange
+                    service, row, isCaps, mode, KeyboardTheme.getButtonHeight(), maxKeyCount, onCapsChange, onModeChange
                 )
             )
         }
@@ -93,7 +81,14 @@ object KeyboardViewBuilder {
     }
 
     private fun createRowLayout(
-        service: InputMethodService, row: List<KeyEntry>, isCaps: Boolean, buttonHeight: Int, maxKeyCount: Int, onCapsChange: (Boolean) -> Unit
+        service: InputMethodService,
+        row: List<KeyEntry>,
+        isCaps: Boolean,
+        mode: KeyboardMode,
+        buttonHeight: Int,
+        maxKeyCount: Int,
+        onCapsChange: (Boolean) -> Unit,
+        onModeChange: (KeyboardMode) -> Unit
     ): LinearLayout {
         var keybWidth = KeyboardTheme.getLetterButtonWidth(context, maxKeyCount)
         var systemKeybWidth = KeyboardTheme.getSystemButtonWidth(service)
@@ -118,8 +113,13 @@ object KeyboardViewBuilder {
 
         shiftKey?.let {
             val view = SystemKeyBuilder.forKey(
-                service, it, isCaps, buttonHeight, maxKeyCount, onCapsChange
+                service, it, isCaps, buttonHeight, maxKeyCount, onCapsChange, KeyboardTheme.getSystemButtonStyle(service)
             )
+
+            view.setOnLongClickListener {
+                onModeChange.invoke(KeyboardMode.SavedStrings)
+                true
+            }
 
             val params = LinearLayout.LayoutParams(
                 systemKeybWidth, buttonHeight
@@ -139,7 +139,7 @@ object KeyboardViewBuilder {
 
         middleKeys.forEach { key ->
             middleContainer.addView(
-                LetterKeyBuilder.createLetterKey(service, process(key), isCaps, buttonHeight, keybWidth, onKeyClick = { letter ->
+                LetterKeyBuilder.createLetterKey(service, process(key, mode), isCaps, buttonHeight, keybWidth, onKeyClick = { letter ->
                     if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
                         if (ensureRTLContext(service)) {
                             service.currentInputConnection?.commitText("\u202B", 1)
@@ -190,38 +190,52 @@ object KeyboardViewBuilder {
         return textBefore.isNullOrEmpty() || textBefore.last() == '\n'
     }
 
-    fun process(key: KeyEntry): KeyEntry {
+    fun process(key: KeyEntry, mode: KeyboardMode): KeyEntry {
         var keyToSet = key
 
-        if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
-            if (key.name == "b" && !eb_Def) {
-                keyToSet = getEB(keyToSet)
-                return keyToSet
-            }
-            if (key.name == "n" && !en_Def) {
-                keyToSet = getEN(keyToSet)
-                return keyToSet
-            }
-
-            if (key.name == "s" && as_Def) {
-                keyToSet = getAS(keyToSet)
-                return keyToSet
-            }
-
-            if (key.name == "ş" && !esh_Def) {
-                if (!MyKeyboardService.isClassic && MyKeyboardService.current_bitikDialect == BitikDialect.Altay && MyKeyboardService.current_bitikVariant == BitikVariant.SAMAGAN) {
-                    keyToSet = getESH(keyToSet)
+        if (mode == KeyboardMode.Main) {
+            if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
+                if (key.name == "b" && !eb_Def) {
+                    keyToSet = getEB(keyToSet)
+                    return keyToSet
                 }
-                return keyToSet
-            }
-        } else {
-            if (key.name == "⸮") {
-                keyToSet = key.copy(
-                    lowercase = "?", lowerCaseHold = "⸮", lowerCaseRomanization = "⸮", uppercase = "?", upperCaseHold = "⸮", upperCaseRomanization = "⸮"
-                )
-                return keyToSet
+                if (key.name == "n" && !en_Def) {
+                    keyToSet = getEN(keyToSet)
+                    return keyToSet
+                }
+
+                if (key.name == "s" && as_Def) {
+                    keyToSet = getAS(keyToSet)
+                    return keyToSet
+                }
+
+                if (key.name == "ş" && !esh_Def) {
+                    if (!MyKeyboardService.isClassic && MyKeyboardService.current_bitikDialect == BitikDialect.Altay && MyKeyboardService.current_bitikVariant == BitikVariant.SAMAGAN) {
+                        keyToSet = getESH(keyToSet)
+                    }
+                    return keyToSet
+                }
+            } else {
+                if (key.name == "⸮") {
+                    keyToSet = key.copy(
+                        lowercase = "?", lowerCaseHold = "⸮", lowerCaseRomanization = "⸮", uppercase = "?", upperCaseHold = "⸮", upperCaseRomanization = "⸮"
+                    )
+                    return keyToSet
+                }
             }
         }
+
+        if (mode == KeyboardMode.Emojis) {
+            if (key.name == "kg") {
+                val a = context.freeTamga_Click
+                val b = context.freeTamga_Hold
+
+                keyToSet = key.copy(
+                    lowercase = a, lowerCaseHold = b, lowerCaseRomanization = b, uppercase = b, upperCaseHold = b, upperCaseRomanization = a
+                )
+            }
+        }
+
         return keyToSet
     }
 

@@ -2,6 +2,8 @@ package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.inputmethodservice.InputMethodService
 import android.util.TypedValue
 import android.view.Gravity
@@ -22,12 +24,42 @@ import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.systems.JSTranscriber
 import com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
+import java.util.WeakHashMap
+
+class OnTypedListener {
+    private val listeners = WeakHashMap<View, () -> Unit>()
+
+    fun addOnTypedListener(view: View, listener: () -> Unit) {
+        listeners[view] = listener
+    }
+
+    fun removeOnTypedListener(view: View) {
+        listeners.remove(view)
+    }
+
+    fun removeAll() {
+        listeners.clear()
+    }
+
+    fun invoke() {
+        cleanupNulls()
+        listeners.values.forEach { it.invoke() }
+    }
+
+    fun cleanupNulls() {
+        val it = listeners.entries.iterator()
+        while (it.hasNext()) {
+            val e = it.next()
+            if (e.key == null || e.value == null) it.remove()
+        }
+    }
+}
 
 object TopRowBuilder_Old {
-    var onTypedListener: (() -> Unit)? = null
+    var onTypedListener: OnTypedListener = OnTypedListener()
 
     fun createTopRow(
-        service: InputMethodService, buttonHeight: Int, onModeChange: (KeyboardMode) -> Unit, onAlphabetChange: () -> Unit
+        service: InputMethodService, buttonHeight: Int, mode: TextTranscription, onModeChange: (KeyboardMode) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -56,8 +88,9 @@ object TopRowBuilder_Old {
         var switchLanguageView = SystemKeyBuilder.systemButton_Text(
             service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() })
         rowLayout.addView(switchLanguageView)
+        val jsTranscriber = JSTranscriber(service)
 
-        if (MyKeyboardService.current_textTranscription == TextTranscription.On) {
+        if (mode == TextTranscription.On) {
             val lastWordContainer = createLastWordContainer(service, buttonHeight).apply {
                 clipChildren = false
                 clipToPadding = false
@@ -65,8 +98,7 @@ object TopRowBuilder_Old {
 
             rowLayout.addView(lastWordContainer)
 
-            val jsTranscriber = JSTranscriber(service)
-            onTypedListener = {
+            onTypedListener.addOnTypedListener(lastWordContainer) {
                 lastWordContainer.post {
                     updateLastWord(
                         service, service.currentInputConnection, jsTranscriber, lastWordContainer, KeyboardTheme.getSystemButtonStyle(service)
@@ -86,7 +118,7 @@ object TopRowBuilder_Old {
                 service, KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight, onClick = {
                     val imm = service.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                     imm.showInputMethodPicker()
-                    TopRowBuilder_Old.onTypedListener?.invoke()
+                    TopRowBuilder_Old.onTypedListener.invoke()
                 })
         )
 
@@ -187,16 +219,21 @@ object TopRowBuilder_Old {
 
     fun getPlaceholderText(service: InputMethodService, rowLayout: LinearLayout): TextView {
         val textView = TextView(rowLayout.context).apply {
-            text = if (MyKeyboardService.showTextTranscription) "𐰖𐰕𐰃𐰬𐰕" else "𐱅𐰭𐰼𐰃 𐰅𐰠𐰢𐰚𐰁 𐰌𐰝𐰢𐰓𐰢"
+            text = if (MyKeyboardService.showTextTranscription) "𐰖𐰕𐰃𐰬𐰕" else "𐱅𐰭𐰼𐰃 ⁚ 𐰅𐰠𐰢𐰚𐰁 ⁚ 𐰌𐰝𐰢𐰓𐰢"
 
             isSingleLine = false
-            setLines(2)
             ellipsize = null
 
+            typeface = Typeface.DEFAULT_BOLD
+            paint.isFakeBoldText = true
+            paint.strokeWidth = 1.25f
+            paint.style = Paint.Style.FILL_AND_STROKE
+
+            setLines(2)
             setTextColor(KeyboardTheme.getColor(2).toColorInt())
 
             val baseSp = KeyboardTheme.getHintButtonTextSize(service).value
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, baseSp * 1.35f)
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, baseSp * 2)
 
             gravity = Gravity.CENTER
             textAlignment = View.TEXT_ALIGNMENT_CENTER

@@ -13,6 +13,7 @@
 
         <activity
             android:name=".MainActivity"
+            android:windowSoftInputMode="adjustResize"
             android:enableOnBackInvokedCallback="true"
             android:exported="true"
             android:theme="@style/Theme.ShoktuKeyboard">

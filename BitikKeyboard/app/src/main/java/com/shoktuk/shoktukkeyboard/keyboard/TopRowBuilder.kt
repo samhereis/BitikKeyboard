@@ -2,6 +2,8 @@ package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.inputmethodservice.InputMethodService
 import android.util.TypedValue
 import android.view.Gravity
@@ -20,7 +22,7 @@ import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
 object TopRowBuilder {
     fun createTopRow(
-        service: InputMethodService, buttonHeight: Int, onAlphabetChange: () -> Unit
+        service: InputMethodService, buttonHeight: Int, onModeChange: (KeyboardMode) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
         val rowLayout = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
@@ -53,20 +55,30 @@ object TopRowBuilder {
 
         var topLabel = "Расмий эмес, жаңыланган битик колдонуудасыз!"
         if (MyKeyboardService.current_writingSystem != WritingSystem.Bitik) {
-            topLabel = "𐱅𐰭𐰼𐰃 𐰅𐰠𐰢𐰚𐰁 𐰌𐰝𐰢𐰓𐰢"
+            topLabel = "𐱅𐰭𐰼𐰃 ⁚ 𐰅𐰠𐰢𐰚𐰁 ⁚ 𐰌𐰝𐰢𐰓𐰢"
         }
 
         val textView = TextView(rowLayout.context).apply {
             text = topLabel
 
             isSingleLine = false
-            setLines(2)
             ellipsize = null
 
+            typeface = Typeface.DEFAULT_BOLD
+            paint.isFakeBoldText = true
+            paint.strokeWidth = 0f
+            paint.style = Paint.Style.FILL_AND_STROKE
+
+            setLines(2)
             setTextColor(KeyboardTheme.getColor(2).toColorInt())
 
             val baseSp = KeyboardTheme.getHintButtonTextSize(service).value
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, baseSp * 1.35f)
+
+            if (MyKeyboardService.current_writingSystem != WritingSystem.Bitik) {
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, baseSp * 1.25f)
+            } else {
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, baseSp * 1.5f)
+            }
 
             gravity = Gravity.CENTER
 
@@ -80,6 +92,20 @@ object TopRowBuilder {
             }
 
             visibility = View.VISIBLE
+
+            if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
+                setOnClickListener {
+                    paint.strokeWidth = 2f
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, baseSp * 1.5f)
+                    text = "𐱅𐰭𐰼𐰃 ⁚ 𐰅𐰠𐰢𐰚𐰁 ⁚ 𐰌𐰝𐰢𐰓𐰢"
+                }
+
+                postDelayed({
+                    paint.strokeWidth = 2f
+                    setTextSize(TypedValue.COMPLEX_UNIT_SP, baseSp * 1.5f)
+                    text = "𐱅𐰭𐰼𐰃 ⁚ 𐰅𐰠𐰢𐰚𐰁 ⁚ 𐰌𐰝𐰢𐰓𐰢"
+                }, 3000)
+            }
         }
 
         rowLayout.addView(textView)

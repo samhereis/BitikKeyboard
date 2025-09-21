@@ -1,7 +1,10 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import Haptics
 import android.content.Context
 import android.graphics.Color
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
@@ -49,7 +52,7 @@ class KeyView(
     private var style = KeyboardTheme.getLetterButtonStyle_Normal(context, MyKeyboardService.showLetterTranscription)
 
     private lateinit var visualContainer: FrameLayout
-    private val visualInsetPx_H = dpToPx(context, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_H)
+    private val visualInsetPx_H = dpToPx(context, if (MyKeyboardService.maxButtonInOneRow > 10) KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_H else (KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_H * 1.5f).toInt())
     private val visualInsetPx_V = dpToPx(context, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_V)
 
     // NEW:
@@ -134,51 +137,68 @@ class KeyView(
     }
 
     private fun updateContent() {
-        var mainTextSize = style.textSizeSp.value;
+        var mainTextSize = style.textSizeSp.value
         if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && isCaps) {
-            mainTextSize = style.textSizeSp.value / 1.1f;
+            mainTextSize /= 1.1f
         }
 
         mainText.apply {
             text = getCurrentMainText()
             setTextColor(style.textColor.toColorInt())
             setTextSize(TypedValue.COMPLEX_UNIT_SP, mainTextSize)
-            setPadding(0, 0, 0, 0)
             maxLines = 1
             ellipsize = null
+
+            typeface = Typeface.DEFAULT_BOLD
+            paint.isFakeBoldText = true
+            if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
+                paint.strokeWidth = 2f
+            }
+            else {
+                paint.strokeWidth = 0.75f
+            }
+            paint.style = Paint.Style.FILL_AND_STROKE
+
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
                 this, 1, mainTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
             )
         }
 
-        val firstText = getCurrentSubText()?.toString().orEmpty()
-        val secontText = getCurrentSubText_Alt()?.toString().orEmpty()
+        val first = getCurrentSubText()?.toString().orEmpty()
+        val second = getCurrentSubText_Alt()?.toString().orEmpty()
         val lines = if (MyKeyboardService.isClassic) 2 else 1
 
-        subText_bottom.apply {
-            text = firstText
-            maxLines = lines
-            setLineSpacing(0.75f, 0.75f)
-            setTextColor(style.textColor.toColorInt())
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, hintButtonTextSize)
-            setPadding(0, 0, 0, 0)
-            ellipsize = null
-            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                this, 1, hintButtonTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
-            )
-        }
+        val edge = dpToPx(context, 0)
 
         subText_top.apply {
-            text = secontText
+            text = second
             maxLines = lines
-            setLineSpacing(0.75f, 0.75f)
+            includeFontPadding = false
+
+            setLineSpacing(0f, 1f)
             setTextColor(style.textColor.toColorInt())
             setTextSize(TypedValue.COMPLEX_UNIT_SP, hintButtonTextSize)
-            setPadding(0, 0, 0, 0)
-            ellipsize = null
-            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                this, 1, hintButtonTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
-            )
+            setPadding(0, -3, 0, 0)
+
+            (layoutParams as FrameLayout.LayoutParams).apply {
+                gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                topMargin = edge
+            }.also { layoutParams = it }
+        }
+
+        subText_bottom.apply {
+            text = first
+            maxLines = lines
+            includeFontPadding = false
+            setLineSpacing(0f, 1f)
+            setTextColor(style.textColor.toColorInt())
+            setTextSize(TypedValue.COMPLEX_UNIT_SP, hintButtonTextSize)
+            setPadding(0, 0, 0, -3)
+
+            (layoutParams as FrameLayout.LayoutParams).apply {
+                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                bottomMargin = edge
+            }.also { layoutParams = it }
         }
 
         if (!MyKeyboardService.showLetterTranscription) {
@@ -331,6 +351,16 @@ class KeyView(
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp.value)
                 maxLines = 1
                 isAllCaps = false
+
+                typeface = Typeface.DEFAULT_BOLD
+                paint.isFakeBoldText = true
+                if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
+                    paint.strokeWidth = 2f
+                }
+                else {
+                    paint.strokeWidth = 0.75f
+                }
+                paint.style = Paint.Style.FILL_AND_STROKE
             }
 
             column.addView(

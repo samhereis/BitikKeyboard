@@ -1,6 +1,8 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import Haptics
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.graphics.drawable.InsetDrawable
 import android.inputmethodservice.InputMethodService
 import android.os.Handler
@@ -70,7 +72,7 @@ object SystemKeyBuilder {
     }
 
     fun expandableSystemButton_Text(
-        service: InputMethodService, text: String, buttonHeight: Int, textToCommit: String, style: ButtonStyle = KeyboardTheme.getLetterButtonStyle_Normal(service)
+        service: InputMethodService, text: String, buttonHeight: Int, textToCommit: String, onClick: (() -> Unit)? = null, style: ButtonStyle = KeyboardTheme.getLetterButtonStyle_Normal(service)
     ): View {
         val root = newContainer(service, style, buttonHeight, weight = 1f)
         root.addView(makeCenteredContent(service, style, buttonHeight, textToSet = text))
@@ -78,6 +80,10 @@ object SystemKeyBuilder {
             Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
             service.currentInputConnection?.commitText(textToCommit, 1)
             TopRowBuilder_Old.onTypedListener?.invoke()
+        }
+        root.setOnLongClickListener {
+            onClick?.invoke()
+            true
         }
         return root
     }
@@ -87,8 +93,8 @@ object SystemKeyBuilder {
         assetPath: String,
         textToCommit: String,
         buttonHeight: Int,
-        onLongClick: (() -> Unit)? = null,
-        style: ButtonStyle = KeyboardTheme.getLetterButtonStyle_Normal(service)
+        style: ButtonStyle = KeyboardTheme.getLetterButtonStyle_Normal(service),
+        onLongClick: (() -> Unit)? = null
     ): View {
         val root = newContainer(service, style, buttonHeight, weight = 1f)
         root.addView(makeCenteredContent(service, style, buttonHeight, iconAssetPath = assetPath))
@@ -107,20 +113,22 @@ object SystemKeyBuilder {
     }
 
     fun forKey(
-        service: InputMethodService, key: KeyEntry, isCaps: Boolean, buttonHeight: Int, maxKeyCount: Int, onCapsChange: (Boolean) -> Unit
+        service: InputMethodService,
+        key: KeyEntry,
+        isCaps: Boolean,
+        buttonHeight: Int,
+        maxKeyCount: Int,
+        onCapsChange: (Boolean) -> Unit,
+        baseStyle: ButtonStyle = KeyboardTheme.getSystemButtonStyle(service)
     ): View {
-        val baseStyle = KeyboardTheme.getSystemButtonStyle(service)
-        val style = if (key.name == "Shift" && isCaps) baseStyle.copy(fillColor = KeyboardTheme.getColor(3), textColor = KeyboardTheme.getColor(1))
-        else baseStyle
-
-        val root = newContainer(service, style, buttonHeight, maxKeyCount = maxKeyCount)
+        val root = newContainer(service, baseStyle, buttonHeight, maxKeyCount = maxKeyCount)
 
         val icon = when (key.name) {
-            "Shift" -> KeyboardTheme.SHIFT_ICON_FILE
+            "Shift" -> if (isCaps) KeyboardTheme.SHIFT_ICON_FILE_Filled else KeyboardTheme.SHIFT_ICON_FILE
             "Del" -> KeyboardTheme.DELETE_ICON_FILE
             else -> null
         }
-        root.addView(makeCenteredContent(service, style, buttonHeight, textToSet = key.lowercase, iconAssetPath = icon))
+        root.addView(makeCenteredContent(service, baseStyle, buttonHeight, textToSet = key.lowercase, iconAssetPath = icon))
 
         when (key.name) {
             "Shift" -> wireShift(root, onCapsChange)
@@ -144,7 +152,7 @@ object SystemKeyBuilder {
             } else {
                 LinearLayout.LayoutParams(0, buttonHeight, weight)
             }
-            val inset_h = dpToPx(service, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_H)
+            val inset_h = dpToPx(service, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_H * 2)
             val inset_v = dpToPx(service, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_V)
             val pill = KeyboardTheme.createDrawableFromStyle(service, style)
             background = InsetDrawable(pill, inset_h, inset_v, inset_h, inset_v)
@@ -187,16 +195,23 @@ object SystemKeyBuilder {
                 maxLines = 1
                 ellipsize = null
                 textSize = buttonHeight / 6f
+
+                typeface = Typeface.DEFAULT_BOLD
+                paint.isFakeBoldText = true
+                paint.strokeWidth = 1f
+                paint.style = Paint.Style.FILL_AND_STROKE
+
                 layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply { gravity = Gravity.CENTER }
+
                 text = textToSet
                 if (textId != null) {
                     id = textId
                 }
             }
 
-            // CHANGED: enable AutoSize so text scales down to fit
             val maxSp = KeyboardTheme.getLetterButtonStyle_Normal(service).textSizeSp.value.toInt()
             val minSp = 1
             val stepSp = 1
@@ -244,7 +259,7 @@ object SystemKeyBuilder {
         }
     }
 
-    private fun performDelete(service: InputMethodService) {
+    fun performDelete(service: InputMethodService) {
         val ic = service.currentInputConnection ?: return
         val before = ic.getTextBeforeCursor(2, 0)
         val deleteCount = when {

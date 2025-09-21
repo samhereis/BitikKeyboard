@@ -52,6 +52,21 @@ enum class BasicInfoScreens(val id: String) {
         }
 }
 
+enum class SettingScreens(val id: String) {
+    SavedStrings("SavedStrings");
+
+    val title: String
+        get() = when (this) {
+            SavedStrings -> "Сакталмалар"
+            else -> "bi_originalBitik"
+        }
+
+    val systemImageName: ImageVector
+        get() = when (this) {
+            SavedStrings -> Icons.Filled.Settings
+            else -> Icons.Default.KeyboardArrowUp
+        }
+}
 
 data class SideMenuItem(
     val path: MainScreens, var icon: ImageVector

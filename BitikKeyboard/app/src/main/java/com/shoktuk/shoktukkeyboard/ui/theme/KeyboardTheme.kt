@@ -25,36 +25,40 @@ object KeyboardTheme {
     // 3 = key text (accent e.g., Shift active)
     // 4 = soft tamga key bg
     // 5 = special tamga key bg
+    // 6 = system key bg
     private val colorIndexes_Light = listOf(
         "#f1f0f7", // 0 container
         "#ffffff", // 1 key bg
         "#1B1B17", // 2 key text
         "#1d192b",  // 3 accent text
         "#dce2f9",  // 4 soft tamga key bg
-        "#e6e0e9",  // 5 special tamga key bg
+        "#e8def8",  // 5 special tamga key bg
+        "#8a90a5",      // 6 = system key bg
     )
     private val colorIndexes_Dark = listOf(
-        "#1a1b20", // 0 container
-        "#2f3036", // 1 key bg
-        "#FFFFFF", // 2 key text
+        "#1e1f25", // 0 container
+        "#33343a", // 1 key bg
+        "#fcfaff", // 2 key text
         "#d8e2ff", // 3 accent text
-        "#272c3a",  // 4 soft tamga key bg
-        "#362b2e",  // 5 special tamga key bg
+        "#2d4766",  // 4 soft tamga key bg
+        "#4a4458",  // 5 special tamga key bg
+        "#8a90a5",      // 6 = system key bg
     )
 
     private const val BASE_SCREEN_WIDTH_DP = 350f
     private const val MAX_SCALE_FACTOR = 1.5f
-    private const val BUTTON_HEIGHT_DP = 175
+    private const val BUTTON_HEIGHT_DP = 170
     const val KEY_MARGIN_DP = 0
     const val KEY_MARGIN_DP_OnlyVisual_H = 2
-    const val KEY_MARGIN_DP_OnlyVisual_V = 5
+    const val KEY_MARGIN_DP_OnlyVisual_V = 6
 
-    private val BASE_LETTER_TEXT_SIZE_SP = 20.sp
-    private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 25.sp
-    private val BASE_HINT_TEXT_SIZE_SP = 8.sp
+    private val BASE_LETTER_TEXT_SIZE_SP = 19.sp
+    private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 21.sp
+    private val BASE_HINT_TEXT_SIZE_SP = 7.sp
     private val BASE_SYSTEM_TEXT_SIZE_SP = 17.sp
 
     const val SHIFT_ICON_FILE = "icons/shift_icon.png"
+    const val SHIFT_ICON_FILE_Filled = "icons/shiftfilled_icon.png"
     const val DELETE_ICON_FILE = "icons/delete_icon.png"
     const val LANGUAGE_ICON_FILE = "icons/icon_language.png"
     const val SPACE_ICON_FILE = "icons/space_icon.png"
@@ -161,7 +165,7 @@ object KeyboardTheme {
 
     fun getSystemButtonStyle(context: Context): ButtonStyle {
         return ButtonStyle(
-            fillColor = getColor(1), borderColor = getColor(1), borderWidthDp = 0, cornerRadiusDp = 10, textColor = getColor(2), textSizeSp = getSystemButtonTextSize(context)
+            fillColor = getColor(6), borderColor = getColor(1), borderWidthDp = 0, cornerRadiusDp = 10, textColor = getColor(1), textSizeSp = getSystemButtonTextSize(context)
         )
     }
 }

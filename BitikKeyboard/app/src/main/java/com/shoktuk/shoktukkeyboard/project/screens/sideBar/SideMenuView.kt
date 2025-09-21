@@ -29,13 +29,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,10 +43,13 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.shoktuk.shoktukkeyboard.project.data.BasicInfoScreens
 import com.shoktuk.shoktukkeyboard.project.data.MainScreens
+import com.shoktuk.shoktukkeyboard.project.data.SettingScreens
 import com.shoktuk.shoktukkeyboard.project.data.SideMenuItem
+import com.shoktuk.shoktukkeyboard.project.screens.settings.SavedStringsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.testKeyboard.TestKeyboard_Screen
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import localized
 
@@ -60,25 +59,14 @@ fun SideMenuView() {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
-    var selectedItemIndex by remember { mutableIntStateOf(0) }
     val context = LocalContext.current
 
-    val mainScreens = listOf(
-        MainScreens.HOW_TO_ENABLE.id, MainScreens.TEST_KEYBOARD.id, MainScreens.BASIC_INFO.id, MainScreens.SETTINGS.id, MainScreens.SUPPORT.id
-    )
+    val items = MainScreens.entries.map { SideMenuItem(it, it.systemImageName) }
+    val mainRoutes = MainScreens.entries.map { it.id }.toSet()
 
-    val items = listOf(
-        SideMenuItem(MainScreens.HOW_TO_ENABLE, MainScreens.HOW_TO_ENABLE.systemImageName),
-        SideMenuItem(MainScreens.TEST_KEYBOARD, MainScreens.TEST_KEYBOARD.systemImageName),
-        SideMenuItem(MainScreens.BASIC_INFO, MainScreens.BASIC_INFO.systemImageName),
-        SideMenuItem(MainScreens.SETTINGS, MainScreens.SETTINGS.systemImageName),
-        SideMenuItem(MainScreens.SUPPORT, MainScreens.SUPPORT.systemImageName)
-    )
-
-    val currentBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = currentBackStackEntry?.destination?.route ?: MainScreens.HOW_TO_ENABLE.id
-
-    val isMainScreen = mainScreens.contains(currentRoute)
+    val backStack by navController.currentBackStackEntryAsState()
+    val currentRoute = backStack?.destination?.route ?: MainScreens.HOW_TO_ENABLE.id
+    val isMainScreen = currentRoute in mainRoutes
 
     ModalNavigationDrawer(
         drawerState = drawerState, gesturesEnabled = isMainScreen, drawerContent = {
@@ -90,30 +78,14 @@ fun SideMenuView() {
                             .padding(20.dp)
                     )
                 }
-                // Drawer items.
-                items.forEachIndexed { index, drawerItem ->
+                items.forEach { drawerItem ->
+                    val selected = currentRoute == drawerItem.path.id
                     NavigationDrawerItem(
-                        selected = selectedItemIndex == index, onClick = {
-                            selectedItemIndex = index
-                            scope.launch { drawerState.close() }
-                            val route = when (selectedItemIndex) {
-                                0 -> MainScreens.HOW_TO_ENABLE.id
-                                1 -> MainScreens.TEST_KEYBOARD.id
-                                2 -> MainScreens.BASIC_INFO.id
-                                3 -> MainScreens.SETTINGS.id
-                                4 -> MainScreens.SUPPORT.id
-                                else -> MainScreens.HOW_TO_ENABLE.id
-                            }
-                            navController.navigate(route) {
-                                popUpTo(navController.graph.findStartDestination().id) {
-                                    saveState = true
-                                }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                        selected = selected, onClick = {
+                            navigateRoot(scope, drawerState, navController, drawerItem.path.id)
                         }, icon = {
                             Row(
-                                modifier = Modifier, horizontalArrangement = Arrangement.Start, verticalAlignment = Alignment.CenterVertically
+                                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start
                             ) {
                                 Icon(
                                     imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
@@ -123,9 +95,7 @@ fun SideMenuView() {
                         }, label = {}, modifier = Modifier.padding(5.dp)
                     )
                 }
-
                 Spacer(modifier = Modifier.weight(1f))
-                //ChangeLanguageWidget()
                 Spacer(modifier = Modifier.weight(1f))
             }
         }) {
@@ -134,26 +104,23 @@ fun SideMenuView() {
                 if (isMainScreen) {
                     TopAppBar(
                         title = {
-                            val menuTitle = items.find { it.path.id == currentRoute }?.path?.title?.localized("loc_sideBar", context) ?: ""
+                            val menuTitle = MainScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_sideBar", context) ?: ""
                             Text(text = menuTitle, fontSize = 15.sp)
                         }, navigationIcon = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(
-                                    imageVector = Icons.Rounded.Menu, contentDescription = "Menu"
-                                )
+                                Icon(Icons.Rounded.Menu, contentDescription = "Menu")
                             }
                         }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
                     )
                 } else {
                     TopAppBar(
                         title = {
-                            val menuTitle = BasicInfoScreens.entries.find { it.id == currentRoute }?.title?.localized("loc_basicInfo", context) ?: ""
-                            Text(text = menuTitle, fontSize = 15.sp)
+                            val title = BasicInfoScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_basicInfo", context)
+                                ?: SettingScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_settings", context) ?: ""
+                            Text(text = title, fontSize = 15.sp)
                         }, navigationIcon = {
                             IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back"
-                                )
+                                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
                             }
                         }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
                     )
@@ -165,21 +132,35 @@ fun SideMenuView() {
                 composable(MainScreens.HOW_TO_ENABLE.id) { HowToEnable_Screen() }
                 composable(MainScreens.TEST_KEYBOARD.id) { TestKeyboard_Screen() }
                 composable(MainScreens.BASIC_INFO.id) { BasicInfo_Screen(navController) }
-                composable(MainScreens.SETTINGS.id) { SettingsScreen() }
+                composable(MainScreens.SETTINGS.id) {
+                    SettingsScreen(
+                        onOpenSavedStrings = { navController.navigate(SettingScreens.SavedStrings.id) })
+                }
                 composable(MainScreens.SUPPORT.id) { SupportScreen() }
 
                 composable(BasicInfoScreens.ORIGINAL_TAMGAS.id) { OriginalTamgasView() }
                 composable(BasicInfoScreens.MODERNIZED_TAMGAS.id) { ModernizedTamgasView() }
                 composable(BasicInfoScreens.RULES_OF_WRITING.id) { RulesOfWritingView() }
+
+                composable(SettingScreens.SavedStrings.id) { SavedStringsScreen() }
             }
         }
+    }
+}
+
+private fun navigateRoot(
+    scope: CoroutineScope, drawerState: androidx.compose.material3.DrawerState, navController: androidx.navigation.NavHostController, route: String
+) {
+    scope.launch { drawerState.close() }
+    navController.navigate(route) {
+        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+        launchSingleTop = true
+        restoreState = true
     }
 }
 
 @Preview(showBackground = true)
 @Composable
 fun SideMenuViewPreview() {
-    ShoktukKeyboardTheme {
-        SideMenuView()
-    }
+    ShoktukKeyboardTheme { SideMenuView() }
 }
