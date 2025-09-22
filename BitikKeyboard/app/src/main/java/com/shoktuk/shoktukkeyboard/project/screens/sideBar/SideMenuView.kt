@@ -6,10 +6,14 @@ import ModernizedTamgasView
 import OriginalTamgasView
 import SideMenuHeader
 import SupportScreen
+import android.content.pm.PackageInfo
+import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -32,6 +36,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -75,28 +80,28 @@ fun SideMenuView() {
                     SideMenuHeader(
                         modifier = Modifier
                             .padding(top = 25.dp)
-                            .padding(20.dp)
+                            .padding(bottom = 10.dp)
                     )
                 }
                 items.forEach { drawerItem ->
                     val selected = currentRoute == drawerItem.path.id
                     NavigationDrawerItem(
                         selected = selected, onClick = {
-                            navigateRoot(scope, drawerState, navController, drawerItem.path.id)
-                        }, icon = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start
-                            ) {
-                                Icon(
-                                    imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
-                                )
-                                Text(text = drawerItem.path.title.localized("loc_sideBar", context))
-                            }
-                        }, label = {}, modifier = Modifier.padding(5.dp)
+                        navigateRoot(scope, drawerState, navController, drawerItem.path.id)
+                    }, icon = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start
+                        ) {
+                            Icon(
+                                imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
+                            )
+                            Text(text = drawerItem.path.title.localized("loc_sideBar", context))
+                        }
+                    }, label = {}, modifier = Modifier.padding(5.dp)
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
-                Spacer(modifier = Modifier.weight(1f))
+                AppVersionText(modifier = Modifier.padding(bottom = 25.dp))
             }
         }) {
         Scaffold(
@@ -104,25 +109,25 @@ fun SideMenuView() {
                 if (isMainScreen) {
                     TopAppBar(
                         title = {
-                            val menuTitle = MainScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_sideBar", context) ?: ""
-                            Text(text = menuTitle, fontSize = 15.sp)
-                        }, navigationIcon = {
-                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                                Icon(Icons.Rounded.Menu, contentDescription = "Menu")
-                            }
-                        }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
+                        val menuTitle = MainScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_sideBar", context) ?: ""
+                        Text(text = menuTitle, fontSize = 15.sp)
+                    }, navigationIcon = {
+                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                            Icon(Icons.Rounded.Menu, contentDescription = "Menu")
+                        }
+                    }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
                     )
                 } else {
                     TopAppBar(
                         title = {
-                            val title = BasicInfoScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_basicInfo", context)
-                                ?: SettingScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_settings", context) ?: ""
-                            Text(text = title, fontSize = 15.sp)
-                        }, navigationIcon = {
-                            IconButton(onClick = { navController.popBackStack() }) {
-                                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
-                            }
-                        }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
+                        val title = BasicInfoScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_basicInfo", context)
+                            ?: SettingScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_settings", context) ?: ""
+                        Text(text = title, fontSize = 15.sp)
+                    }, navigationIcon = {
+                        IconButton(onClick = { navController.popBackStack() }) {
+                            Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        }
+                    }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
                     )
                 }
             }) { innerPadding ->
@@ -156,6 +161,27 @@ private fun navigateRoot(
         popUpTo(navController.graph.findStartDestination().id) { saveState = true }
         launchSingleTop = true
         restoreState = true
+    }
+}
+
+@Composable
+fun AppVersionText(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val packageInfo: PackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+
+    val versionName = packageInfo.versionName
+    val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        packageInfo.longVersionCode.toString()
+    } else {
+        @Suppress("DEPRECATION") packageInfo.versionCode.toString()
+    }
+
+    Box(
+        modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = "v$versionName ($versionCode)", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), modifier = Modifier.alpha(0.8f)
+        )
     }
 }
 
