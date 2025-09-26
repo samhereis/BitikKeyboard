@@ -6,6 +6,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 class JSTranscriber(context: Context) {
     private val quickJs: QuickJs = QuickJs.create()
 
+    //"𐰩", "𐰩", CharacterType.HardVowel),
     init {
         var jsFile = if(context.keyboardVariant == BitikVariant.CLASSIC) "transcriber_old.js" else "transcriber_modern.js"
 

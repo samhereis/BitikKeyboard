@@ -4,7 +4,6 @@ import Haptics
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
-import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
@@ -155,8 +154,6 @@ class KeyView(
             maxLines = 1
             ellipsize = null
 
-            typeface = Typeface.DEFAULT_BOLD
-            paint.isFakeBoldText = true
             paint.strokeWidth = 0.5f
             paint.style = Paint.Style.FILL_AND_STROKE
 
@@ -353,8 +350,6 @@ class KeyView(
                 maxLines = 1
                 isAllCaps = false
 
-                typeface = Typeface.DEFAULT_BOLD
-                paint.isFakeBoldText = true
                 paint.strokeWidth = 0.5f
                 paint.style = Paint.Style.FILL_AND_STROKE
             }
@@ -403,6 +398,10 @@ class KeyView(
     }
 
     private fun addHoldIndicatorIfNeeded(root: View) {
+        if (context.coloring == Coloring.Off) {
+            return
+        }
+
         val hasHoldVariant = if (isCaps) {
             key.upperCaseHold != null
         } else {

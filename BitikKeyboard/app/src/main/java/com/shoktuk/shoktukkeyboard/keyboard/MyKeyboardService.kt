@@ -156,9 +156,7 @@ class MyKeyboardService : InputMethodService() {
         maxButtonInOneRow = 10
         if (current_writingSystem == WritingSystem.Kiril) {
             maxButtonInOneRow = 11
-            current_letterTranscription = LetterTranscription.On
         } else if (current_writingSystem == WritingSystem.Latin) {
-            current_letterTranscription = LetterTranscription.On
         }
 
         fillRoots()

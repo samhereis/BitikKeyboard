@@ -7,8 +7,10 @@
     HardVowel: "HardVowel",
     SoftVowel: "SoftVowel",
     Special: "Special",
-    Special_Hard: "Special_Hard",
-    Special_Soft: "Special_Soft",
+    Special_Hard_ConsonantFirst: "Special_Hard_ConsonantFirst",
+    Special_Hard_VowelFirst: "Special_Hard_VowelFirst",
+    Special_Soft_ConsonantFirst: "Special_Soft_ConsonantFirst",
+    Special_Soft_VowelFirst: "Special_Soft_VowelFirst",
   };
 
   // --- Data classes ---
@@ -100,9 +102,6 @@
             new TranscriptionEntry("т", "𐱄", "𐱅", CharacterType.Consonant),
             new TranscriptionEntry("ө", "𐰇", "𐰇", CharacterType.SoftVowel),
             new TranscriptionEntry("б", "𐰉", "𐰌", CharacterType.Consonant),
-            new TranscriptionEntry("я", "𐰖𐰀", "𐰖𐰀", CharacterType.epmty),
-            new TranscriptionEntry("ю", "𐰖𐰆", "𐰖𐰆", CharacterType.epmty),
-            new TranscriptionEntry("ё", "𐰖𐰆", "𐰖𐰆", CharacterType.epmty),
             new TranscriptionEntry("ф", "𐰯", "𐰯", CharacterType.Consonant_Univ),
             new TranscriptionEntry("в", "𐰉", "𐰌", CharacterType.Consonant),
             new TranscriptionEntry("х", "𐰴", "𐰚", CharacterType.Consonant),
@@ -176,6 +175,10 @@
     }
 
     GetTranscription(text){
+        text = text.replace(/я/gi, "йа");
+        text = text.replace(/ю/gi, "йу");
+        text = text.replace(/ё/gi, "йо");
+
       this.toDelete.length = 0;
       this.transcriptoinUnits.length = 0;
 
@@ -284,220 +287,188 @@
       }
     }
 
-    TryRemove_Consonant_A_Consonant(){
-      try{
-        if (this.transcriptoinUnits.length > 2){
-          const firsTamga = this.transcriptoinUnits[0];
-          const secondTamga = this.transcriptoinUnits[1];
-          const thirdTamga = this.transcriptoinUnits[2];
+TryRemove_Consonant_A_Consonant(){
+  try{
+    if (this.transcriptoinUnits.length > 2){
+      const firsTamga = this.transcriptoinUnits[0];
+      const secondTamga = this.transcriptoinUnits[1];
+      const thirdTamga = this.transcriptoinUnits[2];
 
-          const isNeededFirstConsonant =
+      const isNeededFirstConsonant =
+        (firsTamga.isSoft === false) &&
+        (firsTamga.self.type === CharacterType.Consonant ||
+         firsTamga.self.type === CharacterType.Consonant_Univ);
+      if (!isNeededFirstConsonant) return;
+
+      const isNeededVowel =
+        secondTamga.self.symbol.toLowerCase() === "a" ||
+        secondTamga.self.symbol.toLowerCase() === "а";
+      if (!isNeededVowel) return;
+
+      const isNeededConsonant =
+        (thirdTamga.isSoft === false) &&
+        (thirdTamga.self.type === CharacterType.Consonant ||
+         thirdTamga.self.type === CharacterType.Consonant_Univ ||
+         thirdTamga.self.type === CharacterType.Special ||
+         thirdTamga.self.type === CharacterType.Special_Hard_ConsonantFirst);
+
+      const isNeededSpecial =
+        (thirdTamga.self.type === CharacterType.Special ||
+         thirdTamga.self.type === CharacterType.Special_Hard_ConsonantFirst);
+
+      if (isNeededFirstConsonant && isNeededVowel && (isNeededConsonant || isNeededSpecial)){
+        this.toDelete.push(secondTamga);
+      }
+    }
+  }catch(ex){ /* no-op */ }
+}
+
+TryRemove_Consonant_E_Consonant(){
+  try{
+    if (this.transcriptoinUnits.length > 2){
+      const firsTamga = this.transcriptoinUnits[0];
+      const secondTamga = this.transcriptoinUnits[1];
+      const thirdTamga = this.transcriptoinUnits[2];
+
+      const isNeededFirstConsonant =
+        (firsTamga.isSoft === true) &&
+        (firsTamga.self.type === CharacterType.Consonant ||
+         firsTamga.self.type === CharacterType.Consonant_Univ);
+      if (!isNeededFirstConsonant) return;
+
+      const sym2 = (secondTamga.self.symbol || "").toLowerCase();
+      const isNeededVowel = (sym2 === "e" || sym2 === "э" || sym2 === "е");
+      if (!isNeededVowel) return;
+
+      const isNeededConsonant =
+        (thirdTamga.isSoft === true) &&
+        (thirdTamga.self.type === CharacterType.Consonant ||
+         thirdTamga.self.type === CharacterType.Consonant_Univ ||
+         thirdTamga.self.type === CharacterType.Special ||
+         thirdTamga.self.type === CharacterType.Special_Soft_ConsonantFirst);
+
+      const isNeededSpecial =
+        (thirdTamga.self.type === CharacterType.Special ||
+         thirdTamga.self.type === CharacterType.Special_Soft_ConsonantFirst);
+
+      if (isNeededFirstConsonant && isNeededVowel && (isNeededConsonant || isNeededSpecial)){
+        this.toDelete.push(secondTamga);
+      }
+    }
+  }catch(ex){ /* no-op */ }
+}
+
+TryRemove_SoftAfterHard(){
+  if (this.transcriptoinUnits.length > 3){
+    let index = 0;
+    for (let i = 0; i < this.transcriptoinUnits.length; i++){
+      if (i + 3 < this.transcriptoinUnits.length){
+        const firsTamga = this.transcriptoinUnits[i];
+        const secondTamga = this.transcriptoinUnits[i+1];
+        const thirdTamga = this.transcriptoinUnits[i+2];
+        const forthTamga = this.transcriptoinUnits[i+3];
+
+        try{
+          let isFirstHard =
             (firsTamga.isSoft === false) &&
-            (
-              firsTamga.self.type === CharacterType.Consonant ||
-              firsTamga.self.type === CharacterType.Consonant_Univ
-            );
-          if (isNeededFirstConsonant === false){ return; }
+            (firsTamga.self.type === CharacterType.Consonant ||
+             firsTamga.self.type === CharacterType.Consonant_Univ ||
+             firsTamga.self.type === CharacterType.Special_Hard_ConsonantFirst ||
+             firsTamga.self.type === CharacterType.Special_Hard_VowelFirst ||
+             firsTamga.self.type === CharacterType.Special);
 
-          const isNeededVowel =
-            secondTamga.self.symbol.toLowerCase() === "a" ||
-            secondTamga.self.symbol.toLowerCase() === "а";
-          if (isNeededVowel === false){ return; }
-
-          const isNeededConsonant =
-            (thirdTamga.isSoft === false) &&
-            (
-              thirdTamga.self.type === CharacterType.Consonant ||
-              thirdTamga.self.type === CharacterType.Consonant_Univ ||
-              thirdTamga.self.type === CharacterType.Special ||
-              thirdTamga.self.type === CharacterType.Special_Hard
-            );
-          if (isNeededConsonant === false){ return; }
-
-          if (isNeededFirstConsonant && isNeededVowel && isNeededConsonant){
-            this.transcriptoinUnits.splice(1,1);
-          }
-        }
-      }catch(ex){
-        // Debug.LogError(ex);
-      }
-    }
-
-    TryRemove_Consonant_E_Consonant(){
-      try{
-        if (this.transcriptoinUnits.length > 2){
-          const firsTamga = this.transcriptoinUnits[0];
-          const secondTamga = this.transcriptoinUnits[1];
-          const thirdTamga = this.transcriptoinUnits[2];
+          if (firsTamga.self.type === CharacterType.HardVowel) isFirstHard = true;
+          if (firsTamga.self.type === CharacterType.Special_Hard_ConsonantFirst ||
+              firsTamga.self.type === CharacterType.Special_Hard_VowelFirst) isFirstHard = true;
+          if (!isFirstHard) continue;
 
           const isNeededFirstConsonant =
-            (firsTamga.isSoft === true) &&
-            (
-              firsTamga.self.type === CharacterType.Consonant ||
-              firsTamga.self.type === CharacterType.Consonant_Univ
-            );
-          if (isNeededFirstConsonant === false){ return; }
+            (secondTamga.isSoft === true) &&
+            (secondTamga.self.type === CharacterType.Consonant ||
+             secondTamga.self.type === CharacterType.Consonant_Univ);
+          if (!isNeededFirstConsonant) continue;
 
-          const sym2 = secondTamga.self.symbol.toLowerCase();
-          const isNeededVowel = (sym2 === "e" || sym3 === "е" || sym3 === "э");
-          if (isNeededVowel === false){ return; }
+          const sym3 = (thirdTamga.self.symbol || "").toLowerCase();
+          const isNeededVowel = (sym3 === "e" || sym3 === "э" || sym3 === "е");
+          if (!isNeededVowel) continue;
 
           const isNeededConsonant =
-            (thirdTamga.isSoft === true) &&
-            (
-              thirdTamga.self.type === CharacterType.Consonant ||
-              thirdTamga.self.type === CharacterType.Consonant_Univ
-            );
-          if (isNeededConsonant === false){ return; }
+            (forthTamga.isSoft === true) &&
+            (forthTamga.self.type === CharacterType.Consonant ||
+             forthTamga.self.type === CharacterType.Consonant_Univ ||
+             forthTamga.self.type === CharacterType.Special ||
+             forthTamga.self.type === CharacterType.Special_Hard_VowelFirst ||
+             forthTamga.self.type === CharacterType.Special);
+          if (!isNeededConsonant) continue;
 
-          const isNeededSpecial =
-            (
-              thirdTamga.self.type === CharacterType.Special ||
-              thirdTamga.self.type === CharacterType.Consonant_Univ ||
-              thirdTamga.self.type === CharacterType.Special_Soft
-            );
-          if (isNeededSpecial === false){ return; }
-
-          if (isNeededFirstConsonant && isNeededVowel && (isNeededConsonant || isNeededSpecial)){
-            this.transcriptoinUnits.splice(1,1);
+          if (isFirstHard && isNeededFirstConsonant && isNeededVowel && isNeededConsonant){
+            this.toDelete.push(thirdTamga);
           }
-        }
-      }catch(ex){
-        // Debug.LogError(ex);
+        }catch(ex){ /* no-op */ }
+
+        index = 0;
+      } else {
+        index++;
       }
     }
+  }
+}
 
-    TryRemove_SoftAfterHard(){
-      if (this.transcriptoinUnits.length > 3){
-        let index = 0;
+TryRemove_HardAfterSoft(){
+  if (this.transcriptoinUnits.length > 3){
+    let index = 0;
+    for (let i = 0; i < this.transcriptoinUnits.length; i++){
+      if (i + 3 < this.transcriptoinUnits.length){
+        const firsTamga = this.transcriptoinUnits[i];
+        const secondTamga = this.transcriptoinUnits[i+1];
+        const thirdTamga = this.transcriptoinUnits[i+2];
+        const forthTamga = this.transcriptoinUnits[i+3];
 
-        for (let i = 0; i < this.transcriptoinUnits.length; i++){
-          if (i + 3 < this.transcriptoinUnits.length){
-            const first = i;
-            const second = i + 1;
-            const third = i + 2;
-            const forth = i + 3;
+        try{
+          let isFirstHard =
+            (firsTamga.isSoft === true) &&
+            (firsTamga.self.type === CharacterType.Consonant ||
+             firsTamga.self.type === CharacterType.Consonant_Univ ||
+             firsTamga.self.type === CharacterType.Special ||
+             firsTamga.self.type === CharacterType.Special_Soft_ConsonantFirst ||
+             firsTamga.self.type === CharacterType.Special_Soft_VowelFirst);
 
-            const firsTamga = this.transcriptoinUnits[first];
-            const secondTamga = this.transcriptoinUnits[second];
-            const thirdTamga = this.transcriptoinUnits[third];
-            const forthTamga = this.transcriptoinUnits[forth];
+          if (firsTamga.self.type === CharacterType.SoftVowel) isFirstHard = true;
+          if (firsTamga.self.type === CharacterType.Special_Soft_ConsonantFirst ||
+              firsTamga.self.type === CharacterType.Special_Soft_VowelFirst) isFirstHard = true;
+          if (!isFirstHard) continue;
 
-            try{
-              let isFirstHard =
-                (firsTamga.isSoft === false) &&
-                (
-                  firsTamga.self.type === CharacterType.Consonant ||
-                  firsTamga.self.type === CharacterType.Consonant_Univ ||
-                  firsTamga.self.type === CharacterType.Special_Hard
-                );
+          const isNeededFirstConsonant =
+            (secondTamga.isSoft === false) &&
+            (secondTamga.self.type === CharacterType.Consonant ||
+             secondTamga.self.type === CharacterType.Consonant_Univ);
+          if (!isNeededFirstConsonant) continue;
 
-              if (firsTamga.self.type === CharacterType.HardVowel) { isFirstHard = true; }
-              if (firsTamga.self.type === CharacterType.Special_Hard) { isFirstHard = true; }
-              if (isFirstHard === false){ continue; }
+          const sym3 = (thirdTamga.self.symbol || "").toLowerCase();
+          const isNeededVowel = (sym3 === "a" || sym3 === "а");
+          if (!isNeededVowel) continue;
 
-              const isNeededFirstConsonant =
-                (secondTamga.isSoft === true) &&
-                (
-                  secondTamga.self.type === CharacterType.Consonant ||
-                  secondTamga.self.type === CharacterType.Consonant_Univ
-                );
-              if (isNeededFirstConsonant === false){ continue; }
+          const isNeededConsonant =
+            (forthTamga.isSoft === false) &&
+            (forthTamga.self.type === CharacterType.Consonant ||
+             forthTamga.self.type === CharacterType.Consonant_Univ ||
+             forthTamga.self.type === CharacterType.Special ||
+             forthTamga.self.type === CharacterType.Special_Soft_ConsonantFirst ||
+             forthTamga.self.type === CharacterType.Special_Soft_VowelFirst);
+          if (!isNeededConsonant) continue;
 
-              const sym3 = (thirdTamga.self.symbol || "").toLowerCase();
-              const isNeededVowel = (sym3 === "e" || sym3 === "е" || sym3 === "э");
-              if (isNeededVowel === false){ continue; }
-
-              const isNeededConsonant =
-                (forthTamga.isSoft === true) &&
-                (
-                  forthTamga.self.type === CharacterType.Consonant ||
-                  forthTamga.self.type === CharacterType.Consonant_Univ ||
-                  forthTamga.self.type === CharacterType.Special ||
-                  forthTamga.self.type === CharacterType.Special_Hard
-                );
-              if (isNeededConsonant === false){ continue; }
-
-              if (isFirstHard && isNeededFirstConsonant && isNeededVowel && isNeededConsonant){
-                this.toDelete.push(thirdTamga);
-              }
-            }catch(ex){
-              // Debug.LogError(ex);
-            }
-
-            index = 0;
-          } else {
-            index++;
+          if (isFirstHard && isNeededFirstConsonant && isNeededVowel && isNeededConsonant){
+            this.toDelete.push(thirdTamga);
           }
-        }
+        }catch(ex){ /* no-op */ }
+
+        index = 0;
+      } else {
+        index++;
       }
     }
-
-    TryRemove_HardAfterSoft(){
-      if (this.transcriptoinUnits.length > 3){
-        let index = 0;
-
-        for (let i = 0; i < this.transcriptoinUnits.length; i++){
-          if (i + 3 < this.transcriptoinUnits.length){
-            const first = i;
-            const second = i + 1;
-            const third = i + 2;
-            const forth = i + 3;
-
-            const firsTamga = this.transcriptoinUnits[first];
-            const secondTamga = this.transcriptoinUnits[second];
-            const thirdTamga = this.transcriptoinUnits[third];
-            const forthTamga = this.transcriptoinUnits[forth];
-
-            try{
-              let isFirstHard =
-                (firsTamga.isSoft === true) &&
-                (
-                  firsTamga.self.type === CharacterType.Consonant ||
-                  firsTamga.self.type === CharacterType.Consonant_Univ ||
-                  firsTamga.self.type === CharacterType.Special_Soft
-                );
-
-              if (firsTamga.self.type === CharacterType.SoftVowel) { isFirstHard = true; }
-              if (firsTamga.self.type === CharacterType.Special_Soft) { isFirstHard = true; }
-              if (isFirstHard === false){ continue; }
-
-              const isNeededFirstConsonant =
-                (secondTamga.isSoft === false) &&
-                (
-                  secondTamga.self.type === CharacterType.Consonant ||
-                  secondTamga.self.type === CharacterType.Consonant_Univ
-                );
-              if (isNeededFirstConsonant === false){ continue; }
-
-              const sym3 = (thirdTamga.self.symbol || "").toLowerCase();
-              const isNeededVowel = (sym3 === "a" || sym3 === "а");
-              if (isNeededVowel === false){ continue; }
-
-              const isNeededConsonant =
-                (forthTamga.isSoft === false) &&
-                (
-                  forthTamga.self.type === CharacterType.Consonant ||
-                  forthTamga.self.type === CharacterType.Consonant_Univ ||
-                  forthTamga.self.type === CharacterType.Special ||
-                  forthTamga.self.type === CharacterType.Special_Hard
-                );
-              if (isNeededConsonant === false){ continue; }
-
-              if (isFirstHard && isNeededFirstConsonant && isNeededVowel && isNeededConsonant){
-                this.toDelete.push(thirdTamga);
-              }
-            }catch(ex){
-              // Debug.LogError(ex);
-            }
-
-            index = 0;
-          } else {
-            index++;
-          }
-        }
-      }
-    }
+  }
+}
   }
 
   // export on global like a Unity-style singleton-ish script would attach to window

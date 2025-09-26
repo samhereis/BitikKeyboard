@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -112,26 +113,34 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     text = "Жөндөө", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
-                if (context.keyboardVariant != BitikVariant.SAMAGAN) {
+                if (keyboardVariant == BitikVariant.CLASSIC) {
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
                         tonalElevation = 2.dp,
-                        shadowElevation = 4.dp,
+                        shadowElevation = 4.dp
                     ) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(5.dp), horizontalAlignment = Alignment.CenterHorizontally
+                                .padding(5.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
+                            Icon(
+                                imageVector = Icons.Default.Info,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary,
+                                modifier = Modifier.size(36.dp)
+                            )
+                            Spacer(Modifier.height(8.dp))
                             Text(
-                                text = "Битик тууралуу көп билбесеңиз, ыңлайлаштырылган вариантын колдонуңуз",
+                                text = "Битик тууралуу көп билбесеңиз, демейкини колдонуңуз",
                                 style = MaterialTheme.typography.titleSmall,
-                                modifier = Modifier.fillMaxWidth(),
+                                color = MaterialTheme.colorScheme.onSurface,
                             )
                         }
                     }
-                } else {
+                } else if (keyboardVariant == BitikVariant.SAMAGAN) {
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(12.dp),
@@ -143,10 +152,14 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(5.dp), horizontalAlignment = Alignment.CenterHorizontally
+                                .padding(5.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.size(36.dp)
+                                imageVector = Icons.Default.Warning,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.onErrorContainer,
+                                modifier = Modifier.size(36.dp)
                             )
                             Spacer(Modifier.height(8.dp))
                             Text(
@@ -160,19 +173,19 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
 
                 CenteredDropdownPopup(
                     label = "Битик түрү".localized("loc_settings", context), options = BitikVariant.entries, selected = keyboardVariant, onSelect = { variant ->
-                        keyboardVariant = variant
-                        context.keyboardVariant = variant
-                    }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
+                    keyboardVariant = variant
+                    context.keyboardVariant = variant
+                }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
                     label = "Битик диалект", options = BitikDialect.entries, selected = bitikDialect, onSelect = { alpha ->
-                        bitikDialect = alpha
-                        context.bitikDialect = alpha
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    bitikDialect = alpha
+                    context.bitikDialect = alpha
+                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
-                if (keyboardVariant == BitikVariant.CLASSIC) {
+                if (keyboardVariant != BitikVariant.SAMAGAN) {
                     EnumSwitchSetting(
                         label = "Жазуу транскрипция", selected = textTranscription, optionOn = TextTranscription.On, optionOff = TextTranscription.Off, onSelect = {
                             context.textTranscription = if (it == TextTranscription.On) TextTranscription.On else TextTranscription.Off
@@ -190,9 +203,9 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
 
                 CenteredDropdownPopup(
                     label = "Эки чекит", options = WordSeparator.entries, selected = wordSeparator, onSelect = { alpha ->
-                        context.wordSeparator = alpha
-                        wordSeparator = context.wordSeparator
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    context.wordSeparator = alpha
+                    wordSeparator = context.wordSeparator
+                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -214,11 +227,11 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     text = "Сезилиш", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
-                CenteredDropdownPopup(
-                    label = "Түстөө", options = Coloring.entries, selected = coloring, onSelect = { alpha ->
-                        context.coloring = alpha
+                EnumSwitchSetting(
+                    label = "Түстөө", selected = coloring, optionOn = Coloring.On, optionOff = Coloring.Off, onSelect = {
+                        context.coloring = if (it == Coloring.On) Coloring.On else Coloring.Off
                         coloring = context.coloring
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    }, modifier = Modifier.fillMaxWidth()
                 )
 
                 EnumSwitchSetting(
@@ -255,33 +268,33 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                 )
                 CenteredDropdownPopup(
                     label = "эБ тамга", options = EB_Letter_Variant.entries, selected = ebVariant, onSelect = { alpha ->
-                        ebVariant = alpha
-                        context.ebVariant = alpha
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    ebVariant = alpha
+                    context.ebVariant = alpha
+                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
                     label = "эН тамга", options = EN_Letter_Variant.entries, selected = eNariant, onSelect = { alpha ->
-                        eNariant = alpha
-                        context.enVariant = alpha
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    eNariant = alpha
+                    context.enVariant = alpha
+                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 if (bitikDialect == BitikDialect.Altay) {
                     Text("Алтай варианты үчүн:")
                     CenteredDropdownPopup(
                         label = "аС тамга", options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
-                            asVariant = alpha
-                            context.asVariant = alpha
-                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        asVariant = alpha
+                        context.asVariant = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                     )
 
                     if (keyboardVariant == BitikVariant.SAMAGAN && bitikDialect == BitikDialect.Altay) {
                         CenteredDropdownPopup(
                             label = "эШ тамга", options = ESH_Letter_Variant.entries, selected = eshVariant, onSelect = { alpha ->
-                                eshVariant = alpha
-                                context.eshVariant = alpha
-                            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                            eshVariant = alpha
+                            context.eshVariant = alpha
+                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }
