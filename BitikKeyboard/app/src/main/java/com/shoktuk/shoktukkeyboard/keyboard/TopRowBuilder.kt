@@ -63,6 +63,10 @@ object TopRowBuilder {
         val screenWidth = service.resources.displayMetrics.widthPixels
         val maxItemWidth = (screenWidth * 0.5f).toInt()
 
+        if (clipboardItems.isEmpty()) {
+            clipboardItems.add(" ")
+        }
+
         for (clipText in clipboardItems) {
             val preview = if (clipText.length > 20) clipText.take(19) + "…" else clipText
 

@@ -1,15 +1,16 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import JSTranscriber
-import JSTranscriber_Alphabet
 import android.content.Context
 import android.inputmethodservice.InputMethodService
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.InputConnection
 import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
+import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.graphics.toColorInt
@@ -20,6 +21,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
+import com.shoktuk.shoktukkeyboard.project.screens.settings.loadSavedStrings
 import com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import java.util.WeakHashMap
@@ -106,6 +108,61 @@ object TopRowBuilder_Old {
                 }
             }
         } else {
+            val scrollView = HorizontalScrollView(service).apply {
+                isHorizontalScrollBarEnabled = false
+                layoutParams = LinearLayout.LayoutParams(
+                    0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
+                )
+            }
+
+            val innerClipboardRow = LinearLayout(service).apply {
+                orientation = LinearLayout.HORIZONTAL
+                gravity = Gravity.CENTER_VERTICAL
+                layoutParams = LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
+                )
+            }
+
+            val clipboardItems = loadSavedStrings(service)
+
+            val screenWidth = service.resources.displayMetrics.widthPixels
+            val maxItemWidth = (screenWidth * 0.5f).toInt()
+
+            if (clipboardItems.isEmpty()) {
+                clipboardItems.add(" ")
+            }
+
+            for (clipText in clipboardItems) {
+                val preview = if (clipText.length > 20) clipText.take(19) + "…" else clipText
+
+                val itemView = SystemKeyBuilder.systemButton_Text(
+                    service = service,
+                    text = " $preview ",
+                    buttonHeight = buttonHeight,
+                    bald = false,
+                    style = KeyboardTheme.getLetterButtonStyle_Normal(innerClipboardRow.context),
+                    weight = 0f,
+                    onClick = {
+                        service.currentInputConnection?.commitText(clipText, 1)
+                    })
+                itemView.setPadding(25, 0, 25, 0)
+
+                val params = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT, buttonHeight
+                ).apply {
+                    marginEnd = MyKeyboardService.buttonMargin
+                }
+
+                itemView.layoutParams = params
+                itemView.measure(
+                    View.MeasureSpec.makeMeasureSpec(maxItemWidth, View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(buttonHeight, View.MeasureSpec.EXACTLY)
+                )
+
+                innerClipboardRow.addView(itemView)
+            }
+
+            scrollView.addView(innerClipboardRow)
+            rowLayout.addView(scrollView)
         }
 
         rowLayout.addView(
