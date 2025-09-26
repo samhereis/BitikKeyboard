@@ -62,7 +62,7 @@
         "lowercase": "𐰩",
         "lowerCaseRomanization": "у",
         "backgroundColorIndex_lowercase": 4,
-        "uppercase": "𐰇",
+        "uppercase": "𐰈",
         "upperCaseRomanization": "ү",
         "backgroundColorIndex_uppercase": 4
       },
@@ -83,7 +83,7 @@
         "lowerCaseHoldHint": "от",
         "backgroundColorIndex_lowercase": 4,
         "backgroundColorIndex_lowercase_Hold": 5,
-        "uppercase": "𐰈",
+        "uppercase": "𐰇",
         "upperCaseRomanization": "ө",
         "backgroundColorIndex_uppercase": 4
       },

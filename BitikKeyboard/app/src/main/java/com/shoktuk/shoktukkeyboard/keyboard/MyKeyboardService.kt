@@ -201,7 +201,7 @@ class MyKeyboardService : InputMethodService() {
         var systemKeybHeight = (KeyboardTheme.getButtonHeight() / 1.5f).toInt()
 
         if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
-            if (context.keyboardVariant == BitikVariant.CLASSIC) {
+            if (context.keyboardVariant != BitikVariant.SAMAGAN) {
                 if (topBar_old == null) {
                     topBar_old = TopRowBuilder_Old.createTopRow(this, systemKeybHeight, current_textTranscription, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
                 }
@@ -214,7 +214,7 @@ class MyKeyboardService : InputMethodService() {
             }
         } else {
             if (topBar_noTR == null) {
-                topBar_noTR = TopRowBuilder_Old.createTopRow(this, systemKeybHeight, TextTranscription.Off, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
+                topBar_noTR = TopRowBuilder_Alphabet.createTopRow(this, systemKeybHeight, TextTranscription.Off, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
             }
             topBar = topBar_noTR
         }
@@ -313,6 +313,8 @@ class MyKeyboardService : InputMethodService() {
 
         return if (keyboardVariant == BitikVariant.CLASSIC) {
             "${dialect}_old"
+        } else if (keyboardVariant == BitikVariant.Modern) {
+            "${dialect}_modern"
         } else {
             dialect
         }

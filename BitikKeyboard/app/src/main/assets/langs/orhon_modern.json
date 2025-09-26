@@ -63,8 +63,9 @@
       },
       {
         "name": "u",
-        "lowercase": "𐰩",
-        "lowerCaseRomanization": "у",
+        "lowercase": "𐰆",
+        "lowerCaseRomanization": "У",
+        "lowerCaseRomanization_Alt": "О",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "𐰈",
         "upperCaseRomanization": "ү",
@@ -80,13 +81,10 @@
         "backgroundColorIndex_uppercase": 4
       },
       {
-        "name": "o/u",
-        "lowercase": "𐰆",
-        "lowerCaseRomanization": "о",
-        "backgroundColorIndex_lowercase": 4,
-        "lowerCaseHold": "𐱇",
-        "lowerCaseHoldHint": "от",
-        "backgroundColorIndex_lowercase_Hold": 5,
+        "name": "ot",
+        "lowercase": "𐱇",
+        "lowerCaseRomanization": "от",
+        "backgroundColorIndex_lowercase": 5,
         "uppercase": "𐰇",
         "upperCaseRomanization": "ө",
         "backgroundColorIndex_uppercase": 4

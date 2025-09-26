@@ -1,9 +1,8 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import JSTranscriber
+import JSTranscriber_Alphabet
 import android.content.Context
-import android.graphics.Color
-import android.graphics.Paint
-import android.graphics.Typeface
 import android.inputmethodservice.InputMethodService
 import android.util.TypedValue
 import android.view.Gravity
@@ -21,7 +20,6 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
-import com.shoktuk.shoktukkeyboard.project.systems.JSTranscriber
 import com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import java.util.WeakHashMap
@@ -107,10 +105,7 @@ object TopRowBuilder_Old {
                     lastWordContainer.invalidate()
                 }
             }
-
-            lastWordContainer.addView(getPlaceholderText(service, lastWordContainer))
         } else {
-            rowLayout.addView(getPlaceholderText(service, rowLayout))
         }
 
         rowLayout.addView(
@@ -156,7 +151,6 @@ object TopRowBuilder_Old {
 
         container.removeAllViews()
         if (before.isEmpty()) {
-            container.addView(getPlaceholderText(service, container))
             return
         }
 
@@ -215,41 +209,5 @@ object TopRowBuilder_Old {
             setTextColor(KeyboardTheme.getColor(2).toColorInt())
             gravity = Gravity.CENTER
         }.also(container::addView)
-    }
-
-    fun getPlaceholderText(service: InputMethodService, rowLayout: LinearLayout): TextView {
-        val textView = TextView(rowLayout.context).apply {
-            text = if (MyKeyboardService.showTextTranscription) "𐰖𐰕𐰃𐰬𐰕" else "𐱅𐰭𐰼𐰃 ⁚ 𐰅𐰠𐰢𐰚𐰁 ⁚ 𐰌𐰝𐰢𐰓𐰢"
-
-            isSingleLine = false
-            ellipsize = null
-
-            typeface = Typeface.DEFAULT_BOLD
-            paint.isFakeBoldText = true
-            paint.strokeWidth = 1.25f
-            paint.style = Paint.Style.FILL_AND_STROKE
-
-            setLines(2)
-            setTextColor(KeyboardTheme.getColor(2).toColorInt())
-
-            val baseSp = KeyboardTheme.getHintButtonTextSize(service).value
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, baseSp * 2)
-
-            gravity = Gravity.CENTER
-            textAlignment = View.TEXT_ALIGNMENT_CENTER
-
-            setBackgroundColor(Color.TRANSPARENT)
-
-            layoutParams = LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f
-            ).apply {
-                marginStart = MyKeyboardService.buttonMargin
-                marginEnd = MyKeyboardService.buttonMargin
-            }
-
-            visibility = View.VISIBLE
-        }
-
-        return textView
     }
 }

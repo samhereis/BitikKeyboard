@@ -22,6 +22,8 @@ import android.widget.TextView
 import androidx.core.graphics.toColorInt
 import androidx.core.widget.TextViewCompat
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.data.Coloring
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
@@ -108,7 +110,11 @@ class KeyView(
             key.backgroundColorIndex_lowercase ?: 1
         }
 
-        style = style.copy(fillColor = KeyboardTheme.getColor(currentBackgroundColorIndex))
+        if (context.coloring == Coloring.Off) {
+            style = style.copy(fillColor = KeyboardTheme.getColor(1), textColor = KeyboardTheme.getColor(2))
+        } else {
+            style = style.copy(fillColor = KeyboardTheme.getColor(currentBackgroundColorIndex))
+        }
 
         if (::visualContainer.isInitialized) {
             visualContainer.background = KeyboardTheme.createDrawableFromStyle(context, style)
@@ -151,12 +157,7 @@ class KeyView(
 
             typeface = Typeface.DEFAULT_BOLD
             paint.isFakeBoldText = true
-            if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
-                paint.strokeWidth = 2f
-            }
-            else {
-                paint.strokeWidth = 0.75f
-            }
+            paint.strokeWidth = 0.5f
             paint.style = Paint.Style.FILL_AND_STROKE
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
@@ -354,12 +355,7 @@ class KeyView(
 
                 typeface = Typeface.DEFAULT_BOLD
                 paint.isFakeBoldText = true
-                if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
-                    paint.strokeWidth = 2f
-                }
-                else {
-                    paint.strokeWidth = 0.75f
-                }
+                paint.strokeWidth = 0.5f
                 paint.style = Paint.Style.FILL_AND_STROKE
             }
 

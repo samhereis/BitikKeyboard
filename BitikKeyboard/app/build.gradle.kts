@@ -37,11 +37,11 @@ android {
 }
 
 dependencies {
-    implementation("com.google.android.material:material:1.13.0")
+    implementation(libs.material)
 
     implementation(libs.androidx.foundation)
 
-    implementation("com.google.android.flexbox:flexbox:3.0.0")
+    implementation(libs.flexbox)
 
     implementation(libs.ui)
     implementation(libs.androidx.compose.material3.material3)
@@ -51,7 +51,7 @@ dependencies {
 
     implementation(libs.hilt.android)
 
-    implementation(libs.rhino)
+    implementation(libs.quickjs.android)
 
 // DataStore)
     implementation(libs.androidx.datastore.preferences)

@@ -34,6 +34,7 @@ object KeyboardTheme {
         "#dce2f9",  // 4 soft tamga key bg
         "#e8def8",  // 5 special tamga key bg
         "#8a90a5",      // 6 = system key bg
+        "#1B1B17",      // 7 = system key text
     )
     private val colorIndexes_Dark = listOf(
         "#1e1f25", // 0 container
@@ -43,6 +44,7 @@ object KeyboardTheme {
         "#2d4766",  // 4 soft tamga key bg
         "#4a4458",  // 5 special tamga key bg
         "#8a90a5",      // 6 = system key bg
+        "#1B1B17",      // 7 = system key text
     )
 
     private const val BASE_SCREEN_WIDTH_DP = 350f
@@ -163,7 +165,7 @@ object KeyboardTheme {
         )
     }
 
-    fun getSystemButtonStyle(context: Context): ButtonStyle {
+    fun getSystemButtonStyle(context: Context, backgroundColor: Int = 6, textColor: Int = 1): ButtonStyle {
         return ButtonStyle(
             fillColor = getColor(6), borderColor = getColor(1), borderWidthDp = 0, cornerRadiusDp = 10, textColor = getColor(1), textSizeSp = getSystemButtonTextSize(context)
         )

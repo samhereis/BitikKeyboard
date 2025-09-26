@@ -1,6 +1,6 @@
 {
-  "languageCode": "𐱃",
-  "languageColor": "#007775",
+  "languageCode": "𐱄",
+  "languageColor": "#800d4a",
   "spaceKey": ":",
   "directionality": 4,
   "rows": [
@@ -17,14 +17,11 @@
       },
       {
         "name": "ş",
-        "lowercase": "𐱁",
-        "lowerCaseRomanization": "Ш",
-        "lowerCaseHold": "𐱀",
-        "lowerCaseHoldHint": "Ш",
+        "lowercase": "𐱀",
+        "lowerCaseRomanization": "аШ",
         "uppercase": "𐱁",
-        "upperCaseRomanization": "Ш",
-        "upperCaseHold": "𐰿",
-        "upperCaseHoldHint": "Ш"
+        "upperCaseRomanization": "еШ",
+        "upperCaseHold": "𐰿"
       },
       {
         "name": "a",
@@ -39,16 +36,15 @@
       {
         "name": "r",
         "lowercase": "𐰺",
-        "lowerCaseHold": "𐰻",
         "lowerCaseRomanization": "аР",
         "uppercase": "𐰼",
         "upperCaseRomanization": "еР"
       },
       {
         "name": "t",
-        "lowercase": "𐱃",
-        "lowerCaseHold": "𐱄",
+        "lowercase": "𐱄",
         "lowerCaseRomanization": "аТ",
+        "lowerCaseHold": "𐱃",
         "uppercase": "𐱅",
         "upperCaseRomanization": "еТ"
       },
@@ -56,15 +52,14 @@
         "name": "y",
         "lowercase": "𐰖",
         "lowerCaseRomanization": "аЙ",
-        "lowerCaseHold": "𐰗",
-        "backgroundColorIndex_lowercase_Hold": 5,
         "uppercase": "𐰘",
         "upperCaseRomanization": "еЙ"
       },
       {
         "name": "u",
-        "lowercase": "𐰩",
-        "lowerCaseRomanization": "у",
+        "lowercase": "𐰆",
+        "lowerCaseRomanization": "У",
+        "lowerCaseRomanization_Alt": "О",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "𐰈",
         "upperCaseRomanization": "ү",
@@ -80,13 +75,10 @@
         "backgroundColorIndex_uppercase": 4
       },
       {
-        "name": "o/u",
-        "lowercase": "𐰆",
-        "lowerCaseRomanization": "о",
-        "backgroundColorIndex_lowercase": 4,
-        "lowerCaseHold": "𐱇",
-        "lowerCaseHoldHint": "от",
-        "backgroundColorIndex_lowercase_Hold": 5,
+        "name": "ot",
+        "lowercase": "𐱇",
+        "lowerCaseRomanization": "от",
+        "backgroundColorIndex_lowercase": 5,
         "uppercase": "𐰇",
         "upperCaseRomanization": "ө",
         "backgroundColorIndex_uppercase": 4
@@ -112,10 +104,9 @@
       },
       {
         "name": "s",
-        "lowercase": "𐰽",
+        "lowercase": "𐱂",
         "lowerCaseRomanization": "аС",
-        "lowerCaseHold": "𐱂",
-        "backgroundColorIndex_lowercase_Hold": 5,
+        "lowerCaseHold": "𐰽",
         "uppercase": "𐰾",
         "upperCaseRomanization": "еС"
       },
@@ -193,10 +184,10 @@
       {
         "name": "ñ",
         "lowercase": "𐰬",
-        "lowerCaseRomanization": "Ң",
+        "lowerCaseRomanization": "аҢ",
         "lowerCaseHold": "𐰧",
         "uppercase": "𐰭",
-        "upperCaseRomanization": "Ң",
+        "upperCaseRomanization": "еҢ",
         "upperCaseHold": "𐰮"
       },
       {
@@ -236,8 +227,8 @@
         "lowerCaseHold": "𐰪",
         "lowerCaseRomanization": "аН",
         "uppercase": "𐰤",
-        "upperCaseRomanization": "еН",
-        "upperCaseHold": "𐰥"
+        "upperCaseHold": "𐰥",
+        "upperCaseRomanization": "еН"
       },
       {
         "name": "m",

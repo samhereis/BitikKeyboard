@@ -13,10 +13,6 @@ import androidx.core.graphics.toColorInt
 import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayout
-import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.Companion.context
-import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
-import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.screens.settings.loadSavedStrings
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 

@@ -2,26 +2,24 @@ package com.shoktuk.shoktukkeyboard.project.screens.settings
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -29,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -37,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
+import com.shoktuk.shoktukkeyboard.project.data.Coloring
 import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
@@ -45,6 +43,7 @@ import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
@@ -78,6 +77,7 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
     var asVariant by remember { mutableStateOf(context.asVariant) }
     var eshVariant by remember { mutableStateOf(context.eshVariant) }
 
+    var coloring by remember { mutableStateOf(context.coloring) }
     var vibrations by remember { mutableStateOf(context.vibrations) }
     var sounds by remember { mutableStateOf(context.sounds) }
 
@@ -112,18 +112,64 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     text = "Жөндөө", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
+                if (context.keyboardVariant != BitikVariant.SAMAGAN) {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        tonalElevation = 2.dp,
+                        shadowElevation = 4.dp,
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp), horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Text(
+                                text = "Битик тууралуу көп билбесеңиз, ыңлайлаштырылган вариантын колдонуңуз",
+                                style = MaterialTheme.typography.titleSmall,
+                                modifier = Modifier.fillMaxWidth(),
+                            )
+                        }
+                    }
+                } else {
+                    Surface(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        tonalElevation = 2.dp,
+                        shadowElevation = 4.dp,
+                        color = MaterialTheme.colorScheme.errorContainer,
+                        border = BorderStroke(1.dp, MaterialTheme.colorScheme.error)
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(5.dp), horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Warning, contentDescription = null, tint = MaterialTheme.colorScheme.onErrorContainer, modifier = Modifier.size(36.dp)
+                            )
+                            Spacer(Modifier.height(8.dp))
+                            Text(
+                                text = "Ооба, ыңгайлуу бирок расмий эмес, автор жаңылаган битик колдонуудасыз!",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onErrorContainer,
+                            )
+                        }
+                    }
+                }
+
                 CenteredDropdownPopup(
                     label = "Битик түрү".localized("loc_settings", context), options = BitikVariant.entries, selected = keyboardVariant, onSelect = { variant ->
-                    keyboardVariant = variant
-                    context.keyboardVariant = variant
-                }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
+                        keyboardVariant = variant
+                        context.keyboardVariant = variant
+                    }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
                     label = "Битик диалект", options = BitikDialect.entries, selected = bitikDialect, onSelect = { alpha ->
-                    bitikDialect = alpha
-                    context.bitikDialect = alpha
-                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        bitikDialect = alpha
+                        context.bitikDialect = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 if (keyboardVariant == BitikVariant.CLASSIC) {
@@ -144,9 +190,9 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
 
                 CenteredDropdownPopup(
                     label = "Эки чекит", options = WordSeparator.entries, selected = wordSeparator, onSelect = { alpha ->
-                    context.wordSeparator = alpha
-                    wordSeparator = context.wordSeparator
-                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        context.wordSeparator = alpha
+                        wordSeparator = context.wordSeparator
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -166,6 +212,13 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
             ) {
                 Text(
                     text = "Сезилиш", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                )
+
+                CenteredDropdownPopup(
+                    label = "Түстөө", options = Coloring.entries, selected = coloring, onSelect = { alpha ->
+                        context.coloring = alpha
+                        coloring = context.coloring
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 EnumSwitchSetting(
@@ -202,33 +255,33 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                 )
                 CenteredDropdownPopup(
                     label = "эБ тамга", options = EB_Letter_Variant.entries, selected = ebVariant, onSelect = { alpha ->
-                    ebVariant = alpha
-                    context.ebVariant = alpha
-                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        ebVariant = alpha
+                        context.ebVariant = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
                     label = "эН тамга", options = EN_Letter_Variant.entries, selected = eNariant, onSelect = { alpha ->
-                    eNariant = alpha
-                    context.enVariant = alpha
-                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        eNariant = alpha
+                        context.enVariant = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 if (bitikDialect == BitikDialect.Altay) {
                     Text("Алтай варианты үчүн:")
                     CenteredDropdownPopup(
                         label = "аС тамга", options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
-                        asVariant = alpha
-                        context.asVariant = alpha
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                            asVariant = alpha
+                            context.asVariant = alpha
+                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                     )
 
                     if (keyboardVariant == BitikVariant.SAMAGAN && bitikDialect == BitikDialect.Altay) {
                         CenteredDropdownPopup(
                             label = "эШ тамга", options = ESH_Letter_Variant.entries, selected = eshVariant, onSelect = { alpha ->
-                            eshVariant = alpha
-                            context.eshVariant = alpha
-                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                                eshVariant = alpha
+                                context.eshVariant = alpha
+                            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                         )
                     }
                 }

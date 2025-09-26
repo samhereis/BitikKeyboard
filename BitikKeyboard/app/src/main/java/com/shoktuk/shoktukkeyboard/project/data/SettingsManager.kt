@@ -64,6 +64,10 @@ object SettingsManager {
         get() = prefs().getEnum(Latin_Status.KEY, Latin_Status.On)
         set(v) = prefs().setEnum(Latin_Status.KEY, v)
 
+    var Context.coloring: Coloring
+        get() = prefs().getEnum(Coloring.KEY, Coloring.Medium)
+        set(v) = prefs().setEnum(Coloring.KEY, v)
+
     var Context.vibrations: Vibrations
         get() = prefs().getEnum(Vibrations.KEY, Vibrations.On)
         set(v) = prefs().setEnum(Vibrations.KEY, v)

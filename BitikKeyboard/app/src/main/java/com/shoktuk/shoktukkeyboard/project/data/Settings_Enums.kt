@@ -1,7 +1,9 @@
 package com.shoktuk.shoktukkeyboard.project.data
 
 enum class BitikVariant(val id: String) {
-    CLASSIC("settings_keyboardVariant_Classic"), SAMAGAN("settings_keyboardVariant_Modern");
+    CLASSIC("Оригинал, түп нуска"),
+    Modern("Ыңгайлаштырылган"),
+    SAMAGAN("Заманбапталган");
 
     companion object {
         const val KEY = "keyboard_variant"
@@ -93,6 +95,14 @@ enum class Vibrations(val id: String) {
 
     companion object {
         const val KEY = "Vibrations"
+    }
+}
+
+enum class Coloring(val id: String) {
+    Off("Өчүк"), Medium("Орточо");
+
+    companion object {
+        const val KEY = "Coloring"
     }
 }
 

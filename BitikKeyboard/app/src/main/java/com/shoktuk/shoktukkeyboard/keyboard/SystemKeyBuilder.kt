@@ -31,6 +31,7 @@ object SystemKeyBuilder {
         service: InputMethodService,
         text: String,
         buttonHeight: Int,
+        bald: Boolean = true,
         style: ButtonStyle = KeyboardTheme.getSystemButtonStyle(service),
         onClick: (() -> Unit)? = null,
         onLongClick: (() -> Unit)? = null,
@@ -41,7 +42,7 @@ object SystemKeyBuilder {
             isHapticFeedbackEnabled = true
         }
 
-        root.addView(makeCenteredContent(service, style, buttonHeight, textId, textToSet = text))
+        root.addView(makeCenteredContent(service, style, buttonHeight, bald, textId, textToSet = text))
 
         root.setOnClickListener {
             Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
@@ -160,7 +161,7 @@ object SystemKeyBuilder {
     }
 
     private fun makeCenteredContent(
-        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, textId: Int? = null, textToSet: String? = null, iconAssetPath: String? = null
+        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, bald: Boolean = true, textId: Int? = null, textToSet: String? = null, iconAssetPath: String? = null
     ): View {
         val container = LinearLayout(service).apply {
             orientation = LinearLayout.VERTICAL
@@ -196,14 +197,15 @@ object SystemKeyBuilder {
                 ellipsize = null
                 textSize = buttonHeight / 6f
 
-                typeface = Typeface.DEFAULT_BOLD
-                paint.isFakeBoldText = true
-                paint.strokeWidth = 1f
-                paint.style = Paint.Style.FILL_AND_STROKE
+                if (bald) {
+                    typeface = Typeface.DEFAULT_BOLD
+                    paint.isFakeBoldText = true
+                    paint.strokeWidth = 0.5f
+                    paint.style = Paint.Style.FILL_AND_STROKE
+                }
 
                 layoutParams = LinearLayout.LayoutParams(
-                    ViewGroup.LayoutParams.WRAP_CONTENT,
-                    ViewGroup.LayoutParams.WRAP_CONTENT
+                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT
                 ).apply { gravity = Gravity.CENTER }
 
                 text = textToSet

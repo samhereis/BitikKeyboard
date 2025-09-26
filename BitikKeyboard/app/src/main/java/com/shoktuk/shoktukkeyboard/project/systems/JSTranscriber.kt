@@ -1,44 +1,41 @@
-package com.shoktuk.shoktukkeyboard.project.systems
-
 import android.content.Context
-import org.mozilla.javascript.ScriptableObject
-import org.mozilla.javascript.Context as RhinoContext
+import app.cash.quickjs.QuickJs
+import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 
-class JSTranscriber(private val context: Context) {
-    private lateinit var rhino: RhinoContext
-    private lateinit var scope: ScriptableObject
+class JSTranscriber(context: Context) {
+    private val quickJs: QuickJs = QuickJs.create()
 
     init {
-        // Initialize Rhino JS engine
-        rhino = RhinoContext.enter()
-        rhino.optimizationLevel = -1 // Disable optimizations for Android
-        scope = rhino.initStandardObjects()
+        var jsFile = if(context.keyboardVariant == BitikVariant.CLASSIC) "transcriber_old.js" else "transcriber_modern.js"
 
-        var fileName = "transcriber_old.js"
-
-        val jsCode = context.assets.open(fileName).bufferedReader().use { it.readText() }
-        rhino.evaluateString(scope, jsCode, fileName, 1, null)
+        val js = context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }
+        quickJs.evaluate(js, jsFile)
     }
 
-    fun getTranscription(inputText: String): String {
-        var methodCall = "new CorrentText_Old().GetTranscription('$inputText')";
-
-        val result = rhino.evaluateString(
-            scope, methodCall, "GetTranscription", 1, null
-        )
-        return result.toString()
+    fun getTranscription(text: String): String {
+        val escaped = text.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r")
+        val jsCall = """
+            (function(){
+              var t = new CorrentText_Old();
+              return t.GetTranscription("$escaped");
+            })();
+        """.trimIndent()
+        return quickJs.evaluate(jsCall, "TranscribeCall.js")?.toString() ?: ""
     }
 
-    fun getTranscription_Alternative(inputText: String): String {
-        var methodCall = "new CorrentText_Old().GetTranscription_Alternative('$inputText')";
-
-        val result = rhino.evaluateString(
-            scope, methodCall, "GetTranscription_Alternative", 1, null
-        )
-        return result.toString()
+    fun getTranscription_Alternative(text: String): String {
+        val escaped = text.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r")
+        val jsCall = """
+            (function(){
+              var t = new CorrentText_Old();
+              return t.GetTranscription_Alternative("$escaped");
+            })();
+        """.trimIndent()
+        return quickJs.evaluate(jsCall, "TranscribeCall.js")?.toString() ?: ""
     }
 
-    fun cleanup() {
-        RhinoContext.exit()
+    fun close() {
+        quickJs.close()
     }
 }

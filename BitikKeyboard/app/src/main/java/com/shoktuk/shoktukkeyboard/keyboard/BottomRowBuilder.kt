@@ -5,7 +5,11 @@ import android.inputmethodservice.InputMethodService
 import android.os.Build
 import android.text.InputType
 import android.view.Gravity
+import android.view.MotionEvent
+import android.view.View
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.ExtractedText
+import android.view.inputmethod.ExtractedTextRequest
 import android.widget.LinearLayout
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
@@ -15,6 +19,17 @@ import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
 
 object BottomRowBuilder {
+    private var selectionMode = false
+    private var anchor = 0
+
+    private fun extracted(service: InputMethodService): ExtractedText? = service.currentInputConnection?.getExtractedText(ExtractedTextRequest(), 0)
+
+    private fun currentCursor(service: InputMethodService): Int = extracted(service)?.selectionEnd ?: 0
+
+    private fun setSel(service: InputMethodService, start: Int, end: Int) {
+        service.currentInputConnection?.setSelection(start, end)
+    }
+
     fun createBottomRow(
         service: InputMethodService, isCaps: Boolean, mode: KeyboardMode, buttonHeight: Int, onModeChange: (KeyboardMode) -> Unit,
     ): LinearLayout {
@@ -77,7 +92,7 @@ object BottomRowBuilder {
         bottomRow.addView(returnView)
 
         bottomRow.addView(
-            SystemKeyBuilder.systemButton_Text(service, dot, buttonHeight, KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
+            SystemKeyBuilder.systemButton_Text(service, dot, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
                 service.currentInputConnection?.commitText(dot, 1)
                 TopRowBuilder_Old.onTypedListener?.invoke()
             }, onLongClick = {
@@ -86,13 +101,69 @@ object BottomRowBuilder {
             })
         )
 
-        bottomRow.addView(
-            SystemKeyBuilder.expandableSystemButton_Icon(
-                service, KeyboardTheme.SPACE_ICON_FILE, " ", buttonHeight, onLongClick = {
-                    service.currentInputConnection?.commitText("⁚", 1)
-                    TopRowBuilder_Old.onTypedListener?.invoke()
-                })
-        )
+        val spaceBtn = SystemKeyBuilder.expandableSystemButton_Icon(
+            service, KeyboardTheme.SPACE_ICON_FILE, " ", buttonHeight, onLongClick = {
+                // long-press toggles selection mode; next drags will select
+                selectionMode = true
+                anchor = currentCursor(service)
+                true
+            })
+
+        spaceBtn.setOnTouchListener(object : View.OnTouchListener {
+            var downX = 0f
+            var lastStep = 0
+            val stepPx = spaceBtn.resources.displayMetrics.density * 10 // ~10dp per char
+            var dragging = false
+
+            override fun onTouch(v: View, e: MotionEvent): Boolean {
+                when (e.actionMasked) {
+                    MotionEvent.ACTION_DOWN -> {
+                        downX = e.x
+                        lastStep = 0
+                        dragging = false
+                        if (!selectionMode) anchor = currentCursor(service)
+                        v.parent?.requestDisallowInterceptTouchEvent(true)
+                        return true
+                    }
+
+                    MotionEvent.ACTION_MOVE -> {
+                        val dx = e.x - downX
+                        val step = (dx / stepPx).toInt()
+                        if (step != lastStep) {
+                            val delta = step - lastStep
+                            lastStep = step
+                            dragging = true
+                            val et = extracted(service) ?: return true
+                            val curStart = et.selectionStart
+                            val curEnd = et.selectionEnd
+                            val cur = if (selectionMode) curEnd else curEnd
+                            val newPos = (cur + delta).coerceIn(0, (et.text?.length ?: 0))
+                            if (selectionMode) {
+                                val a = anchor.coerceIn(0, (et.text?.length ?: 0))
+                                setSel(service, minOf(a, newPos), maxOf(a, newPos))
+                            } else {
+                                setSel(service, newPos, newPos)
+                            }
+                        }
+                        return true
+                    }
+
+                    MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                        if (!dragging && !selectionMode) {
+                            service.currentInputConnection?.commitText(" ", 1)
+                            TopRowBuilder_Old.onTypedListener?.invoke()
+                        }
+                        dragging = false
+                        selectionMode = false
+                        v.parent?.requestDisallowInterceptTouchEvent(false)
+                        return true
+                    }
+                }
+                return false
+            }
+        })
+
+        bottomRow.addView(spaceBtn)
 
         if (isBitik && MyKeyboardService.context.wordSeparator != WordSeparator.Off) {
             var wp = MyKeyboardService.context.wordSeparator.id.replace("{", "").replace("}", "").reversed()
@@ -107,7 +178,7 @@ object BottomRowBuilder {
         }
 
         bottomRow.addView(
-            SystemKeyBuilder.systemButton_Text(service, comma, buttonHeight, KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
+            SystemKeyBuilder.systemButton_Text(service, comma, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
                 service.currentInputConnection?.commitText(comma, 1)
                 TopRowBuilder_Old.onTypedListener?.invoke()
             }, onLongClick = {
