@@ -5,8 +5,9 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 
 class JSTranscriber_Alphabet(context: Context) {
     private val quickJs: QuickJs = QuickJs.create()
+
     init {
-        var jsFile = if(context.keyboardVariant == BitikVariant.CLASSIC) "transcriber_alphabet.js" else "transcriber_alphabet_modern.js"
+        var jsFile = if (context.keyboardVariant == BitikVariant.SAMAGAN) "transcriber_alphabet_modern.js" else "transcriber_alphabet.js"
 
         val js = context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }
         quickJs.evaluate(js, jsFile)
@@ -25,5 +26,7 @@ class JSTranscriber_Alphabet(context: Context) {
         return quickJs.evaluate(jsCall, "TranscribeCall.js")?.toString() ?: ""
     }
 
-    fun close() { quickJs.close() }
+    fun close() {
+        quickJs.close()
+    }
 }

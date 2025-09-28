@@ -30,6 +30,19 @@ enum class KeyboardMode(val id: String) {
     Main("Main"), Symbols("Symbols"), Emojis("Emojis"), SavedStrings("SavedStrings");
 }
 
+object onKeyPressed {
+    private val listeners = mutableListOf<(String, Boolean) -> Unit>()
+
+    fun addListener(listener: (String, Boolean) -> Unit) {
+        listeners.clear()
+        listeners.add(listener)
+    }
+
+    fun invoke(isActive: String, isSystemKey: Boolean = false) {
+        listeners.forEach { it(isActive, false) }
+    }
+}
+
 class MyKeyboardService : InputMethodService() {
     companion object {
         lateinit var context: MyKeyboardService
@@ -43,6 +56,7 @@ class MyKeyboardService : InputMethodService() {
         var keyboardMode: KeyboardMode = KeyboardMode.Main
 
         var isCaps: Boolean = false
+        var isBitikMode: Boolean = false
 
         val buttonMargin: Int = KeyboardTheme.KEY_MARGIN_DP
 
@@ -110,6 +124,9 @@ class MyKeyboardService : InputMethodService() {
             oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd
         )
         TopRowBuilder_Old.onTypedListener?.invoke()
+        onKeyPressed.addListener { key, isSystemKey ->
+            handleKeyPress(key, isSystemKey)
+        }
     }
 
     fun applyKeyboard() {
@@ -316,5 +333,46 @@ class MyKeyboardService : InputMethodService() {
         } else {
             dialect
         }
+    }
+
+    fun handleKeyPress(key: String, isSystemKey: Boolean) {
+        when {
+            // Handle system keys first
+            isSystemKey -> {
+                when (key) {
+                    "BACKSPACE" -> this.currentInputConnection?.deleteSurroundingText(1, 0)
+                    "ENTER" -> this.currentInputConnection?.commitText("\n", 1)
+                    "SPACE" -> this.currentInputConnection?.commitText(" ", 1)
+                    "SWITCH" -> {
+
+                    }
+                }
+            }
+
+            current_writingSystem == WritingSystem.Bitik -> {
+                if (ensureRTLContext(this)) {
+                    this.currentInputConnection?.commitText("\u202B", 1) // RLE mark
+                }
+                this.currentInputConnection?.commitText(key, 1)
+                TopRowBuilder_Old.onTypedListener?.invoke()
+            }
+
+            // Default: normal text
+            else -> {
+                this.currentInputConnection?.commitText(key, 1)
+                TopRowBuilder_Old.onTypedListener?.invoke()
+
+                if (isCaps) {
+                    isCaps = false
+                    applyKeyboard()
+                }
+            }
+        }
+    }
+
+    private fun ensureRTLContext(service: InputMethodService): Boolean {
+        val inputConnection = service.currentInputConnection ?: return false
+        val textBefore = inputConnection.getTextBeforeCursor(1, 0)
+        return textBefore.isNullOrEmpty() || textBefore.last() == '\n'
     }
 }

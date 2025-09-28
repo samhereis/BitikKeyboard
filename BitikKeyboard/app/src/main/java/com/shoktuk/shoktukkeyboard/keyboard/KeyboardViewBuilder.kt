@@ -17,7 +17,6 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
@@ -140,16 +139,7 @@ object KeyboardViewBuilder {
         middleKeys.forEach { key ->
             middleContainer.addView(
                 LetterKeyBuilder.createLetterKey(service, process(key, mode), isCaps, buttonHeight, keybWidth, onKeyClick = { letter ->
-                    if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
-                        if (ensureRTLContext(service)) {
-                            service.currentInputConnection?.commitText("\u202B", 1)
-                        }
-                    }
-                    service.currentInputConnection?.commitText(letter, 1)
-                    TopRowBuilder_Old.onTypedListener?.invoke()
-                    if (isCaps && MyKeyboardService.current_writingSystem != WritingSystem.Bitik) {
-                        onCapsChange.invoke(false)
-                    }
+                    onKeyPressed?.invoke(letter)
                 }, onLongPress = { letter ->
                     letter?.let { service.currentInputConnection?.commitText(it, 1) }
                 })
@@ -182,12 +172,6 @@ object KeyboardViewBuilder {
             rowLayout.addView(view)
         }
         return rowLayout
-    }
-
-    private fun ensureRTLContext(service: InputMethodService): Boolean {
-        val inputConnection = service.currentInputConnection ?: return false
-        val textBefore = inputConnection.getTextBeforeCursor(1, 0)
-        return textBefore.isNullOrEmpty() || textBefore.last() == '\n'
     }
 
     fun process(key: KeyEntry, mode: KeyboardMode): KeyEntry {
