@@ -15,6 +15,10 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.Companion.context
+import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed
+import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed_Alt
+import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.inputText_LastWord
+import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.text_Original
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
@@ -143,7 +147,8 @@ object TopRowBuilder_Old {
                     style = KeyboardTheme.getLetterButtonStyle_Normal(innerClipboardRow.context),
                     weight = 0f,
                     onClick = {
-                        service.currentInputConnection?.commitText(clipText, 1)
+                        onKeyPressed?.invoke(service.currentInputConnection, clipText, false)
+
                     })
                 itemView.setPadding(25, 0, 25, 0)
 
@@ -193,11 +198,14 @@ object TopRowBuilder_Old {
     fun updateLastWord(
         service: InputMethodService, inputConnection: InputConnection?, transcriber: JSTranscriber, container: LinearLayout?, buttonStyle: ButtonStyle?
     ) {
-        val before = inputConnection?.getTextBeforeCursor(100, 0)?.toString().orEmpty()
+        val extraSeparators = "·.,⸮⹁:;!?()[]{}\"'"
 
-        val lastWord = before.split("[^\\p{L}\\p{N}]+".toRegex()).lastOrNull().orEmpty()
-        val topText = transcriber.getTranscription_Alternative(lastWord).orEmpty().ifEmpty { lastWord }
-        val baseText = transcriber.getTranscription(lastWord).orEmpty().ifEmpty { lastWord }
+        text_Original = inputConnection?.getTextBeforeCursor(100, 0)?.toString().orEmpty()
+        val regex = "[^\\p{L}${Regex.escape(extraSeparators)}]+".toRegex()
+        inputText_LastWord = text_Original.split(regex).lastOrNull().orEmpty()
+
+        InputText_Transcribed = transcriber.getTranscription(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
+        InputText_Transcribed_Alt = transcriber.getTranscription_Alternative(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
 
         if (container == null) {
             return
@@ -207,7 +215,7 @@ object TopRowBuilder_Old {
         }
 
         container.removeAllViews()
-        if (before.isEmpty()) {
+        if (text_Original.isEmpty()) {
             return
         }
 
@@ -221,8 +229,8 @@ object TopRowBuilder_Old {
             gravity = Gravity.CENTER
         }.also(container::addView)
 
-        baseText.forEachIndexed { i, baseChar ->
-            if (i < topText.length && topText[i] != baseChar) {
+        InputText_Transcribed.forEachIndexed { i, baseChar ->
+            if (i < InputText_Transcribed_Alt.length && InputText_Transcribed_Alt[i] != baseChar) {
                 val stack = FrameLayout(container.context).apply {
                     layoutParams = LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
@@ -241,7 +249,7 @@ object TopRowBuilder_Old {
                 }.also(stack::addView)
 
                 TextView(container.context).apply {
-                    text = topText[i].toString()
+                    text = InputText_Transcribed_Alt[i].toString()
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, halfSp)
                     setTextColor(KeyboardTheme.getColor(2).toColorInt())
                     gravity = Gravity.CENTER

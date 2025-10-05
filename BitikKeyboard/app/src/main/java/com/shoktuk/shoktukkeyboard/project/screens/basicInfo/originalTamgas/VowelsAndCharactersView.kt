@@ -25,11 +25,7 @@ fun VowelsAndCharactersView() {
     var context = LocalContext.current
 
     val colLeft = listOf(
-        BulletItem(text = "А/E - 𐰁/𐰀"),
-        BulletItem(text = "E - 𐰅, 𐰂"),
-        BulletItem(text = "Ы/И - 𐰄 ,𐰃"),
-        BulletItem(text = "О/U - 𐰆"),
-        BulletItem(text = "Ө/Ү - 𐰇/𐰈")
+        BulletItem(text = "А/E - 𐰁/𐰀"), BulletItem(text = "E - 𐰂 ,𐰅"), BulletItem(text = "Ы/И - 𐰄 ,𐰃"), BulletItem(text = "О/U - 𐰆"), BulletItem(text = "Ө/Ү - 𐰇/𐰈")
     )
     val colRight = listOf(
         BulletItem(text = "УҚ/ОҚ - 𐰹, 𐰸"),
@@ -46,12 +42,9 @@ fun VowelsAndCharactersView() {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
             .border(1.dp, androidx.compose.ui.graphics.Color.Gray, shape = RoundedCornerShape(25.dp))
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(15.dp)
+            .padding(10.dp), horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
-        // Each column gets equal horizontal space.
         BulletColumnView(
             items = colLeft, headline = "ot_vowels".localized("loc_originalTamgas", context), textColor = Color(0xFF0B84FE), // #ac8f68 converted to ARGB format
             modifier = Modifier.weight(1f)

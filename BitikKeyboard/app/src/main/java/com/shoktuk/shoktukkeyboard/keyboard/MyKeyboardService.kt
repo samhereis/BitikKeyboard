@@ -4,12 +4,15 @@ import android.inputmethodservice.InputMethodService
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputConnection
 import android.widget.LinearLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
 import com.shoktuk.shoktukkeyboard.emoji.EmojisData
 import com.shoktuk.shoktukkeyboard.emoji.EmojisViewBuilder
+import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed
+import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.inputText_LastWord
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
@@ -21,8 +24,10 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
+import com.shoktuk.shoktukkeyboard.project.data.WordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
@@ -31,15 +36,20 @@ enum class KeyboardMode(val id: String) {
 }
 
 object onKeyPressed {
-    private val listeners = mutableListOf<(String, Boolean) -> Unit>()
+    var text_Original: String = ""
+    var inputText_LastWord: String = ""
+    var InputText_Transcribed: String = ""
+    var InputText_Transcribed_Alt: String = ""
 
-    fun addListener(listener: (String, Boolean) -> Unit) {
+    private val listeners = mutableListOf<(InputConnection, String, Boolean) -> Unit>()
+
+    fun addListener(listener: (InputConnection, String, Boolean) -> Unit) {
         listeners.clear()
         listeners.add(listener)
     }
 
-    fun invoke(isActive: String, isSystemKey: Boolean = false) {
-        listeners.forEach { it(isActive, false) }
+    fun invoke(ic: InputConnection, key: String, isSystemKey: Boolean = false) {
+        listeners.forEach { it(ic, key, isSystemKey) }
     }
 }
 
@@ -115,6 +125,9 @@ class MyKeyboardService : InputMethodService() {
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         TopRowBuilder_Old.onTypedListener?.invoke()
+        onKeyPressed.addListener { ic, key, isSystemKey ->
+            handleKeyPress(ic, key, isSystemKey)
+        }
     }
 
     override fun onUpdateSelection(
@@ -124,9 +137,6 @@ class MyKeyboardService : InputMethodService() {
             oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd
         )
         TopRowBuilder_Old.onTypedListener?.invoke()
-        onKeyPressed.addListener { key, isSystemKey ->
-            handleKeyPress(key, isSystemKey)
-        }
     }
 
     fun applyKeyboard() {
@@ -270,7 +280,7 @@ class MyKeyboardService : InputMethodService() {
 
     private fun makeEmojiView(): LinearLayout {
         root_Emojis = EmojisViewBuilder.create(service = this, EmojisData.defaultCategories(), onKeyPress = {
-            this.currentInputConnection?.commitText(it, 1)
+            onKeyPressed?.invoke(this.currentInputConnection, it, false)
         }, onABC = {
             keyboardMode = KeyboardMode.Main
             reloadKeyboard()
@@ -283,7 +293,7 @@ class MyKeyboardService : InputMethodService() {
 
     private fun makeSavablesView(): LinearLayout {
         val view = SavedStringsViewBuilder.create(service = this, false, keyboardMode, onKeyPress = {
-            this.currentInputConnection?.commitText(it, 1)
+            onKeyPressed?.invoke(this.currentInputConnection, it, false)
         }, onModeChange = {
             keyboardMode = KeyboardMode.Main
             reloadKeyboard()
@@ -335,39 +345,61 @@ class MyKeyboardService : InputMethodService() {
         }
     }
 
-    fun handleKeyPress(key: String, isSystemKey: Boolean) {
-        when {
-            // Handle system keys first
-            isSystemKey -> {
-                when (key) {
-                    "BACKSPACE" -> this.currentInputConnection?.deleteSurroundingText(1, 0)
-                    "ENTER" -> this.currentInputConnection?.commitText("\n", 1)
-                    "SPACE" -> this.currentInputConnection?.commitText(" ", 1)
-                    "SWITCH" -> {
+    val listOfAlwaysSyss: Set<String> = setOf("?", "⸮", "!")
+    fun handleKeyPress(ic: InputConnection, key: String, isSystemKey: Boolean) {
+        val isSys = isSystemKey || listOfAlwaysSyss.contains(key)
+        var toPasteAfter = key.replace("sys", "")
 
+        if (isBitikMode && isSys) {
+            toPasteAfter = toPasteAfter.replace("  ", " ").replace("?", "⸮ ").replace("!", "! ").replace(".", "·").replace(",", "⹁")
+
+            if (toPasteAfter == " ") {
+                toPasteAfter = when (context.wordSeparator) {
+                    WordSeparator.NoSpace -> "⁚"
+                    WordSeparator.SpaceBefore -> "⁚ "
+                    WordSeparator.ArroundSpace -> " ⁚ "
+                    WordSeparator.Off -> " "
+                }
+            }
+
+            replaceText(ic, InputText_Transcribed + toPasteAfter)
+        } else {
+            when {
+                current_writingSystem == WritingSystem.Bitik -> {
+                    if (ensureRTLContext(this)) {
+                        ic?.commitText("\u202B", 1) // RLE mark
+                    }
+                    ic.commitText(key, 1)
+                }
+
+                else -> {
+                    ic.commitText(key, 1)
+
+                    if (isCaps) {
+                        isCaps = false
+                        applyKeyboard()
                     }
                 }
             }
 
-            current_writingSystem == WritingSystem.Bitik -> {
-                if (ensureRTLContext(this)) {
-                    this.currentInputConnection?.commitText("\u202B", 1) // RLE mark
-                }
-                this.currentInputConnection?.commitText(key, 1)
-                TopRowBuilder_Old.onTypedListener?.invoke()
-            }
+            TopRowBuilder_Old.onTypedListener?.invoke()
+        }
+    }
 
-            // Default: normal text
-            else -> {
-                this.currentInputConnection?.commitText(key, 1)
-                TopRowBuilder_Old.onTypedListener?.invoke()
-
-                if (isCaps) {
-                    isCaps = false
-                    applyKeyboard()
-                }
+    fun replaceText(ic: InputConnection, toPasteAfter: String) {
+        if (!inputText_LastWord.isBlank()) {
+            try {
+                ic.beginBatchEdit()
+                ic.deleteSurroundingText(inputText_LastWord.length, 0)
+            } catch (_: Exception) {
+            } finally {
+                ic.endBatchEdit()
             }
         }
+
+        ic.commitText(toPasteAfter, 1)
+
+        TopRowBuilder_Old.onTypedListener?.invoke()
     }
 
     private fun ensureRTLContext(service: InputMethodService): Boolean {

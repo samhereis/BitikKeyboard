@@ -1,8 +1,6 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
-import GlowOverlayView
 import JSTranscriber_Alphabet
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Paint
 import android.graphics.Typeface
@@ -15,9 +13,11 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.TextView
-import androidx.core.graphics.ColorUtils
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.Companion.context
+import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed
+import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.inputText_LastWord
+import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.text_Original
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
@@ -39,10 +39,6 @@ object onBitikModeChanged {
 }
 
 object TopRowBuilder_Alphabet {
-    var text_Original: String = ""
-    var inputText_LastWord: String = ""
-    var InputText_Transcribed: String = ""
-
     fun createTopRow(
         service: InputMethodService, buttonHeight: Int, mode: TextTranscription, onModeChange: (KeyboardMode) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
@@ -61,6 +57,16 @@ object TopRowBuilder_Alphabet {
                 topMargin = MyKeyboardService.buttonMargin
                 bottomMargin = MyKeyboardService.buttonMargin
             }
+        }
+
+        val newGlow = NewGlowDrawable()
+        rowLayout.background = newGlow
+        if (MyKeyboardService.isBitikMode) {
+            newGlow.setVisibleAlpha(1f)
+            newGlow.startRotating()
+        } else {
+            newGlow.setVisibleAlpha(0f)
+            newGlow.stopRotating()
         }
 
         val switchLanguageView = SystemKeyBuilder.systemButton_Text(
@@ -97,28 +103,10 @@ object TopRowBuilder_Alphabet {
                 val m = (6 * resources.displayMetrics.density).toInt()
                 marginStart = m
             }
-
         }
 
-        val glowView = GlowOverlayView(service).apply {
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT
-            )
-
-            isClickable = false
-            isFocusable = false
-            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-
-
-            alpha = if (MyKeyboardService.isBitikMode) 0.75f else 0f
-            if (MyKeyboardService.isBitikMode) startRotating(4500L) else stopRotating()
-            invalidate()
-        }
-
-        centerSlot.addView(glowView, 0)
-        centerSlot.addView(hintIcon, 1)
+        centerSlot.addView(hintIcon)
         centerSlot.addView(lastWordContainer)
-
         centerSlot.setOnClickListener {
             MyKeyboardService.isBitikMode = !MyKeyboardService.isBitikMode
             onBitikModeChanged.invoke(MyKeyboardService.isBitikMode)
@@ -146,22 +134,21 @@ object TopRowBuilder_Alphabet {
         }
 
         onBitikModeChanged.addListener { active ->
-            centerSlot.post {
+            rowLayout.post {
                 if (active) {
-                    glowView.animate().alpha(0.75f).setDuration(400).withStartAction { glowView.startRotating(4500L) }.start()
+                    newGlow.startRotating()
+                    newGlow.animateAlpha(1f, 400L, null)
                 } else {
-                    glowView.animate().alpha(0f).setDuration(400).withEndAction { glowView.stopRotating() }.start()
+                    newGlow.animateAlpha(0f, 400L) { newGlow.stopRotating() }
                 }
             }
-
             if (active) {
                 hintIcon.animate().alpha(0f).setDuration(300).setStartDelay(100).start()
             } else {
                 hintIcon.animate().alpha(1f).setDuration(300).setStartDelay(0).start()
             }
         }
-        glowView.startRotating(4500L)
-        glowView.invalidate()
+
         return rowLayout
     }
 
@@ -186,8 +173,11 @@ object TopRowBuilder_Alphabet {
     fun updateLastWord(
         service: InputMethodService, inputConnection: InputConnection?, transcriber: JSTranscriber_Alphabet, container: LinearLayout?, buttonHeight: Int, buttonStyle: ButtonStyle?
     ) {
+        val extraSeparators = "·.,⸮⹁:;!?()[]{}\"'"
+
         text_Original = inputConnection?.getTextBeforeCursor(100, 0)?.toString().orEmpty()
-        inputText_LastWord = text_Original.split("[^\\p{L}\\p{N}]+".toRegex()).lastOrNull().orEmpty()
+        val regex = "[^\\p{L}${Regex.escape(extraSeparators)}]+".toRegex()
+        inputText_LastWord = text_Original.split(regex).lastOrNull().orEmpty()
         InputText_Transcribed = transcriber.getTranscription(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
 
         if (container == null) {
@@ -203,15 +193,13 @@ object TopRowBuilder_Alphabet {
         val textView = TextView(container.context).apply {
             text = InputText_Transcribed
             setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
-            setTextColor(KeyboardTheme.getColor(2).toColorInt())
+            setTextColor(KeyboardTheme.getColor(1).toColorInt())
 
             background = android.graphics.drawable.GradientDrawable().apply {
                 cornerRadius = 48f
 
                 val base = KeyboardTheme.getColor(6).toColorInt()
-                val halfAlpha = ColorUtils.setAlphaComponent(base, if (MyKeyboardService.isBitikMode) 100 else 255)
-
-                setColor(halfAlpha)
+                setColor(base)
             }
 
             gravity = Gravity.CENTER
@@ -230,30 +218,10 @@ object TopRowBuilder_Alphabet {
             paint.strokeWidth = 0.5f
             paint.style = Paint.Style.FILL_AND_STROKE
 
-            onBitikModeChanged.addListener { active ->
-                val startAlpha = if (active) 255 else 100   // where we are
-                val endAlpha = if (active) 100 else 255   // where we’re going
-
-                ValueAnimator.ofInt(startAlpha, endAlpha).apply {
-                    duration = 400
-                    addUpdateListener { animator ->
-                        val alpha = animator.animatedValue as Int
-                        background = android.graphics.drawable.GradientDrawable().apply {
-                            cornerRadius = 48f
-                            val base = KeyboardTheme.getColor(6).toColorInt()
-                            val color = ColorUtils.setAlphaComponent(base, alpha)
-                            setColor(color)
-                        }
-                    }
-                    start()
-                }
-            }
-
             setOnClickListener {
                 if (inputText_LastWord.isNotBlank()) {
-                    inputConnection?.apply {
-                        deleteSurroundingText(inputText_LastWord.length, 0)
-                        commitText(InputText_Transcribed + " ", 1)
+                    if (inputConnection != null) {
+                        MyKeyboardService().replaceText(inputConnection, InputText_Transcribed)
 
                         InputText_Transcribed = ""
                         text = inputText_LastWord

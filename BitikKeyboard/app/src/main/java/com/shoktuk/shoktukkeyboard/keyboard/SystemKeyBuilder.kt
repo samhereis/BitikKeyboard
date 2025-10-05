@@ -45,13 +45,10 @@ object SystemKeyBuilder {
         root.addView(makeCenteredContent(service, style, buttonHeight, bald, textId, textToSet = text))
 
         root.setOnClickListener {
-            Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
             onClick?.invoke()
-            TopRowBuilder_Old.onTypedListener?.invoke()
         }
 
         root.setOnLongClickListener {
-            Haptics.perform(it, HapticFeedbackConstants.LONG_PRESS)
             onLongClick?.invoke()
             true
         }
@@ -65,9 +62,7 @@ object SystemKeyBuilder {
         val root = newContainer(service, style, buttonHeight, weight)
         root.addView(makeCenteredContent(service, style, buttonHeight, iconAssetPath = assetPath))
         root.setOnClickListener {
-            Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
             onClick?.invoke()
-            TopRowBuilder_Old.onTypedListener?.invoke()
         }
         return root
     }
@@ -78,9 +73,7 @@ object SystemKeyBuilder {
         val root = newContainer(service, style, buttonHeight, weight = 1f)
         root.addView(makeCenteredContent(service, style, buttonHeight, textToSet = text))
         root.setOnClickListener {
-            Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
-            service.currentInputConnection?.commitText(textToCommit, 1)
-            TopRowBuilder_Old.onTypedListener?.invoke()
+            onKeyPressed?.invoke(service.currentInputConnection, textToCommit, true)
         }
         root.setOnLongClickListener {
             onClick?.invoke()
@@ -100,13 +93,10 @@ object SystemKeyBuilder {
         val root = newContainer(service, style, buttonHeight, weight = 1f)
         root.addView(makeCenteredContent(service, style, buttonHeight, iconAssetPath = assetPath))
         root.setOnClickListener {
-            Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
-            service.currentInputConnection?.commitText(textToCommit, 1)
-            TopRowBuilder_Old.onTypedListener?.invoke()
+            onKeyPressed?.invoke(service.currentInputConnection, textToCommit, true)
         }
 
         root.setOnLongClickListener {
-            Haptics.perform(it, HapticFeedbackConstants.LONG_PRESS)
             onLongClick?.invoke()
             true
         }

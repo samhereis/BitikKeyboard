@@ -78,7 +78,7 @@ object TopRowBuilder {
                 style = KeyboardTheme.getLetterButtonStyle_Normal(innerClipboardRow.context),
                 weight = 0f,
                 onClick = {
-                    service.currentInputConnection?.commitText(clipText, 1)
+                    onKeyPressed?.invoke(service.currentInputConnection, clipText, false)
                 })
             itemView.setPadding(25, 0, 25, 0)
 

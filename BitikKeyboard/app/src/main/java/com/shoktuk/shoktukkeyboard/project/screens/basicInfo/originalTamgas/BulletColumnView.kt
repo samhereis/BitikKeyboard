@@ -42,10 +42,10 @@ fun BulletColumnView(
         modifier = modifier
             .fillMaxWidth()
             .border(1.dp, Color.Gray, shape = RoundedCornerShape(25.dp))
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
         headline?.let {
-            Text(text = it, fontSize = 20.sp, color = textColor)
+            Text(text = it, fontSize = 15.sp, color = textColor)
             Spacer(modifier = Modifier.height(8.dp))
         }
         items.forEach { item ->

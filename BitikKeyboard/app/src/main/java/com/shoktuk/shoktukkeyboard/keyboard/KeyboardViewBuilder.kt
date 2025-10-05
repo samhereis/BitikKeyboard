@@ -139,9 +139,9 @@ object KeyboardViewBuilder {
         middleKeys.forEach { key ->
             middleContainer.addView(
                 LetterKeyBuilder.createLetterKey(service, process(key, mode), isCaps, buttonHeight, keybWidth, onKeyClick = { letter ->
-                    onKeyPressed?.invoke(letter)
+                    onKeyPressed?.invoke(service.currentInputConnection, letter)
                 }, onLongPress = { letter ->
-                    letter?.let { service.currentInputConnection?.commitText(it, 1) }
+                    letter?.let { onKeyPressed?.invoke(service.currentInputConnection, letter) }
                 })
             )
         }

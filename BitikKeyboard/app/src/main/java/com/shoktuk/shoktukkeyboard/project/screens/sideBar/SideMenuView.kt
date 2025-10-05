@@ -2,7 +2,6 @@ package com.shoktuk.shoktukkeyboard
 
 import BasicInfo_Screen
 import HowToEnable_Screen
-import ModernizedTamgasView
 import OriginalTamgasView
 import SideMenuHeader
 import SupportScreen
@@ -46,6 +45,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.shoktuk.bittik.instructions.UseInstruction
+import com.shoktuk.bittik.rules.BitikRule1
+import com.shoktuk.bittik.rules.BitikRule2
+import com.shoktuk.bittik.rules.BitikRule3
+import com.shoktuk.bittik.rules.BitikRule4
 import com.shoktuk.shoktukkeyboard.project.data.BasicInfoScreens
 import com.shoktuk.shoktukkeyboard.project.data.MainScreens
 import com.shoktuk.shoktukkeyboard.project.data.SettingScreens
@@ -87,17 +91,17 @@ fun SideMenuView() {
                     val selected = currentRoute == drawerItem.path.id
                     NavigationDrawerItem(
                         selected = selected, onClick = {
-                        navigateRoot(scope, drawerState, navController, drawerItem.path.id)
-                    }, icon = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start
-                        ) {
-                            Icon(
-                                imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
-                            )
-                            Text(text = drawerItem.path.title.localized("loc_sideBar", context))
-                        }
-                    }, label = {}, modifier = Modifier.padding(5.dp)
+                            navigateRoot(scope, drawerState, navController, drawerItem.path.id)
+                        }, icon = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start
+                            ) {
+                                Icon(
+                                    imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
+                                )
+                                Text(text = drawerItem.path.title.localized("loc_sideBar", context))
+                            }
+                        }, label = {}, modifier = Modifier.padding(5.dp)
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
@@ -109,25 +113,25 @@ fun SideMenuView() {
                 if (isMainScreen) {
                     TopAppBar(
                         title = {
-                        val menuTitle = MainScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_sideBar", context) ?: ""
-                        Text(text = menuTitle, fontSize = 15.sp)
-                    }, navigationIcon = {
-                        IconButton(onClick = { scope.launch { drawerState.open() } }) {
-                            Icon(Icons.Rounded.Menu, contentDescription = "Menu")
-                        }
-                    }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
+                            val menuTitle = MainScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_sideBar", context) ?: ""
+                            Text(text = menuTitle, fontSize = 15.sp)
+                        }, navigationIcon = {
+                            IconButton(onClick = { scope.launch { drawerState.open() } }) {
+                                Icon(Icons.Rounded.Menu, contentDescription = "Menu")
+                            }
+                        }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
                     )
                 } else {
                     TopAppBar(
                         title = {
-                        val title = BasicInfoScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_basicInfo", context)
-                            ?: SettingScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_settings", context) ?: ""
-                        Text(text = title, fontSize = 15.sp)
-                    }, navigationIcon = {
-                        IconButton(onClick = { navController.popBackStack() }) {
-                            Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
-                        }
-                    }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
+                            val title = BasicInfoScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_basicInfo", context)
+                                ?: SettingScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_settings", context) ?: ""
+                            Text(text = title, fontSize = 15.sp)
+                        }, navigationIcon = {
+                            IconButton(onClick = { navController.popBackStack() }) {
+                                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                            }
+                        }, colors = TopAppBarDefaults.topAppBarColors(MaterialTheme.colorScheme.background)
                     )
                 }
             }) { innerPadding ->
@@ -144,8 +148,11 @@ fun SideMenuView() {
                 composable(MainScreens.SUPPORT.id) { SupportScreen() }
 
                 composable(BasicInfoScreens.ORIGINAL_TAMGAS.id) { OriginalTamgasView() }
-                composable(BasicInfoScreens.MODERNIZED_TAMGAS.id) { ModernizedTamgasView() }
-                composable(BasicInfoScreens.RULES_OF_WRITING.id) { RulesOfWritingView() }
+                composable(BasicInfoScreens.USE_INSTRUCTION.id) { UseInstruction() }
+                composable(BasicInfoScreens.BITIK_RULE_1.id) { BitikRule1() }
+                composable(BasicInfoScreens.BITIK_RULE_2.id) { BitikRule2() }
+                composable(BasicInfoScreens.BITIK_RULE_3.id) { BitikRule3() }
+                composable(BasicInfoScreens.BITIK_RULE_4.id) { BitikRule4() }
 
                 composable(SettingScreens.SavedStrings.id) { SavedStringsScreen() }
             }

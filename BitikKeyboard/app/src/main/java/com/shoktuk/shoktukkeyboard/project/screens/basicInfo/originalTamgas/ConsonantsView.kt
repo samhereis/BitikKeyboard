@@ -39,14 +39,14 @@ fun ConsonantsView() {
         BulletItem(text = "аҒ - 𐰎 ,𐰍"),
         BulletItem(text = "аҚ - 𐰴"),
         BulletItem(text = "аЛ - 𐰟 ,𐰞"),
+        BulletItem(text = "аШ - 𐱀"),
         BulletItem(text = "аБ - 𐰊 ,𐰉"),
         BulletItem(text = "аН - 𐰣"),
         BulletItem(text = "", needBullet = false),
-        BulletItem(text = "П - 𐰯"),
-        BulletItem(text = "З - 𐰕"),
-        BulletItem(text = "Ш - 𐱁 ,𐰿 ,𐱀"),
-        BulletItem(text = "Ч - 𐰳 ,𐰲"),
-        BulletItem(text = "М - 𐰢")
+        BulletItem(text = "Шериксиз:", needBullet = false),
+        BulletItem(text = "аП - 𐰯"),
+        BulletItem(text = "аЗ - 𐰕"),
+        BulletItem(text = "аЧ - 𐰳 ,𐰲"),
     )
     val topRight = listOf(
         BulletItem(text = "еҢ - 𐰮 ,𐰭"),
@@ -58,16 +58,19 @@ fun ConsonantsView() {
         BulletItem(text = "еГ - 𐰐 ,𐰏"),
         BulletItem(text = "еК - 𐰛 ,𐰚"),
         BulletItem(text = "еЛ - 𐰠"),
+        BulletItem(text = "эШ - 𐱁 ,𐰿"),
         BulletItem(text = "еБ - 𐰋 ,𐰌"),
-        BulletItem(text = "еН - 𐰤 ,𐰥")
+        BulletItem(text = "еН - 𐰤 ,𐰥"),
+        BulletItem(text = "", needBullet = false),
+        BulletItem(text = "Шериксиз:", needBullet = false),
+        BulletItem(text = "эМ - 𐰢")
     )
 
     Column(
         modifier = Modifier
-            .padding(16.dp)
             .fillMaxWidth()
             .border(1.dp, Color.Gray, shape = RoundedCornerShape(25.dp))
-            .padding(16.dp)
+            .padding(10.dp)
     ) {
         Text(text = "ot_consonants".localized("loc_originalTamgas", context), fontSize = 30.sp)
 

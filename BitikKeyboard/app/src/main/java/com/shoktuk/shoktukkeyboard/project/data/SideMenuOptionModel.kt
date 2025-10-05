@@ -33,22 +33,23 @@ enum class MainScreens(val id: String) {
 }
 
 enum class BasicInfoScreens(val id: String) {
-    ORIGINAL_TAMGAS("OriginalTamgasView"), MODERNIZED_TAMGAS("ModernizedTamgasView"), RULES_OF_WRITING("RulesOfWriting");
+    ORIGINAL_TAMGAS("OriginalTamgasView"),
+    MODERNIZED_TAMGAS("ModernizedTamgasView"),
+    USE_INSTRUCTION("USE_INSTRUCTION"),
+    BITIK_RULE_1("BITIK_RULE_1"),
+    BITIK_RULE_2("BITIK_RULE_2"),
+    BITIK_RULE_3("BITIK_RULE_3"),
+    BITIK_RULE_4("BITIK_RULE_4");
 
     val title: String
         get() = when (this) {
-            ORIGINAL_TAMGAS -> "bi_originalBitik"
-            MODERNIZED_TAMGAS -> "bi_modernBitik"
-            RULES_OF_WRITING -> "bi_rulesOfWriting"
+            ORIGINAL_TAMGAS -> "Битиктин нускасы"
+            USE_INSTRUCTION -> "Тиркемени колдонуу"
+            BITIK_RULE_1 -> "№1 - Оңдон солго жазылыш"
+            BITIK_RULE_2 -> "№1 - Жумшак/Катуу"
+            BITIK_RULE_3 -> "№1 - Кыска жазылыш"
+            BITIK_RULE_4 -> "№1 - Курама сөздөр"
             else -> "bi_originalBitik"
-        }
-
-    val systemImageName: ImageVector
-        get() = when (this) {
-            ORIGINAL_TAMGAS -> Icons.Filled.Settings
-            MODERNIZED_TAMGAS -> Icons.Filled.CheckCircle
-            RULES_OF_WRITING -> Icons.Filled.Info
-            else -> Icons.Default.KeyboardArrowUp
         }
 }
 

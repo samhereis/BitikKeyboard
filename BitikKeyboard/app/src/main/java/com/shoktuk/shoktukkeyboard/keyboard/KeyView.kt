@@ -1,6 +1,5 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
-import Haptics
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
@@ -9,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.TypedValue
 import android.view.Gravity
-import android.view.HapticFeedbackConstants
 import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
@@ -230,7 +228,6 @@ class KeyView(
 
             if (isTouchInBounds && hasHoldValue) {
                 isLongPressed = true
-                Haptics.perform(this, HapticFeedbackConstants.LONG_PRESS)
                 onLongPress(getCurrentMainText_Hold())
                 applyStyle()
                 updateContent()
@@ -246,7 +243,6 @@ class KeyView(
                     isTouchInBounds = true
                     handler.postDelayed(longPressRunnable, longPressDelay)
                     showOverlay()
-                    Haptics.perform(this, HapticFeedbackConstants.KEYBOARD_PRESS)
                     true
                 }
 

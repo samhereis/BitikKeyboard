@@ -34,10 +34,10 @@ object BottomRowBuilder {
         service: InputMethodService, isCaps: Boolean, mode: KeyboardMode, buttonHeight: Int, onModeChange: (KeyboardMode) -> Unit,
     ): LinearLayout {
         var isBitik = MyKeyboardService.current_writingSystem == WritingSystem.Bitik
-        var comma = if (isBitik) "⹁" else ","
-        var comma_alt = if (isBitik) "," else "⹁"
-        var dot = if (isBitik) "·" else "."
-        var dot_alt = if (isBitik) "." else "·"
+        var comma = if (isBitik) "⹁ " else ", "
+        var comma_alt = if (isBitik) ", " else "⹁ "
+        var dot = if (isBitik) "· " else ". "
+        var dot_alt = if (isBitik) ". " else "· "
 
         val action = service.currentInputEditorInfo.imeOptions and EditorInfo.IME_MASK_ACTION
         val isMultiline = (service.currentInputEditorInfo.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0
@@ -93,17 +93,14 @@ object BottomRowBuilder {
 
         bottomRow.addView(
             SystemKeyBuilder.systemButton_Text(service, dot, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
-                service.currentInputConnection?.commitText(dot, 1)
-                TopRowBuilder_Old.onTypedListener?.invoke()
+                onKeyPressed?.invoke(service.currentInputConnection, dot, true)
             }, onLongClick = {
-                service.currentInputConnection?.commitText(dot_alt, 1)
-                TopRowBuilder_Old.onTypedListener?.invoke()
+                onKeyPressed?.invoke(service.currentInputConnection, dot_alt, true)
             })
         )
 
         val spaceBtn = SystemKeyBuilder.expandableSystemButton_Icon(
             service, KeyboardTheme.SPACE_ICON_FILE, " ", buttonHeight, onLongClick = {
-                // long-press toggles selection mode; next drags will select
                 selectionMode = true
                 anchor = currentCursor(service)
                 true
@@ -150,8 +147,7 @@ object BottomRowBuilder {
 
                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                         if (!dragging && !selectionMode) {
-                            service.currentInputConnection?.commitText(" ", 1)
-                            TopRowBuilder_Old.onTypedListener?.invoke()
+                            onKeyPressed?.invoke(service.currentInputConnection, " ", true)
                         }
                         dragging = false
                         selectionMode = false
@@ -171,19 +167,16 @@ object BottomRowBuilder {
             bottomRow.addView(
                 SystemKeyBuilder.expandableSystemButton_Text(
                     service, "⁚", buttonHeight, wp, onClick = {
-                        service.currentInputConnection?.commitText(":", 1)
-                        TopRowBuilder_Old.onTypedListener?.invoke()
+                        onKeyPressed?.invoke(service.currentInputConnection, ":", true)
                     })
             )
         }
 
         bottomRow.addView(
             SystemKeyBuilder.systemButton_Text(service, comma, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
-                service.currentInputConnection?.commitText(comma, 1)
-                TopRowBuilder_Old.onTypedListener?.invoke()
+                onKeyPressed?.invoke(service.currentInputConnection, comma, true)
             }, onLongClick = {
-                service.currentInputConnection?.commitText(comma_alt, 1)
-                TopRowBuilder_Old.onTypedListener?.invoke()
+                onKeyPressed?.invoke(service.currentInputConnection, comma_alt, true)
             })
         )
 
@@ -205,13 +198,11 @@ object BottomRowBuilder {
                             }
 
                             isMultiline -> {
-                                ic.commitText("\n", 1)
-                                TopRowBuilder_Old.onTypedListener?.invoke()
+                                onKeyPressed?.invoke(service.currentInputConnection, "\n", true)
                             }
 
                             else -> {
-                                ic.commitText("\n", 1)
-                                TopRowBuilder_Old.onTypedListener?.invoke()
+                                onKeyPressed?.invoke(service.currentInputConnection, "\n", true)
                             }
                         }
                     }
