@@ -12,8 +12,8 @@ android {
         applicationId = "com.shoktuk.shoktukkeyboard"
         minSdk = 25
         targetSdk = 36
-        versionCode = 18
-        versionName = "3.1.1"
+        versionCode = 19
+        versionName = "3.1.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,27 +37,21 @@ android {
 }
 
 dependencies {
-    implementation(libs.material)
-
-    implementation(libs.androidx.foundation)
-
     implementation(libs.flexbox)
-
     implementation(libs.ui)
-    implementation(libs.androidx.compose.material3.material3)
     implementation(libs.ui.tooling.preview)
     implementation(libs.androidx.appcompat)
     implementation(libs.gson)
 
     implementation(libs.hilt.android)
-
-    implementation(libs.reorderable)
     implementation("com.eclipsesource.j2v8:j2v8:6.2.1@aar")
 
 // DataStore)
     implementation(libs.androidx.datastore.preferences)
 
 // Compose
+    implementation(libs.material)
+    implementation(libs.androidx.foundation)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.hilt.navigation.compose)
 

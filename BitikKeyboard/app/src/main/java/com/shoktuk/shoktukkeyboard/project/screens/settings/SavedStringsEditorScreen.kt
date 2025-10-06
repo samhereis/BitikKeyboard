@@ -24,6 +24,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -194,7 +195,7 @@ private fun EditableRow(
             modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Icon(
-                imageVector = Icons.Filled.Edit, contentDescription = "Reorder", modifier = Modifier
+                imageVector = Icons.Filled.Menu, contentDescription = "Reorder", modifier = Modifier
                     .size(20.dp)
                     .pointerInput(Unit) {
                         detectDragGestures(

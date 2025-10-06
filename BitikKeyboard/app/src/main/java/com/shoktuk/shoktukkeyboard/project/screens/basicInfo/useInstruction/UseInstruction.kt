@@ -62,6 +62,7 @@ fun UseInstruction() {
             contentDescription = "QWERTY Keyboard",
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(top = 10.dp)
                 .clip(RoundedCornerShape(20.dp)),
             contentScale = ContentScale.FillWidth
         )
@@ -80,18 +81,19 @@ fun UseInstruction() {
         SectionCard {
             Column {
                 Text("Демейки түстүүлөр - үнсүздөр.")
-                Text("Көк түстүүлөр - үндүүлөр.", color = Color(0xFF1232B8))
-                Text("Кызгылт түстүүлөр - атайын тамгалар.", color = Color(0xFFFFA500)) // orange
+                Text("Көк түстүүлөр - үндүүлөр.", color = Color(0xFF5875FF))
+                Text("Кызгылт түстүүлөр - атайын тамгалар.", color = Color(0xFFC43494)) // orange
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 Text("Түстөөнү орнотууларда өчүрүп салса болот.")
             }
         }
 
+        Spacer(Modifier.height(6.dp))
         Text(
             text = "Тамгалардын экинчи варианттарын басыш үчүн, үстүндө сызыгы бар тамгаларды басып туруңуз.", style = MaterialTheme.typography.bodyLarge
         )
 
-        HorizontalDivider(Modifier.padding(vertical = 8.dp))
+        Spacer(Modifier.height(6.dp))
 
         InfoCard(
             infoTexts = listOf(
@@ -186,6 +188,7 @@ fun VideoPlay(videoName: String) {
             if (!view.isPlaying) view.start()
         }, modifier = Modifier
             .fillMaxWidth()
+            .padding(top = 10.dp)
             .aspectRatio(aspect)
             .clip(RoundedCornerShape(25.dp)) // ✅ Rounded corners
     )
