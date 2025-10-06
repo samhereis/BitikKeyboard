@@ -76,7 +76,7 @@ fun BasicInfo_Screen(navController: NavController) {
 
         BeautifulNavigationItem(
             title = BasicInfoScreens.ORIGINAL_TAMGAS.title, onClick = {
-                navController.navigate(BasicInfoScreens.USE_INSTRUCTION.id)
+                navController.navigate(BasicInfoScreens.ORIGINAL_TAMGAS.id)
             }, subtitle = null, leading = Icons.Default.Favorite, tint = MaterialTheme.colorScheme.primary
         )
         HorizontalDivider()

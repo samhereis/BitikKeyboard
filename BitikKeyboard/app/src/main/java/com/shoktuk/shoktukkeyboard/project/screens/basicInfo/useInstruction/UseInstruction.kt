@@ -69,7 +69,7 @@ fun UseInstruction() {
         Spacer(Modifier.height(12.dp))
 
         Text(
-            text = "Бир гана баскыч өзгөчө - бул Shift баскычы. Демейде, Shift баскычы чоң/кичи тамгаларды оодарат. " + "Shoktuk Bitik те катуу/жумшак тамгаларды оодарат.",
+            text = "Бир гана баскыч өзгөчө - бул Shift баскычы. Демейде, Shift баскычы чоң/кичи тамгаларды оодарат. " + "Shoktuk Bitikте катуу/жумшак тамгаларды оодарат.",
             style = MaterialTheme.typography.bodyLarge
         )
 

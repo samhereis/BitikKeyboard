@@ -1,32 +1,50 @@
 import android.content.Context
-import app.cash.quickjs.QuickJs
+import com.eclipsesource.v8.V8
+import com.eclipsesource.v8.V8Array
+import com.eclipsesource.v8.V8Object
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 
 class JSTranscriber_Alphabet(context: Context) {
-    private val quickJs: QuickJs = QuickJs.create()
+    private val v8: V8 = V8.createV8Runtime()
+
+    private val ctorName = "Transcrptiber_Old"
 
     init {
-        var jsFile = if (context.keyboardVariant == BitikVariant.SAMAGAN) "transcriber_alphabet_modern.js" else "transcriber_alphabet.js"
+        val jsFile = if (context.keyboardVariant == BitikVariant.SAMAGAN) "transcriber_alphabet_modern.js"
+        else "transcriber_alphabet.js"
 
         val js = context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }
-        quickJs.evaluate(js, jsFile)
+        v8.executeVoidScript(js, jsFile, 0)
     }
 
-    fun getTranscription(text: String): String = call(text)
+    fun getTranscription(text: String): String = callInstanceMethod("GetTranscription", text)
 
-    private fun call(input: String): String {
-        val escaped = input.replace("\\", "\\\\").replace("\"", "\\\"").replace("\n", "\\n").replace("\r", "\\r")
-        val jsCall = """
-            (function(){
-              var t = new Transcrptiber_Old();
-              return t.GetTranscription("$escaped");
-            })();
-        """.trimIndent()
-        return quickJs.evaluate(jsCall, "TranscribeCall.js")?.toString() ?: ""
+    fun getTranscription_Alternative(text: String): String = callInstanceMethod("GetTranscription_Alternative", text)
+
+    private fun callInstanceMethod(methodName: String, arg: String): String {
+        val instance: V8Object = v8.executeObjectScript("new $ctorName();")
+        val args = V8Array(v8).push(arg)
+        return try {
+            instance.executeStringFunction(methodName, args)
+        } catch (_: Throwable) {
+            ""
+        } finally {
+            try {
+                args.release()
+            } catch (_: Throwable) {
+            }
+            try {
+                instance.release()
+            } catch (_: Throwable) {
+            }
+        }
     }
 
     fun close() {
-        quickJs.close()
+        try {
+            v8.release()
+        } catch (_: Throwable) {
+        }
     }
 }

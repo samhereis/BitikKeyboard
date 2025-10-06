@@ -51,7 +51,8 @@ dependencies {
 
     implementation(libs.hilt.android)
 
-    implementation(libs.quickjs.android)
+    implementation(libs.reorderable)
+    implementation("com.eclipsesource.j2v8:j2v8:6.2.1@aar")
 
 // DataStore)
     implementation(libs.androidx.datastore.preferences)
