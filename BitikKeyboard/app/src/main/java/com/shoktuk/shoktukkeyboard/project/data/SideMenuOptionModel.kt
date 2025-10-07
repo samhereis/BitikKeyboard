@@ -27,8 +27,8 @@ enum class MainScreens(val id: String) {
             TEST_KEYBOARD -> Icons.Filled.CheckCircle
             BASIC_INFO -> Icons.Filled.Info
             SETTINGS -> Icons.Filled.Settings
-            SUPPORT -> Icons.Default.ThumbUp
-            else -> Icons.Default.KeyboardArrowUp
+            SUPPORT -> Icons.Filled.ThumbUp
+            else -> Icons.Filled.KeyboardArrowUp
         }
 }
 
@@ -65,7 +65,7 @@ enum class SettingScreens(val id: String) {
     val systemImageName: ImageVector
         get() = when (this) {
             SavedStrings -> Icons.Filled.Settings
-            else -> Icons.Default.KeyboardArrowUp
+            else -> Icons.Filled.KeyboardArrowUp
         }
 }
 

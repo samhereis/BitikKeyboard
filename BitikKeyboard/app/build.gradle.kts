@@ -12,8 +12,8 @@ android {
         applicationId = "com.shoktuk.shoktukkeyboard"
         minSdk = 25
         targetSdk = 36
-        versionCode = 20
-        versionName = "3.1.4"
+        versionCode = 21
+        versionName = "3.1.6"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,42 +37,45 @@ android {
 }
 
 dependencies {
-    implementation(libs.flexbox)
-    implementation(libs.ui)
-    implementation(libs.ui.tooling.preview)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.gson)
-
-    implementation(libs.hilt.android)
-    implementation(libs.wrapper.android)
-
-// DataStore)
-    implementation(libs.androidx.datastore.preferences)
-
-// Compose
-    implementation(libs.material)
-    implementation(libs.androidx.foundation)
-    implementation(libs.androidx.lifecycle.viewmodel.compose)
-    implementation(libs.androidx.hilt.navigation.compose)
-
-    implementation(libs.kotlin.csv.jvm)
-
+    // Core & App Compat
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.lifecycle.service)
+    implementation(libs.material)
+
+    // Compose Bill of Materials (BOM)
     implementation(platform(libs.androidx.compose.bom))
+
+    // Compose UI
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.activity.compose)
+
+    // Compose Material 3
     implementation(libs.androidx.material3)
-    implementation(libs.androidx.lifecycle.service)
+    implementation(libs.androidx.compose.material.icons.extended)
+
+    // Compose Navigation & ViewModel
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
+
+    // Other Dependencies
+    implementation(libs.flexbox)
+    implementation(libs.gson)
+    implementation(libs.hilt.android)
+    implementation(libs.wrapper.android)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlin.csv.jvm)
     implementation(libs.androidx.room.ktx)
-    implementation(libs.ui.tooling)
-    implementation(libs.androidx.monitor)
-    implementation(libs.androidx.junit.ktx)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
+
+    // Testing
+    implementation(libs.androidx.monitor)
+    implementation(libs.androidx.junit.ktx)
 }
