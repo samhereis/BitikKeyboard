@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
+import com.whl.quickjs.android.QuickJSLoader
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +24,8 @@ class MainActivity : ComponentActivity() {
                 SideMenuView()
             }
         }
+
+        QuickJSLoader.init()
     }
 }
 

@@ -12,8 +12,8 @@ android {
         applicationId = "com.shoktuk.shoktukkeyboard"
         minSdk = 25
         targetSdk = 36
-        versionCode = 19
-        versionName = "3.1.3"
+        versionCode = 20
+        versionName = "3.1.4"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -44,7 +44,7 @@ dependencies {
     implementation(libs.gson)
 
     implementation(libs.hilt.android)
-    implementation("com.eclipsesource.j2v8:j2v8:6.2.1@aar")
+    implementation(libs.wrapper.android)
 
 // DataStore)
     implementation(libs.androidx.datastore.preferences)

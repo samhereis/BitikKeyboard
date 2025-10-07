@@ -30,6 +30,7 @@ import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 import com.shoktuk.shoktukkeyboard.project.data.WordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
+import com.whl.quickjs.android.QuickJSLoader
 
 enum class KeyboardMode(val id: String) {
     Main("Main"), Symbols("Symbols"), Emojis("Emojis"), SavedStrings("SavedStrings");
@@ -118,7 +119,8 @@ class MyKeyboardService : InputMethodService() {
         if (root != null) {
             applyInsetsNowAndOnChange(root!!)
         }
-
+        
+        QuickJSLoader.init()
         return root
     }
 

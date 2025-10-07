@@ -1,49 +1,46 @@
 import android.content.Context
-import com.eclipsesource.v8.V8
-import com.eclipsesource.v8.V8Array
-import com.eclipsesource.v8.V8Object
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
+import com.whl.quickjs.wrapper.QuickJSContext
 
 class JSTranscriber(context: Context) {
-    private val v8: V8 = V8.createV8Runtime()
-    private val ctorName = "CorrentText_Old"
+    private val ctx: QuickJSContext = QuickJSContext.create()
 
     init {
-        val jsFile = if (context.keyboardVariant == BitikVariant.CLASSIC) "transcriber_old.js"
-        else "transcriber_modern.js"
-
+        val jsFile = if (context.keyboardVariant == BitikVariant.CLASSIC)
+            "transcriber_old.js" else "transcriber_modern.js"
         val js = context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }
-        v8.executeVoidScript(js, jsFile, 0)
+        ctx.evaluate(js)
     }
 
-    fun getTranscription(text: String): String = callInstanceMethod("GetTranscription", text)
+    fun getTranscription(text: String): String {
+        val s = text.escapeJs()
+        val call = """
+            (function(){
+              var t = new CorrentText_Old();
+              return t.GetTranscription("$s");
+            })();
+        """.trimIndent()
+        return ctx.evaluate(call)?.toString() ?: ""
+    }
 
-    fun getTranscription_Alternative(text: String): String = callInstanceMethod("GetTranscription_Alternative", text)
-
-    private fun callInstanceMethod(methodName: String, arg: String): String {
-        val instance: V8Object = v8.executeObjectScript("new $ctorName();")
-        val args = V8Array(v8).push(arg)
-        return try {
-            instance.executeStringFunction(methodName, args)
-        } catch (_: Throwable) {
-            ""
-        } finally {
-            try {
-                args.release()
-            } catch (_: Throwable) {
-            }
-            try {
-                instance.release()
-            } catch (_: Throwable) {
-            }
-        }
+    fun getTranscription_Alternative(text: String): String {
+        val s = text.escapeJs()
+        val call = """
+            (function(){
+              var t = new CorrentText_Old();
+              return t.GetTranscription_Alternative("$s");
+            })();
+        """.trimIndent()
+        return ctx.evaluate(call)?.toString() ?: ""
     }
 
     fun close() {
-        try {
-            v8.release()
-        } catch (_: Throwable) {
-        }
+        ctx.destroy()
     }
+
+    private fun String.escapeJs() = replace("\\", "\\\\")
+        .replace("\"", "\\\"")
+        .replace("\n", "\\n")
+        .replace("\r", "\\r")
 }
