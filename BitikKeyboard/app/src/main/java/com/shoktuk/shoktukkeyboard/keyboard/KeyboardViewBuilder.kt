@@ -34,14 +34,11 @@ object KeyboardViewBuilder {
         maxKeyCount: Int,
         onCapsChange: (Boolean) -> Unit,
         onModeChange: (KeyboardMode) -> Unit,
-        onAlphabetChange: () -> Unit
     ): LinearLayout {
         eb_Def = context.ebVariant == EB_Letter_Variant.Default
         en_Def = context.enVariant == EN_Letter_Variant.Default
         as_Def = context.asVariant == AS_Letter_Variant.Default
         esh_Def = context.eshVariant == ESH_Letter_Variant.Default
-
-        var systemKeybHeight = (KeyboardTheme.getButtonHeight() / 1.5f).toInt()
 
         val screenWidthPx = service.resources.displayMetrics.widthPixels
         val baseDesignWidthDp = 360f

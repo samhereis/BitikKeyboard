@@ -23,6 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.DragHandle
+import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Button
@@ -155,7 +157,7 @@ fun SavedStringsScreen() {
                 modifier = Modifier.weight(1f),
                 shape = RoundedCornerShape(10.dp),
                 textStyle = LocalTextStyle.current.copy(fontSize = 15.sp),
-                placeholder = { Text("𐰕𐰬𐰃𐰕𐰳", fontSize = 15.sp) })
+                placeholder = { Text("...", fontSize = 15.sp) })
 
             Button(
                 onClick = {
@@ -195,7 +197,7 @@ private fun EditableRow(
             modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Icon(
-                imageVector = Icons.Filled.Menu, contentDescription = "Reorder", modifier = Modifier
+                imageVector = Icons.Filled.DragHandle, contentDescription = "Reorder", modifier = Modifier
                     .size(20.dp)
                     .pointerInput(Unit) {
                         detectDragGestures(

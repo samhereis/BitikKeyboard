@@ -18,11 +18,13 @@ import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.NavBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.navBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
@@ -58,7 +60,7 @@ class MyKeyboardService : InputMethodService() {
     companion object {
         lateinit var context: MyKeyboardService
 
-        var current_bitikVariant: BitikVariant = BitikVariant.CLASSIC
+        var current_bitikVariant: BitikVariant = BitikVariant.Modern
         var current_bitikDialect: BitikDialect = BitikDialect.Altay
         var current_writingSystem: WritingSystem = WritingSystem.Bitik
         var current_letterTranscription: LetterTranscription = LetterTranscription.On
@@ -71,7 +73,7 @@ class MyKeyboardService : InputMethodService() {
 
         val buttonMargin: Int = KeyboardTheme.KEY_MARGIN_DP
 
-        val isClassic: Boolean get() = current_bitikVariant == BitikVariant.CLASSIC
+        val isClassic: Boolean get() = current_bitikVariant == BitikVariant.Modern
         val isTamga: Boolean get() = keyboardMode == KeyboardMode.Main
         val showLetterTranscription: Boolean get() = current_letterTranscription == LetterTranscription.On
         val showTextTranscription: Boolean get() = current_textTranscription == TextTranscription.On
@@ -119,7 +121,7 @@ class MyKeyboardService : InputMethodService() {
         if (root != null) {
             applyInsetsNowAndOnChange(root!!)
         }
-        
+
         QuickJSLoader.init()
         return root
     }
@@ -255,8 +257,7 @@ class MyKeyboardService : InputMethodService() {
             KeyboardMode.Emojis,
             maxKeyCount = 10,
             onCapsChange = { isCaps = it; applyKeyboard() },
-            onModeChange = { onModeChange(it) },
-            onAlphabetChange = { onAlphabetChange() })
+            onModeChange = { onModeChange(it) })
         current_letterTranscription = currentTamgaTranscription
 
         root_ShiftOn = KeyboardViewBuilder.buildKeyboardView(
@@ -266,8 +267,7 @@ class MyKeyboardService : InputMethodService() {
             keyboardMode,
             maxButtonInOneRow,
             onCapsChange = { isCaps = it; applyKeyboard() },
-            onModeChange = { onModeChange(it) },
-            onAlphabetChange = { onAlphabetChange() })
+            onModeChange = { onModeChange(it) })
 
         root_ShiftOff = KeyboardViewBuilder.buildKeyboardView(
             service = this,
@@ -276,8 +276,7 @@ class MyKeyboardService : InputMethodService() {
             keyboardMode,
             maxButtonInOneRow,
             onCapsChange = { isCaps = it; applyKeyboard() },
-            onModeChange = { onModeChange(it) },
-            onAlphabetChange = { onAlphabetChange() })
+            onModeChange = { onModeChange(it) })
     }
 
     private fun makeEmojiView(): LinearLayout {
@@ -305,31 +304,38 @@ class MyKeyboardService : InputMethodService() {
     }
 
     private fun applyInsetsNowAndOnChange(view: View) {
-        ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-            val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-
-            if (bottomPadding == null) {
-                bottomPadding = nav.bottom + 25
-            }
-
-            v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding!!)
-            insets // don't consume
+        if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Enable_Off) {
+            return
         }
 
-        view.doOnAttach {
-            val rootInsets = ViewCompat.getRootWindowInsets(it) ?: return@doOnAttach
-            val nav = rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+        if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_AllEnabled || context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Enable_1) {
+            ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+                val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
-            if (bottomPadding == null) {
-                bottomPadding = nav.bottom + 25
+                if (bottomPadding == null) {
+                    bottomPadding = nav.bottom + 25
+                }
+
+                v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding!!)
+                insets // don't consume
             }
+        }
 
-            it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, bottomPadding!!)
+        if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_AllEnabled || context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Enable_2) {
+            view.doOnAttach {
+                val rootInsets = ViewCompat.getRootWindowInsets(it) ?: return@doOnAttach
+                val nav = rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+                if (bottomPadding == null) {
+                    bottomPadding = nav.bottom + 25
+                }
+
+                it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, bottomPadding!!)
+            }
         }
 
         ViewCompat.requestApplyInsets(view)
     }
-
 
     fun getLanguage(): String {
         if (current_writingSystem != WritingSystem.Bitik) {

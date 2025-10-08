@@ -21,7 +21,7 @@ object SettingsManager {
 
     // --- Properties ---
     var Context.keyboardVariant: BitikVariant
-        get() = prefs().getEnum(BitikVariant.KEY, BitikVariant.CLASSIC)
+        get() = prefs().getEnum(BitikVariant.KEY, BitikVariant.Modern)
         set(v) = prefs().setEnum(BitikVariant.KEY, v)
 
     var Context.bitikDialect: BitikDialect
@@ -87,4 +87,8 @@ object SettingsManager {
     var Context.writingSystem: WritingSystem
         get() = prefs().getEnum(WritingSystem.KEY, WritingSystem.Bitik)
         set(v) = prefs().setEnum(WritingSystem.KEY, v)
+
+    var Context.navBarPaddingSolution: NavBarPaddingSolution
+        get() = prefs().getEnum(NavBarPaddingSolution.KEY, NavBarPaddingSolution.Solution_AllEnabled)
+        set(v) = prefs().setEnum(NavBarPaddingSolution.KEY, v)
 }

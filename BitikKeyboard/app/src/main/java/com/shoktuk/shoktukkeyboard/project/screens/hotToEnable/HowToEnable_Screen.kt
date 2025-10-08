@@ -1,16 +1,24 @@
 import android.content.Intent
 import android.provider.Settings
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -23,73 +31,123 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.data.NavBarPaddingSolution
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.navBarPaddingSolution
+import com.shoktuk.shoktukkeyboard.project.screens.settings.CenteredDropdownPopup
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Composable
 fun HowToEnable_Screen() {
     val context = LocalContext.current
 
-    Box(
-        modifier = Modifier
+    Column(
+        Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
             .padding(16.dp)
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
+        // Screen Header
+        Text(
+            text = "hte_HowToEnable".localized("loc_howToEnable", context),
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.onBackground,
+            modifier = Modifier.fillMaxWidth(),
+            textAlign = TextAlign.Start
+        )
+
+        // Step 1: Activate Keyboard
         Column(
-            modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp)
+            modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp), horizontalAlignment = Alignment.Start
         ) {
-            // Screen Header
             Text(
-                text = "hte_HowToEnable".localized("loc_howToEnable", context),
-                style = MaterialTheme.typography.titleLarge,
+                text = "hte_ActivateShoktukKeyboard".localized("loc_howToEnable", context),
+                style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
-
-            // Step 1: Activate Keyboard
-            Column(
-                modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp), horizontalAlignment = Alignment.Start
+            Button(
+                onClick = {
+                    val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
+                    context.startActivity(intent)
+                }, modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "hte_ActivateShoktukKeyboard".localized("loc_howToEnable", context),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Start
-                )
-                Button(
-                    onClick = {
-                        val intent = Intent(Settings.ACTION_INPUT_METHOD_SETTINGS)
-                        context.startActivity(intent)
-                    }, modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        text = "hte_openKeyboardSettings".localized("loc_howToEnable", context), modifier = Modifier.fillMaxWidth(), fontSize = 20.sp, textAlign = TextAlign.Center
-                    )
-                }
-            }
-
-            // Step 2: Switch to the Keyboard
-            Column(
-                modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp), horizontalAlignment = Alignment.Start
-            ) {
-                Text(
-                    text = "hte_ChangeTheLanguage".localized("loc_howToEnable", context),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Start
-                )
-                Image(
-                    painter = painterResource(id = R.drawable.hte_change_keyboard), contentDescription = "Screenshot of the keyboard", modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
+                    text = "hte_openKeyboardSettings".localized("loc_howToEnable", context), modifier = Modifier.fillMaxWidth(), fontSize = 20.sp, textAlign = TextAlign.Center
                 )
             }
         }
+
+        Column(
+            modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp), horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = "hte_ChangeTheLanguage".localized("loc_howToEnable", context),
+                style = MaterialTheme.typography.titleMedium,
+                color = MaterialTheme.colorScheme.onBackground,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start
+            )
+            Image(
+                painter = painterResource(id = R.drawable.hte_change_keyboard), contentDescription = "Screenshot of the keyboard", modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(25.dp))
+            )
+        }
+
+        NavBarPaddingSolutionView()
     }
 }
+
+@Composable
+fun NavBarPaddingSolutionView() {
+    val context = LocalContext.current
+
+    Surface(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        tonalElevation = 0.dp,
+        shadowElevation = 0.dp,
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+        color = MaterialTheme.colorScheme.secondaryContainer
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            Column(
+                modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.secondary, modifier = Modifier.size(36.dp)
+                )
+            }
+
+            Text(
+                text = "Эгер сизде ушундай бош аралык болсо же баскычтоп кирип кетсе, бул чечимдерди колдонуп көрүңүз",
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Start,
+                color = MaterialTheme.colorScheme.secondary
+            )
+
+            CenteredDropdownPopup(
+                label = "Бош аралык чечими", options = NavBarPaddingSolution.entries, selected = context.navBarPaddingSolution, onSelect = { alpha ->
+                context.navBarPaddingSolution = alpha
+            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+            )
+
+            Image(
+                painter = painterResource(id = R.drawable.navbar_freespace), contentDescription = "Screenshot of the keyboard", modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(25.dp))
+            )
+        }
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable
