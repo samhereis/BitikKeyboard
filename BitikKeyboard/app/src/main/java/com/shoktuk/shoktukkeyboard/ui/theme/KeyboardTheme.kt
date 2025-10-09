@@ -10,7 +10,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
-import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
+import com.shoktuk.shoktukkeyboard.keyboard.KeyboardViewControllerBase
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 
 data class ButtonStyle(
@@ -26,7 +26,7 @@ object KeyboardTheme {
     // 4 = soft tamga key bg
     // 5 = special tamga key bg
     // 6 = system key bg
-    private val colorIndexes_Light = listOf(
+    val colorIndexes_Light = listOf(
         "#f1f0f7", // 0 container
         "#ffffff", // 1 key bg
         "#1B1B17", // 2 key text
@@ -36,7 +36,7 @@ object KeyboardTheme {
         "#8a90a5",      // 6 = system key bg
         "#1B1B17",      // 7 = system key text
     )
-    private val colorIndexes_Dark = listOf(
+    val colorIndexes_Dark = listOf(
         "#1e1f25", // 0 container
         "#33343a", // 1 key bg
         "#fcfaff", // 2 key text
@@ -72,7 +72,7 @@ object KeyboardTheme {
     const val ENTER_DONE_ICON_FILE = "icons/enter_done_icon.png"
     const val ENTER_NEXT_ICON_FILE = "icons/enter_next_icon.png"
 
-    private fun isNight(): Boolean = (MyKeyboardService.context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+    private fun isNight(): Boolean = (KeyboardViewControllerBase.context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
     fun getColor(index: Int): String = (if (isNight()) colorIndexes_Dark else colorIndexes_Light)[index]
 
@@ -145,7 +145,7 @@ object KeyboardTheme {
     }
 
     fun getLetterButtonStyle_Normal(context: Context, showTranscription: Boolean = false): ButtonStyle {
-        val textSizeSp = if (!showTranscription || MyKeyboardService.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
+        val textSizeSp = if (!showTranscription || KeyboardViewControllerBase.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
         else getLetterButtonTextSize(context)
 
         return ButtonStyle(
@@ -154,10 +154,10 @@ object KeyboardTheme {
     }
 
     fun getLetterButtonStyle_UpperCase(context: Context, showTranscription: Boolean = false): ButtonStyle {
-        val textSizeSp = if (!showTranscription || MyKeyboardService.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
+        val textSizeSp = if (!showTranscription || KeyboardViewControllerBase.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
         else getLetterButtonTextSize(context)
 
-        val textColorHex = if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) getColor(2)
+        val textColorHex = if (KeyboardViewControllerBase.current_writingSystem == WritingSystem.Latin) getColor(2)
         else getColor(3)
 
         return ButtonStyle(

@@ -2,7 +2,6 @@ package com.shoktuk.shoktukkeyboard.project.screens.settings
 
 import NavBarPaddingSolutionView
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -29,25 +28,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
-import com.shoktuk.shoktukkeyboard.project.data.Coloring
+import com.shoktuk.shoktukkeyboard.project.data.ColoringStatus
 import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
-import com.shoktuk.shoktukkeyboard.project.data.NavBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
@@ -60,7 +55,6 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.navBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.sounds
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.vibrations
@@ -241,8 +235,8 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                 )
 
                 EnumSwitchSetting(
-                    label = "Түстөө", selected = coloring, optionOn = Coloring.On, optionOff = Coloring.Off, onSelect = {
-                        context.coloring = if (it == Coloring.On) Coloring.On else Coloring.Off
+                    label = "Түстөө", selected = coloring, optionOn = ColoringStatus.On, optionOff = ColoringStatus.Off, onSelect = {
+                        context.coloring = if (it == ColoringStatus.On) ColoringStatus.On else ColoringStatus.Off
                         coloring = context.coloring
                     }, modifier = Modifier.fillMaxWidth()
                 )

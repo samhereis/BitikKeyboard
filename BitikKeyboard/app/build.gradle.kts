@@ -37,45 +37,48 @@ android {
 }
 
 dependencies {
-    // Core & App Compat
+    // ── Core & AppCompat
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime.ktx)
-    implementation(libs.androidx.lifecycle.service)
-    implementation(libs.material)
 
-    // Compose Bill of Materials (BOM)
+    // ── Compose BOM
     implementation(platform(libs.androidx.compose.bom))
 
-    // Compose UI
+    // ── Compose UI
+    implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.foundation)
-    implementation(libs.androidx.ui.tooling)
-    implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.activity.compose)
 
-    // Compose Material 3
+    // Tooling: preview at runtime, inspector only in debug
+    implementation(libs.androidx.ui.tooling.preview)
+    debugImplementation(libs.androidx.ui.tooling)
+
+    // ── Material 3
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.material.icons.extended)
+    implementation(libs.material)
 
-    // Compose Navigation & ViewModel
+    // ── Navigation & ViewModel
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // Other Dependencies
-    implementation(libs.flexbox)
-    implementation(libs.gson)
-    implementation(libs.hilt.android)
-    implementation(libs.wrapper.android)
-    implementation(libs.androidx.datastore.preferences)
-    implementation(libs.kotlin.csv.jvm)
-    implementation(libs.androidx.room.ktx)
+    // ── Media3
     implementation(libs.androidx.media3.exoplayer)
     implementation(libs.androidx.media3.ui)
 
-    // Testing
-    implementation(libs.androidx.monitor)
-    implementation(libs.androidx.junit.ktx)
+    // ── Other
+    implementation(libs.flexbox)
+    implementation(libs.gson)
+    implementation(libs.hilt.android)
+    implementation(libs.wrapper.android)            // your QuickJS wrapper alias
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.kotlin.csv.jvm)
+    implementation(libs.androidx.room.ktx)
+
+    // ── Testing (scoped properly)
+    testImplementation(libs.androidx.junit.ktx)
+    androidTestImplementation(libs.androidx.monitor)
 }
