@@ -17,9 +17,6 @@ object KeyboardStyle {
     val keySidePadding: Dp = 3.dp
     val buttonCornerRadius: Dp = 9.dp
     val buttonFont: TextStyle = TextStyle(fontSize = 20.sp)
-    val buttonFont_NoHint: TextStyle = TextStyle(fontSize = 24.sp)
-    val buttonFont_NonBitik_Shift: TextStyle = TextStyle(fontSize = 20.sp)
-    var maxRowElementsCount: Double = 10.25
 
     @Composable
     fun rowHeight(): Dp {
@@ -32,18 +29,18 @@ object KeyboardStyle {
     fun keyWidth(): Dp {
         val cfg = LocalConfiguration.current
         val w = cfg.screenWidthDp.dp
-        return w / maxRowElementsCount.toFloat()
+        return w / KeyboardViewControllerBase.maxRowElementsCount.toFloat()
     }
 
     @Composable
     fun colors(): List<Color> = listOf(
-        MaterialTheme.colorScheme.surface,
-        MaterialTheme.colorScheme.surfaceVariant,
+        MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
+        MaterialTheme.colorScheme.surfaceContainerHigh,
         MaterialTheme.colorScheme.onSurface,
         MaterialTheme.colorScheme.onSurface,
-        MaterialTheme.colorScheme.secondaryContainer,
-        MaterialTheme.colorScheme.tertiaryContainer,
-        MaterialTheme.colorScheme.outlineVariant
+        MaterialTheme.colorScheme.inversePrimary,
+        MaterialTheme.colorScheme.errorContainer,
+        MaterialTheme.colorScheme.primaryContainer
     )
 
     @Composable

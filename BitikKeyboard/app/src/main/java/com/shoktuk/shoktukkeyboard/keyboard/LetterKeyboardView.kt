@@ -15,7 +15,7 @@ fun LetterKeyboardView(
 ) {
     val isStandardWidth = KeyboardViewControllerBase.maxRowElementsCount < 11.0 || KeyboardViewControllerBase.keyboardMode == KeyboardState.Symbols
     val keyWidth = if (isStandardWidth) KeyboardStyle.keyWidth() else KeyboardStyle.keyWidth() / 1.025f
-    val systemKeyWidth = if (isStandardWidth) KeyboardStyle.keyWidth() * 1.5f else KeyboardStyle.keyWidth()
+    val systemKeyWidth = if (isStandardWidth) KeyboardStyle.keyWidth() * 2f else KeyboardStyle.keyWidth()
 
     FixedKeyboardRow(
         keys = row1, keyWidth = keyWidth, onKeyPress = onKeyPress, isShiftEnabled = isShiftEnabled
@@ -24,14 +24,12 @@ fun LetterKeyboardView(
         keys = row2, keyWidth = keyWidth, onKeyPress = onKeyPress, isShiftEnabled = isShiftEnabled
     )
 
-    Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(KeyboardStyle.keySpacingDp)
-    ) {
+    Row(horizontalArrangement = Arrangement.Center) {
         KeyButton(
+            Modifier.weight(1f),
             key = null,
             title = null,
             isSystem = true,
-            width = systemKeyWidth,
             backgroundColorIndex = 6,
             isShiftEnabled = isShiftEnabled,
             onKeyPress = { isShiftEnabled.value = !isShiftEnabled.value },
@@ -58,10 +56,10 @@ fun LetterKeyboardView(
         }
 
         KeyButton(
+            Modifier.weight(1f),
             key = null,
             title = null,
             isSystem = true,
-            width = systemKeyWidth,
             backgroundColorIndex = 6,
             isShiftEnabled = isShiftEnabled,
             onKeyPress = { onKeyPress("delete") },
@@ -74,7 +72,7 @@ fun FixedKeyboardRow(
     keys: List<KeyboardKey>, keyWidth: Dp, onKeyPress: (String) -> Unit, isShiftEnabled: MutableState<Boolean>
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(KeyboardStyle.keySpacingDp)
+        modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
     ) {
         Spacer(Modifier.weight(1f, fill = false))
         keys.forEach { key ->

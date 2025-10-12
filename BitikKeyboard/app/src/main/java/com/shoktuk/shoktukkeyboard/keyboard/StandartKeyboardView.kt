@@ -1,6 +1,7 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,17 +41,10 @@ fun StandardKeyboardView(
 
     LaunchedEffect(keyboardState.value) { /* no-op to mirror onChange(of:) */ }
 
-    //Todo: handle fonts
-    //LaunchedEffect(isShiftEnabled) {
-    //    if (KeyboardControllerBase.keyboardMode != KeyboardMode.Main) {
-    //        KeyboardControllerBase.fontScale =
-    //            if (isShiftEnabled) KeyboardStyle.buttonFont_NonBitik_Shift
-    //            else KeyboardStyle.buttonFont_NoHint
-    //    }
-    //}
-
     Column(
-        modifier = modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(KeyboardStyle.rowSpacingDp)
+        modifier = modifier
+            .fillMaxWidth()
+            .background(KeyboardStyle.getColor(0)), verticalArrangement = Arrangement.spacedBy(KeyboardStyle.rowSpacingDp)
     ) {
         when {
             showEmojis -> {
@@ -123,21 +117,7 @@ fun StandardKeyboardView(
 
 @Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO)
 @Composable
-fun StandardKeyboardViewPreview_Light() {
-    val rows = KeyboardRowsModel()
-    val ks = remember { mutableStateOf(KeyboardState.Main) }
-    MaterialTheme {
-        Column(Modifier.fillMaxWidth()) {
-            Spacer(Modifier.weight(1f))
-            StandardKeyboardView(
-                rowsModel = rows, keyboardState = ks, onKeyPress = {})
-        }
-    }
-}
-
-@Preview(showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES)
-@Composable
-fun StandardKeyboardViewPreview_Dark() {
+fun StandardKeyboardViewPreview() {
     val rows = KeyboardRowsModel()
     val ks = remember { mutableStateOf(KeyboardState.Main) }
     MaterialTheme {
