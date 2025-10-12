@@ -40,6 +40,10 @@ object SettingsManager {
         get() = prefs().getEnum(WordSeparator.KEY, WordSeparator.NoSpace)
         set(v) = prefs().setEnum(WordSeparator.KEY, v)
 
+    var Context.ajVariant: AJ_Letter_Variant
+        get() = prefs().getEnum(AJ_Letter_Variant.KEY, AJ_Letter_Variant.Default)
+        set(v) = prefs().setEnum(AJ_Letter_Variant.KEY, v)
+
     var Context.ebVariant: EB_Letter_Variant
         get() = prefs().getEnum(EB_Letter_Variant.KEY, EB_Letter_Variant.Default)
         set(v) = prefs().setEnum(EB_Letter_Variant.KEY, v)
@@ -56,13 +60,17 @@ object SettingsManager {
         get() = prefs().getEnum(ESH_Letter_Variant.KEY, ESH_Letter_Variant.Default)
         set(v) = prefs().setEnum(ESH_Letter_Variant.KEY, v)
 
-    var Context.kirilisaStatus: Kirilisa_Status
-        get() = prefs().getEnum(Kirilisa_Status.KEY, Kirilisa_Status.Off)
-        set(v) = prefs().setEnum(Kirilisa_Status.KEY, v)
-
     var Context.latinStatus: Latin_Status
         get() = prefs().getEnum(Latin_Status.KEY, Latin_Status.On)
         set(v) = prefs().setEnum(Latin_Status.KEY, v)
+
+    var Context.arabicStatus: Arabic_Status
+        get() = prefs().getEnum(Arabic_Status.KEY, Arabic_Status.Off)
+        set(v) = prefs().setEnum(Arabic_Status.KEY, v)
+
+    var Context.kirilisaStatus: Kirilisa_Status
+        get() = prefs().getEnum(Kirilisa_Status.KEY, Kirilisa_Status.Off)
+        set(v) = prefs().setEnum(Kirilisa_Status.KEY, v)
 
     var Context.coloring: Coloring
         get() = prefs().getEnum(Coloring.KEY, Coloring.On)

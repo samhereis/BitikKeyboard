@@ -19,10 +19,13 @@ import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed_Alt
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.inputText_LastWord
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.text_Original
+import com.shoktuk.shoktukkeyboard.project.data.Arabic_Status
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.screens.settings.loadSavedStrings
@@ -77,15 +80,17 @@ object TopRowBuilder_Old {
         }
 
         var alphabetLabel = "𐰌"
-
-        if (context.latinStatus == Latin_Status.Off && context.kirilisaStatus == Kirilisa_Status.Off) {
+        if (context.latinStatus == Latin_Status.Off && context.kirilisaStatus == Kirilisa_Status.Off && context.arabicStatus == Arabic_Status.Off) {
             alphabetLabel = "😎"
         } else {
-            if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) {
+            if (context.writingSystem == WritingSystem.Latin) {
                 alphabetLabel = "А"
             }
-            if (MyKeyboardService.current_writingSystem == WritingSystem.Kiril) {
+            if (context.writingSystem  == WritingSystem.Kiril) {
                 alphabetLabel = "ж"
+            }
+            if (context.writingSystem  == WritingSystem.Arab) {
+                alphabetLabel = "س"
             }
         }
 

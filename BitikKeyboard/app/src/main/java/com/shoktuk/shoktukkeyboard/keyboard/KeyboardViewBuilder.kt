@@ -5,22 +5,26 @@ import android.view.Gravity
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.Companion.context
+import com.shoktuk.shoktukkeyboard.project.data.AJ_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ajVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
 object KeyboardViewBuilder {
+    var aj_Def = context.ajVariant == AJ_Letter_Variant.Default
     var eb_Def = context.ebVariant == EB_Letter_Variant.Default
     var en_Def = context.enVariant == EN_Letter_Variant.Default
     var as_Def = context.asVariant == AS_Letter_Variant.Default
@@ -35,6 +39,7 @@ object KeyboardViewBuilder {
         onCapsChange: (Boolean) -> Unit,
         onModeChange: (KeyboardMode) -> Unit,
     ): LinearLayout {
+        aj_Def = context.ajVariant == AJ_Letter_Variant.Default
         eb_Def = context.ebVariant == EB_Letter_Variant.Default
         en_Def = context.enVariant == EN_Letter_Variant.Default
         as_Def = context.asVariant == AS_Letter_Variant.Default
@@ -88,6 +93,10 @@ object KeyboardViewBuilder {
     ): LinearLayout {
         var keybWidth = KeyboardTheme.getLetterButtonWidth(context, maxKeyCount)
         var systemKeybWidth = KeyboardTheme.getSystemButtonWidth(service)
+
+        var isBitik = MyKeyboardService.current_writingSystem == WritingSystem.Bitik
+        var isLeftSide = isBitik || MyKeyboardService.current_writingSystem == WritingSystem.Arab
+
         if (MyKeyboardService.maxButtonInOneRow > 10) {
             systemKeybWidth = keybWidth
         }
@@ -112,9 +121,16 @@ object KeyboardViewBuilder {
                 service, it, isCaps, buttonHeight, maxKeyCount, onCapsChange, KeyboardTheme.getSystemButtonStyle(service)
             )
 
-            view.setOnLongClickListener {
-                onModeChange.invoke(KeyboardMode.SavedStrings)
-                true
+            if (MyKeyboardService.current_writingSystem == WritingSystem.Arab) {
+                view.setOnClickListener {
+                    onModeChange.invoke(KeyboardMode.SavedStrings)
+                    true
+                }
+            } else {
+                view.setOnLongClickListener {
+                    onModeChange.invoke(KeyboardMode.SavedStrings)
+                    true
+                }
             }
 
             val params = LinearLayout.LayoutParams(
@@ -166,6 +182,10 @@ object KeyboardViewBuilder {
                 systemKeybWidth, buttonHeight
             )
             view.layoutParams = params
+
+            if (isLeftSide) {
+                view.scaleX = -1f
+            }
             rowLayout.addView(view)
         }
         return rowLayout
@@ -176,6 +196,22 @@ object KeyboardViewBuilder {
 
         if (mode == KeyboardMode.Main) {
             if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
+                if (context.keyboardVariant != BitikVariant.CLASSIC) {
+                    if (key.name == "y" && !aj_Def) {
+                        keyToSet = key.copy(
+                            lowercase = if (context.ajVariant == AJ_Letter_Variant.Default) "𐰖" else "𐰗", lowerCaseHold = if (context.ajVariant == AJ_Letter_Variant.Default) "𐰗" else null
+                        )
+                        return keyToSet
+                    }
+
+                    if (key.name == "j" && !aj_Def) {
+                        keyToSet = key.copy(
+                            lowercase = if (context.ajVariant == AJ_Letter_Variant.Default) "𐰳" else "𐰖", lowerCaseHold = if (context.ajVariant == AJ_Letter_Variant.Default) null else "𐰳"
+                        )
+                        return keyToSet
+                    }
+                }
+
                 if (key.name == "b" && !eb_Def) {
                     keyToSet = getEB(keyToSet)
                     return keyToSet
@@ -218,6 +254,12 @@ object KeyboardViewBuilder {
         }
 
         return keyToSet
+    }
+
+    private fun getAJ(key: KeyEntry): KeyEntry {
+        return key.copy(
+            uppercase = "𐰋", upperCaseHold = "𐰌"
+        )
     }
 
     private fun getEB(key: KeyEntry): KeyEntry {

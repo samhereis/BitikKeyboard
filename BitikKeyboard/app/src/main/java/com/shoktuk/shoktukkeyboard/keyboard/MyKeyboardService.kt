@@ -13,12 +13,14 @@ import com.shoktuk.shoktukkeyboard.emoji.EmojisData
 import com.shoktuk.shoktukkeyboard.emoji.EmojisViewBuilder
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.inputText_LastWord
+import com.shoktuk.shoktukkeyboard.project.data.Arabic_Status
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.NavBarPaddingSolution
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
@@ -204,12 +206,13 @@ class MyKeyboardService : InputMethodService() {
     }
 
     private fun onAlphabetChange() {
-        if (context.latinStatus == Latin_Status.Off && context.kirilisaStatus == Kirilisa_Status.Off) {
+        if (context.latinStatus == Latin_Status.Off && context.kirilisaStatus == Kirilisa_Status.Off && context.arabicStatus == Arabic_Status.Off) {
             context.writingSystem = WritingSystem.Bitik
             keyboardMode = KeyboardMode.Emojis
         } else {
             val availableLanguages = mutableListOf<WritingSystem>(WritingSystem.Bitik)
             if (context.latinStatus == Latin_Status.On) availableLanguages.add(WritingSystem.Latin)
+            if (context.arabicStatus == Arabic_Status.On) availableLanguages.add(WritingSystem.Arab)
             if (context.kirilisaStatus == Kirilisa_Status.On) availableLanguages.add(WritingSystem.Kiril)
 
             var currentLanguageIndex = availableLanguages.indexOf(context.writingSystem)
@@ -231,20 +234,14 @@ class MyKeyboardService : InputMethodService() {
 
         if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
             if (context.keyboardVariant != BitikVariant.SAMAGAN) {
-                if (topBar_old == null) {
-                    topBar_old = TopRowBuilder_Old.createTopRow(this, systemKeybHeight, current_textTranscription, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
-                }
+                topBar_old = TopRowBuilder_Old.createTopRow(this, systemKeybHeight, current_textTranscription, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
                 topBar = topBar_old
             } else {
-                if (topBar_modern == null) {
-                    topBar_modern = TopRowBuilder.createTopRow(this, systemKeybHeight, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
-                }
+                topBar_modern = TopRowBuilder.createTopRow(this, systemKeybHeight, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
                 topBar = topBar_modern
             }
         } else {
-            if (topBar_noTR == null) {
-                topBar_noTR = TopRowBuilder_Alphabet.createTopRow(this, systemKeybHeight, TextTranscription.Off, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
-            }
+            topBar_noTR = TopRowBuilder_Alphabet.createTopRow(this, systemKeybHeight, TextTranscription.Off, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
             topBar = topBar_noTR
         }
 
@@ -277,6 +274,8 @@ class MyKeyboardService : InputMethodService() {
             maxButtonInOneRow,
             onCapsChange = { isCaps = it; applyKeyboard() },
             onModeChange = { onModeChange(it) })
+
+        TopRowBuilder_Old.onTypedListener?.invoke()
     }
 
     private fun makeEmojiView(): LinearLayout {

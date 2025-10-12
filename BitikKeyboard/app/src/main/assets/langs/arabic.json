@@ -1,0 +1,231 @@
+{
+  "languageCode": "𐱄",
+  "languageColor": "#800d1a",
+  "spaceKey": ":",
+  "directionality": 1,
+  "rows": [
+    [
+      {
+        "name": "qı, ıq",
+        "lowercase": "ق",
+        "lowerCaseHold": "ح",
+        "lowerCaseRomanization_Alt": "q.h",
+        "uppercase": "ق",
+        "upperCaseHold": "ح",
+        "upperCaseRomanization_Alt": "q.h"
+      },
+      {
+        "name": "ş",
+        "lowercase": "ش",
+        "lowerCaseRomanization_Alt": "ş",
+        "uppercase": "ش",
+        "upperCaseRomanization_Alt": "ş"
+      },
+      {
+        "name": "a",
+        "lowercase": "ە",
+        "lowerCaseRomanization_Alt": "e",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "ە",
+        "upperCaseRomanization_Alt": "e",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "р",
+        "lowercase": "ر",
+        "lowerCaseRomanization_Alt": "r",
+        "uppercase": "ر",
+        "upperCaseRomanization_Alt": "r"
+      },
+      {
+        "name": "t",
+        "lowercase": "ت",
+        "lowerCaseRomanization_Alt": "t",
+        "uppercase": "ت",
+        "upperCaseRomanization_Alt": "t"
+      },
+      {
+        "name": "y",
+        "lowercase": "ي",
+        "lowerCaseRomanization_Alt": "y",
+        "uppercase": "ي",
+        "upperCaseRomanization_Alt": "y"
+      },
+      {
+        "name": "o, u",
+        "lowercase": "ۇ",
+        "lowerCaseRomanization_Alt": "u",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "ۇ",
+        "upperCaseRomanization_Alt": "u",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "i",
+        "lowercase": "ئ",
+        "lowerCaseRomanization_Alt": "i",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "ئ",
+        "upperCaseRomanization_Alt": "i",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "o/u",
+        "lowercase": "و",
+        "lowerCaseRomanization_Alt": "o",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "و",
+        "upperCaseRomanization_Alt": "o",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "p",
+        "lowercase": "پ",
+        "lowerCaseHold": "ف",
+        "lowerCaseRomanization_Alt": "p.f",
+        "uppercase": "پ",
+        "upperCaseHold": "ف",
+        "upperCaseRomanization_Alt": "p.f"
+      }
+    ],
+    [
+      {
+        "name": "oq, uq",
+        "lowercase": "ا",
+        "lowerCaseRomanization_Alt": "a",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "ا",
+        "upperCaseRomanization_Alt": "a",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "s",
+        "lowercase": "س",
+        "lowerCaseRomanization_Alt": "s",
+        "uppercase": "س",
+        "upperCaseRomanization_Alt": "s"
+      },
+      {
+        "name": "d",
+        "lowercase": "د",
+        "lowerCaseRomanization_Alt": "d",
+        "uppercase": "د",
+        "upperCaseRomanization_Alt": "d"
+      },
+      {
+        "name": "nt, nç",
+        "lowercase": "ۆ",
+        "lowerCaseRomanization_Alt": "ü",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "ۆ",
+        "upperCaseRomanization_Alt": "ü",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "g",
+        "lowercase": "گ",
+        "lowerCaseRomanization_Alt": "g",
+        "uppercase": "گ",
+        "upperCaseRomanization_Alt": "g"
+      },
+      {
+        "name": "rt, lt",
+        "lowercase": "ٶ",
+        "lowerCaseRomanization_Alt": "ö",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "ٶ",
+        "upperCaseRomanization_Alt": "ö",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "j",
+        "lowercase": "ج",
+        "lowerCaseRomanization_Alt": "j",
+        "uppercase": "ج",
+        "upperCaseRomanization_Alt": "j"
+      },
+      {
+        "name": "k",
+        "lowercase": "ک",
+        "lowerCaseRomanization_Alt": "k",
+        "uppercase": "ک",
+        "upperCaseRomanization_Alt": "k"
+      },
+      {
+        "name": "l",
+        "lowercase": "ل",
+        "lowerCaseRomanization_Alt": "l",
+        "uppercase": "ل",
+        "upperCaseRomanization_Alt": "l"
+      },
+      {
+        "name": "ğ",
+        "lowercase": "ع",
+        "lowerCaseRomanization_Alt": "ğ",
+        "uppercase": "ع",
+        "upperCaseRomanization_Alt": "ğ"
+      }
+    ],
+    [
+      {
+        "name": "Shift"
+      },
+      {
+        "name": "z",
+        "lowercase": "ز",
+        "lowerCaseRomanization_Alt": "z",
+        "uppercase": "ز",
+        "upperCaseRomanization_Alt": "z"
+      },
+      {
+        "name": "ñ",
+        "lowercase": "ڭ",
+        "lowerCaseRomanization_Alt": "ñ",
+        "uppercase": "ڭ",
+        "upperCaseRomanization_Alt": "ñ"
+      },
+      {
+        "name": "ç",
+        "lowercase": "چ",
+        "lowerCaseRomanization_Alt": "ç",
+        "uppercase": "چ",
+        "upperCaseRomanization_Alt": "ç"
+      },
+      {
+        "name": "ök, ük",
+        "lowercase": "ى",
+        "lowerCaseRomanization_Alt": "ı",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "ى",
+        "upperCaseRomanization_Alt": "ı",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "b",
+        "lowercase": "ب",
+        "lowerCaseHold": "ۋ",
+        "lowerCaseRomanization_Alt": "b.v",
+        "uppercase": "ب",
+        "upperCaseHold": "ۋ",
+        "upperCaseRomanization_Alt": "b.v"
+      },
+      {
+        "name": "n",
+        "lowercase": "ن",
+        "lowerCaseRomanization_Alt": "n",
+        "uppercase": "ن",
+        "upperCaseRomanization_Alt": "n"
+      },
+      {
+        "name": "m",
+        "lowercase": "م",
+        "lowerCaseRomanization_Alt": "m",
+        "uppercase": "م",
+        "upperCaseRomanization_Alt": "m"
+      },
+      {
+        "name": "Del"
+      }
+    ]
+  ]
+}

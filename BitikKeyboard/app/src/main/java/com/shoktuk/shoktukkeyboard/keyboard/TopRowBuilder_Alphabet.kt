@@ -18,11 +18,15 @@ import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.Companion.context
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.inputText_LastWord
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.text_Original
+import com.shoktuk.shoktukkeyboard.project.data.Arabic_Status
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
@@ -42,7 +46,21 @@ object TopRowBuilder_Alphabet {
     fun createTopRow(
         service: InputMethodService, buttonHeight: Int, mode: TextTranscription, onModeChange: (KeyboardMode) -> Unit, onAlphabetChange: () -> Unit
     ): LinearLayout {
-        val alphabetLabel = if (context.latinStatus == Latin_Status.Off && context.kirilisaStatus == Kirilisa_Status.Off) "😎" else "А"
+        var alphabetLabel = "𐰌"
+        if (context.latinStatus == Latin_Status.Off && context.kirilisaStatus == Kirilisa_Status.Off && context.arabicStatus == Arabic_Status.Off) {
+            alphabetLabel = "😎"
+        } else {
+            if (context.writingSystem == WritingSystem.Latin) {
+                alphabetLabel = "А"
+            }
+            if (context.writingSystem  == WritingSystem.Kiril) {
+                alphabetLabel = "ж"
+            }
+            if (context.writingSystem  == WritingSystem.Arab) {
+                alphabetLabel = "س"
+            }
+        }
+
         val jsTranscriber = JSTranscriber_Alphabet(service)
 
         val rowLayout = LinearLayout(service).apply {

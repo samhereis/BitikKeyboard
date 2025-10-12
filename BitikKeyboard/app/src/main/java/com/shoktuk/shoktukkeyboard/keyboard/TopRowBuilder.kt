@@ -8,10 +8,13 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
+import com.shoktuk.shoktukkeyboard.project.data.Arabic_Status
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.screens.settings.loadSavedStrings
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
@@ -31,12 +34,19 @@ object TopRowBuilder {
             }
         }
 
-        val alphabetLabel = when {
-            MyKeyboardService.context.latinStatus == Latin_Status.Off && MyKeyboardService.context.kirilisaStatus == Kirilisa_Status.Off -> "😎"
-
-            MyKeyboardService.current_writingSystem == WritingSystem.Latin -> "А"
-            MyKeyboardService.current_writingSystem == WritingSystem.Kiril -> "ж"
-            else -> "𐰌"
+        var alphabetLabel = "𐰌"
+        if (MyKeyboardService.Companion.context.latinStatus == Latin_Status.Off && MyKeyboardService.Companion.context.kirilisaStatus == Kirilisa_Status.Off && MyKeyboardService.Companion.context.arabicStatus == Arabic_Status.Off) {
+            alphabetLabel = "😎"
+        } else {
+            if (MyKeyboardService.Companion.context.writingSystem == WritingSystem.Latin) {
+                alphabetLabel = "А"
+            }
+            if (MyKeyboardService.Companion.context.writingSystem  == WritingSystem.Kiril) {
+                alphabetLabel = "ж"
+            }
+            if (MyKeyboardService.Companion.context.writingSystem  == WritingSystem.Arab) {
+                alphabetLabel = "س"
+            }
         }
 
         val switchLanguageView = SystemKeyBuilder.systemButton_Text(

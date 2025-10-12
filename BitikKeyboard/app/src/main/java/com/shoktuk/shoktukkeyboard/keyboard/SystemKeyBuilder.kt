@@ -20,6 +20,8 @@ import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.toColorInt
 import androidx.core.widget.TextViewCompat
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
@@ -115,7 +117,16 @@ object SystemKeyBuilder {
         val root = newContainer(service, baseStyle, buttonHeight, maxKeyCount = maxKeyCount)
 
         val icon = when (key.name) {
-            "Shift" -> if (isCaps) KeyboardTheme.SHIFT_ICON_FILE_Filled else KeyboardTheme.SHIFT_ICON_FILE
+            "Shift" -> if (service.writingSystem == WritingSystem.Arab) {
+                KeyboardTheme.BOOKMARK_ICON
+            } else {
+                if (isCaps) {
+                    KeyboardTheme.SHIFT_ICON_FILE_Filled
+                } else {
+                    KeyboardTheme.SHIFT_ICON_FILE
+                }
+            }
+
             "Del" -> KeyboardTheme.DELETE_ICON_FILE
             else -> null
         }

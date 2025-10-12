@@ -40,6 +40,14 @@ enum class WordSeparator(val id: String) {
     }
 }
 
+enum class AJ_Letter_Variant(val id: String) {
+    Default("𐰳"), Ay("𐰖");
+
+    companion object {
+        const val KEY = "AJ_Letter_Variant"
+    }
+}
+
 enum class EB_Letter_Variant(val id: String) {
     Default("𐰌"), Second("𐰋");
 
@@ -72,19 +80,27 @@ enum class ESH_Letter_Variant(val id: String) {
     }
 }
 
-enum class Kirilisa_Status(val id: String) {
-    Off("Өчүк"), On("Жанык");
-
-    companion object {
-        const val KEY = "Kirilisa_Status"
-    }
-}
-
 enum class Latin_Status(val id: String) {
     Off("Өчүк"), On("Жанык");
 
     companion object {
         const val KEY = "Latin_Status"
+    }
+}
+
+enum class Arabic_Status(val id: String) {
+    Off("Өчүк"), On("Жанык");
+
+    companion object {
+        const val KEY = "Arabic_Status"
+    }
+}
+
+enum class Kirilisa_Status(val id: String) {
+    Off("Өчүк"), On("Жанык");
+
+    companion object {
+        const val KEY = "Kirilisa_Status"
     }
 }
 
@@ -113,7 +129,7 @@ enum class Sounds(val id: String) {
 }
 
 enum class WritingSystem(val id: String) {
-    Bitik("Bitik"), Latin("latin"), Kiril("kiril");
+    Bitik("Bitik"), Latin("latin"), Arab("arabic"), Kiril("kiril");
 
     companion object {
         const val KEY = "WritingSystem"

@@ -34,8 +34,9 @@ object BottomRowBuilder {
         service: InputMethodService, isCaps: Boolean, mode: KeyboardMode, buttonHeight: Int, onModeChange: (KeyboardMode) -> Unit,
     ): LinearLayout {
         var isBitik = MyKeyboardService.current_writingSystem == WritingSystem.Bitik
-        var comma = if (isBitik) "⹁ " else ", "
-        var comma_alt = if (isBitik) ", " else "⹁ "
+        var isLeftSide = isBitik || MyKeyboardService.current_writingSystem == WritingSystem.Arab
+        var comma = if (isLeftSide) "⹁ " else ", "
+        var comma_alt = if (isLeftSide) ", " else "⹁ "
         var dot = if (isBitik) "· " else ". "
         var dot_alt = if (isBitik) ". " else "· "
 

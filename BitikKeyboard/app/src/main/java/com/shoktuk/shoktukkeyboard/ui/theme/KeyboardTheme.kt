@@ -61,6 +61,7 @@ object KeyboardTheme {
 
     const val SHIFT_ICON_FILE = "icons/shift_icon.png"
     const val SHIFT_ICON_FILE_Filled = "icons/shiftfilled_icon.png"
+    const val BOOKMARK_ICON = "icons/bookmark_icon.png"
     const val DELETE_ICON_FILE = "icons/delete_icon.png"
     const val LANGUAGE_ICON_FILE = "icons/icon_language.png"
     const val SPACE_ICON_FILE = "icons/space_icon.png"
