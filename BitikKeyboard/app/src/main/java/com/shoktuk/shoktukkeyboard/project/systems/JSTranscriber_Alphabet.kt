@@ -24,14 +24,30 @@ class JSTranscriber_Alphabet(context: Context) {
     fun getTranscription(text: String): String = call(text)
 
     private fun call(input: String): String {
-        val s = input.escapeJs()
-        val code = """
+        return try {
+            val safeInput = input
+                .replace("\\", "\\\\")  // escape backslashes
+                .replace("\"", "\\\"")  // escape double quotes
+                .replace("`", "\\`")    // escape backticks
+                .replace("\n", "\\n")   // escape newlines
+                .replace("\r", "\\r")
+
+            val code = """
             (function(){
-              var t = new Transcrptiber_Old();
-              return t.GetTranscription("$s");
+              try {
+                var t = new Transcrptiber_Old();
+                return t.GetTranscription("$safeInput");
+              } catch (e) {
+                return "Error: " + e.message;
+              }
             })();
         """.trimIndent()
-        return jsCtx?.evaluate(code)?.toString() ?: input
+
+            jsCtx?.evaluate(code)?.toString() ?: input
+        } catch (e: Exception) {
+            // If JS context or evaluation fails, fall back safely
+            "Error: ${e.message ?: "Unknown error"}"
+        }
     }
 
     fun close() {
