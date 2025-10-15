@@ -61,7 +61,7 @@ fun SideMenuHeader(
 
         Column(Modifier.weight(1f)) {
             Text(
-                text = "Shoktuk Keyboard", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold), maxLines = 1, overflow = TextOverflow.Ellipsis
+                text = "Şoqtuq Bitik", style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold), maxLines = 1, overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = "by Samagan Davlatbek uulu", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1, overflow = TextOverflow.Ellipsis

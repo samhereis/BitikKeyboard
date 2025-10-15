@@ -114,10 +114,10 @@
       },
       {
         "name": "nt, nç",
-        "lowercase": "ۆ",
+        "lowercase": "ۉ",
         "lowerCaseRomanization_Alt": "ü",
         "backgroundColorIndex_lowercase": 4,
-        "uppercase": "ۆ",
+        "uppercase": "ۉ",
         "upperCaseRomanization_Alt": "ü",
         "backgroundColorIndex_uppercase": 4
       },
@@ -130,10 +130,10 @@
       },
       {
         "name": "rt, lt",
-        "lowercase": "ٶ",
+        "lowercase": "ۅ",
         "lowerCaseRomanization_Alt": "ö",
         "backgroundColorIndex_lowercase": 4,
-        "uppercase": "ٶ",
+        "uppercase": "ۅ",
         "upperCaseRomanization_Alt": "ö",
         "backgroundColorIndex_uppercase": 4
       },

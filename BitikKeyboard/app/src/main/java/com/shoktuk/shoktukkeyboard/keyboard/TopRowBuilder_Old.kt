@@ -86,10 +86,10 @@ object TopRowBuilder_Old {
             if (context.writingSystem == WritingSystem.Latin) {
                 alphabetLabel = "А"
             }
-            if (context.writingSystem  == WritingSystem.Kiril) {
+            if (context.writingSystem == WritingSystem.Kiril) {
                 alphabetLabel = "ж"
             }
-            if (context.writingSystem  == WritingSystem.Arab) {
+            if (context.writingSystem == WritingSystem.Arab) {
                 alphabetLabel = "س"
             }
         }
@@ -109,9 +109,7 @@ object TopRowBuilder_Old {
 
             onTypedListener.addOnTypedListener(lastWordContainer) {
                 lastWordContainer.post {
-                    updateLastWord(
-                        service, service.currentInputConnection, jsTranscriber, lastWordContainer, KeyboardTheme.getSystemButtonStyle(service)
-                    )
+                    updateLastWord(service.currentInputConnection, jsTranscriber, lastWordContainer, KeyboardTheme.getSystemButtonStyle(service))
                     lastWordContainer.requestLayout()
                     lastWordContainer.invalidate()
                 }
@@ -200,9 +198,7 @@ object TopRowBuilder_Old {
         }
     }
 
-    fun updateLastWord(
-        service: InputMethodService, inputConnection: InputConnection?, transcriber: JSTranscriber, container: LinearLayout?, buttonStyle: ButtonStyle?
-    ) {
+    fun updateLastWord(inputConnection: InputConnection?, transcriber: JSTranscriber, container: LinearLayout?, buttonStyle: ButtonStyle?) {
         val extraSeparators = "·.,⸮⹁:;!?()[]{}\"'"
 
         text_Original = inputConnection?.getTextBeforeCursor(100, 0)?.toString().orEmpty()

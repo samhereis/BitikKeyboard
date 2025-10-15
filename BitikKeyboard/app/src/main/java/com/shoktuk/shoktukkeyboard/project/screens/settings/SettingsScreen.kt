@@ -34,23 +34,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.shoktuk.shoktukkeyboard.project.data.AJ_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.ANG_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.Arabic_Status
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.Coloring
 import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.EK_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ajVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ekVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
@@ -79,9 +83,11 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
     var wordSeparator by remember { mutableStateOf(context.wordSeparator) }
 
     var ajVariant by remember { mutableStateOf(context.ajVariant) }
+    var angVariant by remember { mutableStateOf(context.angVariant) }
     var ebVariant by remember { mutableStateOf(context.ebVariant) }
     var eNariant by remember { mutableStateOf(context.enVariant) }
     var asVariant by remember { mutableStateOf(context.asVariant) }
+    var ekVariant by remember { mutableStateOf(context.ekVariant) }
     var eshVariant by remember { mutableStateOf(context.eshVariant) }
 
     var coloring by remember { mutableStateOf(context.coloring) }
@@ -185,16 +191,16 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
 
                 CenteredDropdownPopup(
                     label = "Битик түрү".localized("loc_settings", context), options = BitikVariant.entries, selected = keyboardVariant, onSelect = { variant ->
-                    keyboardVariant = variant
-                    context.keyboardVariant = variant
-                }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
+                        keyboardVariant = variant
+                        context.keyboardVariant = variant
+                    }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
                     label = "Битик диалект", options = BitikDialect.entries, selected = bitikDialect, onSelect = { alpha ->
-                    bitikDialect = alpha
-                    context.bitikDialect = alpha
-                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        bitikDialect = alpha
+                        context.bitikDialect = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 if (keyboardVariant != BitikVariant.SAMAGAN) {
@@ -215,9 +221,9 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
 
                 CenteredDropdownPopup(
                     label = "Эки чекит", options = WordSeparator.entries, selected = wordSeparator, onSelect = { alpha ->
-                    context.wordSeparator = alpha
-                    wordSeparator = context.wordSeparator
-                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        context.wordSeparator = alpha
+                        wordSeparator = context.wordSeparator
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
             }
         }
@@ -282,43 +288,61 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                 if (keyboardVariant != BitikVariant.CLASSIC) {
                     CenteredDropdownPopup(
                         label = "аЖ тамга", options = AJ_Letter_Variant.entries, selected = ajVariant, onSelect = { alpha ->
-                        ajVariant = alpha
-                        context.ajVariant = alpha
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                            ajVariant = alpha
+                            context.ajVariant = alpha
+                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                     )
                 }
 
                 CenteredDropdownPopup(
                     label = "эБ тамга", options = EB_Letter_Variant.entries, selected = ebVariant, onSelect = { alpha ->
-                    ebVariant = alpha
-                    context.ebVariant = alpha
-                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        ebVariant = alpha
+                        context.ebVariant = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
                     label = "эН тамга", options = EN_Letter_Variant.entries, selected = eNariant, onSelect = { alpha ->
-                    eNariant = alpha
-                    context.enVariant = alpha
-                }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                        eNariant = alpha
+                        context.enVariant = alpha
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 if (bitikDialect == BitikDialect.Altay) {
                     Text("Алтай варианты үчүн:")
                     CenteredDropdownPopup(
                         label = "аС тамга", options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
-                        asVariant = alpha
-                        context.asVariant = alpha
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                            asVariant = alpha
+                            context.asVariant = alpha
+                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                     )
 
-                    if (keyboardVariant == BitikVariant.SAMAGAN && bitikDialect == BitikDialect.Altay) {
+                    CenteredDropdownPopup(
+                        label = "эК тамга", options = EK_Letter_Variant.entries, selected = ekVariant, onSelect = { alpha ->
+                            ekVariant = alpha
+                            context.ekVariant = alpha
+                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    )
+
+                    if (keyboardVariant != BitikVariant.CLASSIC) {
                         CenteredDropdownPopup(
                             label = "эШ тамга", options = ESH_Letter_Variant.entries, selected = eshVariant, onSelect = { alpha ->
-                            eshVariant = alpha
-                            context.eshVariant = alpha
-                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                                eshVariant = alpha
+                                context.eshVariant = alpha
+                            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                         )
                     }
+                }
+
+                if (bitikDialect == BitikDialect.Orkon) {
+                    Text("Орхон варианты үчүн:")
+
+                    EnumSwitchSetting(
+                        label = "аҢ тамга", selected = angVariant, optionOn = ANG_Letter_Variant.On, optionOff = ANG_Letter_Variant.Off, onSelect = {
+                            context.angVariant = it
+                            angVariant = context.angVariant
+                        }, modifier = Modifier.fillMaxWidth()
+                    )
                 }
             }
         }

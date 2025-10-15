@@ -53,10 +53,10 @@ object TopRowBuilder_Alphabet {
             if (context.writingSystem == WritingSystem.Latin) {
                 alphabetLabel = "А"
             }
-            if (context.writingSystem  == WritingSystem.Kiril) {
+            if (context.writingSystem == WritingSystem.Kiril) {
                 alphabetLabel = "ж"
             }
-            if (context.writingSystem  == WritingSystem.Arab) {
+            if (context.writingSystem == WritingSystem.Arab) {
                 alphabetLabel = "س"
             }
         }
@@ -144,7 +144,7 @@ object TopRowBuilder_Alphabet {
         TopRowBuilder_Old.onTypedListener.addOnTypedListener(lastWordContainer) {
             lastWordContainer.post {
                 updateLastWord(
-                    service, service.currentInputConnection, jsTranscriber, lastWordContainer, buttonHeight, KeyboardTheme.getSystemButtonStyle(service)
+                    service.currentInputConnection, jsTranscriber, lastWordContainer, KeyboardTheme.getSystemButtonStyle(service)
                 )
                 lastWordContainer.requestLayout()
                 lastWordContainer.invalidate()
@@ -188,15 +188,15 @@ object TopRowBuilder_Alphabet {
         }
     }
 
-    fun updateLastWord(
-        service: InputMethodService, inputConnection: InputConnection?, transcriber: JSTranscriber_Alphabet, container: LinearLayout?, buttonHeight: Int, buttonStyle: ButtonStyle?
-    ) {
+    fun updateLastWord(inputConnection: InputConnection?, transcriber: JSTranscriber_Alphabet, container: LinearLayout?, buttonStyle: ButtonStyle?) {
         val extraSeparators = "·.,⸮⹁:;!?()[]{}\"'"
 
         text_Original = inputConnection?.getTextBeforeCursor(100, 0)?.toString().orEmpty()
         val regex = "[^\\p{L}${Regex.escape(extraSeparators)}]+".toRegex()
         inputText_LastWord = text_Original.split(regex).lastOrNull().orEmpty()
         InputText_Transcribed = transcriber.getTranscription(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
+
+        InputText_Transcribed = TranscriptionProccessor().processTranscription_alphabet(InputText_Transcribed, context)
 
         if (container == null) {
             return

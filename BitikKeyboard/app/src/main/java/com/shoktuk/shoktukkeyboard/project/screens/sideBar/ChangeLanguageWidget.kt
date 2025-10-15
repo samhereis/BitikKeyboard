@@ -28,27 +28,6 @@ import com.shoktuk.shoktukkeyboard.R
 data class FlagItem(val imageName: Painter, val language: Language)
 
 @Composable
-fun FlagButton(
-    flag: FlagItem, isSelected: Boolean, onClick: () -> Unit
-) {
-    // Animate the scale if selected (visual "bigger" effect)
-    val scale by animateFloatAsState(targetValue = if (isSelected) 1.1f else 1f)
-
-    Box(modifier = Modifier
-        .size(width = 80.dp, height = 54.dp)
-        .clickable { onClick() }
-        .graphicsLayer(scaleX = scale, scaleY = scale)
-        .then(
-            if (isSelected) Modifier.border(BorderStroke(2.dp, Color.Blue), shape = RoundedCornerShape(4.dp))
-            else Modifier
-        ), contentAlignment = Alignment.Center) {
-        Image(
-            painter = flag.imageName, contentDescription = flag.language.name, contentScale = ContentScale.Fit, modifier = Modifier.fillMaxSize()
-        )
-    }
-}
-
-@Composable
 fun ChangeLanguageWidget() {
     val context = LocalContext.current
     val currentLanguage = LocalizationManager.currentLanguage
@@ -68,24 +47,7 @@ fun ChangeLanguageWidget() {
                 .padding(16.dp)
                 .fillMaxWidth(), verticalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp), horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)) {
-                flags.take(3).forEach { flag ->
-                    FlagButton(
-                        flag = flag, isSelected = flag.language == currentLanguage
-                    ) {
-                        LocalizationManager.setLanguage(context, flag.language)
-                    }
-                }
-            }
-            Row(horizontalArrangement = androidx.compose.foundation.layout.Arrangement.spacedBy(16.dp)) {
-                flags.drop(3).forEach { flag ->
-                    FlagButton(
-                        flag = flag, isSelected = flag.language == currentLanguage
-                    ) {
-                        LocalizationManager.setLanguage(context, flag.language)
-                        }
-                    }
-                }
+
         }
     }
 }

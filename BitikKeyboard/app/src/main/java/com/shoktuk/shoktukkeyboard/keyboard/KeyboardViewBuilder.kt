@@ -6,15 +6,19 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.Companion.context
 import com.shoktuk.shoktukkeyboard.project.data.AJ_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.ANG_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.EK_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ajVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ekVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
@@ -221,16 +225,53 @@ object KeyboardViewBuilder {
                     return keyToSet
                 }
 
-                if (key.name == "s" && as_Def) {
-                    keyToSet = getAS(keyToSet)
-                    return keyToSet
+                if (MyKeyboardService.current_bitikDialect == BitikDialect.Altay) {
+                    if (key.name == "s" && as_Def) {
+                        keyToSet = getAS(keyToSet)
+                        return keyToSet
+                    }
+
+                    if (key.name == "k" && context.ekVariant == EK_Letter_Variant.Second) {
+                        keyToSet = getEK(keyToSet)
+                        return keyToSet
+                    }
+
+                    if (context.keyboardVariant != BitikVariant.CLASSIC) {
+                        if (key.name == "ş" && !esh_Def) {
+                            keyToSet = getESH(keyToSet)
+                        }
+                        return keyToSet
+                    }
                 }
 
-                if (key.name == "ş" && !esh_Def) {
-                    if (!MyKeyboardService.isClassic && MyKeyboardService.current_bitikDialect == BitikDialect.Altay && MyKeyboardService.current_bitikVariant == BitikVariant.SAMAGAN) {
-                        keyToSet = getESH(keyToSet)
+                if (MyKeyboardService.current_bitikDialect == BitikDialect.Orkon) {
+                    if (key.name == "ñ" && context.angVariant == ANG_Letter_Variant.Off) {
+                        keyToSet = getANG(keyToSet)
+                        return keyToSet
                     }
-                    return keyToSet
+
+                    if (key.name == "ş") {
+                        keyToSet = keyToSet.copy(
+                            lowercase = "𐱁", lowerCaseHold = "𐱀", lowerCaseRomanization = "Ш", upperCaseHold = "𐰿", upperCaseRomanization = "Ш"
+                        )
+                        return keyToSet
+                    }
+
+                    if (key.name == "t") {
+                        keyToSet = keyToSet.copy(
+                            lowercase = "𐱃", lowerCaseHold = "𐱄"
+                        )
+                        return keyToSet
+                    }
+
+                    if (context.keyboardVariant == BitikVariant.CLASSIC) {
+                        if (key.name == "oq, uq") {
+                            keyToSet = keyToSet.copy(
+                                uppercase = "𐰰", upperCaseHold = "𐰝"
+                            )
+                        }
+                        return keyToSet
+                    }
                 }
             } else {
                 if (key.name == "⸮") {
@@ -256,9 +297,15 @@ object KeyboardViewBuilder {
         return keyToSet
     }
 
-    private fun getAJ(key: KeyEntry): KeyEntry {
+    private fun getANG(key: KeyEntry): KeyEntry {
         return key.copy(
-            uppercase = "𐰋", upperCaseHold = "𐰌"
+            lowercase = "𐰭", lowerCaseRomanization = "Ң", upperCaseRomanization = "Ң"
+        )
+    }
+
+    private fun getEK(key: KeyEntry): KeyEntry {
+        return key.copy(
+            uppercase = "𐰛", upperCaseHold = "𐰚"
         )
     }
 

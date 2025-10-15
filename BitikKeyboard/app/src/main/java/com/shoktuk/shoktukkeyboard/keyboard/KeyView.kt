@@ -19,8 +19,10 @@ import android.widget.TextView
 import androidx.core.graphics.toColorInt
 import androidx.core.widget.TextViewCompat
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.Coloring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
@@ -162,7 +164,7 @@ class KeyView(
 
         val first = getCurrentSubText()?.toString().orEmpty()
         val second = getCurrentSubText_Alt()?.toString().orEmpty()
-        val lines = if (MyKeyboardService.isClassic) 2 else 1
+        val lines = if (context.keyboardVariant != BitikVariant.SAMAGAN) 2 else 1
 
         val edge = dpToPx(context, 0)
 

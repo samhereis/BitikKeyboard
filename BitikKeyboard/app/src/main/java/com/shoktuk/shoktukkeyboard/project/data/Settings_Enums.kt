@@ -48,6 +48,14 @@ enum class AJ_Letter_Variant(val id: String) {
     }
 }
 
+enum class ANG_Letter_Variant(val id: String) {
+    Off("Off"), On("On");
+
+    companion object {
+        const val KEY = "ANG_Letter_Variant"
+    }
+}
+
 enum class EB_Letter_Variant(val id: String) {
     Default("𐰌"), Second("𐰋");
 
@@ -69,6 +77,14 @@ enum class AS_Letter_Variant(val id: String) {
 
     companion object {
         const val KEY = "AS_variant"
+    }
+}
+
+enum class EK_Letter_Variant(val id: String) {
+    Default("𐰚"), Second("𐰛");
+
+    companion object {
+        const val KEY = "EK_Letter_Variant"
     }
 }
 

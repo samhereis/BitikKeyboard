@@ -2,6 +2,8 @@ package com.shoktuk.shoktukkeyboard
 
 import BasicInfo_Screen
 import HowToEnable_Screen
+import Language
+import LocalizationManager
 import OriginalTamgasView
 import SideMenuHeader
 import SupportScreen
@@ -17,6 +19,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,7 +35,10 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -41,6 +47,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -54,6 +61,7 @@ import com.shoktuk.shoktukkeyboard.project.data.BasicInfoScreens
 import com.shoktuk.shoktukkeyboard.project.data.MainScreens
 import com.shoktuk.shoktukkeyboard.project.data.SettingScreens
 import com.shoktuk.shoktukkeyboard.project.data.SideMenuItem
+import com.shoktuk.shoktukkeyboard.project.screens.settings.CenteredDropdownPopup
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SavedStringsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.testKeyboard.TestKeyboard_Screen
@@ -76,6 +84,8 @@ fun SideMenuView() {
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route ?: MainScreens.HOW_TO_ENABLE.id
     val isMainScreen = currentRoute in mainRoutes
+
+    var currentLanguage by remember { mutableStateOf(LocalizationManager.currentLanguage) }
 
     ModalNavigationDrawer(
         drawerState = drawerState, gesturesEnabled = isMainScreen, drawerContent = {
@@ -105,6 +115,13 @@ fun SideMenuView() {
                     )
                 }
                 Spacer(modifier = Modifier.weight(1f))
+
+                //CenteredDropdownPopup(
+                //    label = "Тил", options = Language.entries, selected = currentLanguage, onSelect = { alpha ->
+                //        LocalizationManager.setLanguage(context, newLanguage = alpha)
+                //        currentLanguage = alpha
+                //    }, optionLabel = { it.displayName }, modifier = Modifier.fillMaxWidth()
+                //)
                 AppVersionText(modifier = Modifier.padding(bottom = 25.dp))
             }
         }) {
@@ -161,7 +178,7 @@ fun SideMenuView() {
 }
 
 private fun navigateRoot(
-    scope: CoroutineScope, drawerState: androidx.compose.material3.DrawerState, navController: androidx.navigation.NavHostController, route: String
+    scope: CoroutineScope, drawerState: DrawerState, navController: NavHostController, route: String
 ) {
     scope.launch { drawerState.close() }
     navController.navigate(route) {

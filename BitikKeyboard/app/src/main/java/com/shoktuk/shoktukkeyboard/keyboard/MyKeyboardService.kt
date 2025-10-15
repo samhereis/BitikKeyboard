@@ -75,7 +75,6 @@ class MyKeyboardService : InputMethodService() {
 
         val buttonMargin: Int = KeyboardTheme.KEY_MARGIN_DP
 
-        val isClassic: Boolean get() = current_bitikVariant == BitikVariant.Modern
         val isTamga: Boolean get() = keyboardMode == KeyboardMode.Main
         val showLetterTranscription: Boolean get() = current_letterTranscription == LetterTranscription.On
         val showTextTranscription: Boolean get() = current_textTranscription == TextTranscription.On
@@ -341,14 +340,12 @@ class MyKeyboardService : InputMethodService() {
             return current_writingSystem.id
         }
 
-        var dialect = if (current_bitikDialect == BitikDialect.Altay) "enesay" else "orhon"
-
         return if (keyboardVariant == BitikVariant.CLASSIC) {
-            "${dialect}_old"
+            "enesay_old"
         } else if (keyboardVariant == BitikVariant.Modern) {
-            "${dialect}_modern"
+            "enesay_modern"
         } else {
-            dialect
+            "enesay"
         }
     }
 

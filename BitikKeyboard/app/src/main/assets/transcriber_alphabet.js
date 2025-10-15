@@ -102,7 +102,7 @@
                  new TranscriptionEntry("т", "𐱄", "𐱅", CharacterType.Consonant),
                  new TranscriptionEntry("ө", "𐰇", "𐰇", CharacterType.SoftVowel),
                  new TranscriptionEntry("б", "𐰉", "𐰌", CharacterType.Consonant),
-                 new TranscriptionEntry("ə", "𐰅", "𐰅", CharacterType.SoftVowel),
+                 new TranscriptionEntry("ə", "𐰂", "𐰂", CharacterType.SoftVowel),
                  new TranscriptionEntry("қ", "𐰴", "𐰚", CharacterType.Consonant),
                  new TranscriptionEntry("ғ", "𐰍", "𐰏", CharacterType.Consonant),
                  new TranscriptionEntry("ф", "𐰯", "𐰯", CharacterType.Consonant_Univ),
@@ -187,9 +187,9 @@
                  new TranscriptionEntry("س", "𐰽", "𐰾", CharacterType.Consonant),
                  new TranscriptionEntry("د", "𐰑", "𐰓", CharacterType.Consonant),
                  new TranscriptionEntry("گ", "𐰍", "𐰏", CharacterType.Consonant),
-                 new TranscriptionEntry("ۆ", "𐰈", "𐰈", CharacterType.SoftVowel),
+                 new TranscriptionEntry("ۉ", "𐰈", "𐰈", CharacterType.SoftVowel),
                  new TranscriptionEntry("ج", "𐰳", "𐰙", CharacterType.Consonant),
-                 new TranscriptionEntry("ٶ", "𐰇", "𐰇", CharacterType.SoftVowel),
+                 new TranscriptionEntry("ۅ", "𐰇", "𐰇", CharacterType.SoftVowel),
                  new TranscriptionEntry("ک", "𐰴", "𐰚", CharacterType.Consonant),
                  new TranscriptionEntry("ل", "𐰞", "𐰠", CharacterType.Consonant),
                  new TranscriptionEntry("ع", "𐰍", "𐰏", CharacterType.Consonant),
@@ -217,8 +217,8 @@
                  new TranscriptionEntry("وت", "𐱇", "𐱇", CharacterType.Special_Hard),
                  new TranscriptionEntry("وق", "𐰹", "𐰹", CharacterType.Special_Hard),
                  new TranscriptionEntry("ۇق", "𐰸", "𐰸", CharacterType.Special_Hard),
-                 new TranscriptionEntry("ٶک", "𐰝", "𐰝", CharacterType.Special_Soft),
-                 new TranscriptionEntry("ۆک", "𐰰", "𐰰", CharacterType.Special_Soft)
+                 new TranscriptionEntry("ۅک", "𐰝", "𐰝", CharacterType.Special_Soft),
+                 new TranscriptionEntry("ۉک", "𐰰", "𐰰", CharacterType.Special_Soft)
              ];
 
              this.transcriptoinUnits = [];

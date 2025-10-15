@@ -44,6 +44,10 @@ object SettingsManager {
         get() = prefs().getEnum(AJ_Letter_Variant.KEY, AJ_Letter_Variant.Default)
         set(v) = prefs().setEnum(AJ_Letter_Variant.KEY, v)
 
+    var Context.angVariant: ANG_Letter_Variant
+        get() = prefs().getEnum(ANG_Letter_Variant.KEY, ANG_Letter_Variant.Off)
+        set(v) = prefs().setEnum(ANG_Letter_Variant.KEY, v)
+
     var Context.ebVariant: EB_Letter_Variant
         get() = prefs().getEnum(EB_Letter_Variant.KEY, EB_Letter_Variant.Default)
         set(v) = prefs().setEnum(EB_Letter_Variant.KEY, v)
@@ -55,6 +59,10 @@ object SettingsManager {
     var Context.asVariant: AS_Letter_Variant
         get() = prefs().getEnum(AS_Letter_Variant.KEY, AS_Letter_Variant.Default)
         set(v) = prefs().setEnum(AS_Letter_Variant.KEY, v)
+
+    var Context.ekVariant: EK_Letter_Variant
+        get() = prefs().getEnum(EK_Letter_Variant.KEY, EK_Letter_Variant.Default)
+        set(v) = prefs().setEnum(EK_Letter_Variant.KEY, v)
 
     var Context.eshVariant: ESH_Letter_Variant
         get() = prefs().getEnum(ESH_Letter_Variant.KEY, ESH_Letter_Variant.Default)
@@ -93,6 +101,10 @@ object SettingsManager {
         set(v) = prefs().setString("freeTamga_Hold", v)
 
     var Context.writingSystem: WritingSystem
+        get() = prefs().getEnum(WritingSystem.KEY, WritingSystem.Bitik)
+        set(v) = prefs().setEnum(WritingSystem.KEY, v)
+
+    var Context.currentLanguage: WritingSystem
         get() = prefs().getEnum(WritingSystem.KEY, WritingSystem.Bitik)
         set(v) = prefs().setEnum(WritingSystem.KEY, v)
 

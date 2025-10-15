@@ -1,9 +1,15 @@
 import android.content.Context
 import android.util.Log
+import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
+import com.shoktuk.shoktukkeyboard.project.data.ANG_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.whl.quickjs.android.QuickJSLoader
 import com.whl.quickjs.wrapper.QuickJSContext
+import java.text.Normalizer
 
 class JSTranscriber_Alphabet(context: Context) {
     private val jsCtx: QuickJSContext? = try {
@@ -13,7 +19,22 @@ class JSTranscriber_Alphabet(context: Context) {
         val jsFile = if (context.keyboardVariant == BitikVariant.SAMAGAN) "transcriber_alphabet_modern.js"
         else "transcriber_alphabet.js"
 
-        val js = context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }
+        var js = context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }
+
+        if (MyKeyboardService.context.bitikDialect == BitikDialect.Orkon) {
+            if (MyKeyboardService.context.angVariant == ANG_Letter_Variant.Off) {
+                var normalizedSource = Normalizer.normalize(js, Normalizer.Form.NFC)
+
+                var old = """new TranscriptionEntry("ң", "𐰬", "𐰭", CharacterType.Consonant),"""
+                var new = """new TranscriptionEntry("ң", "𐰭", "𐰭", CharacterType.Consonant_Univ),"""
+                js = normalizedSource.replace(old, new)
+
+                old = """new TranscriptionEntry("𐰬", "аҢ", CharacterType.HardConsonant),"""
+                new = ""
+                js = js.replace(old, new)
+            }
+        }
+
         ctx.evaluate(js) // load your JS once
         ctx
     } catch (e: Exception) {
