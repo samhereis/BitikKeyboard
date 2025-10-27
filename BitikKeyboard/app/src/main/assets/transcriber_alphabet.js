@@ -190,7 +190,7 @@
                  new TranscriptionEntry("ۉ", "𐰈", "𐰈", CharacterType.SoftVowel),
                  new TranscriptionEntry("ج", "𐰳", "𐰙", CharacterType.Consonant),
                  new TranscriptionEntry("ۅ", "𐰇", "𐰇", CharacterType.SoftVowel),
-                 new TranscriptionEntry("ک", "𐰴", "𐰚", CharacterType.Consonant),
+                 new TranscriptionEntry("ك", "𐰴", "𐰚", CharacterType.Consonant),
                  new TranscriptionEntry("ل", "𐰞", "𐰠", CharacterType.Consonant),
                  new TranscriptionEntry("ع", "𐰍", "𐰏", CharacterType.Consonant),
 
@@ -217,8 +217,8 @@
                  new TranscriptionEntry("وت", "𐱇", "𐱇", CharacterType.Special_Hard),
                  new TranscriptionEntry("وق", "𐰹", "𐰹", CharacterType.Special_Hard),
                  new TranscriptionEntry("ۇق", "𐰸", "𐰸", CharacterType.Special_Hard),
-                 new TranscriptionEntry("ۅک", "𐰝", "𐰝", CharacterType.Special_Soft),
-                 new TranscriptionEntry("ۉک", "𐰰", "𐰰", CharacterType.Special_Soft)
+                 new TranscriptionEntry("ۅك", "𐰝", "𐰝", CharacterType.Special_Soft),
+                 new TranscriptionEntry("ۉك", "𐰰", "𐰰", CharacterType.Special_Soft)
              ];
 
              this.transcriptoinUnits = [];
