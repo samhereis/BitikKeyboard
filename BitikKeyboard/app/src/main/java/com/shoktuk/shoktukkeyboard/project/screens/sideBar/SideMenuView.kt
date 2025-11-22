@@ -116,12 +116,12 @@ fun SideMenuView() {
                 }
                 Spacer(modifier = Modifier.weight(1f))
 
-                //CenteredDropdownPopup(
-                //    label = "Тил", options = Language.entries, selected = currentLanguage, onSelect = { alpha ->
-                //        LocalizationManager.setLanguage(context, newLanguage = alpha)
-                //        currentLanguage = alpha
-                //    }, optionLabel = { it.displayName }, modifier = Modifier.fillMaxWidth()
-                //)
+                CenteredDropdownPopup(
+                    label = "Тил", options = Language.entries, selected = currentLanguage, onSelect = { alpha ->
+                        LocalizationManager.setLanguage(context, newLanguage = alpha)
+                        currentLanguage = alpha
+                    }, optionLabel = { it.displayName }, modifier = Modifier.fillMaxWidth()
+                )
                 AppVersionText(modifier = Modifier.padding(bottom = 25.dp))
             }
         }) {
