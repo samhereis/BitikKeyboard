@@ -34,12 +34,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import kotlinx.coroutines.launch
 
@@ -49,6 +51,8 @@ fun SupportScreen() {
     val clipboard = LocalClipboardManager.current
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
+
+    var mess = Loc_BasicInfo.CARD_NUMBER.localizedTitle(LocalContext.current)
 
     Scaffold(snackbarHost = {
         SnackbarHost(hostState = snackbarHostState)
@@ -65,7 +69,7 @@ fun SupportScreen() {
             ) {
                 Column(Modifier.padding(16.dp)) {
                     Text(
-                        text = "MBank:", style = MaterialTheme.typography.headlineSmall
+                        text = Loc_BasicInfo.CARD_NUMBER.localizedTitle(LocalContext.current), style = MaterialTheme.typography.headlineSmall
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Surface(
@@ -73,7 +77,7 @@ fun SupportScreen() {
                             clipboard.setText(AnnotatedString("4177490190674160"))
                             scope.launch {
                                 snackbarHostState.showSnackbar(
-                                    message = "Copied!", duration = SnackbarDuration.Short
+                                    message = mess, duration = SnackbarDuration.Short
                                 )
                             }
                         }) {

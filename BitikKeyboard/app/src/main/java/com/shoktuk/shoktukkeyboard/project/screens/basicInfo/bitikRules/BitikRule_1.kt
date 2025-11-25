@@ -13,8 +13,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BitikRules
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -31,11 +34,11 @@ fun BitikRule1() {
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp), horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "Оңдон солго", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
+                text = Loc_BasicInfo.RULE1.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
             )
 
             Text(
-                text = "Битик жалпыда оңдон солго окулат, бирок талас вариантында солдон оңго окулган үлгүлөр да бар. " + "Автордун сунушу: келечекте солдон оңго кылуу керек, себеби оңдон солго болсо көп баг, " + "ыңгайсыздык жана тех кыйынчылык пайда болот экен.",
+                text = Loc_BitikRules.R_1_RIGHT_TO_LEFT.localizedTitle(LocalContext.current),
                 style = MaterialTheme.typography.bodyLarge
             )
         }

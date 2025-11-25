@@ -57,14 +57,14 @@ import com.shoktuk.bittik.rules.BitikRule1
 import com.shoktuk.bittik.rules.BitikRule2
 import com.shoktuk.bittik.rules.BitikRule3
 import com.shoktuk.bittik.rules.BitikRule4
-import com.shoktuk.shoktukkeyboard.project.data.BasicInfoScreens
-import com.shoktuk.shoktukkeyboard.project.data.MainScreens
 import com.shoktuk.shoktukkeyboard.project.data.SettingScreens
 import com.shoktuk.shoktukkeyboard.project.data.SideMenuItem
 import com.shoktuk.shoktukkeyboard.project.screens.settings.CenteredDropdownPopup
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SavedStringsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.testKeyboard.TestKeyboard_Screen
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_SideMenu
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -78,11 +78,11 @@ fun SideMenuView() {
     val navController = rememberNavController()
     val context = LocalContext.current
 
-    val items = MainScreens.entries.map { SideMenuItem(it, it.systemImageName) }
-    val mainRoutes = MainScreens.entries.map { it.id }.toSet()
+    val items = Loc_SideMenu.entries.map { SideMenuItem(it, it.systemImage) }
+    val mainRoutes = Loc_SideMenu.entries.map { it.titleKey }.toSet()
 
     val backStack by navController.currentBackStackEntryAsState()
-    val currentRoute = backStack?.destination?.route ?: MainScreens.HOW_TO_ENABLE.id
+    val currentRoute = backStack?.destination?.route ?: Loc_SideMenu.HOW_TO_ENABLE.titleKey
     val isMainScreen = currentRoute in mainRoutes
 
     var currentLanguage by remember { mutableStateOf(LocalizationManager.currentLanguage) }
@@ -98,10 +98,10 @@ fun SideMenuView() {
                     )
                 }
                 items.forEach { drawerItem ->
-                    val selected = currentRoute == drawerItem.path.id
+                    val selected = currentRoute == drawerItem.path.titleKey
                     NavigationDrawerItem(
                         selected = selected, onClick = {
-                            navigateRoot(scope, drawerState, navController, drawerItem.path.id)
+                            navigateRoot(scope, drawerState, navController, drawerItem.path.titleKey)
                         }, icon = {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start
@@ -109,7 +109,7 @@ fun SideMenuView() {
                                 Icon(
                                     imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
                                 )
-                                Text(text = drawerItem.path.title.localized("loc_sideBar", context))
+                                Text(text = drawerItem.path.titleKey.localized("sideBar", context))
                             }
                         }, label = {}, modifier = Modifier.padding(5.dp)
                     )
@@ -130,7 +130,7 @@ fun SideMenuView() {
                 if (isMainScreen) {
                     TopAppBar(
                         title = {
-                            val menuTitle = MainScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_sideBar", context) ?: ""
+                            val menuTitle = Loc_SideMenu.entries.firstOrNull { it.titleKey == currentRoute }?.titleKey?.localized("sideBar", context) ?: ""
                             Text(text = menuTitle, fontSize = 15.sp)
                         }, navigationIcon = {
                             IconButton(onClick = { scope.launch { drawerState.open() } }) {
@@ -141,8 +141,8 @@ fun SideMenuView() {
                 } else {
                     TopAppBar(
                         title = {
-                            val title = BasicInfoScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_basicInfo", context)
-                                ?: SettingScreens.entries.firstOrNull { it.id == currentRoute }?.title?.localized("loc_settings", context) ?: ""
+                            val title = Loc_BasicInfo.entries.firstOrNull { it.titleKey == currentRoute }?.titleKey?.localized("basicInfo", context)
+                                ?: SettingScreens.entries.firstOrNull { it.id == currentRoute }?.id?.localized("settings", context) ?: ""
                             Text(text = title, fontSize = 15.sp)
                         }, navigationIcon = {
                             IconButton(onClick = { navController.popBackStack() }) {
@@ -153,23 +153,23 @@ fun SideMenuView() {
                 }
             }) { innerPadding ->
             NavHost(
-                navController = navController, startDestination = MainScreens.HOW_TO_ENABLE.id, modifier = Modifier.padding(innerPadding)
+                navController = navController, startDestination = Loc_SideMenu.HOW_TO_ENABLE.titleKey, modifier = Modifier.padding(innerPadding)
             ) {
-                composable(MainScreens.HOW_TO_ENABLE.id) { HowToEnable_Screen() }
-                composable(MainScreens.TEST_KEYBOARD.id) { TestKeyboard_Screen() }
-                composable(MainScreens.BASIC_INFO.id) { BasicInfo_Screen(navController) }
-                composable(MainScreens.SETTINGS.id) {
+                composable(Loc_SideMenu.HOW_TO_ENABLE.titleKey) { HowToEnable_Screen() }
+                composable(Loc_SideMenu.TEST_KEYBOARD.titleKey) { TestKeyboard_Screen() }
+                composable(Loc_SideMenu.BASIC_INFO.titleKey) { BasicInfo_Screen(navController) }
+                composable(Loc_SideMenu.SETTINGS.titleKey) {
                     SettingsScreen(
                         onOpenSavedStrings = { navController.navigate(SettingScreens.SavedStrings.id) })
                 }
-                composable(MainScreens.SUPPORT.id) { SupportScreen() }
+                composable(Loc_SideMenu.SUPPORT.titleKey) { SupportScreen() }
 
-                composable(BasicInfoScreens.ORIGINAL_TAMGAS.id) { OriginalTamgasView() }
-                composable(BasicInfoScreens.USE_INSTRUCTION.id) { UseInstruction() }
-                composable(BasicInfoScreens.BITIK_RULE_1.id) { BitikRule1() }
-                composable(BasicInfoScreens.BITIK_RULE_2.id) { BitikRule2() }
-                composable(BasicInfoScreens.BITIK_RULE_3.id) { BitikRule3() }
-                composable(BasicInfoScreens.BITIK_RULE_4.id) { BitikRule4() }
+                composable(Loc_BasicInfo.USING_THE_KEYBOARD.titleKey) { OriginalTamgasView() }
+                composable(Loc_BasicInfo.ORIGINAL_BITIK.titleKey) { UseInstruction() }
+                composable(Loc_BasicInfo.RULE1.titleKey) { BitikRule1() }
+                composable(Loc_BasicInfo.RULE2.titleKey) { BitikRule2() }
+                composable(Loc_BasicInfo.RULE3.titleKey) { BitikRule3() }
+                composable(Loc_BasicInfo.RULE4.titleKey) { BitikRule4() }
 
                 composable(SettingScreens.SavedStrings.id) { SavedStringsScreen() }
             }

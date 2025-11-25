@@ -6,7 +6,7 @@ import androidx.core.content.edit
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 
 enum class Language(val code: String, val displayName: String) {
-    KY("ky", "🇰🇬 Qırğız"), TR("tr", "🇹🇷 Türkçe"), KZ("kz", "🇰🇿 Қазақша"),AZ("az", "🇦🇿 Azərbaycan"), EN("en", "🇺🇸 English"), RU("ru", "🇷🇺 Русский")
+    KY_L("ky_latin", "🇰🇬 Qırğız"), KY_K("ky_kiril", "🇰🇬 Кыргыз"), TR("tr", "🇹🇷 Türkçe"), KZ("kz", "🇰🇿 Қазақша"),AZ("az", "🇦🇿 Azərbaycan"), EN("en", "🇺🇸 English"), RU("ru", "🇷🇺 Русский")
 }
 
 fun String.localized(csvFileName: String = "Localizations", context: Context): String {
@@ -14,7 +14,7 @@ fun String.localized(csvFileName: String = "Localizations", context: Context): S
 }
 
 object LocalizationManager {
-    var currentLanguage by mutableStateOf(Language.KY)
+    var currentLanguage by mutableStateOf(Language.KY_L)
     private val csvCache = mutableMapOf<String, Map<String, Map<Language, String>>>()
 
     private const val PREFS_NAME = "LocalizationPrefs"
@@ -22,10 +22,10 @@ object LocalizationManager {
 
     fun init(context: Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val savedLangCode = prefs.getString(KEY_LANGUAGE, Language.KY.code)
+        val savedLangCode = prefs.getString(KEY_LANGUAGE, Language.KY_L.code)
         savedLangCode?.let { langCode ->
             Language.entries.find { it.code == langCode }?.let {
-                currentLanguage = Language.KY //it
+                currentLanguage = Language.KY_L
             }
         }
     }
@@ -47,7 +47,7 @@ object LocalizationManager {
 
     private fun loadLocalizations(csvFileName: String, context: Context) {
         try {
-            context.assets.open("$csvFileName.csv").use { inputStream ->
+            context.assets.open("localization/$csvFileName.csv").use { inputStream ->
                 val rows: List<Map<String, String>> = csvReader().readAllWithHeader(inputStream)
                 val translations = mutableMapOf<String, Map<Language, String>>()
                 for (row in rows) {

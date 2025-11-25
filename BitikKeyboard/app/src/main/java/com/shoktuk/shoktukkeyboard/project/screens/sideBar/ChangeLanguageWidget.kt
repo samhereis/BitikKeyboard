@@ -32,7 +32,8 @@ fun ChangeLanguageWidget() {
     val context = LocalContext.current
     val currentLanguage = LocalizationManager.currentLanguage
     val flags = listOf(
-        FlagItem(painterResource(id = R.drawable.flag_kg), Language.KY),
+        FlagItem(painterResource(id = R.drawable.flag_kg), Language.KY_L),
+        FlagItem(painterResource(id = R.drawable.flag_kg), Language.KY_K),
         FlagItem(painterResource(id = R.drawable.flag_kz), Language.KZ),
         FlagItem(painterResource(id = R.drawable.flag_tr), Language.TR),
         FlagItem(painterResource(id = R.drawable.flag_usa), Language.EN),

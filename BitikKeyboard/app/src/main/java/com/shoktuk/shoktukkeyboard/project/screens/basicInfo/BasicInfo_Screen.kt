@@ -46,7 +46,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.shoktuk.shoktukkeyboard.project.data.BasicInfoScreens
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Preview(showBackground = true)
@@ -69,40 +69,40 @@ fun BasicInfo_Screen(navController: NavController) {
             .padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         BeautifulNavigationItem(
-            title = BasicInfoScreens.USE_INSTRUCTION.title.localized("loc_basicInfo", context), onClick = {
-                navController.navigate(BasicInfoScreens.USE_INSTRUCTION.id)
+            title = Loc_BasicInfo.USING_THE_KEYBOARD.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.USING_THE_KEYBOARD.titleKey)
             }, subtitle = null, leading = Icons.Default.Info, tint = MaterialTheme.colorScheme.primary
         )
 
         BeautifulNavigationItem(
-            title = BasicInfoScreens.ORIGINAL_TAMGAS.title, onClick = {
-                navController.navigate(BasicInfoScreens.ORIGINAL_TAMGAS.id)
+            title = Loc_BasicInfo.ORIGINAL_BITIK.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.ORIGINAL_BITIK.titleKey)
             }, subtitle = null, leading = Icons.Default.Favorite, tint = MaterialTheme.colorScheme.primary
         )
         HorizontalDivider()
 
         Text("Битик эрежелери")
         BeautifulNavigationItem(
-            title = BasicInfoScreens.BITIK_RULE_1.title, onClick = {
-                navController.navigate(BasicInfoScreens.BITIK_RULE_1.id)
+            title = Loc_BasicInfo.RULE1.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.RULE1.titleKey)
             }, subtitle = null, leading = Icons.Default.Star, tint = MaterialTheme.colorScheme.primary
         )
 
         BeautifulNavigationItem(
-            title = BasicInfoScreens.BITIK_RULE_2.title, onClick = {
-                navController.navigate(BasicInfoScreens.BITIK_RULE_2.id)
+            title = Loc_BasicInfo.RULE2.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.RULE2.titleKey)
             }, subtitle = null, leading = Icons.Default.Star, tint = MaterialTheme.colorScheme.primary
         )
 
         BeautifulNavigationItem(
-            title = BasicInfoScreens.BITIK_RULE_3.title, onClick = {
-                navController.navigate(BasicInfoScreens.BITIK_RULE_3.id)
+            title =  Loc_BasicInfo.RULE3.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.RULE3.titleKey)
             }, subtitle = null, leading = Icons.Default.Star, tint = MaterialTheme.colorScheme.primary
         )
 
         BeautifulNavigationItem(
-            title = BasicInfoScreens.BITIK_RULE_4.title, onClick = {
-                navController.navigate(BasicInfoScreens.BITIK_RULE_4.id)
+            title = Loc_BasicInfo.RULE4.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.RULE4.titleKey)
             }, subtitle = null, leading = Icons.Default.Star, tint = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.weight(1f))
