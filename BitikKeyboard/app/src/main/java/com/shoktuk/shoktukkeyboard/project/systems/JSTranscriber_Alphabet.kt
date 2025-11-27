@@ -29,7 +29,7 @@ class JSTranscriber_Alphabet(context: Context) {
                 var new = """new TranscriptionEntry("ң", "𐰭", "𐰭", CharacterType.Consonant_Univ),"""
                 js = normalizedSource.replace(old, new)
 
-                old = """new TranscriptionEntry("𐰬", "аҢ", CharacterType.HardConsonant),"""
+                old = """new TranscriptionEntry("𐰬", "aÑ", CharacterType.HardConsonant),"""
                 new = ""
                 js = js.replace(old, new)
             }

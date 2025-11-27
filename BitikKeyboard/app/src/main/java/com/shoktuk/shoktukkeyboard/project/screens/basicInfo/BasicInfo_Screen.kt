@@ -21,6 +21,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -47,6 +48,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_OriginalBitik
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Preview(showBackground = true)
@@ -81,7 +83,7 @@ fun BasicInfo_Screen(navController: NavController) {
         )
         HorizontalDivider()
 
-        Text("Битик эрежелери")
+        Text(Loc_BasicInfo.BITIK_RULES.localizedTitle(LocalContext.current))
         BeautifulNavigationItem(
             title = Loc_BasicInfo.RULE1.localizedTitle(context), onClick = {
                 navController.navigate(Loc_BasicInfo.RULE1.titleKey)
@@ -104,6 +106,15 @@ fun BasicInfo_Screen(navController: NavController) {
             title = Loc_BasicInfo.RULE4.localizedTitle(context), onClick = {
                 navController.navigate(Loc_BasicInfo.RULE4.titleKey)
             }, subtitle = null, leading = Icons.Default.Star, tint = MaterialTheme.colorScheme.primary
+        )
+
+        HorizontalDivider()
+
+        Text(Loc_BasicInfo.MEMORIZE_TAMGAS.localizedTitle(LocalContext.current))
+        BeautifulNavigationItem(
+            title = Loc_BasicInfo.MEMORIZE_TAMGAS.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.MEMORIZE_TAMGAS.titleKey)
+            }, subtitle = null, leading = Icons.Default.LocalLibrary, tint = MaterialTheme.colorScheme.primary
         )
         Spacer(modifier = Modifier.weight(1f))
     }

@@ -13,6 +13,7 @@ data class KeyEntry(
     val lowerCaseHoldHint: String? = "",
     val backgroundColorIndex_lowercase: Int? = 1,
     val backgroundColorIndex_lowercase_Hold: Int? = 1,
+    var lowerCase_HoldabilityIndicator: String? = "",
 
     val uppercase: String? = "",
     val upperCaseRomanization: String? = "",
@@ -20,5 +21,6 @@ data class KeyEntry(
     val upperCaseHold: String? = "",
     val upperCaseHoldHint: String? = "",
     val backgroundColorIndex_uppercase: Int? = 1,
-    val backgroundColorIndex_uppercase_Hold: Int? = 1
+    val backgroundColorIndex_uppercase_Hold: Int? = 1,
+    var uppercase_HoldabilityIndicator: String? = "",
 )

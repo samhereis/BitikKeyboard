@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_UsingTheKeyboard
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -54,7 +55,7 @@ fun UseInstruction() {
             .padding(horizontal = 16.dp), horizontalAlignment = Alignment.Start
     ) {
         Text(
-            text = "Баскычтоптун жасалгасы, көнүү жана колдонуу оңой болушуна, демейки qwerty баскычтоптон көчүрүлгөн.", style = MaterialTheme.typography.bodyLarge
+            text = Loc_UsingTheKeyboard.keyboardDesign.localizedTitle(LocalContext.current), style = MaterialTheme.typography.bodyLarge
         )
 
         Image(
@@ -70,7 +71,7 @@ fun UseInstruction() {
         Spacer(Modifier.height(12.dp))
 
         Text(
-            text = "Бир гана баскыч өзгөчө - бул Shift баскычы. Демейде, Shift баскычы чоң/кичи тамгаларды оодарат. " + "Shoktuk Bitikте катуу/жумшак тамгаларды оодарат.",
+            text = Loc_UsingTheKeyboard.shiftButton.localizedTitle(LocalContext.current),
             style = MaterialTheme.typography.bodyLarge
         )
 
@@ -80,26 +81,26 @@ fun UseInstruction() {
 
         SectionCard {
             Column {
-                Text("Демейки түстүүлөр - үнсүздөр.")
-                Text("Көк түстүүлөр - үндүүлөр.", color = Color(0xFF5875FF))
-                Text("Кызгылт түстүүлөр - атайын тамгалар.", color = Color(0xFFC43494)) // orange
+                Text(Loc_UsingTheKeyboard.standartColorsConsonants.localizedTitle(LocalContext.current))
+                Text(Loc_UsingTheKeyboard.blueColorIsVowels.localizedTitle(LocalContext.current), color = Color(0xFF5875FF))
+                Text(Loc_UsingTheKeyboard.redIsSpecialLetters.localizedTitle(LocalContext.current), color = Color(0xFFC43494)) // orange
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
-                Text("Түстөөнү орнотууларда өчүрүп салса болот.")
+                Text(Loc_UsingTheKeyboard.disablingTheColoring.localizedTitle(LocalContext.current))
             }
         }
 
         Spacer(Modifier.height(6.dp))
         Text(
-            text = "Тамгалардын экинчи варианттарын басыш үчүн, үстүндө сызыгы бар тамгаларды басып туруңуз.", style = MaterialTheme.typography.bodyLarge
+            text = Loc_UsingTheKeyboard.secondLetterVariantsOnHold.localizedTitle(LocalContext.current), style = MaterialTheme.typography.bodyLarge
         )
 
         Spacer(Modifier.height(6.dp))
 
         InfoCard(
             infoTexts = listOf(
-                "99% учурда, бир сөз жазууда катуу/жумшак оодаруу керек эмес. " + "Сөздө АУОЫ үндүүлөр болсо демек сөзүңүз катуу. ЭЕҮӨИ болсо жумшак. " + "Сөздү жазып бүтмөюнчө шифт басуу керек эмес",
+                Loc_UsingTheKeyboard.noNeedToChangeShiftInOneWord.localizedTitle(LocalContext.current),
                 "",
-                "Бөтөнчө - атайын тамгалар.",
+                Loc_UsingTheKeyboard.needToChangeShiftException.localizedTitle(LocalContext.current),
                 "",
                 "𐰶𐰺𐰏𐰃𐰕 🚫",
                 "𐰶𐰺𐰍𐰃𐰕 ✅",
@@ -111,12 +112,12 @@ fun UseInstruction() {
 
         Spacer(Modifier.height(24.dp))
 
-        Text("Кеңеш", fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
+        Text(Loc_UsingTheKeyboard.advice.localizedTitle(LocalContext.current), fontSize = 22.sp, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary)
 
         Spacer(Modifier.height(6.dp))
 
         Text(
-            text = "Сөздүн жазылышын көрүү үчүн, латынга же кирилицага өтүп туурасын көрүп алыңыз.", style = MaterialTheme.typography.bodyLarge
+            text = Loc_UsingTheKeyboard.youCanSeeWordWritingInLatinOrKiril.localizedTitle(LocalContext.current), style = MaterialTheme.typography.bodyLarge
         )
 
         VideoPlay(videoName = "keyboardusing_alphabet_demo")

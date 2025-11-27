@@ -1,7 +1,7 @@
 key,ky_latin,ky_kiril,en,ru
-howToEnable,Ornotuu ıqması,Күйгүзүү ыкма,How to enable,
-openSettingsAndEnableKeyboard,Ornotuu açıp basqıçtoptu jandırıñız,Иштетип көрүү,Test the keyboard,
-openSettings,Ornotuunu aç,Орнотууну ач,Check yourself,
-changeLanguage,Til almaştırıñiz,Тил алмаштырыңыз,Change language,
-freeSpaceTitle,"Eger sizde uşunday boş aralıq bolso je basqıçtop kirip ketse, bul çeçimderdı qoldonup körüñüz","Эгер сизде ушундай бош аралык болсо же баскычтоп кирип кетсе, бул чечимдерди колдонуп көрүңүз","If the keyboard has this free space or it is offseted, try these solutions.",
-freeSpaceSetting,Boş aralıq çeçimi,Бош аралык чечими,Lessons,
+howToEnable,Ornotuu ıqması,Күйгүзүү ыкма,How to enable,Как включить
+openSettingsAndEnableKeyboard,Ornotuu açıp basqıçtoptu jandırıñız,Орнотууну ачып баскычтопту жандырыңыз,Open settings and enable the keyboard,Откройте настройки и включите клавиатуру
+openSettings,Ornotuunu aç,Орнотууну ач,Open settings,Открыть настройки
+changeLanguage,Til almaştırıñiz,Тил алмаштырыңыз,Change language,Поменяйте язык
+freeSpaceTitle,"Eger sizde uşunday boş aralıq bolso je basqıçtop kirip ketse, bul çeçimderdı qoldonup körüñüz","Эгер сизде ушундай бош аралык болсо же баскычтоп кирип кетсе, бул чечимдерди колдонуп көрүңүз","If the keyboard has this free space or it is offseted, try these solutions.","Если клавиатура имеет вот такую пустую область или она съехала, попробуйте вот эти решения"
+freeSpaceSetting,Boş aralıq çeçimi,Бош аралык чечими,Lessons,Решения

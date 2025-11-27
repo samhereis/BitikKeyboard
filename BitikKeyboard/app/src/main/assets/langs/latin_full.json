@@ -1,0 +1,205 @@
+{
+  "languageCode": "𐱄",
+  "languageColor": "#800d1a",
+  "spaceKey": ":",
+  "directionality": 1,
+  "rows": [
+    [
+      {
+        "name": "q",
+        "lowercase": "q",
+        "uppercase": "Q"
+      },
+      {
+        "name": "w",
+        "lowercase": "w",
+        "uppercase": "W"
+      },
+      {
+        "name": "a",
+        "lowercase": "e",
+        "lowerCaseRomanization": "ə",
+        "lowerCaseHold": "ə",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "E",
+        "upperCaseRomanization": "Ə",
+        "upperCaseHold": "Ə",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "р",
+        "lowercase": "r",
+        "uppercase": "R"
+      },
+      {
+        "name": "t",
+        "lowercase": "t",
+        "uppercase": "T"
+      },
+      {
+        "name": "y",
+        "lowercase": "y",
+        "uppercase": "Y"
+      },
+      {
+        "name": "u",
+        "lowercase": "u",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "U",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "i",
+        "lowercase": "i",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "İ",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "o",
+        "lowercase": "o",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "O",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "p",
+        "lowercase": "p",
+        "uppercase": "P"
+      },
+      {
+        "name": "ş",
+        "lowercase": "ş",
+        "uppercase": "Ş"
+      },
+      {
+        "name": "ü",
+        "lowercase": "ü",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "Ü",
+        "backgroundColorIndex_uppercase": 4
+      }
+    ],
+    [
+      {
+        "name": "a",
+        "lowercase": "a",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "A",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "s",
+        "lowercase": "s",
+        "uppercase": "S"
+      },
+      {
+        "name": "d",
+        "lowercase": "d",
+        "uppercase": "D"
+      },
+      {
+        "name": "f",
+        "lowercase": "f",
+        "uppercase": "F"
+      },
+      {
+        "name": "g",
+        "lowercase": "g",
+        "uppercase": "G"
+      },
+      {
+        "name": "h",
+        "lowercase": "h",
+        "uppercase": "H"
+      },
+      {
+        "name": "j",
+        "lowercase": "j",
+        "uppercase": "J"
+      },
+      {
+        "name": "k",
+        "lowercase": "k",
+        "uppercase": "K"
+      },
+      {
+        "name": "l",
+        "lowercase": "l",
+        "uppercase": "L"
+      },
+      {
+        "name": "ğ",
+        "lowercase": "ğ",
+        "uppercase": "Ğ"
+      },
+      {
+        "name": "ı",
+        "lowercase": "ı",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "I",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "ñ",
+        "lowercase": "ñ",
+        "uppercase": "Ñ"
+      }
+    ],
+    [
+      {
+        "name": "Shift"
+      },
+      {
+        "name": "z",
+        "lowercase": "z",
+        "uppercase": "Z"
+      },
+      {
+        "name": "x",
+        "lowercase": "x",
+        "uppercase": "X"
+      },
+      {
+        "name": "c",
+        "lowercase": "c",
+        "uppercase": "C"
+      },
+      {
+        "name": "v",
+        "lowercase": "v",
+        "uppercase": "V"
+      },
+      {
+        "name": "b",
+        "lowercase": "b",
+        "uppercase": "B"
+      },
+      {
+        "name": "n",
+        "lowercase": "n",
+        "uppercase": "N"
+      },
+      {
+        "name": "m",
+        "lowercase": "m",
+        "uppercase": "M"
+      },
+      {
+        "name": "ç",
+        "lowercase": "ç",
+        "uppercase": "Ç"
+      },
+      {
+        "name": "ö",
+        "lowercase": "ö",
+        "backgroundColorIndex_lowercase": 4,
+        "uppercase": "Ö",
+        "backgroundColorIndex_uppercase": 4
+      },
+      {
+        "name": "Del"
+      }
+    ]
+  ]
+}

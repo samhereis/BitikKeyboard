@@ -44,8 +44,11 @@ import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EK_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.HoldabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
+import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
+import com.shoktuk.shoktukkeyboard.project.data.Latin_ZH
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ajVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
@@ -59,9 +62,12 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.holdabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.sounds
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
@@ -70,6 +76,8 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 import com.shoktuk.shoktukkeyboard.project.data.Vibrations
 import com.shoktuk.shoktukkeyboard.project.data.WordSeparator
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_Settings
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_SideMenu
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import localized
 
@@ -91,6 +99,7 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
     var eshVariant by remember { mutableStateOf(context.eshVariant) }
 
     var coloring by remember { mutableStateOf(context.coloring) }
+    var holdabilityColoring by remember { mutableStateOf(context.holdabilityColoring) }
     var vibrations by remember { mutableStateOf(context.vibrations) }
     var sounds by remember { mutableStateOf(context.sounds) }
 
@@ -98,6 +107,9 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
     var freeTamga_Hold by remember { mutableStateOf(context.freeTamga_Hold) }
 
     var latinStatus by remember { mutableStateOf(context.latinStatus) }
+    var latinVariant by remember { mutableStateOf(context.latinVariant) }
+    var latinZH by remember { mutableStateOf(context.latinZH) }
+
     var arabStatus by remember { mutableStateOf(context.arabicStatus) }
     var kirilisaStatus by remember { mutableStateOf(context.kirilisaStatus) }
 
@@ -121,7 +133,7 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Жөндөө", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    text = Loc_SideMenu.SETTINGS.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
                 if (keyboardVariant == BitikVariant.CLASSIC) {
@@ -137,7 +149,7 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                                 imageVector = Icons.Default.Info, contentDescription = null, tint = MaterialTheme.colorScheme.primary, modifier = Modifier.size(36.dp)
                             )
                             Text(
-                                text = "Битик тууралуу көп билбесеңиз, демейкини колдонуңуз",
+                                text = Loc_Settings.keyboardVariant_Classic_Note.localizedTitle(LocalContext.current),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurface,
                             )
@@ -160,7 +172,7 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                                 imageVector = Icons.Default.Warning, contentDescription = null, tint = Color.Red, modifier = Modifier.size(36.dp)
                             )
                             Text(
-                                text = "Ооба, ыңгайлуу бирок расмий эмес, автор жаңылаган битик колдонуудасыз!", style = MaterialTheme.typography.titleMedium
+                                text = Loc_Settings.keyboardVariant_Modern_Note.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium
                             )
                         }
                     }
@@ -182,7 +194,7 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                                 imageVector = Icons.Default.CheckCircle, contentDescription = null, tint = Color.Green, modifier = Modifier.size(36.dp)
                             )
                             Text(
-                                text = "Демейки варианты бул бираз ыңгайлаштырылган оригинал! Карапайым колдонуучуга да оңой, түп нускага да жакын.",
+                                text = Loc_Settings.keyboardVariant_Standart_Note.localizedTitle(LocalContext.current),
                                 style = MaterialTheme.typography.bodyMedium,
                             )
                         }
@@ -190,37 +202,47 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                 }
 
                 CenteredDropdownPopup(
-                    label = "Битик түрү".localized("loc_settings", context), options = BitikVariant.entries, selected = keyboardVariant, onSelect = { variant ->
+                    label = Loc_Settings.keyboardVariant.localizedTitle(LocalContext.current), options = BitikVariant.entries, selected = keyboardVariant, onSelect = { variant ->
                         keyboardVariant = variant
                         context.keyboardVariant = variant
-                    }, optionLabel = { it.id.localized("loc_settings", context) }, modifier = Modifier.fillMaxWidth()
+                    }, optionLabel = { it.id.localized("settings", context) }, modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
-                    label = "Битик диалект", options = BitikDialect.entries, selected = bitikDialect, onSelect = { alpha ->
+                    label = Loc_Settings.keyboardDialect.localizedTitle(LocalContext.current), options = BitikDialect.entries, selected = bitikDialect, onSelect = { alpha ->
                         bitikDialect = alpha
                         context.bitikDialect = alpha
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    }, optionLabel = { it.id.localized("settings", context) }, modifier = Modifier.fillMaxWidth()
                 )
 
                 if (keyboardVariant != BitikVariant.SAMAGAN) {
                     EnumSwitchSetting(
-                        label = "Жазуу транскрипция", selected = textTranscription, optionOn = TextTranscription.On, optionOff = TextTranscription.Off, onSelect = {
+                        label = Loc_Settings.textTranscription.localizedTitle(LocalContext.current),
+                        selected = textTranscription,
+                        optionOn = TextTranscription.On,
+                        optionOff = TextTranscription.Off,
+                        onSelect = {
                             context.textTranscription = if (it == TextTranscription.On) TextTranscription.On else TextTranscription.Off
                             textTranscription = context.textTranscription
-                        }, modifier = Modifier.fillMaxWidth()
+                        },
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
 
                 EnumSwitchSetting(
-                    label = "Тамга транскрипция", selected = letterTranscription, optionOn = LetterTranscription.On, optionOff = LetterTranscription.Off, onSelect = {
+                    label = Loc_Settings.letterTranscription.localizedTitle(LocalContext.current),
+                    selected = letterTranscription,
+                    optionOn = LetterTranscription.On,
+                    optionOff = LetterTranscription.Off,
+                    onSelect = {
                         context.letterTranscription = if (it == LetterTranscription.On) LetterTranscription.On else LetterTranscription.Off
                         letterTranscription = context.letterTranscription
-                    }, modifier = Modifier.fillMaxWidth()
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
-                    label = "Эки чекит", options = WordSeparator.entries, selected = wordSeparator, onSelect = { alpha ->
+                    label = Loc_Settings.colon.localizedTitle(LocalContext.current), options = WordSeparator.entries, selected = wordSeparator, onSelect = { alpha ->
                         context.wordSeparator = alpha
                         wordSeparator = context.wordSeparator
                     }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
@@ -242,18 +264,30 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Сезилиш", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    text = Loc_Settings.experience.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
                 EnumSwitchSetting(
-                    label = "Түстөө", selected = coloring, optionOn = Coloring.On, optionOff = Coloring.Off, onSelect = {
+                    label = Loc_Settings.coloring.localizedTitle(LocalContext.current), selected = coloring, optionOn = Coloring.On, optionOff = Coloring.Off, onSelect = {
                         context.coloring = if (it == Coloring.On) Coloring.On else Coloring.Off
                         coloring = context.coloring
                     }, modifier = Modifier.fillMaxWidth()
                 )
 
                 EnumSwitchSetting(
-                    label = "Дирилдөө", selected = vibrations, optionOn = Vibrations.On, optionOff = Vibrations.Off, onSelect = {
+                    label = Loc_Settings.holdabilityIndicator.localizedTitle(LocalContext.current),
+                    selected = holdabilityColoring,
+                    optionOn = HoldabilityColoring.On,
+                    optionOff = HoldabilityColoring.Off,
+                    onSelect = {
+                        context.holdabilityColoring = if (it == HoldabilityColoring.On) HoldabilityColoring.On else HoldabilityColoring.Off
+                        holdabilityColoring = context.holdabilityColoring
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                EnumSwitchSetting(
+                    label = Loc_Settings.vibration.localizedTitle(LocalContext.current), selected = vibrations, optionOn = Vibrations.On, optionOff = Vibrations.Off, onSelect = {
                         context.vibrations = if (it == Vibrations.On) Vibrations.On else Vibrations.Off
                         vibrations = context.vibrations
                     }, modifier = Modifier.fillMaxWidth()
@@ -282,12 +316,12 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Тамгалар", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    text = Loc_Settings.letters.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
                 if (keyboardVariant != BitikVariant.CLASSIC) {
                     CenteredDropdownPopup(
-                        label = "аЖ тамга", options = AJ_Letter_Variant.entries, selected = ajVariant, onSelect = { alpha ->
+                        label = Loc_Settings.ajLetter.localizedTitle(LocalContext.current), options = AJ_Letter_Variant.entries, selected = ajVariant, onSelect = { alpha ->
                             ajVariant = alpha
                             context.ajVariant = alpha
                         }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
@@ -295,30 +329,30 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                 }
 
                 CenteredDropdownPopup(
-                    label = "эБ тамга", options = EB_Letter_Variant.entries, selected = ebVariant, onSelect = { alpha ->
+                    label = Loc_Settings.ebLetter.localizedTitle(LocalContext.current), options = EB_Letter_Variant.entries, selected = ebVariant, onSelect = { alpha ->
                         ebVariant = alpha
                         context.ebVariant = alpha
                     }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 CenteredDropdownPopup(
-                    label = "эН тамга", options = EN_Letter_Variant.entries, selected = eNariant, onSelect = { alpha ->
+                    label = Loc_Settings.enLetter.localizedTitle(LocalContext.current), options = EN_Letter_Variant.entries, selected = eNariant, onSelect = { alpha ->
                         eNariant = alpha
                         context.enVariant = alpha
                     }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 
                 if (bitikDialect == BitikDialect.Altay) {
-                    Text("Алтай варианты үчүн:")
+                    Text(Loc_Settings.forAltayDialekt.localizedTitle(LocalContext.current))
                     CenteredDropdownPopup(
-                        label = "аС тамга", options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
+                        label = Loc_Settings.asLetter.localizedTitle(LocalContext.current), options = AS_Letter_Variant.entries, selected = asVariant, onSelect = { alpha ->
                             asVariant = alpha
                             context.asVariant = alpha
                         }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                     )
 
                     CenteredDropdownPopup(
-                        label = "эК тамга", options = EK_Letter_Variant.entries, selected = ekVariant, onSelect = { alpha ->
+                        label = Loc_Settings.ekLetter.localizedTitle(LocalContext.current), options = EK_Letter_Variant.entries, selected = ekVariant, onSelect = { alpha ->
                             ekVariant = alpha
                             context.ekVariant = alpha
                         }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
@@ -326,7 +360,7 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
 
                     if (keyboardVariant != BitikVariant.CLASSIC) {
                         CenteredDropdownPopup(
-                            label = "эШ тамга", options = ESH_Letter_Variant.entries, selected = eshVariant, onSelect = { alpha ->
+                            label = Loc_Settings.eshLetter.localizedTitle(LocalContext.current), options = ESH_Letter_Variant.entries, selected = eshVariant, onSelect = { alpha ->
                                 eshVariant = alpha
                                 context.eshVariant = alpha
                             }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
@@ -335,10 +369,10 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                 }
 
                 if (bitikDialect == BitikDialect.Orkon) {
-                    Text("Орхон варианты үчүн:")
+                    Text(Loc_Settings.forOrhonDialekt.localizedTitle(LocalContext.current))
 
                     EnumSwitchSetting(
-                        label = "аҢ тамга", selected = angVariant, optionOn = ANG_Letter_Variant.On, optionOff = ANG_Letter_Variant.Off, onSelect = {
+                        label = Loc_Settings.angLetter.localizedTitle(LocalContext.current), selected = angVariant, optionOn = ANG_Letter_Variant.On, optionOff = ANG_Letter_Variant.Off, onSelect = {
                             context.angVariant = it
                             angVariant = context.angVariant
                         }, modifier = Modifier.fillMaxWidth()
@@ -361,7 +395,10 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Жеткиликтүүлүк", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    text = Loc_Settings.accessability.localizedTitle(LocalContext.current),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
                 )
 
                 HorizontalDivider()
@@ -396,25 +433,42 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = "Кошумча ариптер", style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
+                    text = Loc_Settings.otherAlphabets.localizedTitle(LocalContext.current),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
                 )
 
                 EnumSwitchSetting(
-                    label = "Латын жазуусу", selected = latinStatus, optionOn = Latin_Status.On, optionOff = Latin_Status.Off, onSelect = {
-                        context.latinStatus = if (it == Latin_Status.On) Latin_Status.On else Latin_Status.Off
+                    label = Loc_Settings.latinAlphabet.localizedTitle(LocalContext.current), selected = latinStatus, optionOn = Latin_Status.On, optionOff = Latin_Status.Off, onSelect = {
+                        context.latinStatus = it
                         latinStatus = context.latinStatus
                     }, modifier = Modifier.fillMaxWidth()
                 )
 
+                CenteredDropdownPopup(
+                    label = Loc_Settings.latinAlphabet.localizedTitle(LocalContext.current), selected = latinVariant, options = Latin_Variant.entries, onSelect = {
+                        context.latinVariant = it
+                        latinVariant = context.latinVariant
+                    }, optionLabel = { it.id.localized("settings", context) }, modifier = Modifier.fillMaxWidth()
+                )
+
+                CenteredDropdownPopup(
+                    label = "zh (ж)", selected = latinZH, options = Latin_ZH.entries, onSelect = {
+                        context.latinZH = it
+                        latinZH = context.latinZH
+                    }, modifier = Modifier.fillMaxWidth()
+                )
+
                 EnumSwitchSetting(
-                    label = "Араб жазуусу", selected = arabStatus, optionOn = Arabic_Status.On, optionOff = Arabic_Status.Off, onSelect = {
-                        context.arabicStatus = if (it == Arabic_Status.On) Arabic_Status.On else Arabic_Status.Off
+                    label = Loc_Settings.arabAlphabet.localizedTitle(LocalContext.current), selected = arabStatus, optionOn = Arabic_Status.On, optionOff = Arabic_Status.Off, onSelect = {
+                        context.arabicStatus = it
                         arabStatus = context.arabicStatus
                     }, modifier = Modifier.fillMaxWidth()
                 )
 
                 EnumSwitchSetting(
-                    label = "Кирил жазуусу", selected = kirilisaStatus, optionOn = Kirilisa_Status.On, optionOff = Kirilisa_Status.Off, onSelect = {
+                    label = Loc_Settings.kirilAlphabet.localizedTitle(LocalContext.current), selected = kirilisaStatus, optionOn = Kirilisa_Status.On, optionOff = Kirilisa_Status.Off, onSelect = {
                         context.kirilisaStatus = if (it == Kirilisa_Status.On) Kirilisa_Status.On else Kirilisa_Status.Off
                         kirilisaStatus = context.kirilisaStatus
                     }, modifier = Modifier.fillMaxWidth()

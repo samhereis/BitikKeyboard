@@ -14,6 +14,8 @@ import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EK_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
+import com.shoktuk.shoktukkeyboard.project.data.Latin_ZH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ajVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
@@ -24,6 +26,8 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
@@ -101,7 +105,7 @@ object KeyboardViewBuilder {
         var isBitik = MyKeyboardService.current_writingSystem == WritingSystem.Bitik
         var isLeftSide = isBitik || MyKeyboardService.current_writingSystem == WritingSystem.Arab
 
-        if (MyKeyboardService.maxButtonInOneRow > 10) {
+        if (MyKeyboardService.current_writingSystem == WritingSystem.Kiril) {
             systemKeybWidth = keybWidth
         }
 
@@ -252,7 +256,7 @@ object KeyboardViewBuilder {
 
                     if (key.name == "ş") {
                         keyToSet = keyToSet.copy(
-                            lowercase = "𐱁", lowerCaseHold = "𐱀", lowerCaseRomanization = "Ш", upperCaseHold = "𐰿", upperCaseRomanization = "Ш"
+                            lowercase = "𐱁", lowerCaseHold = "𐱀", lowerCaseRomanization = "Ş", upperCaseHold = "𐰿", upperCaseRomanization = "Ş"
                         )
                         return keyToSet
                     }
@@ -274,6 +278,21 @@ object KeyboardViewBuilder {
                     }
                 }
             } else {
+
+                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinVariant == Latin_Variant.minimal && context.latinZH == Latin_ZH.c) {
+                    if (key.name == "j") {
+                        keyToSet = keyToSet.copy(
+                            lowercase = "c", lowerCaseRomanization = "j", lowerCaseHold = "j", uppercase = "C", upperCaseRomanization = "J", upperCaseHold = "J"
+                        )
+                    }
+
+                    if (key.name == "ç") {
+                        keyToSet = keyToSet.copy(
+                            lowerCaseHold = null, lowerCaseRomanization = null, lowerCaseRomanization_Alt = null, upperCaseHold = null, upperCaseRomanization = null, upperCaseRomanization_Alt = null
+                        )
+                    }
+                }
+
                 if (key.name == "⸮") {
                     keyToSet = key.copy(
                         lowercase = "?", lowerCaseHold = "⸮", lowerCaseRomanization = "⸮", uppercase = "?", upperCaseHold = "⸮", upperCaseRomanization = "⸮"
@@ -299,7 +318,7 @@ object KeyboardViewBuilder {
 
     private fun getANG(key: KeyEntry): KeyEntry {
         return key.copy(
-            lowercase = "𐰭", lowerCaseRomanization = "Ң", upperCaseRomanization = "Ң"
+            lowercase = "𐰭", lowerCaseRomanization = "Ñ", upperCaseRomanization = "Ñ"
         )
     }
 

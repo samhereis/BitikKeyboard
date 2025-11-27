@@ -72,6 +72,14 @@ object SettingsManager {
         get() = prefs().getEnum(Latin_Status.KEY, Latin_Status.On)
         set(v) = prefs().setEnum(Latin_Status.KEY, v)
 
+    var Context.latinVariant: Latin_Variant
+        get() = prefs().getEnum(Latin_Variant.KEY, Latin_Variant.minimal)
+        set(v) = prefs().setEnum(Latin_Variant.KEY, v)
+
+    var Context.latinZH: Latin_ZH
+        get() = prefs().getEnum(Latin_ZH.KEY, Latin_ZH.j)
+        set(v) = prefs().setEnum(Latin_ZH.KEY, v)
+
     var Context.arabicStatus: Arabic_Status
         get() = prefs().getEnum(Arabic_Status.KEY, Arabic_Status.Off)
         set(v) = prefs().setEnum(Arabic_Status.KEY, v)
@@ -83,6 +91,10 @@ object SettingsManager {
     var Context.coloring: Coloring
         get() = prefs().getEnum(Coloring.KEY, Coloring.On)
         set(v) = prefs().setEnum(Coloring.KEY, v)
+
+    var Context.holdabilityColoring: HoldabilityColoring
+        get() = prefs().getEnum(HoldabilityColoring.KEY, HoldabilityColoring.On)
+        set(v) = prefs().setEnum(HoldabilityColoring.KEY, v)
 
     var Context.vibrations: Vibrations
         get() = prefs().getEnum(Vibrations.KEY, Vibrations.On)

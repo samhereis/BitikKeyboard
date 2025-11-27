@@ -28,11 +28,11 @@ class JSTranscriber(context: Context) {
             if (MyKeyboardService.context.angVariant == ANG_Letter_Variant.Off) {
                 var normalizedSource = Normalizer.normalize(js, Normalizer.Form.NFC)
 
-                var old = """new TranscriptionEntry("𐰭", "еҢ", CharacterType.SoftConsonant),"""
-                var new = """new TranscriptionEntry("𐰭", "Ң", CharacterType.HardConsonant_Single),"""
+                var old = """new TranscriptionEntry("𐰭", "eÑ", CharacterType.SoftConsonant),"""
+                var new = """new TranscriptionEntry("𐰭", "Ñ", CharacterType.HardConsonant_Single),"""
                 js = normalizedSource.replace(old, new)
 
-                old = """new TranscriptionEntry("𐰬", "аҢ", CharacterType.HardConsonant),"""
+                old = """new TranscriptionEntry("𐰬", "aÑ", CharacterType.HardConsonant),"""
                 new = ""
                 js = js.replace(old, new)
             }

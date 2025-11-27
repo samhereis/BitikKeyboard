@@ -14,8 +14,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_SideMenu
 
 @Composable
 fun TestKeyboard_Screen() {
@@ -28,9 +30,6 @@ fun TestKeyboard_Screen() {
             .padding(WindowInsets.Side.TOP.dp)
             .padding(10.dp)
     ) {
-        Text(
-            text = "Баскычтопту иштетип көрүңүз", modifier = Modifier.padding(bottom = 8.dp)
-        )
         TextField(
             value = text, onValueChange = { newValue -> text = newValue }, modifier = Modifier.fillMaxSize()
         )

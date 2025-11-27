@@ -20,6 +20,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -94,6 +98,7 @@ fun HowToEnable_Screen() {
 @Composable
 fun NavBarPaddingSolutionView() {
     val context = LocalContext.current
+    var selected by remember { mutableStateOf(context.navBarPaddingSolution) }
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -127,9 +132,10 @@ fun NavBarPaddingSolutionView() {
             CenteredDropdownPopup(
                 label = Loc_HowToEnable.freeSpaceSetting.localizedTitle(context),
                 options = NavBarPaddingSolution.entries,
-                selected = context.navBarPaddingSolution,
+                selected = selected,
                 onSelect = { alpha ->
-                    context.navBarPaddingSolution = alpha
+                    selected = alpha
+                    context.navBarPaddingSolution = selected
                 },
                 optionLabel = { it.id },
                 modifier = Modifier.fillMaxWidth()

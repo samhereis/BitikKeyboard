@@ -72,8 +72,8 @@ fun BitikRule2() {
             )
 
             Column {
-                Text("О  + аЙ + аД + О = Ойдо", color = MaterialTheme.colorScheme.error)
-                Text("Ө + эР + ҮК = Өрүк", color = MaterialTheme.colorScheme.error)
+                Text("O  + aY + aD + O = Oydo", color = MaterialTheme.colorScheme.error)
+                Text("Ö + eR + ÜK = Örük", color = MaterialTheme.colorScheme.error)
             }
 
             SectionCard {

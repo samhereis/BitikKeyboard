@@ -3,6 +3,7 @@ package com.shoktuk.shoktukkeyboard
 import BasicInfo_Screen
 import HowToEnable_Screen
 import Language
+import LetterMemorizeScreenCompose
 import LocalizationManager
 import OriginalTamgasView
 import SideMenuHeader
@@ -16,12 +17,15 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.DrawerState
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -43,6 +47,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.LinkAnnotation
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextLinkStyles
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.withLink
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -87,44 +98,90 @@ fun SideMenuView() {
 
     var currentLanguage by remember { mutableStateOf(LocalizationManager.currentLanguage) }
 
-    ModalNavigationDrawer(
-        drawerState = drawerState, gesturesEnabled = isMainScreen, drawerContent = {
-            ModalDrawerSheet {
-                Column {
-                    SideMenuHeader(
-                        modifier = Modifier
-                            .padding(top = 25.dp)
-                            .padding(bottom = 10.dp)
-                    )
-                }
-                items.forEach { drawerItem ->
-                    val selected = currentRoute == drawerItem.path.titleKey
-                    NavigationDrawerItem(
-                        selected = selected, onClick = {
-                            navigateRoot(scope, drawerState, navController, drawerItem.path.titleKey)
-                        }, icon = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start
-                            ) {
-                                Icon(
-                                    imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
-                                )
-                                Text(text = drawerItem.path.titleKey.localized("sideBar", context))
-                            }
-                        }, label = {}, modifier = Modifier.padding(5.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.weight(1f))
+    val uriHandler = LocalUriHandler.current
+    val rawText = "languageDisclaimer".localized("sideBar", context)
 
+    ModalNavigationDrawer(drawerState = drawerState, gesturesEnabled = isMainScreen, drawerContent = {
+        ModalDrawerSheet {
+            SideMenuHeader(
+                modifier = Modifier
+                    .padding(top = 25.dp)
+                    .padding(bottom = 10.dp)
+            )
+            items.forEach { drawerItem ->
+                val selected = currentRoute == drawerItem.path.titleKey
+                NavigationDrawerItem(
+                    selected = selected, onClick = {
+                        navigateRoot(scope, drawerState, navController, drawerItem.path.titleKey)
+                    }, icon = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Start
+                        ) {
+                            Icon(
+                                imageVector = drawerItem.icon, contentDescription = null, modifier = Modifier.padding(10.dp)
+                            )
+                            Text(text = drawerItem.path.titleKey.localized("sideBar", context))
+                        }
+                    }, label = {}, modifier = Modifier.padding(5.dp)
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+
+            val annotated = buildAnnotatedString {
+                val parts: List<String> = rawText.split("[link]")
+                append(parts.getOrNull(0).orEmpty())
+
+                // Insert link
+                withLink(
+                    LinkAnnotation.Url(
+                        url = "https://t.me/shoktuk_bitik", styles = TextLinkStyles(
+                            style = SpanStyle(
+                                color = MaterialTheme.colorScheme.primary, textDecoration = TextDecoration.Underline
+                            )
+                        )
+                    )
+                ) {
+                    append("Telegram")
+                }
+
+                append(parts.getOrNull(1).orEmpty())
+            }
+
+            if (LocalizationManager.currentLanguage != Language.KY_L && LocalizationManager.currentLanguage != Language.KY_K) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .verticalScroll(rememberScrollState())
+                        .padding(top = 15.dp, bottom = 15.dp, end = 15.dp, start = 15.dp)
+                ) {
+                    Text(
+                        text = annotated, fontSize = 16.sp, style = MaterialTheme.typography.bodyMedium
+                    )
+                    HorizontalDivider(
+                        modifier = Modifier.padding(top = 15.dp, bottom = 15.dp, end = 15.dp, start = 15.dp)
+                    )
+                    CenteredDropdownPopup(
+                        label = "sideBar_language".localized("sideBar", context), options = Language.entries, selected = currentLanguage, onSelect = { alpha ->
+                            LocalizationManager.setLanguage(context, newLanguage = alpha)
+                            currentLanguage = alpha
+                        }, optionLabel = { it.displayName }, modifier = Modifier.fillMaxWidth()
+                    )
+
+                    AppVersionText(modifier = Modifier.padding(bottom = 25.dp))
+                }
+
+            } else {
                 CenteredDropdownPopup(
-                    label = "Тил", options = Language.entries, selected = currentLanguage, onSelect = { alpha ->
+                    label = "sideBar_language".localized("sideBar", context), options = Language.entries, selected = currentLanguage, onSelect = { alpha ->
                         LocalizationManager.setLanguage(context, newLanguage = alpha)
                         currentLanguage = alpha
                     }, optionLabel = { it.displayName }, modifier = Modifier.fillMaxWidth()
                 )
+
                 AppVersionText(modifier = Modifier.padding(bottom = 25.dp))
             }
-        }) {
+        }
+    }) {
         Scaffold(
             topBar = {
                 if (isMainScreen) {
@@ -164,12 +221,13 @@ fun SideMenuView() {
                 }
                 composable(Loc_SideMenu.SUPPORT.titleKey) { SupportScreen() }
 
-                composable(Loc_BasicInfo.USING_THE_KEYBOARD.titleKey) { OriginalTamgasView() }
-                composable(Loc_BasicInfo.ORIGINAL_BITIK.titleKey) { UseInstruction() }
+                composable(Loc_BasicInfo.USING_THE_KEYBOARD.titleKey) { UseInstruction() }
+                composable(Loc_BasicInfo.ORIGINAL_BITIK.titleKey) { OriginalTamgasView() }
                 composable(Loc_BasicInfo.RULE1.titleKey) { BitikRule1() }
                 composable(Loc_BasicInfo.RULE2.titleKey) { BitikRule2() }
                 composable(Loc_BasicInfo.RULE3.titleKey) { BitikRule3() }
                 composable(Loc_BasicInfo.RULE4.titleKey) { BitikRule4() }
+                composable(Loc_BasicInfo.MEMORIZE_TAMGAS.titleKey) { LetterMemorizeScreenCompose() }
 
                 composable(SettingScreens.SavedStrings.id) { SavedStringsScreen() }
             }

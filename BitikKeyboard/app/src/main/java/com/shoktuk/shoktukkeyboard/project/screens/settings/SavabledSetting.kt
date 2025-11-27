@@ -20,8 +20,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_Settings
 
 @Composable
 fun SavabledSetting(
@@ -36,7 +38,7 @@ fun SavabledSetting(
     ) {
         TextButton(
             onClick = { showHint = true }) {
-            Text("Сакталмалар", style = MaterialTheme.typography.bodyLarge)
+            Text(Loc_Settings.savables.localizedTitle(LocalContext.current), style = MaterialTheme.typography.bodyLarge)
             Icon(
                 imageVector = Icons.Default.Info, contentDescription = null
             )
@@ -50,7 +52,7 @@ fun SavabledSetting(
     if (showHint) {
         InfoFullScreen(
             drawables = mapOf(
-                R.drawable.settings_savables_0 to "Shift басып туруңуз", R.drawable.settings_savables_1 to ""
+                R.drawable.settings_savables_0 to Loc_Settings.holdShift.localizedTitle(LocalContext.current), R.drawable.settings_savables_1 to ""
             ), onClick = { showHint = false })
     }
 }

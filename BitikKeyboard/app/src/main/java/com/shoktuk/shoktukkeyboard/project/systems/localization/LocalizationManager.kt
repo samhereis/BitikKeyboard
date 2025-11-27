@@ -6,7 +6,13 @@ import androidx.core.content.edit
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 
 enum class Language(val code: String, val displayName: String) {
-    KY_L("ky_latin", "🇰🇬 Qırğız"), KY_K("ky_kiril", "🇰🇬 Кыргыз"), TR("tr", "🇹🇷 Türkçe"), KZ("kz", "🇰🇿 Қазақша"),AZ("az", "🇦🇿 Azərbaycan"), EN("en", "🇺🇸 English"), RU("ru", "🇷🇺 Русский")
+    KY_L("ky_latin", "🇰🇬 Qırğız"),
+    KY_K("ky_kiril", "🇰🇬 Кыргыз"),
+    //TR("tr", "🇹🇷 Türkçe"),
+    //KZ("kz", "🇰🇿 Қазақша"),
+    //AZ("az", "🇦🇿 Azərbaycan"),
+    EN("en", "🇺🇸 English"),
+    RU("ru", "🇷🇺 Русский")
 }
 
 fun String.localized(csvFileName: String = "Localizations", context: Context): String {
@@ -25,7 +31,7 @@ object LocalizationManager {
         val savedLangCode = prefs.getString(KEY_LANGUAGE, Language.KY_L.code)
         savedLangCode?.let { langCode ->
             Language.entries.find { it.code == langCode }?.let {
-                currentLanguage = Language.KY_L
+                currentLanguage = it
             }
         }
     }

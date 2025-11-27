@@ -21,7 +21,9 @@ import androidx.core.widget.TextViewCompat
 import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.Coloring
+import com.shoktuk.shoktukkeyboard.project.data.HoldabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.holdabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
@@ -158,7 +160,7 @@ class KeyView(
             paint.style = Paint.Style.FILL_AND_STROKE
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                this, 1, mainTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
+                mainText, 1, mainTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
             )
         }
 
@@ -171,32 +173,36 @@ class KeyView(
         subText_top.apply {
             text = second
             maxLines = lines
-            includeFontPadding = false
+            includeFontPadding = true
 
             setLineSpacing(0f, 1f)
             setTextColor(style.textColor.toColorInt())
             setTextSize(TypedValue.COMPLEX_UNIT_SP, hintButtonTextSize)
-            setPadding(0, -3, 0, 0)
 
             (layoutParams as FrameLayout.LayoutParams).apply {
                 gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
-                topMargin = edge
             }.also { layoutParams = it }
+
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                subText_top, 1, mainTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
+            )
         }
 
         subText_bottom.apply {
             text = first
             maxLines = lines
-            includeFontPadding = false
+            includeFontPadding = true
             setLineSpacing(0f, 1f)
             setTextColor(style.textColor.toColorInt())
             setTextSize(TypedValue.COMPLEX_UNIT_SP, hintButtonTextSize)
-            setPadding(0, 0, 0, -3)
 
             (layoutParams as FrameLayout.LayoutParams).apply {
                 gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
-                bottomMargin = edge
             }.also { layoutParams = it }
+
+            TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
+                subText_bottom, 1, mainTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
+            )
         }
 
         if (!MyKeyboardService.showLetterTranscription) {
@@ -396,8 +402,23 @@ class KeyView(
     }
 
     private fun addHoldIndicatorIfNeeded(root: View) {
-        if (context.coloring == Coloring.Off) {
-            return
+        if (MyKeyboardService.keyboardMode != KeyboardMode.Symbols) {
+            if (context.coloring == Coloring.Off) {
+                return
+            }
+            if (context.holdabilityColoring == HoldabilityColoring.Off) {
+                return
+            }
+
+            if (isCaps) {
+                if (key.uppercase_HoldabilityIndicator != "on") {
+                    return
+                }
+            } else {
+                if (key.lowerCase_HoldabilityIndicator != "on") {
+                    return
+                }
+            }
         }
 
         val hasHoldVariant = if (isCaps) {

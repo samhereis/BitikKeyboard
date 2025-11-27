@@ -10,6 +10,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_OriginalBitik
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Preview(showBackground = true)
@@ -25,19 +26,23 @@ fun VowelsAndCharactersView() {
     var context = LocalContext.current
 
     val colLeft = listOf(
-        BulletItem(text = "А/E - 𐰁/𐰀"), BulletItem(text = "E - 𐰂 ,𐰅"), BulletItem(text = "Ы/И - 𐰄 ,𐰃"), BulletItem(text = "О/U - 𐰆"), BulletItem(text = "Ө/Ү - 𐰇/𐰈")
+        BulletItem(text = "A/E - 𐰁/𐰀"),
+        BulletItem(text = "E - 𐰂 ,𐰅"),
+        BulletItem(text = "I/İ - 𐰄 ,𐰃"),
+        BulletItem(text = "O/U - 𐰆"),
+        BulletItem(text = "Ö/Ü - 𐰇/𐰈"),
     )
     val colRight = listOf(
-        BulletItem(text = "УҚ/ОҚ - 𐰹, 𐰸"),
-        BulletItem(text = "ҚЫ/ЫҚ - 𐰷 ,𐰶"),
-        BulletItem(text = "ҮК/ӨК - 𐰝, 𐰜"),
-        BulletItem(text = "ЧЫ/ЧИ - 𐰱"),
-        BulletItem(text = "РТ/Баш - 𐱈"),
-        BulletItem(text = "ЛТ - 𐰡"),
-        BulletItem(text = "НТ - 𐰦, 𐰧"),
-        BulletItem(text = "НЧ - 𐰩 ,𐰨"),
-        BulletItem(text = "ОТ - 𐱇"),
-        BulletItem(text = "НЙ - 𐰪, 𐰫")
+        BulletItem(text = "UQ/OQ - 𐰹, 𐰸"),
+        BulletItem(text = "QI/IQ - 𐰷 ,𐰶"),
+        BulletItem(text = "ÜK/ÖK - 𐰝, 𐰜"),
+        BulletItem(text = "ÇI/Çİ - 𐰱"),
+        BulletItem(text = "RT/BAŞ - 𐱈"),
+        BulletItem(text = "LT - 𐰡"),
+        BulletItem(text = "NT - 𐰦, 𐰧"),
+        BulletItem(text = "NÇ - 𐰩 ,𐰨"),
+        BulletItem(text = "OT - 𐱇"),
+        BulletItem(text = "NY/NÇ - 𐰪, 𐰫"),
     )
     Row(
         modifier = Modifier
@@ -46,11 +51,11 @@ fun VowelsAndCharactersView() {
             .padding(10.dp), horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         BulletColumnView(
-            items = colLeft, headline = "ot_vowels".localized("loc_originalTamgas", context), textColor = Color(0xFF0B84FE), // #ac8f68 converted to ARGB format
+            items = colLeft, headline = Loc_OriginalBitik.ot_vowels.localizedTitle(LocalContext.current), textColor = Color(0xFF0B84FE), // #ac8f68 converted to ARGB format
             modifier = Modifier.weight(1f)
         )
         BulletColumnView(
-            items = colRight, headline = "ot_characters".localized("loc_originalTamgas", context), textColor = Color(0xFFFFA500), modifier = Modifier.weight(1f)
+            items = colRight, headline = Loc_OriginalBitik.ot_characters.localizedTitle(LocalContext.current), textColor = Color(0xFFFFA500), modifier = Modifier.weight(1f)
         )
     }
 }

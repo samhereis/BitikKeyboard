@@ -1,7 +1,7 @@
 package com.shoktuk.shoktukkeyboard.project.data
 
 enum class BitikVariant(val id: String) {
-    CLASSIC("Түп нуска"), Modern("Демейки"), SAMAGAN("Заманбапталган");
+    CLASSIC("keyboardVariant_Classic"), Modern("keyboardVariant_Standart"), SAMAGAN("keyboardVariant_Modern");
 
     companion object {
         const val KEY = "keyboard_variant"
@@ -9,7 +9,7 @@ enum class BitikVariant(val id: String) {
 }
 
 enum class BitikDialect(val id: String) {
-    Altay("Алтай"), Orkon("Оркон");
+    Altay("keyboardDialect_Altay"), Orkon("keyboardDialect_Orhon");
 
     companion object {
         const val KEY = "BitikDialect"
@@ -104,6 +104,22 @@ enum class Latin_Status(val id: String) {
     }
 }
 
+enum class Latin_Variant(val id: String) {
+    minimal("latinAlphabet_Kyrgyz"), full("latinAlphabet_Full");
+
+    companion object {
+        const val KEY = "Latin_Variant"
+    }
+}
+
+enum class Latin_ZH(val id: String) {
+    j("j"), c("c");
+
+    companion object {
+        const val KEY = "Latin_ZH"
+    }
+}
+
 enum class Arabic_Status(val id: String) {
     Off("Өчүк"), On("Жанык");
 
@@ -133,6 +149,14 @@ enum class Coloring(val id: String) {
 
     companion object {
         const val KEY = "Coloring"
+    }
+}
+
+enum class HoldabilityColoring(val id: String) {
+    Off("Өчүк"), On("Жанык");
+
+    companion object {
+        const val KEY = "HoldabilityColoring"
     }
 }
 

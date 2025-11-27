@@ -14,6 +14,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.outlined.ContentCopy
 import androidx.compose.material.icons.outlined.Star
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -52,7 +53,7 @@ fun SupportScreen() {
     val snackbarHostState = remember { SnackbarHostState() }
     val scope = rememberCoroutineScope()
 
-    var mess = Loc_BasicInfo.CARD_NUMBER.localizedTitle(LocalContext.current)
+    var mess = Loc_BasicInfo.COPIED.localizedTitle(LocalContext.current)
 
     Scaffold(snackbarHost = {
         SnackbarHost(hostState = snackbarHostState)
@@ -89,7 +90,7 @@ fun SupportScreen() {
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Icon(
-                                imageVector = Icons.Outlined.Star, contentDescription = "Copy:", tint = MaterialTheme.colorScheme.onSurfaceVariant
+                                imageVector = Icons.Outlined.ContentCopy, contentDescription = "Copy:", tint = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }

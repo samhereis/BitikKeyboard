@@ -1,15 +1,15 @@
 key,ky_latin,ky_kiril,en,tr,kz,az,ru
 setting_no,Joq,Жок,No,Yok,Жоқ,,Нет
-setting_off,Öçük,Өчүк,Off,,,,
-setting_on,Janıq,Жанык,On,,,,
-keyboardVariant,Bitik türü,Битик түрү,Keyboard variant,Klavye Varyantı,Пернетақта нұсқасы,,Вариант письма
-keyboardVariant_Classic,Tüp nusqa,Түп нуска,Classic,Klasik,Түпнұсқа,,Стандартный
+setting_off,Öçük,Өчүк,Off,,,,Выкл
+setting_on,Janıq,Жанык,On,,,,Вкл
+keyboardVariant,Bitik türü,Битик түрү,Bitik variant,Bitik Varyantı,Битик нұсқасы,,Вариант Битика
+keyboardVariant_Classic,Tüp nusqa,Түп нуска,Classic,Klasik,Түпнұсқа,,Классический
 keyboardVariant_Classic_Note,"Bitik tuuraluu köp bilbeseñiz, demeykini qoldonuñuz. Al tüp nusqağa da jaqın, üyrönüü jana qoldonuu da oñoy.","Битик тууралуу көп билбесеңиз, демейкини колдонуңуз. Ал түп нускага да жакын, үйрөнүү жана колдонуу да оңой.","If you are unfamiliar with Bitik, please use the default variant. It is close to the original and modernized a bit for ease of use.",Varsayılanı kullanın; orijinale yakın ve kullanımı kolay.,Әдепкі нұсқасын пайдаланыңыз; түпнұсқасына жақын және қолдануға оңай.,,"Если вы не знакомы с Битиком, используйте вариант по умолчанию. Оно близко к оригиналу, но немного модернизировано совсем чуть чуть."
 keyboardVariant_Standart,Demeyki,Демейки,Default,Varsayılan,Әдепкі,,По умолчанию
 keyboardVariant_Standart_Note,"Demeyki variantı bul biraz ıñgaylaştırlğan orignal! Qarapayım qoldonuuçuğa da oñoy, tüp nusqağa da jaqın.","Демейки варианты бул бираз ыңгайлаштырылган оригинал! Карапайым колдонуучуга да оңой, түп нускага да жакын.",Default variant is the original Bitik but modernized a bit! It will be easy for an average user and does not violate the original Bitik rules.,Varsayılan varyant biraz uyarlanmış; kullanıcı için kolay ve orijinale yakın.,Әдепкі нұсқа аздап бейімделген; қарапайым қолданушыға оңай және түпнұсқасына жақын.,,"Вариант по умолчанию - это оригинал, но немного модернизированный. Подходит для обычного пользователя."
 keyboardVariant_Modern,Zamanbaptalğan,Заманбапталган,Modernized,Modernleştirilmiş,Модернизацияланған,,Модернизированный
 keyboardVariant_Modern_Note,"Ooba, ıñgayluu biroq rasmiy emes, avtor jañılağan bitik qoldonuudasız!","Ооба, ыңгайлуу бирок расмий эмес, автор жаңылаган битик колдонуудасыз!","You are using the modernized version (by the author). Although it is easy to use, it has letters that are not ""official"".",Rahat ama resmi değil; yazar tarafından değiştirilmiş,"Ыңғайлы, бірақ ресми емес; автор өзгерткен нұсқа!",,"Вы ипользуйте модернизованный автором вариант. Да, оно удобное, но содержит ""неоффициальные"" тамги."
-keyboardDialect,Bitik dialekti,Битик диалекти,Keyboard dialect,Klavye Diyalekti,Пернетақта диалектісі,,Диалект клавиатуры
+keyboardDialect,Bitik dialekti,Битик диалекти,Bitik dialect,Bitik Diyalekti,Битик диалектісі,,Диалект Битика
 keyboardDialect_Altay,Altay,Алтай,Altay,Altay,Алтай,,Алтай
 keyboardDialect_Orhon,Orhon,Орхон,Orhon,Orhon,Орхон,,Орхон
 bitikLayout,Bitik tüzülüş,Битик түзүлүш,Bitik layout,,,,Битик раскладка
@@ -18,6 +18,7 @@ letterTranscription,Tamğa transkripsiya,Тамга транскрипция,Let
 colon,Eki çekit,Эки чекит,Colon,İki nokta,Екі нүкте,,Двоеточие
 experience,Seziliş,Сезилиш,Experience,Deneyim,Тәжірибе,,Прочее визуальное
 coloring,Tüstöö,Түстөө,Coloring,Renklendirme,Түстерлеу,,Окрашивание
+vibration,Dirildöö,Дириолөө,Vibration,,,,Вибрация
 holdabilityIndicator,Uzaq basa aluu belgisi,Узак баса алуу белгиси,Holdability indicator,Basılı tutma göstergesi,Ұзақ басу индикаторы,,Индикатор удерживания
 letters,Tamğalar,Тамгалар,Letters,,,,Буквы
 ajLetter,aJ tamğa,аЖ тамга,aJ letter,aJ Harfi,аЖ әрпі,,аЖ буква
@@ -38,6 +39,8 @@ otherAlphabets,Qoşumça aripter,Кошумча ариптер,Other alphabets,,
 latinAlphabet,Latın aribi,Латын ариби,Latin alphabet,,,,Латиница
 latinAlphabet_Kyrgyz,Azğana,Азгана,Minimal,,,,Минимальная
 latinAlphabet_Full,Toluq,Толук,Full,,,,Полная
+arabAlphabet,Arab aribi,Араб ариби,Arabic script,,,,Арабица
+kirilAlphabet,Kiril aribi,Кирил ариби,Cyrilic script,,,,Кириллица
 changeOrder,İrettöö,Итеттөө,Edit,,,,Изменить
 add,Qoş,Кош,Add,,,,Добавить
 ready,Dayar,Даяр,Ready,,,,Готово

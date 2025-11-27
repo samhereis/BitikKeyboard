@@ -18,6 +18,7 @@ import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
+import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.NavBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
@@ -25,6 +26,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.navBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
@@ -196,11 +198,7 @@ class MyKeyboardService : InputMethodService() {
     }
 
     private fun onModeChange(mode: KeyboardMode) {
-        if (mode == KeyboardMode.Emojis) {
-            keyboardMode = KeyboardMode.Emojis
-        } else {
-            keyboardMode = mode
-        }
+        keyboardMode = mode
         applyKeyboard()
     }
 
@@ -245,16 +243,20 @@ class MyKeyboardService : InputMethodService() {
         }
 
         var currentTamgaTranscription = current_letterTranscription
+        var currentMode = keyboardMode
+        keyboardMode = KeyboardMode.Symbols
+
         current_letterTranscription = LetterTranscription.On
         root_Symbols = KeyboardViewBuilder.buildKeyboardView(
             service = this,
-            layout = KeyboardLayoutLoader.loadKeyboardLayout(this, KeyboardMode.Symbols, getLanguage()),
+            layout = KeyboardLayoutLoader.loadKeyboardLayout(this, keyboardMode, getLanguage()),
             false,
-            KeyboardMode.Emojis,
+            keyboardMode,
             maxKeyCount = 10,
             onCapsChange = { isCaps = it; applyKeyboard() },
             onModeChange = { onModeChange(it) })
         current_letterTranscription = currentTamgaTranscription
+        keyboardMode = currentMode
 
         root_ShiftOn = KeyboardViewBuilder.buildKeyboardView(
             service = this,
@@ -337,6 +339,11 @@ class MyKeyboardService : InputMethodService() {
 
     fun getLanguage(): String {
         if (current_writingSystem != WritingSystem.Bitik) {
+            if (writingSystem == WritingSystem.Latin && context.latinVariant == Latin_Variant.full) {
+                maxButtonInOneRow = 12
+                return "latin_full"
+            }
+
             return current_writingSystem.id
         }
 
