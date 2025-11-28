@@ -33,6 +33,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shoktuk.shoktukkeyboard.keyboard.onSettingChanged
 import com.shoktuk.shoktukkeyboard.project.data.AJ_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ANG_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
@@ -63,6 +64,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.holdabilityColoring
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
@@ -84,6 +86,9 @@ import localized
 @Composable
 fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
     val context = LocalContext.current
+
+    var buttonHeight by remember { mutableStateOf(context.keyboardHeight) }
+
     var keyboardVariant by remember { mutableStateOf(context.keyboardVariant) }
     var bitikDialect by remember { mutableStateOf(context.bitikDialect) }
     var textTranscription by remember { mutableStateOf(context.textTranscription) }
@@ -132,6 +137,13 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     .fillMaxWidth()
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                SliderSetting(
+                    label = Loc_Settings.buttonHeight.localizedTitle(context), value = buttonHeight, valueRange = 100f..300f, onValueChange = {
+                        buttonHeight = it
+                        context.keyboardHeight = buttonHeight
+                        onSettingChanged.invoke()
+                    })
+
                 Text(
                     text = Loc_SideMenu.SETTINGS.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )

@@ -1,10 +1,12 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import Haptics
 import android.graphics.drawable.GradientDrawable
 import android.inputmethodservice.InputMethodService
 import android.os.Build
 import android.text.InputType
 import android.view.Gravity
+import android.view.HapticFeedbackConstants
 import android.view.MotionEvent
 import android.view.View
 import android.view.inputmethod.EditorInfo
@@ -12,7 +14,9 @@ import android.view.inputmethod.ExtractedText
 import android.view.inputmethod.ExtractedTextRequest
 import android.widget.LinearLayout
 import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.vibrations
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
+import com.shoktuk.shoktukkeyboard.project.data.Vibrations
 import com.shoktuk.shoktukkeyboard.project.data.WordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
@@ -64,6 +68,14 @@ object BottomRowBuilder {
         val targetHeight = (buttonHeight * 0.85f).toInt() // shrink height to 75%
 
         var returnView = SystemKeyBuilder.systemButton_Text(service, if (mode == KeyboardMode.Main) "⓬😀" else "🅰😀", buttonHeight, onClick = {
+            try {
+                if (MyKeyboardService.context.vibrations == Vibrations.On) {
+                    Haptics.perform(bottomRow, HapticFeedbackConstants.KEYBOARD_TAP)
+                }
+            } catch (e: Exception) {
+                print(e.message)
+            }
+
             if (MyKeyboardService.keyboardMode == KeyboardMode.Main) {
                 onModeChange(KeyboardMode.Symbols)
             } else {

@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 
 data class ButtonStyle(
@@ -49,7 +50,6 @@ object KeyboardTheme {
 
     private const val BASE_SCREEN_WIDTH_DP = 350f
     private const val MAX_SCALE_FACTOR = 1.5f
-    private const val BUTTON_HEIGHT_DP = 170
     const val KEY_MARGIN_DP = 0
     const val KEY_MARGIN_DP_OnlyVisual_H = 2
     const val KEY_MARGIN_DP_OnlyVisual_V = 6
@@ -101,7 +101,18 @@ object KeyboardTheme {
         return getLetterButtonWidth(context, maxKeyCount) + (getLetterButtonWidth(context) / 4)
     }
 
-    fun getButtonHeight(): Int = BUTTON_HEIGHT_DP
+    fun getButtonHeight(): Int {
+        var setting = MyKeyboardService.context.keyboardHeight
+        var settingDP = dpToPx(MyKeyboardService.context, setting)
+        var screenHeight = MyKeyboardService.context.resources.displayMetrics.heightPixels
+
+        if (settingDP > screenHeight / 2) {
+            var neededHeight = pxToDp(MyKeyboardService.context, screenHeight / 3)
+            return neededHeight
+        } else {
+            return setting
+        }
+    }
 
     private fun getLetterButtonTextSize(context: Context): TextUnit {
         val scaleFactor = getScaleFactor(context)
@@ -124,6 +135,10 @@ object KeyboardTheme {
     }
 
     fun dpToPx(context: Context, dp: Int): Int = (dp * context.resources.displayMetrics.density).toInt()
+    fun pxToDp(context: Context, px: Int): Int {
+        var density = context.resources.displayMetrics.density
+        return (px / context.resources.displayMetrics.density).toInt()
+    }
 
     fun createDrawableFromStyle(context: Context, style: ButtonStyle): GradientDrawable {
         return GradientDrawable().apply {

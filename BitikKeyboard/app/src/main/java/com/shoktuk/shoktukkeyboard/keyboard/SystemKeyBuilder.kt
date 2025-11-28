@@ -20,7 +20,9 @@ import android.widget.TextView
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.core.graphics.toColorInt
 import androidx.core.widget.TextViewCompat
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.vibrations
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
+import com.shoktuk.shoktukkeyboard.project.data.Vibrations
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
@@ -229,7 +231,14 @@ object SystemKeyBuilder {
 
     private fun wireShift(root: View, onCapsChange: (Boolean) -> Unit) {
         root.setOnClickListener {
-            Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
+            try {
+                if (MyKeyboardService.context.vibrations == Vibrations.On) {
+                    Haptics.perform(root, HapticFeedbackConstants.KEYBOARD_TAP)
+                }
+            } catch (e: Exception) {
+                print(e.message)
+            }
+
             onCapsChange(!MyKeyboardService.isCaps)
         }
     }
@@ -240,13 +249,27 @@ object SystemKeyBuilder {
         val repeater = object : Runnable {
             override fun run() {
                 performDelete(service)
+                try {
+                    if (MyKeyboardService.context.vibrations == Vibrations.On) {
+                        Haptics.perform(root, HapticFeedbackConstants.KEYBOARD_TAP)
+                    }
+                } catch (e: Exception) {
+                    print(e.message)
+                }
                 handler.postDelayed(this, interval)
             }
         }
         root.setOnTouchListener { v, e ->
             when (e.action) {
                 MotionEvent.ACTION_DOWN -> {
-                    Haptics.perform(root, HapticFeedbackConstants.KEYBOARD_TAP)
+                    try {
+                        if (MyKeyboardService.context.vibrations == Vibrations.On) {
+                            Haptics.perform(root, HapticFeedbackConstants.KEYBOARD_TAP)
+                        }
+                    } catch (e: Exception) {
+                        print(e.message)
+                    }
+
                     performDelete(service)
                     handler.postDelayed(repeater, interval)
                     true

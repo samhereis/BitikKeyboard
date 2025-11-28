@@ -278,7 +278,6 @@ object KeyboardViewBuilder {
                     }
                 }
             } else {
-
                 if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinVariant == Latin_Variant.minimal && context.latinZH == Latin_ZH.c) {
                     if (key.name == "j") {
                         keyToSet = keyToSet.copy(
@@ -293,12 +292,21 @@ object KeyboardViewBuilder {
                     }
                 }
 
-                if (key.name == "⸮") {
+                if (key.name == "⸮" || key.name == "?") {
                     keyToSet = key.copy(
                         lowercase = "?", lowerCaseHold = "⸮", lowerCaseRomanization = "⸮", uppercase = "?", upperCaseHold = "⸮", upperCaseRomanization = "⸮"
                     )
                     return keyToSet
                 }
+            }
+        }
+
+        if (MyKeyboardService.current_writingSystem == WritingSystem.Kiril || MyKeyboardService.current_writingSystem == WritingSystem.Latin) {
+            if (key.name == "⸮" || key.name == "?") {
+                keyToSet = key.copy(
+                    lowercase = "?", lowerCaseHold = "⸮", lowerCaseRomanization = "⸮", uppercase = "?", upperCaseHold = "⸮", upperCaseRomanization = "⸮"
+                )
+                return keyToSet
             }
         }
 

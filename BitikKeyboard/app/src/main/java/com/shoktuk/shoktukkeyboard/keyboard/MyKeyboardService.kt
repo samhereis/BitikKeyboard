@@ -1,6 +1,8 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import Haptics
 import android.inputmethodservice.InputMethodService
+import android.view.HapticFeedbackConstants
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -30,9 +32,11 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.navBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.vibrations
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
+import com.shoktuk.shoktukkeyboard.project.data.Vibrations
 import com.shoktuk.shoktukkeyboard.project.data.WordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
@@ -57,6 +61,20 @@ object onKeyPressed {
 
     fun invoke(ic: InputConnection, key: String, isSystemKey: Boolean = false) {
         listeners.forEach { it(ic, key, isSystemKey) }
+    }
+}
+
+object onSettingChanged {
+
+    private val listeners = mutableListOf<() -> Unit>()
+
+    fun addListener(listener: () -> Unit) {
+        listeners.clear()
+        listeners.add(listener)
+    }
+
+    fun invoke() {
+        listeners.forEach { it() }
     }
 }
 
@@ -110,6 +128,10 @@ class MyKeyboardService : InputMethodService() {
         keyboardMode = KeyboardMode.Main
 
         if (currentLayout != null) {
+            reloadKeyboard()
+        }
+
+        onSettingChanged.addListener {
             reloadKeyboard()
         }
     }
@@ -395,6 +417,14 @@ class MyKeyboardService : InputMethodService() {
 
             TopRowBuilder_Old.onTypedListener?.invoke()
         }
+
+        try {
+            if (MyKeyboardService.context.vibrations == Vibrations.On) {
+                Haptics.perform(root as View, HapticFeedbackConstants.KEYBOARD_TAP)
+            }
+        } catch (e: Exception) {
+            print(e.message)
+        }
     }
 
     fun replaceText(ic: InputConnection, toPasteAfter: String) {
@@ -409,7 +439,6 @@ class MyKeyboardService : InputMethodService() {
         }
 
         ic.commitText(toPasteAfter, 1)
-
         TopRowBuilder_Old.onTypedListener?.invoke()
     }
 

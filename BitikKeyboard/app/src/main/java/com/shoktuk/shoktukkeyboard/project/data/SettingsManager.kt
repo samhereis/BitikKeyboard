@@ -16,8 +16,19 @@ object SettingsManager {
     private fun SharedPreferences.setEnum(key: String, value: Enum<*>) = edit { putString(key, value.name) }
 
     private fun SharedPreferences.getStringOrDefault(key: String, default: String): String = getString(key, default) ?: default
-
     private fun SharedPreferences.setString(key: String, value: String) = edit { putString(key, value) }
+
+    private fun SharedPreferences.getIntOrDefault(key: String, default: Int): Int {
+        try {
+            return getInt(key, default) ?: default
+        } catch (e: Exception) {
+            print(e)
+        }
+
+        return 170
+    }
+
+    private fun SharedPreferences.setInt(key: String, value: Int) = edit { putInt(key, value) }
 
     // --- Properties ---
     var Context.keyboardVariant: BitikVariant
@@ -116,11 +127,11 @@ object SettingsManager {
         get() = prefs().getEnum(WritingSystem.KEY, WritingSystem.Bitik)
         set(v) = prefs().setEnum(WritingSystem.KEY, v)
 
-    var Context.currentLanguage: WritingSystem
-        get() = prefs().getEnum(WritingSystem.KEY, WritingSystem.Bitik)
-        set(v) = prefs().setEnum(WritingSystem.KEY, v)
-
     var Context.navBarPaddingSolution: NavBarPaddingSolution
         get() = prefs().getEnum(NavBarPaddingSolution.KEY, NavBarPaddingSolution.Solution_AllEnabled)
         set(v) = prefs().setEnum(NavBarPaddingSolution.KEY, v)
+
+    var Context.keyboardHeight: Int
+        get() = prefs().getIntOrDefault("buttonHeight", 170)
+        set(v) = prefs().setInt("buttonHeight", v)
 }

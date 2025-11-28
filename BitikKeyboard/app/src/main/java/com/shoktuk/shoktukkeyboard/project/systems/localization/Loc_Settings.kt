@@ -64,7 +64,8 @@ enum class Loc_Settings(
     add("add", "tray.full"),
     ready("ready", "tray.full"),
     holdShift("holdShift", "tray.full"),
-    andChooseSavables("andChooseSavables", "tray.full");
+    andChooseSavables("andChooseSavables", "tray.full"),
+    buttonHeight("buttonHeight", "tray.full");
 
     val fileName: String
         get() = "settings"
