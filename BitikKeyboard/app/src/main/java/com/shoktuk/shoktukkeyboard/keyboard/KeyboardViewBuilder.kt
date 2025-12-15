@@ -254,6 +254,11 @@ object KeyboardViewBuilder {
                         return keyToSet
                     }
 
+                    if (key.name == "s") {
+                        keyToSet = getAS(keyToSet)
+                        return keyToSet
+                    }
+
                     if (key.name == "ş") {
                         keyToSet = keyToSet.copy(
                             lowercase = "𐱁", lowerCaseHold = "𐱀", lowerCaseRomanization = "Ş", upperCaseHold = "𐰿", upperCaseRomanization = "Ş"

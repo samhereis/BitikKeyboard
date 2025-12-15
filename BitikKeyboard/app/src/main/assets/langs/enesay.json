@@ -19,6 +19,7 @@
       {
         "name": "ş",
         "lowercase": "𐱀",
+        "lowerCaseHold":"𐰿" ,
         "lowerCaseRomanization": "aŞ",
         "lowerCase_HoldabilityIndicator": "on",
         "uppercase": "𐱁",
@@ -42,7 +43,8 @@
         "lowerCaseHold": "𐰻",
         "lowerCaseRomanization": "aR",
         "uppercase": "𐰼",
-        "upperCaseRomanization": "eR"
+        "upperCaseRomanization": "eR",
+        "upperCaseHold": "𐋄"
       },
       {
         "name": "t",
@@ -59,14 +61,15 @@
         "lowerCaseRomanization": "aY",
         "lowerCaseHold": "𐰗",
         "uppercase": "𐰘",
-        "upperCaseRomanization": "eJ"
+        "upperCaseRomanization": "eY"
       },
       {
         "name": "u",
         "lowercase": "𐰩",
+        "lowerCaseHold": "𐤋",
         "lowerCaseRomanization": "U",
         "backgroundColorIndex_lowercase": 4,
-        "uppercase": "𐰈",
+        "uppercase":"𐰈",
         "upperCaseRomanization": "Ü",
         "backgroundColorIndex_uppercase": 4
       },
@@ -89,14 +92,17 @@
         "backgroundColorIndex_lowercase_Hold": 5,
         "lowerCase_HoldabilityIndicator": "on",
         "uppercase": "𐰇",
+        "upperCaseHold": "𐌂",
         "upperCaseRomanization": "Ö",
         "backgroundColorIndex_uppercase": 4
       },
       {
         "name": "p",
         "lowercase": "𐰯",
+        "lowerCaseHold": "𐪍",
         "lowerCaseRomanization": "P",
         "uppercase": "𐰯",
+        "upperCaseHold": "𐪍",
         "upperCaseRomanization":  "P"
       }
     ],
@@ -126,7 +132,8 @@
         "lowerCaseRomanization": "aD",
         "lowerCaseHold": "𐰒",
         "uppercase": "𐰓",
-        "upperCaseRomanization": "eD"
+        "upperCaseRomanization": "eD",
+        "upperCaseHold": "⊗"
       },
       {
         "name": "nt, nç",
@@ -177,7 +184,8 @@
         "lowerCaseRomanization": "aL",
         "lowerCaseHold": "𐰟",
         "uppercase": "𐰠",
-        "upperCaseRomanization": "eL"
+        "upperCaseRomanization": "eL",
+        "upperCaseHold": "Ξ"
       }
     ],
     [
@@ -189,7 +197,8 @@
         "lowercase": "𐰕",
         "lowerCaseRomanization": "Z",
         "uppercase": "𐰕",
-        "upperCaseRomanization": "Z"
+        "upperCaseRomanization": "Z",
+        "upperCaseHold": "𐤇"
       },
       {
         "name": "ñ",
@@ -247,6 +256,7 @@
         "name": "m",
         "lowercase": "𐰢",
         "lowerCaseRomanization": "M",
+        "lowerCaseHold": "߷",
         "uppercase": "𐰢",
         "upperCaseRomanization": "M"
       },
