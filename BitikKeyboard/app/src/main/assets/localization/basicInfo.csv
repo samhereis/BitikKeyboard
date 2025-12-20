@@ -1,11 +1,11 @@
 key,ky_latin,ky_kiril,en,tr,kz,az,ru
-usingTheKeyboard,Basqıçtoptu Qoldonuu,Баскычтопту колдонуу,Using the Keyboard,Klavyeyi kullanma,Пернетақтаны пайдалану,,Использование клавиатуры
-originalBitik,Bitiktin Nusqası,Битиктин нускасы,Original Bitik,Orijinal Bitik,Битиктің түпнұсқасы,,Оригинал Битика
-bitikRules,Bitik erejeleri,Битик эрежелери,Bitik Rules,Bitik Kuralları,Битик ережелері,,Правила Битика
-rule1,№1 - Oñdon solğo jazılış,№1 - Оңдон солго жазылыш,No.1 – Right to left,№1 – Soldan sağa yazılır,№1 – Солдан оңға жазылады,,№1 – Пишется слева направо
-rule2,№2 - Qatuu/Jumşaq,№2 - Катуу/Жумшак,No.2 – Hard / Soft,№2 – Sert / Yumuşak,№2 – Қатты / Жұмсақ,,№2 – Твёрдый / Мягкий
-rule3,№3 - Qısqa jazılış,№3 - Кыска жазылыш,No.3 – Short Writing,№3 – Kısa yazım,№3 – Қысқа жазу,,№3 – Краткое написание
-rule4,№4 - Qurama sözdör,№4 - Курама сөздөр,No.4 – Compound Words,№4 – Bileşik kelimeler,№4 – Құрама сөздер,,№4 – Составные слова
-memorizeTamgas,Bitik jattoo,Битик жаттоо,Memorize letters,,,,Выучить буквы
-cardNumber,MBank qartası,MBank картасы,MBank card number,,,,MBank карта
-coppied,Köçürüldü!,Көчүрүлдү!,Coppied!,,,,Скопировано
+usingTheKeyboard,Basqıçtoptu Qoldonuu,Баскычтопту колдонуу,Using the Keyboard,Klavyeyi kullanma,Пернетақтаны пайдалану,Klaviaturadan istifadə,Использование клавиатуры
+originalBitik,Bitiktin Nusqası,Битиктин нускасы,Original Bitik,Orijinal Bitik,Битиктің түпнұсқасы,Orijinal Bitik,Оригинал Битика
+bitikRules,Bitik erejeleri,Битик эрежелери,Bitik Rules,Bitik Kuralları,Битик ережелері,Bitik qaydaları,Правила Битика
+rule1,№1 - Oñdon solğo jazılış,№1 - Оңдон солго жазылыш,No.1 – Right to left,№1 – Soldan sağa yazılır,№1 – Солдан оңға жазылады,№1 – Sağdan sola yazılır,№1 – Пишется слева направо
+rule2,№2 - Qatuu/Jumşaq,№2 - Катуу/Жумшак,No.2 – Hard / Soft,№2 – Sert / Yumuşak,№2 – Қатты / Жұмсақ,№2 – Sərt / Yumşaq,№2 – Твёрдый / Мягкий
+rule3,№3 - Qısqa jazılış,№3 - Кыска жазылыш,No.3 – Short Writing,№3 – Kısa yazım,№3 – Қысқа жазылу,№3 – Qısa yazılış,№3 – Краткое написание
+rule4,№4 - Qurama sözdör,№4 - Курама сөздөр,No.4 – Compound Words,№4 – Bileşik kelimeler,№4 – Құрама сөздер,№4 – Mürəkkəb sözlər,№4 – Составные слова
+memorizeTamgas,Bitik jattoo,Битик жаттоо,Memorize letters,Harfleri ezberle,Әріптерді жаттау,Hərfləri əzbərlə,Выучить буквы
+cardNumber,MBank qartası,MBank картасы,MBank card number,MBank kart numarası,MBank карта нөмірі,MBank kart nömrəsi,MBank карта
+coppied,Köçürüldü!,Көчүрүлдү!,Coppied!,Kopyalandı!,Көшірілді!,Kopyalandı!,Скопировано

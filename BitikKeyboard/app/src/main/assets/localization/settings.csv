@@ -1,49 +1,50 @@
 key,ky_latin,ky_kiril,en,tr,kz,az,ru
-setting_no,Joq,Жок,No,Yok,Жоқ,,Нет
-setting_off,Öçük,Өчүк,Off,,,,Выкл
-setting_on,Janıq,Жанык,On,,,,Вкл
-keyboardVariant,Bitik türü,Битик түрү,Bitik variant,Bitik Varyantı,Битик нұсқасы,,Вариант Битика
-keyboardVariant_Classic,Tüp nusqa,Түп нуска,Classic,Klasik,Түпнұсқа,,Классический
-keyboardVariant_Classic_Note,"Bitik tuuraluu köp bilbeseñiz, demeykini qoldonuñuz. Al tüp nusqağa da jaqın, üyrönüü jana qoldonuu da oñoy.","Битик тууралуу көп билбесеңиз, демейкини колдонуңуз. Ал түп нускага да жакын, үйрөнүү жана колдонуу да оңой.","If you are unfamiliar with Bitik, please use the default variant. It is close to the original and modernized a bit for ease of use.",Varsayılanı kullanın; orijinale yakın ve kullanımı kolay.,Әдепкі нұсқасын пайдаланыңыз; түпнұсқасына жақын және қолдануға оңай.,,"Если вы не знакомы с Битиком, используйте вариант по умолчанию. Оно близко к оригиналу, но немного модернизировано совсем чуть чуть."
-keyboardVariant_Standart,Demeyki,Демейки,Default,Varsayılan,Әдепкі,,По умолчанию
-keyboardVariant_Standart_Note,"Demeyki variantı bul biraz ıñgaylaştırlğan orignal! Qarapayım qoldonuuçuğa da oñoy, tüp nusqağa da jaqın.","Демейки варианты бул бираз ыңгайлаштырылган оригинал! Карапайым колдонуучуга да оңой, түп нускага да жакын.",Default variant is the original Bitik but modernized a bit! It will be easy for an average user and does not violate the original Bitik rules.,Varsayılan varyant biraz uyarlanmış; kullanıcı için kolay ve orijinale yakın.,Әдепкі нұсқа аздап бейімделген; қарапайым қолданушыға оңай және түпнұсқасына жақын.,,"Вариант по умолчанию - это оригинал, но немного модернизированный. Подходит для обычного пользователя."
-keyboardVariant_Modern,Zamanbaptalğan,Заманбапталган,Modernized,Modernleştirilmiş,Модернизацияланған,,Модернизированный
-keyboardVariant_Modern_Note,"Ooba, ıñgayluu biroq rasmiy emes, avtor jañılağan bitik qoldonuudasız!","Ооба, ыңгайлуу бирок расмий эмес, автор жаңылаган битик колдонуудасыз!","You are using the modernized version (by the author). Although it is easy to use, it has letters that are not ""official"".",Rahat ama resmi değil; yazar tarafından değiştirilmiş,"Ыңғайлы, бірақ ресми емес; автор өзгерткен нұсқа!",,"Вы ипользуйте модернизованный автором вариант. Да, оно удобное, но содержит ""неоффициальные"" тамги."
-keyboardDialect,Bitik dialekti,Битик диалекти,Bitik dialect,Bitik Diyalekti,Битик диалектісі,,Диалект Битика
-keyboardDialect_Altay,Altay,Алтай,Altay,Altay,Алтай,,Алтай
-keyboardDialect_Orhon,Orhon,Орхон,Orhon,Orhon,Орхон,,Орхон
-bitikLayout,Bitik tüzülüş,Битик түзүлүш,Bitik layout,,,,Битик раскладка
-textTranscription,Jazuu transkripsiya,Жазуу транскрипция,Text transcription,Metin Transkripsiyonu,Мәтін транскрипциясы,,Транскрипция текста
-letterTranscription,Tamğa transkripsiya,Тамга транскрипция,Letter transcription,Harf Transkripsiyonu,Әріп транскрипциясы,,Транскрипция буквы
-colon,Eki çekit,Эки чекит,Colon,İki nokta,Екі нүкте,,Двоеточие
-experience,Seziliş,Сезилиш,Experience,Deneyim,Тәжірибе,,Прочее визуальное
-coloring,Tüstöö,Түстөө,Coloring,Renklendirme,Түстерлеу,,Окрашивание
-vibration,Dirildöö,Дириолөө,Vibration,,,,Вибрация
-holdabilityIndicator,Uzaq basa aluu belgisi,Узак баса алуу белгиси,Holdability indicator,Basılı tutma göstergesi,Ұзақ басу индикаторы,,Индикатор удерживания
-letters,Tamğalar,Тамгалар,Letters,,,,Буквы
-ajLetter,aJ tamğa,аЖ тамга,aJ letter,aJ Harfi,аЖ әрпі,,аЖ буква
-ebLetter,eB tamğa,эБ тамга,eB letter,eB Harfi,эБ әрпі,,эБ буква
-enLetter,eN tamğa,эН тамга,eN letter,eN Harfi,эН әрпі,,эН буква
-forAltayDialekt,Altay dialekti üçün,Алтай диалекти үчүн,For altay dialect,Altay lehçesi için,Алтай диалектісі үшін,,Для алтайского диалекта
-eshLetter,eŞ tamğa,эШ тамга,eŞ letter,eŞ Harfi,эШ әрпі,,эШ буква
-asLetter,aS tamğa,аС тамга,aS letter,aS Harfi,аС әрпі,,aС буква
-ekLetter,eK tamğa,эК тамга,eK letter,eK Harfi,эК әрпі,,эК буква
-forOrhonDialekt,Orhon dialekti üçün,Орхон диалекти үчүн,For orhon dialect,Orhon lehçesi için,Орхон диалектісі үшін,,Для орхонского диалекта
-angLetter,aÑ tamğa,аҢ тамга,aÑ letter,aÑ Harfi,аҢ әрпі,,аҢ буква
-accessability,Jetkiliktüülük,Жеткиликтүүлүк,Accessibility,Erişilebilirlik,Қолжетімділік,,Доступность
-freeLetter,Boş tamğa,Бош тамга,Free letter,Boş Harf,Бос әріп,,Пустая буква
-freeLetter_onHold,Basuuda,Басууда,On click,Basmada,Басқанда,,При нажатии
-freeLetter_onPress,Uzaq basuuda,Узак басууда,On long press,Uzun Basmada,Ұзақ басқанда,,При долгом нажатии
-savables,Saqtalmalar,Сакталмалар,Savables,Kaydedilenler,Сақталғандар,,Сохранялки
-otherAlphabets,Qoşumça aripter,Кошумча ариптер,Other alphabets,,,,Другие алфавиты
-latinAlphabet,Latın aribi,Латын ариби,Latin alphabet,,,,Латиница
-latinAlphabet_Kyrgyz,Azğana,Азгана,Minimal,,,,Минимальная
-latinAlphabet_Full,Toluq,Толук,Full,,,,Полная
-arabAlphabet,Arab aribi,Араб ариби,Arabic script,,,,Арабица
-kirilAlphabet,Kiril aribi,Кирил ариби,Cyrilic script,,,,Кириллица
-changeOrder,İrettöö,Итеттөө,Edit,,,,Изменить
-add,Qoş,Кош,Add,,,,Добавить
-ready,Dayar,Даяр,Ready,,,,Готово
-holdShift,Shift basıp turuñuz,Shift басып туруңуз,Hold on Shift,,,,Удерживайте Shift
-andChooseSavables,Jana saqtalma tandañız,Жана сакталма тандаңыз,And click on a savable,,,,Выберите сохранялку
-buttonHeight,Basqıçtop biyiktigi,Баскычтоп бийиктиги,Keyboard height,,,,Высота клавиатуры
+setting_no,Joq,Жок,No,Yok,Жоқ,Yox,Нет
+setting_off,Öçük,Өчүк,Off,Off,Sönmüş,Söndürülmüş,Выкл
+setting_on,Janıq,Жанык,On,On,Жанық,Açıq,Вкл
+keyboardVariant,Bitik türü,Битик түрү,Bitik variant,Bitik Varyantı,Битик нұсқасы,Bitik Variantı,Вариант Битика
+keyboardVariant_Classic,Tüp nusqa,Түп нуска,Classic,Klasik,Түпнұсқа,Klasik,Классический
+keyboardVariant_Classic_Note,"Bitik tuuraluu köp bilbeseñiz, demeykini qoldonuñuz. Al tüp nusqağa da jaqın, üyrönüü jana qoldonuu da oñoy.","Битик тууралуу көп билбесеңиз, демейкини колдонуңуз. Ал түп нускага да жакын, үйрөнүү жана колдонуу да оңой.","If you are unfamiliar with Bitik, please use the default variant. It is close to the original and modernized a bit for ease of use.",Varsayılanı kullanın; orijinale yakın ve kullanımı kolay.,Әдепкі нұсқасын пайдаланыңыз; түпнұсқасына жақын және қолдануға оңай.,"Bitiklə tanış deyilsinizsə, standart variantdan istifadə edin. Orijinala yaxındır və istifadə asanlığı üçün bir az müasirləşdirilmişdir.","Если вы не знакомы с Битиком, используйте вариант по умолчанию. Оно близко к оригиналу, но немного модернизировано совсем чуть чуть."
+keyboardVariant_Standart,Demeyki,Демейки,Default,Varsayılan,Әдепкі,Standart,По умолчанию
+keyboardVariant_Standart_Note,"Demeyki variantı bul biraz ıñgaylaştırlğan orignal! Qarapayım qoldonuuçuğa da oñoy, tüp nusqağa da jaqın.","Демейки варианты бул бираз ыңгайлаштырылган оригинал! Карапайым колдонуучуга да оңой, түп нускага да жакын.","Default variant is the original Bitik but modernized a bit! It will be easy for an average user and does not violate the original Bitik rules.","Varsayılan varyant biraz uyarlanmış; kullanıcı için kolay ve orijinale yakın.","Әдепкі нұсқа аздап бейімделген; қарапайым қолданушыға оңай және түпнұсқасына жақын.","Standart variant orijinal Bitikdir, lakin bir az müasirləşdirilmişdir! Adi istifadəçi üçün asan olacaq və orijinal Bitik qaydalarını pozmur.","Вариант по умолчанию - это оригинал, но немного модернизированный. Подходит для обычного пользователя."
+keyboardVariant_Modern,Zamanbaptalğan,Заманбапталган,Modernized,Modernleştirilmiş,Модернизацияланған,Müasirləşdirilmiş,Модернизированный
+keyboardVariant_Modern_Note,"Ooba, ıñgayluu biroq rasmiy emes, avtor jañılağan bitik qoldonuudasız!","Ооба, ыңгайлуу бирок расмий эмес, автор жаңылаган битик колдонуудасыз!","You are using the modernized version (by the author). Although it is easy to use, it has letters that are not ""official"".","Rahat ama resmi değil; yazar tarafından değiştirilmiş","Ыңғайлы, бірақ ресми емес; автор өзгерткен нұсқа!","Rahatdır, lakin rəsmi deyil; müəllif tərəfindən dəyişdirilmiş versiya!","Вы ипользуйте модернизованный автором вариант. Да, оно удобное, но содержит ""неоффициальные"" тамги."
+keyboardDialect,Bitik dialekti,Битик диалекти,Bitik dialect,Bitik Diyalekti,Битик диалектісі,Bitik Dialekti,Диалект Битика
+keyboardDialect_Altay,Altay,Алтай,Altay,Altay,Алтай,Altay,Алтай
+keyboardDialect_Orhon,Orhon,Орхон,Orhon,Orhon,Орхон,Orxon,Орхон
+bitikLayout,Bitik tüzülüş,Битик түзүлүш,Bitik layout,Bitik Yerleşimi,Bitik Ornatılışı,Bitik Düzülüşü,Битик раскладка
+textTranscription,Jazuu transkripsiya,Жазуу транскрипция,Text transcription,Metin Transkripsiyonu,Мәтін транскрипциясы,Mətn Transkripsiyası,Транскрипция текста
+letterTranscription,Tamğa transkripsiya,Тамга транскрипция,Letter transcription,Harf Transkripsiyonu,Әріп транскрипциясы,Hərf Transkripsiyası,Транскрипция буквы
+colon,Eki çekit,Эки чекит,Colon,İki nokta,Екі нүкте,İki nöqtə,Двоеточие
+experience,Seziliş,Сезилиш,Experience,Deneyim,Тәжірибе,Təcrübə,Прочее визуальное
+coloring,Tüstöö,Түстөө,Coloring,Renklendirme,Түстерлеу,Rəngləmə,Окрашивание
+vibration,Dirildöö,Дириолөө,Vibration,Titreşim,Діріл,Vibrasiya,Вибрация
+clickSound,Basuu ünü,Басуу үнү,Click sound,Tıklama sesi,Басу дыбысы,Klik səsi,Звук нажатия
+holdabilityIndicator,Uzaq basa aluu belgisi,Узак баса алуу белгиси,Holdability indicator,Basılı tutma göstergesi,Ұзақ басу индикаторы,Saxlama göstəricisi,Индикатор удерживания
+letters,Tamğalar,Тамгалар,Letters,Hərflər,Әріптер,Hərflər,Буквы
+ajLetter,aJ tamğa,аЖ тамга,aJ letter,aJ Harfi,аЖ әрпі,aJ Hərfi,аЖ буква
+ebLetter,eB tamğa,эБ тамга,eB letter,eB Harfi,еБ әрпі,eB Hərfi,эБ буква
+enLetter,eN tamğa,эН тамга,eN letter,eN Harfi,еН әрпі,eN Hərfi,эН буква
+forAltayDialekt,Altay dialekti üçün,Алтай диалекти үчүн,For altay dialect,Altay lehçesi için,Алтай диалектісі үшін,Altay dialekti üçün,Для алтайского диалекта
+eshLetter,eŞ tamğa,эШ тамга,eŞ letter,eŞ Harfi,еШ әрпі,eŞ Hərfi,эШ буква
+asLetter,aS tamğa,аС тамга,aS letter,aS Harfi,аС әрпі,aS Hərfi,aС буква
+ekLetter,eK tamğa,эК тамга,eK letter,eK Harfi,еК әрпі,eK Hərfi,эК буква
+forOrhonDialekt,Orhon dialekti üçün,Орхон диалекти үчүн,For orhon dialect,Orhon lehçesi için,Орхон диалектісі үшін,Orxon dialekti üçün,Для орхонского диалекта
+angLetter,aÑ tamğa,аҢ тамга,aÑ letter,aÑ Harfi,аҢ әрпі,aÑ Hərfi,аҢ буква
+accessability,Jetkiliktüülük,Жеткиликтүүлүк,Accessibility,Erişilebilirlik,Қолжетімділік,Əlçatanlıq,Доступность
+freeLetter,Boş tamğa,Бош тамга,Free letter,Boş Harf,Бос әріп,Boş Hərf,Пустая буква
+freeLetter_onHold,Basuuda,Басууда,On click,Basmada,Басқанда,Basanda,При нажатии
+freeLetter_onPress,Uzaq basuuda,Узак басууда,On long press,Uzun Basmada,Ұзақ басқанда,Uzun Basanda,При долгом нажатии
+savables,Saqtalmalar,Сакталмалар,Savables,Kaydedilenler,Сақталғандар,Saxlanılanlar,Сохранялки
+otherAlphabets,Qoşumça aripter,Кошумча ариптер,Other alphabets,Diğer Alfabeler,Басқа Элипбилер,Digər Əlifbalar,Другие алфавиты
+latinAlphabet,Latın aribi,Латын ариби,Latin alphabet,Latın Alfabesi,Латын Элипбисы,Latın Əlifbası,Латиница
+latinAlphabet_Kyrgyz,Azğana,Азгана,Minimal,Az,Минимал,Minimal,Минимальная
+latinAlphabet_Full,Toluq,Толук,Full,Tam,Tолық,Tam,Полная
+arabAlphabet,Arab aribi,Араб ариби,Arabic script,Араб Yazısı,Араб Жазуы,Ərəb Yazısı,Арабица
+kirilAlphabet,Kiril aribi,Кирил ариби,Cyrilic script,Kiril Alfabesi,Кирилл Элипбисы,Kiril Əlifbası,Кириллица
+changeOrder,İrettöö,Итеттөө,Edit,Düzenle,Өзгерту,Redaktə et,Изменить
+add,Qoş,Кош,Add,Ekle,Қосу,Əlavə et,Добавить
+ready,Dayar,Даяр,Ready,Hazır,Даяр,Hazır,Готово
+holdShift,Shift basıp turuñuz,Shift басып туруңуз,Hold on Shift,Shift'e basılı tutun,Shift-ті басып тұрыңыз,Shift-i basılı saxlayın,Удерживайте Shift
+andChooseSavables,Jana saqtalma tandañız,Жана сакталма тандаңыз,And click on a savable,Ve kaydedilene tıklayın,Және сақталғанды таңдаңыз,Və saxlanılanı seçin,Выберите сохранялку
+buttonHeight,Basqıçtop biyiktigi,Баскычтоп бийиктиги,Keyboard height,Klavye Yüksekliği,Пернетақта Биіктігі,Klaviatura Hündürlüyü,Высота клавиатуры

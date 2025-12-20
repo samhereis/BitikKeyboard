@@ -1,7 +1,7 @@
-key,ky_latin,ky_kiril,en,ru
-howToEnable,Ornotuu ıqması,Күйгүзүү ыкма,How to enable,Как включить
-openSettingsAndEnableKeyboard,Ornotuu açıp basqıçtoptu jandırıñız,Орнотууну ачып баскычтопту жандырыңыз,Open settings and enable the keyboard,Откройте настройки и включите клавиатуру
-openSettings,Ornotuunu aç,Орнотууну ач,Open settings,Открыть настройки
-changeLanguage,Til almaştırıñiz,Тил алмаштырыңыз,Change language,Поменяйте язык
-freeSpaceTitle,"Eger sizde uşunday boş aralıq bolso je basqıçtop kirip ketse, bul çeçimderdı qoldonup körüñüz","Эгер сизде ушундай бош аралык болсо же баскычтоп кирип кетсе, бул чечимдерди колдонуп көрүңүз","If the keyboard has this free space or it is offseted, try these solutions.","Если клавиатура имеет вот такую пустую область или она съехала, попробуйте вот эти решения"
-freeSpaceSetting,Boş aralıq çeçimi,Бош аралык чечими,Solutions,Решения
+key,ky_latin,ky_kiril,en,ru,kz,tr,az
+howToEnable,Ornotuu ıqması,Күйгүзүү ыкма,How to enable,Как включить,Қалай қосу керек,Nasıl etkinleştirilir,Necə aktivləşdirmək olar
+openSettingsAndEnableKeyboard,Ornotuu açıp basqıçtoptu jandırıñız,Орнотууну ачып баскычтопту жандырыңыз,Open settings and enable the keyboard,Откройте настройки и включите клавиатуру,"Параметрлерді ашып, пернетақтаны қосыңыз",Ayarları açın ve klavyeyi etkinleştirin,Ayarları açın və klaviaturanı aktivləşdirin
+openSettings,Ornotuunu aç,Орнотууну ач,Open settings,Открыть настройки,Параметрлерді ашу,Ayarları aç,Ayarları aç
+changeLanguage,Til almaştırıñiz,Тил алмаштырыңыз,Change language,Поменяйте язык,Тілді өзгерту,Dili değiştir,Dili dəyiş
+freeSpaceTitle,"Eger sizde uşunday boş aralıq bolso je basqıçtop kirip ketse, bul çeçimderdı qoldonup körüñüz","Эгер сизде ушундай бош аралык болсо же баскычтоп кирип кетсе, бул чечимдерди колдонуп көрүңүз","If the keyboard has this free space or it is offseted, try these solutions.","Если клавиатура имеет вот такую пустую область или она съехала, попробуйте вот эти решения","Егер пернетақтада бос орын пайда болса немесе ол ығысқан болса, осы шешімдерді қолданып көріңіз","Klavyede boş bir alan varsa veya kaymışsa, bu çözümleri deneyin","Əgər klaviaturada boş sahə varsa və ya sürüşübsə, bu həlləri yoxlayın"
+freeSpaceSetting,Boş aralıq çeçimi,Бош аралык чечими,Solutions,Решения,Бос орын шешімдері,Boşluk çözümleri,Boş sahə həlləri

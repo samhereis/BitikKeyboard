@@ -8,9 +8,9 @@ import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
 enum class Language(val code: String, val displayName: String) {
     KY_L("ky_latin", "🇰🇬 Qırğız"),
     KY_K("ky_kiril", "🇰🇬 Кыргыз"),
-    //TR("tr", "🇹🇷 Türkçe"),
-    //KZ("kz", "🇰🇿 Қазақша"),
-    //AZ("az", "🇦🇿 Azərbaycan"),
+    TR("tr", "🇹🇷 Türkçe"),
+    KZ("kz", "🇰🇿 Қазақша"),
+    AZ("az", "🇦🇿 Azərbaycan"),
     EN("en", "🇺🇸 English"),
     RU("ru", "🇷🇺 Русский")
 }
