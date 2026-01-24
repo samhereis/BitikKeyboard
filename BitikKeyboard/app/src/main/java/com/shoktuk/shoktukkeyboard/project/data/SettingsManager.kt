@@ -96,7 +96,7 @@ object SettingsManager {
         set(v) = prefs().setEnum(Arabic_Status.KEY, v)
 
     var Context.kirilisaStatus: Kirilisa_Status
-        get() = prefs().getEnum(Kirilisa_Status.KEY, Kirilisa_Status.Off)
+        get() = prefs().getEnum(Kirilisa_Status.KEY, Kirilisa_Status.On)
         set(v) = prefs().setEnum(Kirilisa_Status.KEY, v)
 
     var Context.coloring: Coloring

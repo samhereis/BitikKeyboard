@@ -66,7 +66,7 @@
       {
         "name": "u",
         "lowercase": "𐰩",
-        "lowerCaseHold": "𐤋",
+        "lowerCaseHold":"𐌂",
         "lowerCaseRomanization": "U",
         "backgroundColorIndex_lowercase": 4,
         "uppercase":"𐰈",
@@ -92,7 +92,6 @@
         "backgroundColorIndex_lowercase_Hold": 5,
         "lowerCase_HoldabilityIndicator": "on",
         "uppercase": "𐰇",
-        "upperCaseHold": "𐌂",
         "upperCaseRomanization": "Ö",
         "backgroundColorIndex_uppercase": 4
       },

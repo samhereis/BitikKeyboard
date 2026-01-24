@@ -20,7 +20,7 @@ fun String.localized(csvFileName: String = "Localizations", context: Context): S
 }
 
 object LocalizationManager {
-    var currentLanguage by mutableStateOf(Language.KY_L)
+    var currentLanguage by mutableStateOf(Language.KY_K)
     private val csvCache = mutableMapOf<String, Map<String, Map<Language, String>>>()
 
     private const val PREFS_NAME = "LocalizationPrefs"
@@ -28,7 +28,7 @@ object LocalizationManager {
 
     fun init(context: Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val savedLangCode = prefs.getString(KEY_LANGUAGE, Language.KY_L.code)
+        val savedLangCode = prefs.getString(KEY_LANGUAGE, Language.KY_K.code)
         savedLangCode?.let { langCode ->
             Language.entries.find { it.code == langCode }?.let {
                 currentLanguage = it
