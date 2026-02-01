@@ -28,8 +28,10 @@ class TranscriptionProccessor {
 
         var result = text
 
-        result = result.replace("𐰳", "𐰖")
-        result = result.replace("𐰖", "𐰳")
+        if(context.ajVariant == AJ_Letter_Variant.Jaa) {
+            result = result.replace("𐰳", "𐰖")
+            result = result.replace("𐰖", "𐰳")
+        }
 
         return result
     }
@@ -37,7 +39,7 @@ class TranscriptionProccessor {
     fun processTranscription_alphabet(text: String, context: Context): String {
         var result = text
 
-        if (context.keyboardVariant != BitikVariant.CLASSIC && context.ajVariant == AJ_Letter_Variant.Ay) {
+        if (context.keyboardVariant != BitikVariant.CLASSIC && context.ajVariant == AJ_Letter_Variant.Jaa) {
             result = result.replace("𐰖", "𐰗")
             result = result.replace("𐰳", "𐰖")
         }

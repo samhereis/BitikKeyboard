@@ -12,8 +12,8 @@ android {
         applicationId = "com.shoktuk.shoktukkeyboard"
         minSdk = 25
         targetSdk = 36
-        versionCode = 44
-        versionName = "3.3.0"
+        versionCode = 46
+        versionName = "3.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,6 +37,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.colorpicker.compose)
+
     // Core & App Compat
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -79,4 +81,5 @@ dependencies {
     implementation(libs.androidx.monitor)
     implementation(libs.androidx.junit.ktx)
     implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.material3)
 }

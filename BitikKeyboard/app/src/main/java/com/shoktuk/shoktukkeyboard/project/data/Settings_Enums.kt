@@ -41,7 +41,7 @@ enum class WordSeparator(val id: String) {
 }
 
 enum class AJ_Letter_Variant(val id: String) {
-    Default("𐰳"), Ay("𐰖");
+    Ach("𐰳"), Jaa("𐰖");
 
     companion object {
         const val KEY = "AJ_Letter_Variant"

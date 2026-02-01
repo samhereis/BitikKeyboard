@@ -205,6 +205,8 @@ object TopRowBuilder_Old {
         val regex = "[^\\p{L}${Regex.escape(extraSeparators)}]+".toRegex()
         inputText_LastWord = text_Original.split(regex).lastOrNull().orEmpty()
 
+        inputText_LastWord = TranscriptionProccessor().processTranscription_bitik(inputText_LastWord, context)
+
         InputText_Transcribed = transcriber.getTranscription(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
         InputText_Transcribed_Alt = transcriber.getTranscription_Alternative(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
 

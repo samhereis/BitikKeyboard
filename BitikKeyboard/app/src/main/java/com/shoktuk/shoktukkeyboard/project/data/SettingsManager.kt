@@ -52,7 +52,7 @@ object SettingsManager {
         set(v) = prefs().setEnum(WordSeparator.KEY, v)
 
     var Context.ajVariant: AJ_Letter_Variant
-        get() = prefs().getEnum(AJ_Letter_Variant.KEY, AJ_Letter_Variant.Default)
+        get() = prefs().getEnum(AJ_Letter_Variant.KEY, AJ_Letter_Variant.Jaa)
         set(v) = prefs().setEnum(AJ_Letter_Variant.KEY, v)
 
     var Context.angVariant: ANG_Letter_Variant

@@ -32,7 +32,7 @@ import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
 object KeyboardViewBuilder {
-    var aj_Def = context.ajVariant == AJ_Letter_Variant.Default
+    var aj_Def = context.ajVariant == AJ_Letter_Variant.Ach
     var eb_Def = context.ebVariant == EB_Letter_Variant.Default
     var en_Def = context.enVariant == EN_Letter_Variant.Default
     var as_Def = context.asVariant == AS_Letter_Variant.Default
@@ -47,7 +47,7 @@ object KeyboardViewBuilder {
         onCapsChange: (Boolean) -> Unit,
         onModeChange: (KeyboardMode) -> Unit,
     ): LinearLayout {
-        aj_Def = context.ajVariant == AJ_Letter_Variant.Default
+        aj_Def = context.ajVariant == AJ_Letter_Variant.Ach
         eb_Def = context.ebVariant == EB_Letter_Variant.Default
         en_Def = context.enVariant == EN_Letter_Variant.Default
         as_Def = context.asVariant == AS_Letter_Variant.Default
@@ -207,14 +207,14 @@ object KeyboardViewBuilder {
                 if (context.keyboardVariant != BitikVariant.CLASSIC) {
                     if (key.name == "y" && !aj_Def) {
                         keyToSet = key.copy(
-                            lowercase = if (context.ajVariant == AJ_Letter_Variant.Default) "𐰖" else "𐰗", lowerCaseHold = if (context.ajVariant == AJ_Letter_Variant.Default) "𐰗" else null
+                            lowercase = if (context.ajVariant == AJ_Letter_Variant.Ach) "𐰖" else "𐰗", lowerCaseHold = if (context.ajVariant == AJ_Letter_Variant.Ach) "𐰗" else null
                         )
                         return keyToSet
                     }
 
                     if (key.name == "j" && !aj_Def) {
                         keyToSet = key.copy(
-                            lowercase = if (context.ajVariant == AJ_Letter_Variant.Default) "𐰳" else "𐰖", lowerCaseHold = if (context.ajVariant == AJ_Letter_Variant.Default) null else "𐰳"
+                            lowercase = if (context.ajVariant == AJ_Letter_Variant.Ach) "𐰳" else "𐰖", lowerCaseHold = if (context.ajVariant == AJ_Letter_Variant.Ach) null else "𐰳"
                         )
                         return keyToSet
                     }
