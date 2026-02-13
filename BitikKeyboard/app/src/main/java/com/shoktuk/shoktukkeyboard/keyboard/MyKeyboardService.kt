@@ -399,9 +399,6 @@ class MyKeyboardService : InputMethodService() {
         } else {
             when {
                 current_writingSystem == WritingSystem.Bitik -> {
-                    if (ensureRTLContext(this)) {
-                        ic?.commitText("\u202B", 1) // RLE mark
-                    }
                     ic.commitText(key, 1)
                 }
 

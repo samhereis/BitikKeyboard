@@ -108,9 +108,9 @@
     [
       {
         "name": "oq, uq",
-        "lowercase": "𐰀",
+        "lowercase": "𐰁",
         "lowerCaseRomanization": "A",
-        "lowerCaseHold": "𐰁",
+        "lowerCaseHold": "𐰀",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "𐱈",
         "upperCaseRomanization": "RT",
