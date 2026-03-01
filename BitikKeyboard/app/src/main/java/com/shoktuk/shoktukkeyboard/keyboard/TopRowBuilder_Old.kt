@@ -222,7 +222,7 @@ object TopRowBuilder_Old {
             return
         }
 
-        val fullSp = buttonStyle.textSizeSp.value
+        val fullSp = buttonStyle.textSizeSp
         val halfSp = fullSp / 2f
 
         TextView(container.context).apply {

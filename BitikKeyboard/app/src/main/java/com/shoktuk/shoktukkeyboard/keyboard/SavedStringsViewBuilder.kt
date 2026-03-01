@@ -67,7 +67,7 @@ object SavedStringsViewBuilder {
             }
             flow.addView(tv)
         } else {
-            val textSp = KeyboardTheme.getSystemButtonStyle(service).textSizeSp.value
+            val textSp = KeyboardTheme.getSystemButtonStyle(service).textSizeSp
             items.forEach { s ->
                 val chip = TextView(service).apply {
                     text = s

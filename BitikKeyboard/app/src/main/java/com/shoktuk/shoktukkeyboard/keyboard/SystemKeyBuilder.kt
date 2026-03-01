@@ -217,7 +217,7 @@ object SystemKeyBuilder {
                 }
             }
 
-            val maxSp = KeyboardTheme.getLetterButtonStyle_Normal(service).textSizeSp.value.toInt()
+            val maxSp = KeyboardTheme.getLetterButtonStyle_Normal(service).textSizeSp.toInt()
             val minSp = 1
             val stepSp = 1
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(

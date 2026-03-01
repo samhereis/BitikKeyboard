@@ -206,7 +206,7 @@ object TopRowBuilder_Alphabet {
         }
 
         container.removeAllViews()
-        val fullSp = buttonStyle.textSizeSp.value
+        val fullSp = buttonStyle.textSizeSp
 
         val textView = TextView(container.context).apply {
             text = InputText_Transcribed

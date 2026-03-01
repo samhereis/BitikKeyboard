@@ -3,9 +3,11 @@ package com.shoktuk.shoktukkeyboard.keyboard
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.os.Handler
 import android.os.Looper
+import android.text.TextUtils
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -16,15 +18,14 @@ import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.PopupWindow
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.graphics.toColorInt
 import androidx.core.widget.TextViewCompat
 import com.shoktuk.shoktukkeyboard.R
-import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.Coloring
 import com.shoktuk.shoktukkeyboard.project.data.HoldabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.holdabilityColoring
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
@@ -62,7 +63,7 @@ class KeyView(
     private var lastErrorAt = 0L
     private var overlayMainText: TextView? = null
 
-    private var hintButtonTextSize = KeyboardTheme.getHintButtonTextSize(context).value
+    private var hintButtonTextSize = KeyboardTheme.getHintButtonTextSize(context)
 
     // NEW:
     private fun notifyError(message: String, t: Throwable? = null) {
@@ -89,7 +90,7 @@ class KeyView(
 
     override fun onDetachedFromWindow() {
         super.onDetachedFromWindow()
-        dismissOverlay() // CHANGED: ensure cleanup on detach
+        dismissOverlay()
     }
 
     private fun setupView() {
@@ -130,6 +131,7 @@ class KeyView(
                 (this as MarginLayoutParams).setMargins(visualInsetPx_H, visualInsetPx_V, visualInsetPx_H, visualInsetPx_V)
             }
         }
+
         addView(visualContainer)
 
         val view = LayoutInflater.from(context).inflate(R.layout.keyboard_key, visualContainer, true)
@@ -143,72 +145,89 @@ class KeyView(
         addHoldIndicatorIfNeeded(view)
     }
 
+    fun pxFromDp(dp: Float, context: Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics)
+
+    fun pxFromSp(sp: Float, context: Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, sp, context.resources.displayMetrics) // use DIP to ignore font scale
+
     private fun updateContent() {
-        var mainTextSize = style.textSizeSp.value
+        var mainTextSize = style.textSizeSp
         if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && isCaps) {
             mainTextSize /= 1.1f
         }
 
+        val mainPx = pxFromSp(mainTextSize, context)
         mainText.apply {
             text = getCurrentMainText()
             setTextColor(style.textColor.toColorInt())
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, mainTextSize)
+            setTextSize(TypedValue.COMPLEX_UNIT_PX, mainPx)
             maxLines = 1
             ellipsize = null
+            includeFontPadding = false
 
             paint.strokeWidth = 0.5f
             paint.style = Paint.Style.FILL_AND_STROKE
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                mainText, 1, mainTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
+                mainText, 1, mainPx.toInt(), 1, TypedValue.COMPLEX_UNIT_PX
             )
         }
 
         val first = getCurrentSubText()?.toString().orEmpty()
         val second = getCurrentSubText_Alt()?.toString().orEmpty()
-        val lines = if (context.keyboardVariant != BitikVariant.SAMAGAN) 2 else 1
 
-        val edge = dpToPx(context, 0)
+        val topMaxPx = pxFromSp(hintButtonTextSize, context)
+        val topMinPx = pxFromSp(1f, context)
 
         subText_top.apply {
             text = second
-            maxLines = lines
-            includeFontPadding = true
+            maxLines = 1
+            isSingleLine = true
+            ellipsize = TextUtils.TruncateAt.END
+            includeFontPadding = false
 
             setLineSpacing(0f, 1f)
             setTextColor(style.textColor.toColorInt())
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, hintButtonTextSize)
+            setTypeface(null, Typeface.BOLD)
 
-            (layoutParams as FrameLayout.LayoutParams).apply {
+            (layoutParams as ConstraintLayout.LayoutParams).apply {
+                width = ConstraintLayout.LayoutParams.MATCH_PARENT
+                height = ConstraintLayout.LayoutParams.MATCH_PARENT
                 gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
             }.also { layoutParams = it }
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                subText_top, 1, mainTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
+                subText_top, topMinPx.toInt(), topMaxPx.toInt(), 1, TypedValue.COMPLEX_UNIT_PX
             )
         }
 
+        val bottomMaxPx = pxFromSp(hintButtonTextSize, context)
+        val bottomMinPx = pxFromSp(1f, context)
         subText_bottom.apply {
             text = first
-            maxLines = lines
-            includeFontPadding = true
+            maxLines = 1
+            isSingleLine = true
+            ellipsize = TextUtils.TruncateAt.END
+            includeFontPadding = false
+
             setLineSpacing(0f, 1f)
             setTextColor(style.textColor.toColorInt())
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, hintButtonTextSize)
+            setTypeface(null, Typeface.BOLD)
 
-            (layoutParams as FrameLayout.LayoutParams).apply {
+            (layoutParams as ConstraintLayout.LayoutParams).apply {
+                width = ConstraintLayout.LayoutParams.MATCH_PARENT
+                height = ConstraintLayout.LayoutParams.MATCH_PARENT
                 gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
             }.also { layoutParams = it }
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
-                subText_bottom, 1, mainTextSize.toInt(), 1, TypedValue.COMPLEX_UNIT_SP
+                subText_bottom, bottomMinPx.toInt(), bottomMaxPx.toInt(), 1, TypedValue.COMPLEX_UNIT_PX
             )
         }
 
         if (!MyKeyboardService.showLetterTranscription) {
             subText_top.text = ""
             subText_bottom.text = ""
-            mainText.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp.value)
+            mainText.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp)
         }
     }
 
@@ -293,10 +312,10 @@ class KeyView(
         try {
             dismissOverlay()
 
-            if (!androidx.core.view.ViewCompat.isAttachedToWindow(this)) return // CHANGED
+            if (!androidx.core.view.ViewCompat.isAttachedToWindow(this)) return
 
-            val w = kotlin.math.max(1, width)   // CHANGED
-            val h = kotlin.math.max(1, height)  // CHANGED
+            val w = kotlin.math.max(1, width)
+            val h = kotlin.math.max(1, height)
             if (w <= 0 || h <= 0) return
 
             val overlayView = createOverlayView().apply {
@@ -315,18 +334,18 @@ class KeyView(
             val yOff = -h - dpToPxInt(50)
 
             try {
-                popupWindow?.showAsDropDown(this, xOff, yOff, Gravity.START) // CHANGED
-            } catch (e: android.view.WindowManager.BadTokenException) {      // CHANGED
+                popupWindow?.showAsDropDown(this, xOff, yOff, Gravity.START)
+            } catch (e: android.view.WindowManager.BadTokenException) {
                 popupWindow?.dismiss()
                 popupWindow = null
-                notifyError("Can't show key preview on this device (window token).", e) // CHANGED
-            } catch (e: Throwable) {                                         // CHANGED
+                notifyError("Can't show key preview on this device (window token).", e)
+            } catch (e: Throwable) {
                 popupWindow?.dismiss()
                 popupWindow = null
-                notifyError("Failed to show key preview.", e)                 // CHANGED
+                notifyError("Failed to show key preview.", e)
             }
         } catch (e: Throwable) {
-            notifyError("Unexpected error while showing preview.", e)         // CHANGED
+            notifyError("Unexpected error while showing preview.", e)
         }
     }
 
@@ -339,8 +358,8 @@ class KeyView(
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
             background = com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.createDrawableFromStyle(context, style) // CHANGED
 
-            val pad = dpToPxInt(6) // CHANGED
-            setPadding(pad, pad, pad, pad) // CHANGED
+            val pad = dpToPxInt(6)
+            setPadding(pad, pad, pad, pad)
 
             val column = android.widget.LinearLayout(context).apply { // CHANGED
                 orientation = android.widget.LinearLayout.VERTICAL
@@ -350,7 +369,7 @@ class KeyView(
             val main = TextView(context).apply { // CHANGED
                 text = getCurrentMainText()
                 setTextColor(style.textColor.toColorInt())
-                setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp.value)
+                setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp)
                 maxLines = 1
                 isAllCaps = false
 

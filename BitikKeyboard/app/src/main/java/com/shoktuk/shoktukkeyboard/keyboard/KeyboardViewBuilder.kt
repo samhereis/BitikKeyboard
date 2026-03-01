@@ -261,7 +261,13 @@ object KeyboardViewBuilder {
 
                     if (key.name == "ş") {
                         keyToSet = keyToSet.copy(
-                            lowercase = "𐱁", lowerCaseHold = "𐱀", lowerCaseRomanization = "Ş", upperCaseHold = "𐰿", upperCaseRomanization = "Ş"
+                            lowercase = "𐱁",
+                            lowerCaseHold = "𐱀",
+                            lowerCaseRomanization = "Ş",
+                            upperCaseRomanization_Alt = "ш",
+                            upperCaseHold = "𐰿",
+                            upperCaseRomanization = "Ş",
+                            lowerCaseRomanization_Alt = "ш",
                         )
                         return keyToSet
                     }
@@ -331,7 +337,7 @@ object KeyboardViewBuilder {
 
     private fun getANG(key: KeyEntry): KeyEntry {
         return key.copy(
-            lowercase = "𐰭", lowerCaseRomanization = "Ñ", upperCaseRomanization = "Ñ"
+            lowercase = "𐰭", lowerCaseRomanization = "Ñ", lowerCaseRomanization_Alt = "ң", upperCaseRomanization = "Ñ", upperCaseRomanization_Alt = "ң"
         )
     }
 

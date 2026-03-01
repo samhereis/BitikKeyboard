@@ -6,8 +6,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
@@ -15,7 +13,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 
 data class ButtonStyle(
-    var fillColor: String, val borderColor: String, val borderWidthDp: Int, val cornerRadiusDp: Int, val textColor: String, val textSizeSp: TextUnit
+    var fillColor: String, val borderColor: String, val borderWidthDp: Int, val cornerRadiusDp: Int, val textColor: String, val textSizeSp: Float
 )
 
 object KeyboardTheme {
@@ -54,10 +52,10 @@ object KeyboardTheme {
     const val KEY_MARGIN_DP_OnlyVisual_H = 2
     const val KEY_MARGIN_DP_OnlyVisual_V = 6
 
-    private val BASE_LETTER_TEXT_SIZE_SP = 19.sp
-    private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 21.sp
-    private val BASE_HINT_TEXT_SIZE_SP = 7.sp
-    private val BASE_SYSTEM_TEXT_SIZE_SP = 17.sp
+    private val BASE_LETTER_TEXT_SIZE_SP = 19
+    private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 21
+    private val BASE_HINT_TEXT_SIZE_SP = 8.5f
+    private val BASE_SYSTEM_TEXT_SIZE_SP = 17
 
     const val SHIFT_ICON_FILE = "icons/shift_icon.png"
     const val SHIFT_ICON_FILE_Filled = "icons/shiftfilled_icon.png"
@@ -114,22 +112,22 @@ object KeyboardTheme {
         }
     }
 
-    private fun getLetterButtonTextSize(context: Context): TextUnit {
+    private fun getLetterButtonTextSize(context: Context): Float {
         val scaleFactor = getScaleFactor(context)
         return BASE_LETTER_TEXT_SIZE_SP * scaleFactor
     }
 
-    private fun getLetterButtonTextSize_NoTranscription(context: Context): TextUnit {
+    private fun getLetterButtonTextSize_NoTranscription(context: Context): Float {
         val scaleFactor = getScaleFactor(context)
         return BASE_LETTER_TEXT_SIZE_SP_NOHINT * scaleFactor
     }
 
-    fun getHintButtonTextSize(context: Context): TextUnit {
+    fun getHintButtonTextSize(context: Context): Float {
         val scaleFactor = getScaleFactor(context)
         return BASE_HINT_TEXT_SIZE_SP * scaleFactor
     }
 
-    private fun getSystemButtonTextSize(context: Context): TextUnit {
+    private fun getSystemButtonTextSize(context: Context): Float {
         val scaleFactor = getScaleFactor(context)
         return BASE_SYSTEM_TEXT_SIZE_SP * scaleFactor
     }
