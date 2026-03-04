@@ -42,10 +42,14 @@
         "uppercase": "Y"
       },
       {
-        "name": "u",
+        "name": "o, u",
         "lowercase": "u",
+        "lowerCaseRomanization": "ū",
+        "lowerCaseHold": "ū",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "U",
+        "upperCaseRomanization": "Ū",
+        "upperCaseHold": "Ū",
         "backgroundColorIndex_uppercase": 4
       },
       {
@@ -82,10 +86,14 @@
     ],
     [
       {
-        "name": "a",
+        "name": "oq, uq",
         "lowercase": "a",
+        "lowerCaseRomanization": "ä",
+        "lowerCaseHold":"ä",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "A",
+        "upperCaseRomanization": "Ä",
+        "upperCaseHold": "Ä",
         "backgroundColorIndex_uppercase": 4
       },
       {

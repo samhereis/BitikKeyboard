@@ -1,3 +1,5 @@
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,11 +44,14 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.screens.navigation.ExternalLink_Button
 import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
 import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_OriginalBitik
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
@@ -116,7 +121,16 @@ fun BasicInfo_Screen(navController: NavController) {
                 navController.navigate(Loc_BasicInfo.MEMORIZE_TAMGAS.titleKey)
             }, subtitle = null, leading = Icons.Default.LocalLibrary, tint = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.weight(1f))
+
+        ExternalLink_Button(
+            label = "Bitish 🚀",
+            description = "Битик үйрөнүү тиркемеси! 🥳",
+            leadingPainter = painterResource(id = R.drawable.bitish_icon),
+            onClick = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.shoktuk.learnbitik"))
+                context.startActivity(intent)
+            }
+        )
     }
 }
 

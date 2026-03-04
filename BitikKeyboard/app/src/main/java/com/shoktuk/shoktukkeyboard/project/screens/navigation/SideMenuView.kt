@@ -8,7 +8,9 @@ import LocalizationManager
 import OriginalTamgasView
 import SideMenuHeader
 import SupportScreen
+import android.content.Intent
 import android.content.pm.PackageInfo
+import android.net.Uri
 import android.os.Build
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -48,6 +50,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.LinkAnnotation
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLinkStyles
@@ -71,6 +74,7 @@ import com.shoktuk.bittik.rules.BitikRule4
 import com.shoktuk.shoktukkeyboard.project.data.SettingScreens
 import com.shoktuk.shoktukkeyboard.project.data.SideMenuItem
 import com.shoktuk.shoktukkeyboard.project.screens.navigation.BottomNavigationBar
+import com.shoktuk.shoktukkeyboard.project.screens.navigation.ExternalLink_Button
 import com.shoktuk.shoktukkeyboard.project.screens.navigation.MainTabs
 import com.shoktuk.shoktukkeyboard.project.screens.settings.CenteredDropdownPopup
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SavedStringsScreen
@@ -178,7 +182,15 @@ fun SideMenuView() {
                         modifier = Modifier.padding(5.dp)
                     )
                 }
-
+                ExternalLink_Button(
+                    label = "Bitish 🚀",
+                    description = "Битик үйрөнүү тиркемеси! 🥳",
+                    leadingPainter = painterResource(id = R.drawable.bitish_icon),
+                    onClick = {
+                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.shoktuk.learnbitik"))
+                        context.startActivity(intent)
+                    }
+                )
                 Spacer(modifier = Modifier.weight(1f))
 
                 if (LocalizationManager.currentLanguage != Language.KY_L && LocalizationManager.currentLanguage != Language.KY_K) {
@@ -371,20 +383,30 @@ private fun navigateRoot(
 @Composable
 fun AppVersionText(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    val packageInfo: PackageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
-
-    val versionName = packageInfo.versionName
-    val versionCode = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-        packageInfo.longVersionCode.toString()
-    } else {
-        @Suppress("DEPRECATION") packageInfo.versionCode.toString()
+    // Wrap in try-catch to avoid NullPointerException during Compose Preview rendering
+    val packageInfo = try {
+        context.packageManager.getPackageInfo(context.packageName, 0)
+    } catch (e: Exception) {
+        null
     }
+
+    val versionName = packageInfo?.versionName ?: "1.0.0"
+    val versionCode = packageInfo?.let {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            it.longVersionCode.toString()
+        } else {
+            @Suppress("DEPRECATION") it.versionCode.toString()
+        }
+    } ?: "1"
 
     Box(
         modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center
     ) {
         Text(
-            text = "v$versionName ($versionCode)", style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f), modifier = Modifier.alpha(0.8f)
+            text = "v$versionName ($versionCode)",
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+            modifier = Modifier.alpha(0.8f)
         )
     }
 }
