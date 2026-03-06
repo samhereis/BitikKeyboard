@@ -53,7 +53,6 @@ import androidx.navigation.compose.rememberNavController
 import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.project.screens.navigation.ExternalLink_Button
 import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
-import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_OriginalBitik
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Preview(showBackground = true)
@@ -102,7 +101,7 @@ fun BasicInfo_Screen(navController: NavController) {
         )
 
         BeautifulNavigationItem(
-            title =  Loc_BasicInfo.RULE3.localizedTitle(context), onClick = {
+            title = Loc_BasicInfo.RULE3.localizedTitle(context), onClick = {
                 navController.navigate(Loc_BasicInfo.RULE3.titleKey)
             }, subtitle = null, leading = Icons.Default.Star, tint = MaterialTheme.colorScheme.primary
         )
@@ -123,14 +122,16 @@ fun BasicInfo_Screen(navController: NavController) {
         )
 
         ExternalLink_Button(
-            label = "Bitish 🚀",
-            description = "Битик үйрөнүү тиркемеси! 🥳",
-            leadingPainter = painterResource(id = R.drawable.bitish_icon),
-            onClick = {
+            label = "Bitish 🚀", description = "Битик үйрөнүү тиркемеси! 🥳", leadingPainter = painterResource(id = R.drawable.bitish_icon), onClick = {
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.shoktuk.learnbitik"))
                 context.startActivity(intent)
-            }
-        )
+            })
+
+        ExternalLink_Button(
+            label = "Türk tili    𐱅𐰈𐰼𐰰 : 𐱅𐰃𐰠𐰃", description = "https://turk-tili.com", leadingPainter = painterResource(id = R.drawable.turktili_icon), onClick = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://turk-tili.com"))
+                context.startActivity(intent)
+            })
     }
 }
 
