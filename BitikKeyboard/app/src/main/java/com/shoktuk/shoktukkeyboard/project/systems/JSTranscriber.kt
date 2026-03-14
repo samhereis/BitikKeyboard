@@ -1,6 +1,6 @@
 import android.content.Context
 import android.util.Log
-import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
+import com.shoktuk.shoktukkeyboard.keyboard.KeyboardViewControllerBase
 import com.shoktuk.shoktukkeyboard.project.data.ANG_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
@@ -24,8 +24,8 @@ class JSTranscriber(context: Context) {
         val jsFile = if (context.keyboardVariant == BitikVariant.CLASSIC) "transcriber_old.js" else "transcriber_modern.js"
         var js = context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }
 
-        if (MyKeyboardService.context.bitikDialect == BitikDialect.Orkon) {
-            if (MyKeyboardService.context.angVariant == ANG_Letter_Variant.Off) {
+        if (KeyboardViewControllerBase.context.bitikDialect == BitikDialect.Orkon) {
+            if (KeyboardViewControllerBase.context.angVariant == ANG_Letter_Variant.Off) {
                 var normalizedSource = Normalizer.normalize(js, Normalizer.Form.NFC)
 
                 var old = """new TranscriptionEntry("𐰭", "eÑ", CharacterType.SoftConsonant),"""
