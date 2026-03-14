@@ -1,5 +1,6 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import JSTranscriber
 import KeyboardViewLifecycleOwner
 import android.content.Context
 import android.inputmethodservice.InputMethodService
@@ -64,18 +65,22 @@ class KeyboardViewControllerBase() : InputMethodService() {
 
         var maxRowElementsCount: Double = 11.5
         var autoDisableShift: Boolean = false
+
+        /** Reactive transcription state read by TopRowView. Pair(primary, alternative). */
+        val transcriptionState = mutableStateOf("" to "")
     }
 
-    override fun onEvaluateFullscreenMode(): Boolean {
-        return false
-    }
+    private val keyboardViewLifecycleOwner = KeyboardViewLifecycleOwner()
+
+    // Lazily created transcriber; re-created if null (e.g. after settings change).
+    private var jsTranscriber: JSTranscriber? = null
+
+    override fun onEvaluateFullscreenMode(): Boolean = false
 
     override fun onWindowShown() {
         super.onWindowShown()
         keyboardViewLifecycleOwner.onResume()
     }
-
-    private val keyboardViewLifecycleOwner = KeyboardViewLifecycleOwner()
 
     override fun onCreate() {
         super.onCreate()
@@ -90,9 +95,13 @@ class KeyboardViewControllerBase() : InputMethodService() {
                     StandardKeyboardView(
                         rowsModel = keyboardRowModel,
                         keyboardState = remember { mutableStateOf(keyboardMode) },
-                        onKeyPress = {
-
-                        })
+                        onKeyPress = { key ->
+                            currentInputConnection?.let { ic ->
+                                handleKeyPress(key, ic, this@KeyboardViewControllerBase)
+                            }
+                            updateTranscription()
+                        }
+                    )
                 }
             }
         }
@@ -109,13 +118,9 @@ class KeyboardViewControllerBase() : InputMethodService() {
         if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_AllEnabled || context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Enable_1) {
             ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
                 val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-
-                if (bottomPadding == null) {
-                    bottomPadding = nav.bottom
-                }
-
+                if (bottomPadding == null) bottomPadding = nav.bottom
                 v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding!!)
-                insets // don't consume
+                insets
             }
         }
 
@@ -123,18 +128,13 @@ class KeyboardViewControllerBase() : InputMethodService() {
             view.doOnAttach {
                 val rootInsets = ViewCompat.getRootWindowInsets(it) ?: return@doOnAttach
                 val nav = rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
-
-                if (bottomPadding == null) {
-                    bottomPadding = nav.bottom
-                }
-
+                if (bottomPadding == null) bottomPadding = nav.bottom
                 it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, bottomPadding!!)
             }
         }
 
         ViewCompat.requestApplyInsets(view)
     }
-
 
     override fun onWindowHidden() {
         super.onWindowHidden()
@@ -143,7 +143,50 @@ class KeyboardViewControllerBase() : InputMethodService() {
 
     override fun onDestroy() {
         super.onDestroy()
+        jsTranscriber?.close()
+        jsTranscriber = null
         keyboardViewLifecycleOwner.onDestroy()
+    }
+
+    /** Updates [transcriptionState] by transcribing the last word before the cursor. */
+    private fun updateTranscription() {
+        if (!showTextTranscription) {
+            transcriptionState.value = "" to ""
+            return
+        }
+        val ic = currentInputConnection ?: run {
+            transcriptionState.value = "" to ""
+            return
+        }
+
+        try {
+            val extraSeparators = "·.,⸮⹁:;!?()[]{}\"'"
+            val rawText = ic.getTextBeforeCursor(100, 0)?.toString().orEmpty()
+            val regex = "[^\\p{L}${Regex.escape(extraSeparators)}]+".toRegex()
+            var lastWord = rawText.split(regex).lastOrNull().orEmpty()
+            lastWord = TranscriptionProccessor().processTranscription_bitik(lastWord, this)
+
+            onKeyPressed.text_Original = rawText
+            onKeyPressed.inputText_LastWord = lastWord
+
+            if (lastWord.isEmpty()) {
+                onKeyPressed.InputText_Transcribed = ""
+                onKeyPressed.InputText_Transcribed_Alt = ""
+                transcriptionState.value = "" to ""
+                return
+            }
+
+            val transcriber = jsTranscriber ?: JSTranscriber(this).also { jsTranscriber = it }
+            val primary = transcriber.getTranscription(lastWord).ifEmpty { lastWord }
+            val alt = transcriber.getTranscription_Alternative(lastWord).ifEmpty { lastWord }
+
+            onKeyPressed.InputText_Transcribed = primary
+            onKeyPressed.InputText_Transcribed_Alt = alt
+
+            transcriptionState.value = primary to alt
+        } catch (_: Throwable) {
+            transcriptionState.value = "" to ""
+        }
     }
 
     fun handleKeyPress(
@@ -178,7 +221,7 @@ class KeyboardViewControllerBase() : InputMethodService() {
             onKeyPressed.text_Original = ""
             onKeyPressed.InputText_Transcribed_Alt = ""
 
-            onKeyPressed.invoke(ic, "", false) // if you use this to recompute last-word state
+            onKeyPressed.invoke(ic, "", false)
         } else {
             when (key) {
                 "language" -> {

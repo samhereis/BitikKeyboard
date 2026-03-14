@@ -56,6 +56,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_Settings
 import kotlinx.coroutines.launch
 import kotlin.math.roundToInt
 
@@ -170,7 +171,7 @@ fun SavedStringsScreen() {
             ) {
                 Icon(Icons.Filled.Add, contentDescription = null, modifier = Modifier.size(18.dp))
                 Spacer(Modifier.width(4.dp))
-                Text("Кош", fontSize = 15.sp)
+                Text(Loc_Settings.add.localizedTitle(LocalContext.current), fontSize = 15.sp)
             }
         }
     }
@@ -213,7 +214,7 @@ private fun EditableRow(
                 maxLines = 1,
                 textStyle = LocalTextStyle.current.copy(fontSize = 15.sp, lineHeight = 16.sp),
                 shape = RoundedCornerShape(25.dp),
-                placeholder = { Text("Сакталмалар", fontSize = 14.sp) },
+                placeholder = { Text(Loc_Settings.savables.localizedTitle(LocalContext.current), fontSize = 14.sp) },
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = 5.dp)

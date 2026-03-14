@@ -34,13 +34,13 @@ object KeyboardStyle {
 
     @Composable
     fun colors(): List<Color> = listOf(
-        MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),
-        MaterialTheme.colorScheme.surfaceContainerHigh,
-        MaterialTheme.colorScheme.onSurface,
-        MaterialTheme.colorScheme.onSurface,
-        MaterialTheme.colorScheme.inversePrimary,
-        MaterialTheme.colorScheme.errorContainer,
-        MaterialTheme.colorScheme.primaryContainer
+        MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),          // 0 container bg
+        MaterialTheme.colorScheme.surfaceContainerHigh,                 // 1 key bg
+        MaterialTheme.colorScheme.onSurface,                            // 2 key text
+        MaterialTheme.colorScheme.onSurface,                            // 3 accent text (caps)
+        MaterialTheme.colorScheme.inversePrimary,                       // 4 soft vowel bg
+        MaterialTheme.colorScheme.errorContainer,                       // 5 special key bg
+        MaterialTheme.colorScheme.primaryContainer                      // 6 system key bg
     )
 
     @Composable
@@ -51,13 +51,11 @@ object KeyboardStyle {
 
     @Composable
     fun getColor_ForKey(index: Int, coloringOn: Boolean): Color {
-        return getColor(index)
+        return if (coloringOn) getColor(index) else getColor(1)
     }
 
     @Composable
-    fun getButtonTextColor(
-        isAlternate: Boolean, isSystem: Boolean
-    ): Color {
+    fun getButtonTextColor(isAlternate: Boolean, isSystem: Boolean): Color {
         return if (isAlternate && !isSystem) getColor(3) else getColor(2)
     }
 

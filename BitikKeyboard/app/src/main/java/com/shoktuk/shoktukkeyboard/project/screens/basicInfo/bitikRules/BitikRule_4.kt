@@ -14,8 +14,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BitikRules
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,28 +35,28 @@ fun BitikRule4() {
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp), horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "Курама сөздөр", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
+                text = Loc_BasicInfo.RULE4.localizedTitle((LocalContext.current)), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
             )
 
             Text(
-                text = "Кээ бир сөздөр эки сөздөн турушат. Жана жарымы жумшак жарымы катуу болушу мүмкүн, мисалы:", style = MaterialTheme.typography.bodyLarge
+                text = Loc_BitikRules.R_4_DOUBLE_WORDS.localizedTitle((LocalContext.current)), style = MaterialTheme.typography.bodyLarge
             )
 
             Text(
-                text = "Айбек, Бирок, Бейтарап.", color = Color(0xFF2E7D32), // green-ish
+                text = "Aybek, Biroq, Beytarap.", color = Color(0xFF2E7D32), // green-ish
                 style = MaterialTheme.typography.bodyLarge
             )
 
             Text(
-                text = "Бул сөздөрдү бөлөк жазып бириктирип коебуз.", style = MaterialTheme.typography.bodyLarge
+                text = Loc_BitikRules.R_4_DOUBLE_WORDS_2.localizedTitle((LocalContext.current)), style = MaterialTheme.typography.bodyLarge
             )
 
             SectionCard {
                 Column {
-                    Text("Айбек - 𐰀𐰖𐰌𐰚")
-                    Text("Бирок - 𐰌𐰄𐰼𐰹")
-                    Text("Бейтарап - 𐰌𐰘𐱄𐰺𐰯")
-                    Text("Эркетай - 𐰅𐰼𐰚𐰅𐱄𐰖")
+                    Text("Aybek - 𐰀𐰖𐰌𐰚")
+                    Text("Biroq - 𐰌𐰄𐰼𐰹")
+                    Text("Beytarap - 𐰌𐰘𐱄𐰺𐰯")
+                    Text("Erketay - 𐰅𐰼𐰚𐰅𐱄𐰖")
                 }
             }
         }

@@ -127,9 +127,7 @@ object KeyboardLetters {
         )
     )
 
-    fun fill(
-        eb: String, en: String, asTamga: String, esh: String
-    ) {
+    fun fill(eb: String, en: String, asTamga: String, esh: String) {
         row3[4].uppercase = if (eb == "eb_Full") "𐰌" else "𐰋"
         row3[4].upperCaseHold = if (eb == "eb_Full") "𐰋" else "𐰌"
 

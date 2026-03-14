@@ -33,7 +33,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.shoktuk.shoktukkeyboard.project.data.ColoringStatus
+import com.shoktuk.shoktukkeyboard.project.data.Coloring
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
@@ -60,8 +60,8 @@ fun KeyButton(
     sidePaddingRight: Dp = KeyboardStyle.keySidePadding,
     additionalOffsetX: Dp = 0.dp
 ) {
-    val bgIndex =
-        if (KeyboardViewControllerBase.context.coloring != ColoringStatus.On) 1 else (backgroundColorIndex ?: 1)
+    val coloringOn = KeyboardViewControllerBase.context.coloring == Coloring.On
+    val bgIndex = if (!coloringOn) 1 else (backgroundColorIndex ?: 1)
     val showPreview = remember { mutableStateOf(false) }
     val isHolding = remember { mutableStateOf(false) }
     val keyHeight = with(LocalDensity.current) { ((KeyboardStyle.rowHeight().value * scale).dp) }
@@ -89,11 +89,11 @@ fun KeyButton(
     ) { key?.let { if (isShiftEnabled.value) it.upperCaseHoldHint else it.lowerCaseHoldHint } ?: "" }
     val showCorner = remember(
         key, isShiftEnabled.value
-    ) { KeyboardViewControllerBase.context.coloring != ColoringStatus.Off && key != null && (if (isShiftEnabled.value) key.upperCaseHold != null else key.lowerCaseHold != null) }
+    ) { coloringOn && key != null && (if (isShiftEnabled.value) key.upperCaseHold != null else key.lowerCaseHold != null) }
     val showTranscription =
         KeyboardViewControllerBase.keyboardMode == KeyboardState.Symbols || KeyboardViewControllerBase.context.letterTranscription == LetterTranscription.On
 
-    val previewBg = remember(isHolding, key, isShiftEnabled.value, baseBg, colors) {
+    val previewBg = remember(isHolding.value, key, isShiftEnabled.value, baseBg) {
         if (!isHolding.value || key == null) baseBg
         else {
             val idx =
@@ -102,7 +102,7 @@ fun KeyButton(
         }
     }
 
-    LaunchedEffect(isHolding, showPreview) {
+    LaunchedEffect(isHolding.value, showPreview.value) {
         while (isHolding.value && showPreview.value) {
             whilePressing()
             delay(100)
@@ -112,7 +112,7 @@ fun KeyButton(
     val density = LocalDensity.current
     var anchorBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
 
-    Box( // outer host
+    Box(
         modifier = modifier
             .offset(x = additionalOffsetX)
             .padding(
@@ -125,7 +125,8 @@ fun KeyButton(
             .height(keyHeight)
             .onGloballyPositioned { coords ->
                 anchorBounds = coords.boundsInWindow()
-            }) {
+            }
+    ) {
         Surface(
             color = Color.Transparent,
             modifier = Modifier
@@ -154,7 +155,8 @@ fun KeyButton(
                         onDragEnd = { isHolding.value = false; showPreview.value = false },
                         onDragCancel = { isHolding.value = false; showPreview.value = false },
                         onDrag = { _, _ -> })
-                }) {
+                }
+        ) {
             KeyFaceContent(
                 tamga = tamga,
                 icon = icon,
@@ -175,7 +177,7 @@ fun KeyButton(
         val anchor = anchorBounds
         val previewText = if (isHolding.value) (tamgaHold ?: tamga) else tamga
         val previewHintBottom =
-            if (isHolding.value) (if (hintHold.isEmpty()) hintPrimary else hintHold) else hintPrimary
+            if (isHolding.value) (if (hintHold.isNullOrEmpty()) hintPrimary else hintHold) else hintPrimary
         val gapPx = with(density) { 6.dp.toPx().toInt() }
         val keyHpx = with(density) { keyHeight.toPx().toInt() }
 
@@ -198,7 +200,8 @@ fun KeyButton(
                     )
                 }, properties = androidx.compose.ui.window.PopupProperties(
                     focusable = false, clippingEnabled = false
-                ), onDismissRequest = { showPreview.value = false }) {
+                ), onDismissRequest = { showPreview.value = false }
+            ) {
                 Box(
                     modifier = Modifier
                         .width(with(density) { keyWpx.toDp() })
@@ -306,9 +309,7 @@ private fun KeyFaceContent(
                     .align(Alignment.TopCenter)
                     .fillMaxWidth()
                     .height(2.dp)
-                    .background(
-                        color = textColor ?: Color.Unspecified,
-                    )
+                    .background(color = textColor ?: Color.Unspecified)
             )
         }
     }

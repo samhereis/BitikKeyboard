@@ -12,8 +12,8 @@ android {
         applicationId = "com.shoktuk.shoktukkeyboard"
         minSdk = 25
         targetSdk = 36
-        versionCode = 23
-        versionName = "3.1.8"
+        versionCode = 50
+        versionName = "3.3.7"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,48 +37,49 @@ android {
 }
 
 dependencies {
-    // ── Core & AppCompat
+    implementation(libs.colorpicker.compose)
+
+    // Core & App Compat
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.lifecycle.service)
+    implementation(libs.material)
 
-    // ── Compose BOM
+    // Compose Bill of Materials (BOM)
     implementation(platform(libs.androidx.compose.bom))
 
-    // ── Compose UI
-    implementation(libs.androidx.activity.compose)
+    // Compose UI
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.foundation)
-
-    // Tooling: preview at runtime, inspector only in debug
+    implementation(libs.androidx.ui.tooling)
     implementation(libs.androidx.ui.tooling.preview)
-    debugImplementation(libs.androidx.ui.tooling)
+    implementation(libs.androidx.activity.compose)
 
-    // ── Material 3
+    // Compose Material 3
     implementation(libs.androidx.material3)
     implementation(libs.androidx.compose.material.icons.extended)
-    implementation(libs.material)
 
-    // ── Navigation & ViewModel
+    // Compose Navigation & ViewModel
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
 
-    // ── Media3
-    implementation(libs.androidx.media3.exoplayer)
-    implementation(libs.androidx.media3.ui)
-
-    // ── Other
+    // Other Dependencies
     implementation(libs.flexbox)
     implementation(libs.gson)
     implementation(libs.hilt.android)
-    implementation(libs.wrapper.android)            // your QuickJS wrapper alias
+    implementation(libs.wrapper.android)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlin.csv.jvm)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.media3.exoplayer)
+    implementation(libs.androidx.media3.ui)
 
-    // ── Testing (scoped properly)
-    testImplementation(libs.androidx.junit.ktx)
-    androidTestImplementation(libs.androidx.monitor)
+    // Testing
+    implementation(libs.androidx.monitor)
+    implementation(libs.androidx.junit.ktx)
+    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.material3)
 }

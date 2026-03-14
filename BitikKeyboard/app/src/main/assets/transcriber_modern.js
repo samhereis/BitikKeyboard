@@ -168,89 +168,89 @@ function ProcessSoftVowel(currentArgument, lastArgument) {
 function CorrentText_Old() {
     this._isInitialized = false;
     this._transcriptionList = [
-    new TranscriptionEntry("", "", CharacterType.epmty, ""),
+        new TranscriptionEntry("", "", CharacterType.epmty, ""),
 
-                    // First Row
-                    new TranscriptionEntry("𐰶", "КЫ", CharacterType.HardCharacter),
-                    new TranscriptionEntry("𐰷", "ЫК", CharacterType.HardCharacter),
-                    new TranscriptionEntry("𐰬", "аҢ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰧", "аҢ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰁", "А", CharacterType.HardVowel_HasSoftVariant),
-                    new TranscriptionEntry("𐰀", "А", CharacterType.HardVowel_HasSoftVariant),
-                    new TranscriptionEntry("𐰺", "аР", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰻", "аР", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐱄", "аТ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐱃", "аТ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐱇", "ОТ", CharacterType.HardCharacter),
-                    new TranscriptionEntry("𐰖", "аЙ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰗", "аЙ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰆", "У", CharacterType.HardVowel, "О"),
-                    new TranscriptionEntry("𐰃", "Ы", CharacterType.HardVowel_HasSoftVariant),
-                    new TranscriptionEntry("𐰱", "ЧЫ", CharacterType.HardCharacter, "ЧИ"),
-                    new TranscriptionEntry("𐰯", "П", CharacterType.HardConsonant_Single),
+        // First Row
+        new TranscriptionEntry("𐰶", "QI", CharacterType.HardCharacter),
+        new TranscriptionEntry("𐰷", "IQ", CharacterType.HardCharacter),
+        new TranscriptionEntry("𐰬", "aÑ", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰧", "aÑ", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰁", "A", CharacterType.HardVowel_HasSoftVariant),
+        new TranscriptionEntry("𐰀", "A", CharacterType.HardVowel_HasSoftVariant),
+        new TranscriptionEntry("𐰺", "aR", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰻", "aR", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐱄", "aT", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐱃", "aT", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐱇", "OT", CharacterType.HardCharacter),
+        new TranscriptionEntry("𐰖", "aY", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰗", "aY", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰆", "U", CharacterType.HardVowel, "O"),
+        new TranscriptionEntry("𐰃", "I", CharacterType.HardVowel_HasSoftVariant),
+        new TranscriptionEntry("𐰱", "ÇI", CharacterType.HardCharacter, "Çİ"),
+        new TranscriptionEntry("𐰯", "P", CharacterType.HardConsonant_Single),
 
-                    // First Row - Shift
-                    new TranscriptionEntry("𐰭", "еҢ", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰮", "еҢ", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰅", "Е", CharacterType.SoftVowel),
-                    new TranscriptionEntry("𐰂", "Е", CharacterType.SoftVowel),
-                    new TranscriptionEntry("𐰼", "еР", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐱅", "еТ", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰘", "еЙ", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰇", "Ө", CharacterType.SoftVowel),
-                    new TranscriptionEntry("𐰈", "Ү", CharacterType.SoftVowel),
-                    new TranscriptionEntry("𐰄", "И", CharacterType.SoftVowel),
+        // First Row - Shift
+        new TranscriptionEntry("𐰭", "eÑ", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰮", "eÑ", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰅", "E", CharacterType.SoftVowel),
+        new TranscriptionEntry("𐰂", "E", CharacterType.SoftVowel),
+        new TranscriptionEntry("𐰼", "eR", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐱅", "eT", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰘", "eY", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰇", "Ö", CharacterType.SoftVowel),
+        new TranscriptionEntry("𐰈", "Ü", CharacterType.SoftVowel),
+        new TranscriptionEntry("𐰄", "İ", CharacterType.SoftVowel),
 
-                    // Second Row
-                    new TranscriptionEntry("𐰹", "ОК", CharacterType.HardCharacter),
-                    new TranscriptionEntry("𐰸", "УК", CharacterType.HardCharacter),
-                    new TranscriptionEntry("𐱂", "аС", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰽", "аС", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰑", "аД", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰒", "аД", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰦", "НТ", CharacterType.Character),
-                    new TranscriptionEntry("𐰍", "аГ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰎", "аГ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐱈", "РТ", CharacterType.Character),
-                    new TranscriptionEntry("𐰳", "аЖ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰴", "аК", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰞", "аЛ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰟", "аЛ", CharacterType.HardConsonant),
+        // Second Row
+        new TranscriptionEntry("𐰹", "OQ", CharacterType.HardCharacter),
+        new TranscriptionEntry("𐰸", "UQ", CharacterType.HardCharacter),
+        new TranscriptionEntry("𐱂", "aS", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰽", "aS", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰑", "aD", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰒", "aD", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰦", "NT", CharacterType.Character),
+        new TranscriptionEntry("𐰍", "aĞ", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰎", "aĞ", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐱈", "RT", CharacterType.Character),
+        new TranscriptionEntry("𐰳", "aJ", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰴", "aQ", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰞", "aL", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰟", "aL", CharacterType.HardConsonant),
 
-                    // Second Row - Shift
-                    new TranscriptionEntry("𐰾", "еС", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰓", "еД", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰨", "НЧ", CharacterType.Character),
-                    new TranscriptionEntry("𐰩", "НЧ", CharacterType.Character),
-                    new TranscriptionEntry("𐰏", "еГ", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰐", "еГ", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰡", "ЛТ", CharacterType.Character),
-                    new TranscriptionEntry("𐰙", "еЖ", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰚", "еК", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰛", "еК", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰠", "еЛ", CharacterType.SoftConsonant),
+        // Second Row - Shift
+        new TranscriptionEntry("𐰾", "eS", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰓", "eD", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰨", "NÇ", CharacterType.Character),
+        new TranscriptionEntry("𐰩", "NÇ", CharacterType.Character),
+        new TranscriptionEntry("𐰏", "eG", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰐", "eG", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰡", "LT", CharacterType.Character),
+        new TranscriptionEntry("𐰙", "eJ", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰚", "eK", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰛", "eK", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰠", "eL", CharacterType.SoftConsonant),
 
-                    // Third Row
-                    new TranscriptionEntry("𐰕", "З", CharacterType.HardConsonant_Single),
-                    new TranscriptionEntry("𐱀", "Ш", CharacterType.HardConsonant_Single),
-                    new TranscriptionEntry("𐰿", "Ш", CharacterType.HardConsonant_Single),
-                    new TranscriptionEntry("𐱁", "Ш", CharacterType.HardConsonant_Single),
-                    new TranscriptionEntry("𐰲", "Ч", CharacterType.HardConsonant_Single),
-                    new TranscriptionEntry("𐰜", "ҮК", CharacterType.SoftCharacter),
-                    new TranscriptionEntry("𐰰", "ҮК", CharacterType.SoftCharacter),
-                    new TranscriptionEntry("𐰝", "ӨК", CharacterType.SoftCharacter),
-                    new TranscriptionEntry("𐰉", "аБ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰊", "аБ", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰣", "аН", CharacterType.HardConsonant),
-                    new TranscriptionEntry("𐰢", "М", CharacterType.HardConsonant_Single),
+        // Third Row
+        new TranscriptionEntry("𐰕", "Z", CharacterType.HardConsonant_Single),
+        new TranscriptionEntry("𐱀", "Ş", CharacterType.HardConsonant_Single),
+        new TranscriptionEntry("𐰿", "Ş", CharacterType.HardConsonant_Single),
+        new TranscriptionEntry("𐱁", "Ş", CharacterType.HardConsonant_Single),
+        new TranscriptionEntry("𐰲", "Ç", CharacterType.HardConsonant_Single),
+        new TranscriptionEntry("𐰜", "ÜK", CharacterType.SoftCharacter),
+        new TranscriptionEntry("𐰰", "ÜK", CharacterType.SoftCharacter),
+        new TranscriptionEntry("𐰝", "ÖK", CharacterType.SoftCharacter),
+        new TranscriptionEntry("𐰉", "aB", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰊", "aB", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰣", "aN", CharacterType.HardConsonant),
+        new TranscriptionEntry("𐰢", "M", CharacterType.HardConsonant_Single),
 
-                    // Third Row - Shift
-                    new TranscriptionEntry("𐰌", "еБ", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰋", "еБ", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰤", "еН", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰥", "еН", CharacterType.SoftConsonant),
-                    new TranscriptionEntry("𐰫", "НЙ", CharacterType.Character),
-                    new TranscriptionEntry("𐰪", "НЙ", CharacterType.Character),
+        // Third Row - Shift
+        new TranscriptionEntry("𐰌", "eB", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰋", "eB", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰤", "eN", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰥", "eN", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰫", "NY", CharacterType.Character),
+        new TranscriptionEntry("𐰪", "NY", CharacterType.Character),
     ];
     this.singleTranscriptionData = new SingleTranscriptionData();
 }
@@ -258,14 +258,14 @@ function CorrentText_Old() {
 CorrentText_Old.prototype.Initialize = function() {
     if (this._isInitialized) return;
     this._isInitialized = true;
-    var o   = this._transcriptionList.find(x => x.transcription === "У");
-    var oe  = this._transcriptionList.find(x => x.transcription === "Ө");
-    var qi  = this._transcriptionList.find(x => x.transcription === "ҚЫ");
-    var iq  = this._transcriptionList.find(x => x.transcription === "ЫҚ");
-    var oq  = this._transcriptionList.find(x => x.transcription === "ОҚ");
-    var uq  = this._transcriptionList.find(x => x.transcription === "УҚ");
-    var oeq = this._transcriptionList.find(x => x.transcription === "ӨК");
-    var ueq = this._transcriptionList.find(x => x.transcription === "ҮК");
+    var o   = this._transcriptionList.find(x => x.transcription === "U");
+    var oe  = this._transcriptionList.find(x => x.transcription === "Ö");
+    var qi  = this._transcriptionList.find(x => x.transcription === "QI");
+    var iq  = this._transcriptionList.find(x => x.transcription === "IQ");
+    var oq  = this._transcriptionList.find(x => x.transcription === "OQ");
+    var uq  = this._transcriptionList.find(x => x.transcription === "UQ");
+    var oeq = this._transcriptionList.find(x => x.transcription === "ÖK");
+    var ueq = this._transcriptionList.find(x => x.transcription === "ÜK");
     // no linking here per C#
 };
 
@@ -282,8 +282,8 @@ CorrentText_Old.prototype._GetTranscription = function(text, isAlternative) {
     this.singleTranscriptionData.onFistVowelSet = function(x) { x.final = GetTranscriptionEntry(x); };
     this.singleTranscriptionData.onFistConsonantSet = function(x) {
         x.final = (x.type === CharacterType.SoftConsonant)
-            ? x.transcriptionAlternative
-            : x.transcription;
+        ? x.transcriptionAlternative
+        : x.transcription;
     };
 
     var textTemp = "";

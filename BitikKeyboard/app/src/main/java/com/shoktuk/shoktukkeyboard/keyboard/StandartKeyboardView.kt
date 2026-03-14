@@ -13,10 +13,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Preview
@@ -27,54 +25,66 @@ import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 
 @Composable
 fun StandardKeyboardView(
-    rowsModel: KeyboardRowsModel, keyboardState: MutableState<KeyboardState>, onKeyPress: (String) -> Unit, modifier: Modifier = Modifier
+    rowsModel: KeyboardRowsModel,
+    keyboardState: MutableState<KeyboardState>,
+    onKeyPress: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    var isShiftEnabled by remember { mutableStateOf(false) }
-    var isSymbolsEnabled by remember { mutableStateOf(false) }
-    var showEmojis by remember { mutableStateOf(false) }
-    var showSavedStrings by remember { mutableStateOf(false) }
+    // Use val + mutableStateOf so the same MutableState object is passed to all children.
+    // Never re-wrap with remember { mutableStateOf(localVar) } — that creates a disconnected snapshot.
+    val isShiftEnabled = remember { mutableStateOf(false) }
+    val isSymbolsEnabled = remember { mutableStateOf(false) }
+    val showEmojis = remember { mutableStateOf(false) }
+    val showSavedStrings = remember { mutableStateOf(false) }
 
     val cfg = LocalWindowInfo.current
     val savedGridHeight = remember(cfg.containerSize.height) {
         (cfg.containerSize.width / 5.5f).dp
     }
 
-    LaunchedEffect(keyboardState.value) { /* no-op to mirror onChange(of:) */ }
+    LaunchedEffect(keyboardState.value) { /* react to external keyboard state changes if needed */ }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
-            .background(KeyboardStyle.getColor(0)), verticalArrangement = Arrangement.spacedBy(KeyboardStyle.rowSpacingDp)
+            .background(KeyboardStyle.getColor(0)),
+        verticalArrangement = Arrangement.spacedBy(KeyboardStyle.rowSpacingDp)
     ) {
         when {
-            showEmojis -> {
+            showEmojis.value -> {
                 EmojisView(
-                    onKeyPress = onKeyPress, onABC = {
-                        isShiftEnabled = false
-                        isSymbolsEnabled = false
-                        showEmojis = false
-                    }, onBackspace = { onKeyPress("delete") }, emojiByType = EmojisData.defaultCategories()
+                    onKeyPress = onKeyPress,
+                    onABC = {
+                        isShiftEnabled.value = false
+                        isSymbolsEnabled.value = false
+                        showEmojis.value = false
+                    },
+                    onBackspace = { onKeyPress("delete") },
+                    emojiByType = EmojisData.defaultCategories()
                 )
             }
 
-            showSavedStrings -> {
+            showSavedStrings.value -> {
                 TopRowView(onKeyPress = onKeyPress)
 
                 Divider()
 
                 SavedStringsView(
                     stringsInit = listOf(
-                        "Hello", "World", "SwiftUI", "Keyboard", "Premade", "Texts", "Grid", "Buttons", "Click", "Tap", "Sample", "Preview"
-                    ), onKeyPress = onKeyPress, modifier = Modifier
+                        "Hello", "World", "SwiftUI", "Keyboard", "Premade", "Texts",
+                        "Grid", "Buttons", "Click", "Tap", "Sample", "Preview"
+                    ),
+                    onKeyPress = onKeyPress,
+                    modifier = Modifier
                         .fillMaxWidth()
                         .height(savedGridHeight)
                         .padding(5.dp)
                 )
 
                 BottomRowView(
-                    isSymbolsEnabled = remember { mutableStateOf(showSavedStrings) },
-                    isShiftEnabled = remember { mutableStateOf(isShiftEnabled) },
-                    showEmojis = remember { mutableStateOf(showEmojis) },
+                    isSymbolsEnabled = isSymbolsEnabled,
+                    isShiftEnabled = isShiftEnabled,
+                    showEmojis = showEmojis,
                     onKeyPress = { send ->
                         if (send == " ") onKeyPress(" delete ") else onKeyPress(send)
                     },
@@ -91,23 +101,38 @@ fun StandardKeyboardView(
                 if (KeyboardViewControllerBase.context.writingSystem == WritingSystem.Bitik) {
                     TopRowView(onKeyPress = onKeyPress)
                 } else {
-                    TopRowView_Alphabet(textContent = "", isBitikMode = remember { mutableStateOf(KeyboardViewControllerBase.context.writingSystem == WritingSystem.Bitik) }, onReplaceText = {})
+                    TopRowView_Alphabet(
+                        textContent = "",
+                        isBitikMode = remember {
+                            mutableStateOf(KeyboardViewControllerBase.context.writingSystem == WritingSystem.Bitik)
+                        },
+                        onReplaceText = {}
+                    )
                 }
 
-                if (isSymbolsEnabled) {
+                if (isSymbolsEnabled.value) {
                     SymbolKeyboardView(
-                        onKeyPress = onKeyPress, isShiftEnabled = remember { mutableStateOf(isShiftEnabled) })
+                        onKeyPress = onKeyPress,
+                        isShiftEnabled = isShiftEnabled
+                    )
                 } else {
-                    LetterKeyboardView(row1 = rowsModel.row1, row2 = rowsModel.row2, row3 = rowsModel.row3, isShiftEnabled = remember { mutableStateOf(isShiftEnabled) }, onKeyPress = { key ->
-                        onKeyPress(key)
-                        if (KeyboardViewControllerBase.autoDisableShift) isShiftEnabled = false
-                    }, onShiftLongPress = { showSavedStrings = true })
+                    LetterKeyboardView(
+                        row1 = rowsModel.row1,
+                        row2 = rowsModel.row2,
+                        row3 = rowsModel.row3,
+                        isShiftEnabled = isShiftEnabled,
+                        onKeyPress = { key ->
+                            onKeyPress(key)
+                            if (KeyboardViewControllerBase.autoDisableShift) isShiftEnabled.value = false
+                        },
+                        onShiftLongPress = { showSavedStrings.value = true }
+                    )
                 }
 
                 BottomRowView(
-                    isSymbolsEnabled = remember { mutableStateOf(isSymbolsEnabled) },
-                    isShiftEnabled = remember { mutableStateOf(isShiftEnabled) },
-                    showEmojis = remember { mutableStateOf(showEmojis) },
+                    isSymbolsEnabled = isSymbolsEnabled,
+                    isShiftEnabled = isShiftEnabled,
+                    showEmojis = showEmojis,
                     onKeyPress = onKeyPress
                 )
             }
@@ -123,8 +148,7 @@ fun StandardKeyboardViewPreview() {
     MaterialTheme {
         Column(Modifier.fillMaxWidth()) {
             Spacer(Modifier.weight(1f))
-            StandardKeyboardView(
-                rowsModel = rows, keyboardState = ks, onKeyPress = {})
+            StandardKeyboardView(rowsModel = rows, keyboardState = ks, onKeyPress = {})
         }
     }
 }

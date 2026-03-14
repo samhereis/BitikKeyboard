@@ -1,74 +1,19 @@
 package com.shoktuk.shoktukkeyboard.project.data
 
+import android.content.Context
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.ThumbUp
 import androidx.compose.ui.graphics.vector.ImageVector
-
-enum class MainScreens(val id: String) {
-    HOW_TO_ENABLE("HowToEnable_Screen"), TEST_KEYBOARD("TestKeyboard_Screen"), BASIC_INFO("BasicInfo_Screen"), SETTINGS("Settings_Screen"), SUPPORT("Support_Screen");
-
-    val title: String
-        get() = when (this) {
-            HOW_TO_ENABLE -> "sideBar_howToEbable"
-            TEST_KEYBOARD -> "sideBar_testTheKeyboard"
-            BASIC_INFO -> "sideBar_basicInfo"
-            SETTINGS -> "sideBar_settings"
-            SUPPORT -> "sideBar_support"
-            else -> "sideBar_howToEbable"
-        }
-
-    val systemImageName: ImageVector
-        get() = when (this) {
-            HOW_TO_ENABLE -> Icons.Filled.Settings
-            TEST_KEYBOARD -> Icons.Filled.CheckCircle
-            BASIC_INFO -> Icons.Filled.Info
-            SETTINGS -> Icons.Filled.Settings
-            SUPPORT -> Icons.Filled.ThumbUp
-            else -> Icons.Filled.KeyboardArrowUp
-        }
-}
-
-enum class BasicInfoScreens(val id: String) {
-    ORIGINAL_TAMGAS("OriginalTamgasView"),
-    MODERNIZED_TAMGAS("ModernizedTamgasView"),
-    USE_INSTRUCTION("USE_INSTRUCTION"),
-    BITIK_RULE_1("BITIK_RULE_1"),
-    BITIK_RULE_2("BITIK_RULE_2"),
-    BITIK_RULE_3("BITIK_RULE_3"),
-    BITIK_RULE_4("BITIK_RULE_4");
-
-    val title: String
-        get() = when (this) {
-            ORIGINAL_TAMGAS -> "Битиктин нускасы"
-            USE_INSTRUCTION -> "Тиркемени колдонуу"
-            BITIK_RULE_1 -> "№1 - Оңдон солго жазылыш"
-            BITIK_RULE_2 -> "№1 - Жумшак/Катуу"
-            BITIK_RULE_3 -> "№1 - Кыска жазылыш"
-            BITIK_RULE_4 -> "№1 - Курама сөздөр"
-            else -> "bi_originalBitik"
-        }
-}
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_SideMenu
+import localized
 
 enum class SettingScreens(val id: String) {
-    SavedStrings("SavedStrings");
-
-    val title: String
-        get() = when (this) {
-            SavedStrings -> "Сакталмалар"
-            else -> "bi_originalBitik"
-        }
-
-    val systemImageName: ImageVector
-        get() = when (this) {
-            SavedStrings -> Icons.Filled.Settings
-            else -> Icons.Filled.KeyboardArrowUp
-        }
+    SavedStrings("savables");
 }
 
 data class SideMenuItem(
-    val path: MainScreens, var icon: ImageVector
+    val path: Loc_SideMenu, var icon: ImageVector
 )

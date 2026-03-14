@@ -14,67 +14,101 @@ fun BottomRowView(
     showEmojis: MutableState<Boolean>,
     onKeyPress: (String) -> Unit = {},
     lastButton_WhileHolding: (String) -> Unit = {},
-    switcherTitle: String = "🅰😀",
-    switcherTitle_Alt: String = "⓬😀",
+    switcherTitle: String = "🅰😀",       // shown while in symbols mode (tap → back to main)
+    switcherTitle_Alt: String = "⓬😀",   // shown while in main mode (tap → symbols)
     lastButton: String = "arrow.turn.down.left",
     onAdjustCursor: (Int) -> Unit = {}
 ) {
     val keyWidth = KeyboardStyle.keyWidth()
+    val isBitikMain = KeyboardViewControllerBase.keyboardMode == KeyboardState.Main
 
     Row {
-        if (isSymbolsEnabled.value) {
-            KeyButton(
-                title = switcherTitle, isSystem = true, width = keyWidth * 1.5f, backgroundColorIndex = 6, isShiftEnabled = isShiftEnabled, onKeyPress = {
-                    KeyboardViewControllerBase.keyboardMode = KeyboardState.Symbols
-                    isSymbolsEnabled.value = false
-                })
-
-            KeyButton(
-                title = ".", isSystem = true, width = keyWidth, backgroundColorIndex = 1, isShiftEnabled = isShiftEnabled
-            )
-        } else {
-            KeyButton(
-                title = switcherTitle_Alt, isSystem = true, width = keyWidth * 1.5f, backgroundColorIndex = 6, isShiftEnabled = isShiftEnabled
-            )
-
-            KeyButton(
-                title = ".", isSystem = true, width = keyWidth, backgroundColorIndex = 1, isShiftEnabled = isShiftEnabled
-            )
-        }
-
+        // Mode switcher: tap toggles symbols, long-press goes to emojis
         KeyButton(
-            modifier = Modifier.weight(1f), isSystem = true, backgroundColorIndex = 1, isShiftEnabled = isShiftEnabled
+            title = if (isSymbolsEnabled.value) switcherTitle else switcherTitle_Alt,
+            isSystem = true,
+            width = keyWidth * 1.5f,
+            backgroundColorIndex = 6,
+            isShiftEnabled = isShiftEnabled,
+            onKeyPress = {
+                isSymbolsEnabled.value = !isSymbolsEnabled.value
+            },
+            onLongPress = {
+                showEmojis.value = true
+            }
         )
 
-        if (KeyboardViewControllerBase.context.wordSeparator != WordSeparator.NoSpace && KeyboardViewControllerBase.keyboardMode == KeyboardState.Main) {
-            KeyButton(
-                title = "⁚", isSystem = true, backgroundColorIndex = 1, isShiftEnabled = isShiftEnabled, onKeyPress = {
-                    val ws = when (KeyboardViewControllerBase.context.wordSeparator) {
-                        WordSeparator.NoSpace -> "⁚"
-                        WordSeparator.SpaceBefore -> "⁚ "
-                        WordSeparator.ArroundSpace -> " ⁚ "
-                        WordSeparator.Off -> "⁚"
-                    }
-                    onKeyPress("sys$ws")
-                })
-        }
-
+        // Dot / period
         KeyButton(
-            title = if (KeyboardViewControllerBase.keyboardMode == KeyboardState.Main) "⹁" else ",",
+            title = if (isBitikMain) "·" else ".",
             isSystem = true,
             width = keyWidth,
             backgroundColorIndex = 1,
             isShiftEnabled = isShiftEnabled,
             onKeyPress = {
-                onKeyPress("sys" + if (KeyboardViewControllerBase.keyboardMode == KeyboardState.Main) "⹁ " else ", ")
-            })
+                onKeyPress(if (isBitikMain) "sys·" else "sys.")
+            },
+            onLongPress = {
+                onKeyPress(if (isBitikMain) "sys." else "sys·")
+            }
+        )
 
+        // Space (expandable)
         KeyButton(
+            modifier = Modifier.weight(1f),
+            isSystem = true,
+            backgroundColorIndex = 1,
+            isShiftEnabled = isShiftEnabled,
+            onKeyPress = { onKeyPress("sys ") }
+        )
+
+        // Word separator (Bitik only, when not Off)
+        if (isBitikMain && KeyboardViewControllerBase.context.wordSeparator != WordSeparator.Off) {
+            val ws = when (KeyboardViewControllerBase.context.wordSeparator) {
+                WordSeparator.NoSpace -> "⁚"
+                WordSeparator.SpaceBefore -> "⁚ "
+                WordSeparator.ArroundSpace -> " ⁚ "
+                WordSeparator.Off -> "⁚"
+            }
+            KeyButton(
+                title = "⁚",
+                isSystem = true,
+                backgroundColorIndex = 1,
+                isShiftEnabled = isShiftEnabled,
+                onKeyPress = { onKeyPress("sys$ws") }
+            )
+        }
+
+        // Comma
+        KeyButton(
+            title = if (isBitikMain) "⹁" else ",",
+            isSystem = true,
+            width = keyWidth,
+            backgroundColorIndex = 1,
+            isShiftEnabled = isShiftEnabled,
+            onKeyPress = {
+                onKeyPress("sys" + if (isBitikMain) "⹁ " else ", ")
+            },
+            onLongPress = {
+                onKeyPress("sys" + if (isBitikMain) ", " else "⹁ ")
+            }
+        )
+
+        // Enter / Delete (depending on mode)
+        KeyButton(
+            title = if (KeyboardViewControllerBase.keyboardMode == KeyboardState.SavedStrings) "⌫" else "↵",
             isSystem = true,
             width = keyWidth * 1.5f,
             backgroundColorIndex = 6,
             isShiftEnabled = isShiftEnabled,
             whilePressing = { lastButton_WhileHolding("\n") },
-            onKeyPress = { onKeyPress("\n") })
+            onKeyPress = {
+                if (KeyboardViewControllerBase.keyboardMode == KeyboardState.SavedStrings) {
+                    onKeyPress("delete")
+                } else {
+                    onKeyPress("\n")
+                }
+            }
+        )
     }
 }

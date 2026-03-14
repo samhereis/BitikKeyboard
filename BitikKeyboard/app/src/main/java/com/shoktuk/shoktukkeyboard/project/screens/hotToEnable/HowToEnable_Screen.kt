@@ -14,13 +14,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -34,6 +37,7 @@ import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.project.data.NavBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.navBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.screens.settings.CenteredDropdownPopup
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_HowToEnable
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Composable
@@ -47,21 +51,12 @@ fun HowToEnable_Screen() {
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Screen Header
-        Text(
-            text = "hte_HowToEnable".localized("loc_howToEnable", context),
-            style = MaterialTheme.typography.titleLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-            modifier = Modifier.fillMaxWidth(),
-            textAlign = TextAlign.Start
-        )
-
         // Step 1: Activate Keyboard
         Column(
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp), horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "hte_ActivateShoktukKeyboard".localized("loc_howToEnable", context),
+                text = Loc_HowToEnable.openSettingsAndEnableKeyboard.localizedTitle(context),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth(),
@@ -74,7 +69,7 @@ fun HowToEnable_Screen() {
                 }, modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
-                    text = "hte_openKeyboardSettings".localized("loc_howToEnable", context), modifier = Modifier.fillMaxWidth(), fontSize = 20.sp, textAlign = TextAlign.Center
+                    text = Loc_HowToEnable.openSettings.localizedTitle(context), modifier = Modifier.fillMaxWidth(), fontSize = 20.sp, textAlign = TextAlign.Center
                 )
             }
         }
@@ -83,7 +78,7 @@ fun HowToEnable_Screen() {
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp), horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "hte_ChangeTheLanguage".localized("loc_howToEnable", context),
+                text = Loc_HowToEnable.changeLanguage.localizedTitle(context),
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onBackground,
                 modifier = Modifier.fillMaxWidth(),
@@ -103,6 +98,7 @@ fun HowToEnable_Screen() {
 @Composable
 fun NavBarPaddingSolutionView() {
     val context = LocalContext.current
+    var selected by remember { mutableStateOf(context.navBarPaddingSolution) }
 
     Surface(
         modifier = Modifier.fillMaxWidth(),
@@ -126,7 +122,7 @@ fun NavBarPaddingSolutionView() {
             }
 
             Text(
-                text = "Эгер сизде ушундай бош аралык болсо же баскычтоп кирип кетсе, бул чечимдерди колдонуп көрүңүз",
+                text = Loc_HowToEnable.freeSpaceTitle.localizedTitle(context),
                 style = MaterialTheme.typography.titleMedium,
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start,
@@ -134,9 +130,15 @@ fun NavBarPaddingSolutionView() {
             )
 
             CenteredDropdownPopup(
-                label = "Бош аралык чечими", options = NavBarPaddingSolution.entries, selected = context.navBarPaddingSolution, onSelect = { alpha ->
-                context.navBarPaddingSolution = alpha
-            }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                label = Loc_HowToEnable.freeSpaceSetting.localizedTitle(context),
+                options = NavBarPaddingSolution.entries,
+                selected = selected,
+                onSelect = { alpha ->
+                    selected = alpha
+                    context.navBarPaddingSolution = selected
+                },
+                optionLabel = { it.id },
+                modifier = Modifier.fillMaxWidth()
             )
 
             Image(

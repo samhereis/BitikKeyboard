@@ -14,8 +14,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BitikRules
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -32,35 +35,35 @@ fun BitikRule3() {
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp), horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "3 Кыска жазылышы", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
+                text = Loc_BasicInfo.RULE3.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
             )
 
             Text(
-                text = "Тамгалар өзүнчө аР/эР, аЛ/эЛ болуп окулгандан, сөздөр кыска жазылат. " + "Азырынча сөздүн тамырын гана кыска жазып, калганын толук жазса болот. " + "Бирок негизи, битикташтарда баары кыска жазылган.",
+                text = Loc_BitikRules.R_3_SHORT_WRITING.localizedTitle(LocalContext.current),
                 style = MaterialTheme.typography.bodyLarge
             )
 
             Text(
-                text = "Азыр ыңгайлуу болуш үчүн, автордун сунушу: сөздүн тамырын гана кыска жазуу.", style = MaterialTheme.typography.bodyLarge
+                text =Loc_BitikRules.R_3_AUTHOR_SUGGESTIONS.localizedTitle(LocalContext.current), style = MaterialTheme.typography.bodyLarge
             )
 
             SectionCard {
                 Column {
-                    Text("Бар - 𐰉𐰺")
-                    Text("Барыш - 𐰉𐰺𐰃𐱀")
-                    Text("Барышат - 𐰉𐰺𐰃𐱀𐰀𐱄")
+                    Text("Bar - 𐰉𐰺")
+                    Text("barış - 𐰉𐰺𐰃𐱀")
+                    Text("Barışat - 𐰉𐰺𐰃𐱀𐰀𐱄")
                 }
             }
 
             HorizontalDivider()
 
             Text(
-                text = "3.1 Атайын тамгалар", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
+                text = Loc_BitikRules.R_3_SPECIAL_LETTERS.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
             )
             Text(
-                text = "Кошумча, кыска жазууга атайын тамгалар бар. Алардын тыбышы эч качан өзгөрбөйт.", style = MaterialTheme.typography.bodyLarge
+                text =Loc_BitikRules.R_3_SPECIAL_LETTERS_DETAILS.localizedTitle(LocalContext.current), style = MaterialTheme.typography.bodyLarge
             )
-            Text("Артыкчылык:", style = MaterialTheme.typography.bodyLarge)
+            Text("Artıqçılıq:", style = MaterialTheme.typography.bodyLarge)
 
             Column {
                 Text("𐱈𐰷𐰱𐰞𐰷 ✅", color = MaterialTheme.colorScheme.error)
@@ -69,18 +72,11 @@ fun BitikRule3() {
 
             HorizontalDivider()
 
-            Text(
-                text = "3.2 - Сингармонизм менен атайын тамгага туш келсе.", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
-            )
-            Text(
-                text = "Анда эмки тамга түпкү окулушу менен окулат.", style = MaterialTheme.typography.bodyLarge
-            )
-
             SectionCard {
                 Column {
-                    Text("Жырак - 𐰳𐰃𐰺𐰴")
-                    Text("Себеби “жырык” мындай жазылмак:")
-                    Text("𐰳𐰃𐰺𐰷 - Жырык")
+                    Text("Jıraq - 𐰳𐰃𐰺𐰴")
+                    Text(Loc_BitikRules.R_3_SINGARMONISM_JIRAQ.localizedTitle(LocalContext.current))
+                    Text("𐰳𐰃𐰺𐰷 - Jırıq")
                 }
             }
         }

@@ -17,6 +17,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,13 +33,20 @@ import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+/**
+ * Top row showing either:
+ *  - Transcription bar (when Bitik + textTranscription On): shows current-word transliteration
+ *  - Saved strings strip (SAMAGAN variant or transcription Off): scrollable saved strings
+ *
+ * [transcription] is a Pair(primary, alternative) updated by KeyboardViewControllerBase after each
+ * key press via [KeyboardViewControllerBase.transcriptionState].
+ */
 @Composable
 fun TopRowView(
-    onKeyPress: (String) -> Unit = {}
+    onKeyPress: (String) -> Unit = {},
+    transcription: State<Pair<String, String>> = KeyboardViewControllerBase.transcriptionState
 ) {
     val ctx = LocalContext.current
-    var displayText by remember { mutableStateOf("") }
-    var displayTextAlternative by remember { mutableStateOf("") }
     var strings by remember {
         mutableStateOf(
             listOf(
@@ -55,29 +63,37 @@ fun TopRowView(
         }
     }
 
-    val transcription = KeyboardViewControllerBase.current_bitikVariant != BitikVariant.SAMAGAN && KeyboardViewControllerBase.showTextTranscription
+    val showTranscription =
+        KeyboardViewControllerBase.current_bitikVariant != BitikVariant.SAMAGAN &&
+                KeyboardViewControllerBase.showTextTranscription
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp), horizontalAlignment = Alignment.CenterHorizontally
+            .padding(5.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        if (transcription) {
+        if (showTranscription) {
+            val (primary, alt) = transcription.value
             Row(
-                modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("~ ", style = MaterialTheme.typography.bodySmall)
-                if (displayText.isNotEmpty()) {
-                    val pairs = displayText.zip(displayTextAlternative)
+                if (primary.isNotEmpty()) {
+                    val pairs = primary.zip(
+                        alt.padEnd(primary.length, ' ')
+                    )
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
-                        items(pairs) { p ->
-                            TwoFloorText(top = p.second.toString(), bottom = p.first.toString())
+                        items(pairs) { (bot, top) ->
+                            TwoFloorText(top = top.toString(), bottom = bot.toString())
                         }
                     }
                 }
                 Text(" ~", style = MaterialTheme.typography.bodySmall)
             }
         } else {
+            // Saved strings strip
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -92,12 +108,17 @@ fun TopRowView(
                 ) {
                     strings.forEach { item ->
                         Text(
-                            text = if (item.isEmpty()) " " else item, style = MaterialTheme.typography.titleMedium, modifier = Modifier
+                            text = if (item.isEmpty()) " " else item,
+                            style = MaterialTheme.typography.titleMedium,
+                            modifier = Modifier
                                 .padding(horizontal = 5.dp, vertical = 0.dp)
                                 .background(
-                                    color = KeyboardStyle.getColor(1), shape = MaterialTheme.shapes.small
+                                    color = KeyboardStyle.getColor(1),
+                                    shape = MaterialTheme.shapes.small
                                 )
-                                .then(Modifier.clickable { onKeyPress(item) }.padding(horizontal = 8.dp, vertical = 4.dp)))
+                                .clickable { onKeyPress(item) }
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        )
                     }
                 }
             }
@@ -107,23 +128,27 @@ fun TopRowView(
 
 @Composable
 fun TwoFloorText(top: String, bottom: String) {
-    if (top == bottom) {
+    if (top.isBlank() || top == bottom) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 0.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(vertical = 0.dp)
         ) {
-            Text(
-                text = top, style = MaterialTheme.typography.bodySmall, maxLines = 1
-            )
+            Text(text = bottom, style = MaterialTheme.typography.bodySmall, maxLines = 1)
         }
     } else {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(vertical = 0.dp)
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.padding(vertical = 0.dp)
         ) {
             Text(
-                text = top, style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Normal), maxLines = 1
+                text = top,
+                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Normal),
+                maxLines = 1
             )
             Text(
-                text = bottom, style = MaterialTheme.typography.bodySmall, maxLines = 1
+                text = bottom,
+                style = MaterialTheme.typography.bodySmall,
+                maxLines = 1
             )
         }
     }
@@ -136,7 +161,7 @@ private suspend fun loadSavedStrings(ctx: Context): List<String> = withContext(D
     return@withContext try {
         val type = object : TypeToken<List<String>>() {}.type
         Gson().fromJson<List<String>>(raw, type) ?: emptyList()
-    } catch (e: Throwable) {
+    } catch (_: Throwable) {
         emptyList()
     }
 }

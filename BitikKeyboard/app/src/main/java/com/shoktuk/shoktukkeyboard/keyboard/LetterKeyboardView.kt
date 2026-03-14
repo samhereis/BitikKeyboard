@@ -11,24 +11,26 @@ import androidx.compose.ui.unit.Dp
 
 @Composable
 fun LetterKeyboardView(
-    row1: List<KeyboardKey>, row2: List<KeyboardKey>, row3: List<KeyboardKey>, isShiftEnabled: MutableState<Boolean>, onKeyPress: (String) -> Unit, onShiftLongPress: () -> Unit = {}
+    row1: List<KeyboardKey>,
+    row2: List<KeyboardKey>,
+    row3: List<KeyboardKey>,
+    isShiftEnabled: MutableState<Boolean>,
+    onKeyPress: (String) -> Unit,
+    onShiftLongPress: () -> Unit = {}
 ) {
     val isStandardWidth = KeyboardViewControllerBase.maxRowElementsCount < 11.0 || KeyboardViewControllerBase.keyboardMode == KeyboardState.Symbols
     val keyWidth = if (isStandardWidth) KeyboardStyle.keyWidth() else KeyboardStyle.keyWidth() / 1.025f
     val systemKeyWidth = if (isStandardWidth) KeyboardStyle.keyWidth() * 2f else KeyboardStyle.keyWidth()
 
-    FixedKeyboardRow(
-        keys = row1, keyWidth = keyWidth, onKeyPress = onKeyPress, isShiftEnabled = isShiftEnabled
-    )
-    FixedKeyboardRow(
-        keys = row2, keyWidth = keyWidth, onKeyPress = onKeyPress, isShiftEnabled = isShiftEnabled
-    )
+    FixedKeyboardRow(keys = row1, keyWidth = keyWidth, onKeyPress = onKeyPress, isShiftEnabled = isShiftEnabled)
+    FixedKeyboardRow(keys = row2, keyWidth = keyWidth, onKeyPress = onKeyPress, isShiftEnabled = isShiftEnabled)
 
     Row(horizontalArrangement = Arrangement.Center) {
+        // Shift key
         KeyButton(
-            Modifier.weight(1f),
+            modifier = Modifier.weight(1f),
             key = null,
-            title = null,
+            title = if (isShiftEnabled.value) "⬆" else "⇧",
             isSystem = true,
             backgroundColorIndex = 6,
             isShiftEnabled = isShiftEnabled,
@@ -39,8 +41,6 @@ fun LetterKeyboardView(
         row3.forEach { key ->
             KeyButton(
                 key = key,
-                title = null,
-                icon = null,
                 isSystem = false,
                 width = keyWidth,
                 backgroundColorIndex = if (isShiftEnabled.value) key.backgroundColorIndexUppercase ?: 1 else key.backgroundColorIndexLowercase ?: 1,
@@ -52,24 +52,30 @@ fun LetterKeyboardView(
                 onLongPress = {
                     val hold = if (isShiftEnabled.value) key.upperCaseHold else key.lowerCaseHold
                     if (hold != null) onKeyPress(hold)
-                })
+                }
+            )
         }
 
+        // Delete key
         KeyButton(
-            Modifier.weight(1f),
+            modifier = Modifier.weight(1f),
             key = null,
-            title = null,
+            title = "⌫",
             isSystem = true,
             backgroundColorIndex = 6,
             isShiftEnabled = isShiftEnabled,
             onKeyPress = { onKeyPress("delete") },
-            whilePressing = { onKeyPress("delete") })
+            whilePressing = { onKeyPress("delete") }
+        )
     }
 }
 
 @Composable
 fun FixedKeyboardRow(
-    keys: List<KeyboardKey>, keyWidth: Dp, onKeyPress: (String) -> Unit, isShiftEnabled: MutableState<Boolean>
+    keys: List<KeyboardKey>,
+    keyWidth: Dp,
+    onKeyPress: (String) -> Unit,
+    isShiftEnabled: MutableState<Boolean>
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center
@@ -78,8 +84,6 @@ fun FixedKeyboardRow(
         keys.forEach { key ->
             KeyButton(
                 key = key,
-                title = null,
-                icon = null,
                 isSystem = false,
                 width = keyWidth,
                 backgroundColorIndex = if (isShiftEnabled.value) key.backgroundColorIndexUppercase ?: 1 else key.backgroundColorIndexLowercase ?: 1,
@@ -91,7 +95,8 @@ fun FixedKeyboardRow(
                 onLongPress = {
                     val hold = if (isShiftEnabled.value) key.upperCaseHold else key.lowerCaseHold
                     if (hold != null) onKeyPress(hold)
-                })
+                }
+            )
         }
         Spacer(Modifier.weight(1f, fill = false))
     }

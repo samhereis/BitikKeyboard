@@ -1,7 +1,7 @@
 package com.shoktuk.shoktukkeyboard.project.data
 
 enum class BitikVariant(val id: String) {
-    CLASSIC("Түп нуска"), Modern("Демейки"), SAMAGAN("Заманбапталган");
+    CLASSIC("keyboardVariant_Classic"), Modern("keyboardVariant_Standart"), SAMAGAN("keyboardVariant_Modern");
 
     companion object {
         const val KEY = "keyboard_variant"
@@ -9,7 +9,7 @@ enum class BitikVariant(val id: String) {
 }
 
 enum class BitikDialect(val id: String) {
-    Altay("Алтай"), Orkon("Оркон");
+    Altay("keyboardDialect_Altay"), Orkon("keyboardDialect_Orhon");
 
     companion object {
         const val KEY = "BitikDialect"
@@ -40,6 +40,22 @@ enum class WordSeparator(val id: String) {
     }
 }
 
+enum class AJ_Letter_Variant(val id: String) {
+    Ach("𐰳"), Jaa("𐰖");
+
+    companion object {
+        const val KEY = "AJ_Letter_Variant"
+    }
+}
+
+enum class ANG_Letter_Variant(val id: String) {
+    Off("Off"), On("On");
+
+    companion object {
+        const val KEY = "ANG_Letter_Variant"
+    }
+}
+
 enum class EB_Letter_Variant(val id: String) {
     Default("𐰌"), Second("𐰋");
 
@@ -64,6 +80,14 @@ enum class AS_Letter_Variant(val id: String) {
     }
 }
 
+enum class EK_Letter_Variant(val id: String) {
+    Default("𐰚"), Second("𐰛");
+
+    companion object {
+        const val KEY = "EK_Letter_Variant"
+    }
+}
+
 enum class ESH_Letter_Variant(val id: String) {
     Default("𐱁"), Second("𐰿");
 
@@ -72,19 +96,43 @@ enum class ESH_Letter_Variant(val id: String) {
     }
 }
 
-enum class Kirilisa_Status(val id: String) {
-    Off("Өчүк"), On("Жанык");
-
-    companion object {
-        const val KEY = "Kirilisa_Status"
-    }
-}
-
 enum class Latin_Status(val id: String) {
     Off("Өчүк"), On("Жанык");
 
     companion object {
         const val KEY = "Latin_Status"
+    }
+}
+
+enum class Latin_Variant(val id: String) {
+    minimal("latinAlphabet_Kyrgyz"), full("latinAlphabet_Full");
+
+    companion object {
+        const val KEY = "Latin_Variant"
+    }
+}
+
+enum class Latin_ZH(val id: String) {
+    j("j"), c("c");
+
+    companion object {
+        const val KEY = "Latin_ZH"
+    }
+}
+
+enum class Arabic_Status(val id: String) {
+    Off("Өчүк"), On("Жанык");
+
+    companion object {
+        const val KEY = "Arabic_Status"
+    }
+}
+
+enum class Kirilisa_Status(val id: String) {
+    Off("Өчүк"), On("Жанык");
+
+    companion object {
+        const val KEY = "Kirilisa_Status"
     }
 }
 
@@ -104,6 +152,14 @@ enum class ColoringStatus(val id: String) {
     }
 }
 
+enum class HoldabilityColoring(val id: String) {
+    Off("Өчүк"), On("Жанык");
+
+    companion object {
+        const val KEY = "HoldabilityColoring"
+    }
+}
+
 enum class Sounds(val id: String) {
     Off("Өчүк"), On("Жанык");
 
@@ -113,7 +169,7 @@ enum class Sounds(val id: String) {
 }
 
 enum class WritingSystem(val id: String) {
-    Bitik("Bitik"), Latin("latin"), Kiril("kiril");
+    Bitik("Bitik"), Latin("latin"), Arab("arabic"), Kiril("kiril");
 
     companion object {
         const val KEY = "WritingSystem"
@@ -121,7 +177,7 @@ enum class WritingSystem(val id: String) {
 }
 
 enum class NavBarPaddingSolution(val id: String) {
-    Solution_AllEnabled("Чечим №1"), Solution_Enable_1("Чечим №2"), Solution_Enable_2("Чечим №3"), Solution_Enable_Off("Чечим №4");
+    Solution_AllEnabled("№1"), Solution_Enable_1("№2"), Solution_Enable_2("№3"), Solution_Enable_Off("№4");
 
     companion object {
         const val KEY = "NavBarPaddingSolution"

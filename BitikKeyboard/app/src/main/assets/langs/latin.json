@@ -14,10 +14,10 @@
         "name": "ş",
         "lowercase": "ş",
         "lowerCaseHold": "w",
-        "lowerCaseRomanization_Alt": "w",
+        "lowerCaseRomanization": "w",
         "uppercase": "Ş",
         "upperCaseHold": "W",
-        "upperCaseRomanization_Alt": "W"
+        "upperCaseRomanization": "W"
       },
       {
         "name": "a",
@@ -48,8 +48,12 @@
       {
         "name": "o, u",
         "lowercase": "u",
+        "lowerCaseRomanization": "ū",
+        "lowerCaseHold": "ū",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "U",
+        "upperCaseRomanization": "Ū",
+        "upperCaseHold": "Ū",
         "backgroundColorIndex_uppercase": 4
       },
       {
@@ -76,8 +80,12 @@
       {
         "name": "oq, uq",
         "lowercase": "a",
+        "lowerCaseRomanization": "ä",
+        "lowerCaseHold":"ä",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "A",
+        "upperCaseRomanization": "Ä",
+        "upperCaseHold": "Ä",
         "backgroundColorIndex_uppercase": 4
       },
       {
@@ -160,9 +168,9 @@
         "name": "ç",
         "lowercase": "ç",
         "lowerCaseHold": "c",
-        "lowerCaseRomanization_Alt": "c",
+        "lowerCaseRomanization": "c",
         "uppercase": "Ç",
-        "upperCaseRomanization_Alt": "C",
+        "upperCaseRomanization": "C",
         "upperCaseHold": "C"
       },
       {

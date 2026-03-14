@@ -30,6 +30,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -37,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_Settings
 
 @Composable
 fun FreeButtonStringsSection(
@@ -56,7 +58,7 @@ fun FreeButtonStringsSection(
             verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                text = "Бош тамга", style = MaterialTheme.typography.titleMedium
+                text = Loc_Settings.freeLetter.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium
             )
             Icon(
                 imageVector = Icons.Default.Info, contentDescription = null
@@ -69,7 +71,7 @@ fun FreeButtonStringsSection(
     ) {
         Column(Modifier.weight(1f)) {
             Text(
-                "Басууда", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
+                Loc_Settings.freeLetter_onHold.localizedTitle(LocalContext.current), style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
             )
             OutlinedTextField(
                 value = left, onValueChange = onLeftChange, singleLine = false, modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), placeholder = { Text("Басууда") })
@@ -78,7 +80,7 @@ fun FreeButtonStringsSection(
             modifier = Modifier.weight(1f), horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "Басып турууда", style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
+                Loc_Settings.freeLetter_onPress.localizedTitle(LocalContext.current), style = MaterialTheme.typography.labelSmall, textAlign = TextAlign.Center, modifier = Modifier.fillMaxWidth()
             )
 
             OutlinedTextField(
@@ -88,7 +90,7 @@ fun FreeButtonStringsSection(
 
     if (showHint) {
         InfoFullScreen(
-            drawables = mapOf(R.drawable.settings_freebutton to "Бош тамга"), onClick = { showHint = false })
+            drawables = mapOf(R.drawable.settings_freebutton to Loc_Settings.freeLetter.localizedTitle(LocalContext.current)), onClick = { showHint = false })
     }
 }
 

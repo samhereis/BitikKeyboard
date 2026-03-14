@@ -18,8 +18,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BitikRules
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,49 +40,49 @@ fun BitikRule2() {
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(20.dp), horizontalAlignment = Alignment.Start
         ) {
             Text(
-                text = "Катуу/Жумшак", style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
+                text = Loc_BasicInfo.RULE2.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, color = MaterialTheme.colorScheme.primary
             )
 
             Text(
-                text = "Битиктин эң алгачкы эрежеси - тамгалардын катуу/жумшака, же башкача: жоон/ничкеге бөлүнүшү. " + "Битикте к, л, т тамлалар жок, битикте аК/эК, аЛ/эЛ жана аТ/эТ тамгалар бар.",
+                text = Loc_BitikRules.R_2_HARD_SOFT.localizedTitle(LocalContext.current),
                 style = MaterialTheme.typography.bodyLarge
             )
 
-            Text("Бул үндүүлөр жоон - АУОЫ.", style = MaterialTheme.typography.bodyLarge)
-            Text("Булар ничке - ЭЕҮӨИ.", style = MaterialTheme.typography.bodyLarge)
+            Text(Loc_BitikRules.R_2_HARD_VOWEL.localizedTitle(LocalContext.current), style = MaterialTheme.typography.bodyLarge)
+            Text(Loc_BitikRules.R_2_SOFT_VOWEL.localizedTitle(LocalContext.current), style = MaterialTheme.typography.bodyLarge)
 
             Column {
-                Text("аК  + аЛ + аТ = Калат", color = MaterialTheme.colorScheme.error)
-                Text("эК + эЛ + эТ = Келет", color = MaterialTheme.colorScheme.error)
+                Text("aQ  + aL + aT =  Qalat", color = MaterialTheme.colorScheme.error)
+                Text("eK + eL + eT = Kelet", color = MaterialTheme.colorScheme.error)
             }
 
             // SectionCard 1
             SectionCard {
                 Column {
-                    Text("𐰴𐰞𐱄 - Калат ✅")
-                    Text("𐰚𐰠𐱅 - Келет ✅")
+                    Text("𐰴𐰞𐱄 - Qalat ✅")
+                    Text("𐰚𐰠𐱅 - Kelet ✅")
                     Text("")
-                    Text("𐰴𐰠𐱄 - Каэлат 🚫")
-                    Text("𐰚𐰞𐱅 - Кеалэт 🚫")
+                    Text("𐰴𐰠𐱄 - Kaelat 🚫")
+                    Text("𐰚𐰞𐱅 - Kealet 🚫")
                 }
             }
 
             Text(
-                text = "Жоон үндүүлөр тек катуу үнсүздөр менен. Ничке үндүүлөр тек жушмак үнсүздөр менен.", style = MaterialTheme.typography.bodyLarge
+                text = Loc_BitikRules.R_2_SOFT_WITH_SOFT_HARD_WITH_HARD.localizedTitle(LocalContext.current), style = MaterialTheme.typography.bodyLarge
             )
 
             Column {
-                Text("О  + аЙ + аД + О = Ойдо", color = MaterialTheme.colorScheme.error)
-                Text("Ө + эР + ҮК = Өрүк", color = MaterialTheme.colorScheme.error)
+                Text("O  + aY + aD + O = Oydo", color = MaterialTheme.colorScheme.error)
+                Text("Ö + eR + ÜK = Örük", color = MaterialTheme.colorScheme.error)
             }
 
             SectionCard {
                 Column {
-                    Text("𐰆𐰖𐰑𐰆 - Ойдо ✅")
-                    Text("𐰇𐰼𐰰 - Өрүк ✅")
+                    Text("𐰆𐰖𐰑𐰆 - Oydo ✅")
+                    Text("𐰇𐰼𐰰 - Örük ✅")
                     Text("")
-                    Text("𐰇𐰖𐰑𐰇 - Өайдаьө 🚫")
-                    Text("𐰆𐰼𐰰 - Оэрүк 🚫")
+                    Text("𐰇𐰖𐰑𐰇 - Öayadö 🚫")
+                    Text("𐰆𐰼𐰰 - Oerük 🚫")
                 }
             }
         }

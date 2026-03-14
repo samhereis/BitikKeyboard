@@ -6,15 +6,14 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.sp
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
-import com.shoktuk.shoktukkeyboard.keyboard.KeyboardViewControllerBase
+import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 
 data class ButtonStyle(
-    var fillColor: String, val borderColor: String, val borderWidthDp: Int, val cornerRadiusDp: Int, val textColor: String, val textSizeSp: TextUnit
+    var fillColor: String, val borderColor: String, val borderWidthDp: Int, val cornerRadiusDp: Int, val textColor: String, val textSizeSp: Float
 )
 
 object KeyboardTheme {
@@ -26,7 +25,7 @@ object KeyboardTheme {
     // 4 = soft tamga key bg
     // 5 = special tamga key bg
     // 6 = system key bg
-    val colorIndexes_Light = listOf(
+    private val colorIndexes_Light = listOf(
         "#f1f0f7", // 0 container
         "#ffffff", // 1 key bg
         "#1B1B17", // 2 key text
@@ -36,7 +35,7 @@ object KeyboardTheme {
         "#8a90a5",      // 6 = system key bg
         "#1B1B17",      // 7 = system key text
     )
-    val colorIndexes_Dark = listOf(
+    private val colorIndexes_Dark = listOf(
         "#1e1f25", // 0 container
         "#33343a", // 1 key bg
         "#fcfaff", // 2 key text
@@ -49,18 +48,18 @@ object KeyboardTheme {
 
     private const val BASE_SCREEN_WIDTH_DP = 350f
     private const val MAX_SCALE_FACTOR = 1.5f
-    private const val BUTTON_HEIGHT_DP = 170
     const val KEY_MARGIN_DP = 0
     const val KEY_MARGIN_DP_OnlyVisual_H = 2
     const val KEY_MARGIN_DP_OnlyVisual_V = 6
 
-    private val BASE_LETTER_TEXT_SIZE_SP = 19.sp
-    private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 21.sp
-    private val BASE_HINT_TEXT_SIZE_SP = 7.sp
-    private val BASE_SYSTEM_TEXT_SIZE_SP = 17.sp
+    private val BASE_LETTER_TEXT_SIZE_SP = 19
+    private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 21
+    private val BASE_HINT_TEXT_SIZE_SP = 8.5f
+    private val BASE_SYSTEM_TEXT_SIZE_SP = 17
 
     const val SHIFT_ICON_FILE = "icons/shift_icon.png"
     const val SHIFT_ICON_FILE_Filled = "icons/shiftfilled_icon.png"
+    const val BOOKMARK_ICON = "icons/bookmark_icon.png"
     const val DELETE_ICON_FILE = "icons/delete_icon.png"
     const val LANGUAGE_ICON_FILE = "icons/icon_language.png"
     const val SPACE_ICON_FILE = "icons/space_icon.png"
@@ -72,7 +71,7 @@ object KeyboardTheme {
     const val ENTER_DONE_ICON_FILE = "icons/enter_done_icon.png"
     const val ENTER_NEXT_ICON_FILE = "icons/enter_next_icon.png"
 
-    private fun isNight(): Boolean = (KeyboardViewControllerBase.context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+    private fun isNight(): Boolean = (MyKeyboardService.context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
     fun getColor(index: Int): String = (if (isNight()) colorIndexes_Dark else colorIndexes_Light)[index]
 
@@ -100,29 +99,44 @@ object KeyboardTheme {
         return getLetterButtonWidth(context, maxKeyCount) + (getLetterButtonWidth(context) / 4)
     }
 
-    fun getButtonHeight(): Int = BUTTON_HEIGHT_DP
+    fun getButtonHeight(): Int {
+        var setting = MyKeyboardService.context.keyboardHeight
+        var settingDP = dpToPx(MyKeyboardService.context, setting)
+        var screenHeight = MyKeyboardService.context.resources.displayMetrics.heightPixels
 
-    private fun getLetterButtonTextSize(context: Context): TextUnit {
+        if (settingDP > screenHeight / 2) {
+            var neededHeight = pxToDp(MyKeyboardService.context, screenHeight / 3)
+            return neededHeight
+        } else {
+            return setting
+        }
+    }
+
+    private fun getLetterButtonTextSize(context: Context): Float {
         val scaleFactor = getScaleFactor(context)
         return BASE_LETTER_TEXT_SIZE_SP * scaleFactor
     }
 
-    private fun getLetterButtonTextSize_NoTranscription(context: Context): TextUnit {
+    private fun getLetterButtonTextSize_NoTranscription(context: Context): Float {
         val scaleFactor = getScaleFactor(context)
         return BASE_LETTER_TEXT_SIZE_SP_NOHINT * scaleFactor
     }
 
-    fun getHintButtonTextSize(context: Context): TextUnit {
+    fun getHintButtonTextSize(context: Context): Float {
         val scaleFactor = getScaleFactor(context)
         return BASE_HINT_TEXT_SIZE_SP * scaleFactor
     }
 
-    private fun getSystemButtonTextSize(context: Context): TextUnit {
+    private fun getSystemButtonTextSize(context: Context): Float {
         val scaleFactor = getScaleFactor(context)
         return BASE_SYSTEM_TEXT_SIZE_SP * scaleFactor
     }
 
     fun dpToPx(context: Context, dp: Int): Int = (dp * context.resources.displayMetrics.density).toInt()
+    fun pxToDp(context: Context, px: Int): Int {
+        var density = context.resources.displayMetrics.density
+        return (px / context.resources.displayMetrics.density).toInt()
+    }
 
     fun createDrawableFromStyle(context: Context, style: ButtonStyle): GradientDrawable {
         return GradientDrawable().apply {
@@ -145,7 +159,7 @@ object KeyboardTheme {
     }
 
     fun getLetterButtonStyle_Normal(context: Context, showTranscription: Boolean = false): ButtonStyle {
-        val textSizeSp = if (!showTranscription || KeyboardViewControllerBase.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
+        val textSizeSp = if (!showTranscription || MyKeyboardService.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
         else getLetterButtonTextSize(context)
 
         return ButtonStyle(
@@ -154,10 +168,10 @@ object KeyboardTheme {
     }
 
     fun getLetterButtonStyle_UpperCase(context: Context, showTranscription: Boolean = false): ButtonStyle {
-        val textSizeSp = if (!showTranscription || KeyboardViewControllerBase.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
+        val textSizeSp = if (!showTranscription || MyKeyboardService.current_writingSystem == WritingSystem.Latin) getLetterButtonTextSize_NoTranscription(context)
         else getLetterButtonTextSize(context)
 
-        val textColorHex = if (KeyboardViewControllerBase.current_writingSystem == WritingSystem.Latin) getColor(2)
+        val textColorHex = if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) getColor(2)
         else getColor(3)
 
         return ButtonStyle(

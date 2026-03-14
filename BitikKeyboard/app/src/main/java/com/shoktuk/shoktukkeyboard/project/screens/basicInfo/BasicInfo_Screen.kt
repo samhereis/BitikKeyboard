@@ -1,3 +1,5 @@
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.LocalLibrary
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -41,12 +44,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.isPrimaryPressed
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.shoktuk.shoktukkeyboard.project.data.BasicInfoScreens
+import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.screens.navigation.ExternalLink_Button
+import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_BasicInfo
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Preview(showBackground = true)
@@ -69,43 +75,63 @@ fun BasicInfo_Screen(navController: NavController) {
             .padding(16.dp), verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         BeautifulNavigationItem(
-            title = BasicInfoScreens.USE_INSTRUCTION.title.localized("loc_basicInfo", context), onClick = {
-                navController.navigate(BasicInfoScreens.USE_INSTRUCTION.id)
+            title = Loc_BasicInfo.USING_THE_KEYBOARD.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.USING_THE_KEYBOARD.titleKey)
             }, subtitle = null, leading = Icons.Default.Info, tint = MaterialTheme.colorScheme.primary
         )
 
         BeautifulNavigationItem(
-            title = BasicInfoScreens.ORIGINAL_TAMGAS.title, onClick = {
-                navController.navigate(BasicInfoScreens.ORIGINAL_TAMGAS.id)
+            title = Loc_BasicInfo.ORIGINAL_BITIK.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.ORIGINAL_BITIK.titleKey)
             }, subtitle = null, leading = Icons.Default.Favorite, tint = MaterialTheme.colorScheme.primary
         )
         HorizontalDivider()
 
-        Text("Битик эрежелери")
+        Text(Loc_BasicInfo.BITIK_RULES.localizedTitle(LocalContext.current))
         BeautifulNavigationItem(
-            title = BasicInfoScreens.BITIK_RULE_1.title, onClick = {
-                navController.navigate(BasicInfoScreens.BITIK_RULE_1.id)
+            title = Loc_BasicInfo.RULE1.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.RULE1.titleKey)
             }, subtitle = null, leading = Icons.Default.Star, tint = MaterialTheme.colorScheme.primary
         )
 
         BeautifulNavigationItem(
-            title = BasicInfoScreens.BITIK_RULE_2.title, onClick = {
-                navController.navigate(BasicInfoScreens.BITIK_RULE_2.id)
+            title = Loc_BasicInfo.RULE2.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.RULE2.titleKey)
             }, subtitle = null, leading = Icons.Default.Star, tint = MaterialTheme.colorScheme.primary
         )
 
         BeautifulNavigationItem(
-            title = BasicInfoScreens.BITIK_RULE_3.title, onClick = {
-                navController.navigate(BasicInfoScreens.BITIK_RULE_3.id)
+            title = Loc_BasicInfo.RULE3.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.RULE3.titleKey)
             }, subtitle = null, leading = Icons.Default.Star, tint = MaterialTheme.colorScheme.primary
         )
 
         BeautifulNavigationItem(
-            title = BasicInfoScreens.BITIK_RULE_4.title, onClick = {
-                navController.navigate(BasicInfoScreens.BITIK_RULE_4.id)
+            title = Loc_BasicInfo.RULE4.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.RULE4.titleKey)
             }, subtitle = null, leading = Icons.Default.Star, tint = MaterialTheme.colorScheme.primary
         )
-        Spacer(modifier = Modifier.weight(1f))
+
+        HorizontalDivider()
+
+        Text(Loc_BasicInfo.MEMORIZE_TAMGAS.localizedTitle(LocalContext.current))
+        BeautifulNavigationItem(
+            title = Loc_BasicInfo.MEMORIZE_TAMGAS.localizedTitle(context), onClick = {
+                navController.navigate(Loc_BasicInfo.MEMORIZE_TAMGAS.titleKey)
+            }, subtitle = null, leading = Icons.Default.LocalLibrary, tint = MaterialTheme.colorScheme.primary
+        )
+
+        ExternalLink_Button(
+            label = "Bitish 🚀", description = "Битик үйрөнүү тиркемеси! 🥳", leadingPainter = painterResource(id = R.drawable.bitish_icon), onClick = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://play.google.com/store/apps/details?id=com.shoktuk.learnbitik"))
+                context.startActivity(intent)
+            })
+
+        ExternalLink_Button(
+            label = "Türk tili    𐱅𐰈𐰼𐰰 : 𐱅𐰃𐰠𐰃", description = "https://turk-tili.com", leadingPainter = painterResource(id = R.drawable.turktili_icon), onClick = {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://turk-tili.com"))
+                context.startActivity(intent)
+            })
     }
 }
 

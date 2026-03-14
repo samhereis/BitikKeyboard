@@ -180,7 +180,7 @@ private fun TabChip(label: String, active: Boolean, onClick: () -> Unit) {
 
 @Composable
 private fun EmojiSectionsRow(
-    state: LazyListState,                // ← was LazyRowState
+    state: LazyListState,
     categories: List<EmojiCategory>, rowsCount: Int, cellSide: Dp, onTapEmoji: (String) -> Unit, onFirstVisibleTypeChanged: (Int) -> Unit
 ) {
     LaunchedEffect(state.firstVisibleItemIndex) {

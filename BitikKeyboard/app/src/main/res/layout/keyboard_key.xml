@@ -1,42 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/key_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="0dp">
 
-    <!-- changed: inner container creates visual separation; outer frame remains clickable -->
-    <FrameLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/key_inner_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="6dp">
+        android:padding="0dp">
 
         <TextView
             android:id="@+id/topSubText"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="top"
-            android:gravity="center"
+            android:gravity="center_horizontal"
+            android:includeFontPadding="false"
             android:textColor="?android:textColorSecondary"
-            android:textSize="12sp" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/mainText"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:gravity="center"
+            android:includeFontPadding="false"
             android:textColor="?android:textColorPrimary"
-            android:textSize="20sp" />
+            app:layout_constraintBottom_toTopOf="@id/bottomSubText"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/topSubText" />
 
         <TextView
             android:id="@+id/bottomSubText"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:gravity="center"
+            android:gravity="center_horizontal"
+            android:includeFontPadding="false"
             android:textColor="?android:textColorSecondary"
-            android:textSize="12sp" />
-    </FrameLayout>
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintVertical_bias="1.0" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

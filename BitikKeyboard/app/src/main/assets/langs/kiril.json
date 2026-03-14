@@ -8,18 +8,30 @@
       {
         "name": "qı, ıq",
         "lowercase": "й",
-        "uppercase": "Й"
+        "lowerCaseRomanization": "i",
+        "lowerCaseHold": "i",
+        "uppercase": "Й",
+        "upperCaseRomanization": "I",
+        "upperCaseHold": "I"
       },
       {
         "name": "s",
         "lowercase": "ң",
-        "uppercase": "Ң"
+        "lowerCaseRomanization": "ҥ",
+        "lowerCaseHold": "ҥ",
+        "uppercase": "Ң",
+        "upperCaseRomanization": "Ҥ",
+        "upperCaseHold": "Ҥ"
       },
       {
         "name": "ñ",
         "lowercase": "у",
+        "lowerCaseRomanization": "ұ",
+        "lowerCaseHold": "ұ",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "У",
+        "upperCaseRomanization": "Ұ",
+        "upperCaseHold":"Ұ",
         "backgroundColorIndex_uppercase": 4
       },
       {
@@ -68,8 +80,12 @@
       {
         "name": "s",
         "lowercase": "ү",
+        "lowerCaseRomanization": "ӱ",
+        "lowerCaseHold": "ӱ",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "Ү",
+        "upperCaseRomanization": "Ӱ",
+        "upperCaseHold": "Ӱ",
         "backgroundColorIndex_uppercase": 4
       },
       {
@@ -80,7 +96,7 @@
       {
         "name": "i",
         "lowercase": "х",
-        "uppercase": "х"
+        "uppercase": "Х"
       }
     ],
     [
@@ -146,7 +162,11 @@
       {
         "name": "k",
         "lowercase": "ж",
-        "uppercase": "Ж"
+        "lowerCaseRomanization": "j",
+        "lowerCaseHold": "j",
+        "uppercase": "Ж",
+        "upperCaseRomanization": "J",
+        "upperCaseHold": "J"
       },
       {
         "name": "l",
@@ -215,7 +235,7 @@
       {
         "name": "b",
         "lowercase": "ю",
-        "uppercase": "ю"
+        "uppercase": "Ю"
       },
       {
         "name": "Del"
