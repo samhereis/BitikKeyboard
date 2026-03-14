@@ -144,7 +144,7 @@ enum class Vibrations(val id: String) {
     }
 }
 
-enum class ColoringStatus(val id: String) {
+enum class Coloring(val id: String) {
     Off("Өчүк"), On("Жанык");
 
     companion object {
