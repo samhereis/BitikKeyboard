@@ -1,10 +1,12 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
+import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -33,33 +36,22 @@ import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-/**
- * Top row showing either:
- *  - Transcription bar (when Bitik + textTranscription On): shows current-word transliteration
- *  - Saved strings strip (SAMAGAN variant or transcription Off): scrollable saved strings
- *
- * [transcription] is a Pair(primary, alternative) updated by KeyboardViewControllerBase after each
- * key press via [KeyboardViewControllerBase.transcriptionState].
- */
 @Composable
 fun TopRowView(
     onKeyPress: (String) -> Unit = {},
+    onAlphabetChange: () -> Unit = {},
     transcription: State<Pair<String, String>> = KeyboardViewControllerBase.transcriptionState
 ) {
     val ctx = LocalContext.current
     var strings by remember {
         mutableStateOf(
-            listOf(
-                "𐰀𐰺𐰃𐰉𐰬𐰕", "𐰽𐰞𐰢𐱄𐰽𐰕𐰉𐰃", "𐰶𐰺𐰍𐰕𐰽𐱄𐰣", "𐰌𐰄𐱅𐰚", "𐱀𐰹𐱄𐰸"
-            )
+            listOf("𐰀𐰺𐰃𐰉𐰬𐰕", "𐰽𐰞𐰢𐱄𐰽𐰕𐰉𐰃", "𐰶𐰺𐰍𐰕𐰽𐱄𐰣", "𐰌𐰄𐱅𐰚", "𐱀𐰹𐱄𐰸")
         )
     }
 
     LaunchedEffect(Unit) {
         strings = loadSavedStrings(ctx).ifEmpty {
-            listOf(
-                "𐰀𐰺𐰃𐰉𐰬𐰕", "𐰽𐰞𐰢𐱄𐰽𐰕𐰉𐰃", "𐰶𐰺𐰍𐰕𐰽𐱄𐰣", "𐰌𐰄𐱅𐰚", "𐱀𐰹𐱄𐰸"
-            )
+            listOf("𐰀𐰺𐰃𐰉𐰬𐰕", "𐰽𐰞𐰢𐱄𐰽𐰕𐰉𐰃", "𐰶𐰺𐰍𐰕𐰽𐱄𐰣", "𐰌𐰄𐱅𐰚", "𐱀𐰹𐱄𐰸")
         }
     }
 
@@ -67,51 +59,74 @@ fun TopRowView(
         KeyboardViewControllerBase.current_bitikVariant != BitikVariant.SAMAGAN &&
                 KeyboardViewControllerBase.showTextTranscription
 
-    Column(
+    val alphabetLabel = KeyboardViewControllerBase.alphabetLabelState.value
+
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .heightIn(min = KeyboardStyle.rowHeight() / 2, max = KeyboardStyle.rowHeight()),
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        if (showTranscription) {
-            val (primary, alt) = transcription.value
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text("~ ", style = MaterialTheme.typography.bodySmall)
-                if (primary.isNotEmpty()) {
-                    val pairs = primary.zip(
-                        alt.padEnd(primary.length, ' ')
-                    )
-                    LazyRow(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
-                        items(pairs) { (bot, top) ->
-                            TwoFloorText(top = top.toString(), bottom = bot.toString())
+        // Language/alphabet switcher
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .background(
+                    color = KeyboardStyle.getColor(6),
+                    shape = MaterialTheme.shapes.small
+                )
+                .clickable { onAlphabetChange() }
+                .padding(horizontal = 10.dp, vertical = 4.dp)
+        ) {
+            Text(
+                text = alphabetLabel,
+                color = KeyboardStyle.getColor(2),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
+
+        val textColor = KeyboardStyle.getColor(2)
+
+        // Middle content: transcription or saved strings
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(horizontal = 4.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            if (showTranscription) {
+                val (primary, alt) = transcription.value
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text("~ ", style = MaterialTheme.typography.bodySmall, color = textColor)
+                    if (primary.isNotEmpty()) {
+                        val pairs = primary.zip(alt.padEnd(primary.length, ' '))
+                        LazyRow(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
+                            items(pairs) { (bot, top) ->
+                                TwoFloorText(top = top.toString(), bottom = bot.toString(), textColor = textColor)
+                            }
                         }
                     }
+                    Text(" ~", style = MaterialTheme.typography.bodySmall, color = textColor)
                 }
-                Text(" ~", style = MaterialTheme.typography.bodySmall)
-            }
-        } else {
-            // Saved strings strip
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .heightIn(min = KeyboardStyle.rowHeight() / 2, max = KeyboardStyle.rowHeight())
-            ) {
+            } else {
                 Row(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 4.dp),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     strings.forEach { item ->
                         Text(
                             text = if (item.isEmpty()) " " else item,
+                            color = textColor,
                             style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier
-                                .padding(horizontal = 5.dp, vertical = 0.dp)
+                                .padding(horizontal = 5.dp)
                                 .background(
                                     color = KeyboardStyle.getColor(1),
                                     shape = MaterialTheme.shapes.small
@@ -123,31 +138,57 @@ fun TopRowView(
                 }
             }
         }
+
+        // IME picker
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .background(
+                    color = KeyboardStyle.getColor(6),
+                    shape = MaterialTheme.shapes.small
+                )
+                .clickable {
+                    val imm = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                    imm.showInputMethodPicker()
+                }
+                .padding(horizontal = 10.dp, vertical = 4.dp)
+        ) {
+            Text(
+                text = "⌨",
+                color = KeyboardStyle.getColor(2),
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
     }
 }
 
 @Composable
-fun TwoFloorText(top: String, bottom: String) {
+fun TwoFloorText(top: String, bottom: String, textColor: Color = Color.Unspecified) {
+    val fullStyle = MaterialTheme.typography.bodySmall
+    val halfStyle = fullStyle.copy(
+        fontSize = fullStyle.fontSize * 0.5f,
+        lineHeight = fullStyle.fontSize * 0.55f
+    )
+
     if (top.isBlank() || top == bottom) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(vertical = 0.dp)
-        ) {
-            Text(text = bottom, style = MaterialTheme.typography.bodySmall, maxLines = 1)
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(text = bottom, style = fullStyle, color = textColor, maxLines = 1)
         }
     } else {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(vertical = 0.dp)
+            verticalArrangement = Arrangement.Center
         ) {
             Text(
                 text = top,
-                style = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Normal),
+                style = halfStyle.copy(fontWeight = FontWeight.Normal),
+                color = textColor,
                 maxLines = 1
             )
             Text(
                 text = bottom,
-                style = MaterialTheme.typography.bodySmall,
+                style = halfStyle,
+                color = textColor,
                 maxLines = 1
             )
         }

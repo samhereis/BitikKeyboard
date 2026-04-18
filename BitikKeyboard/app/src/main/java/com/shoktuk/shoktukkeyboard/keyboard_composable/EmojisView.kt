@@ -22,7 +22,6 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -75,9 +74,9 @@ fun EmojisView(
     val scope = rememberCoroutineScope()
 
     val rowsCount = 4
-    val keyboardRowH = remember { 44.dp }
+    val keyboardRowH = KeyboardStyle.rowHeight()
     val gridHeight = keyboardRowH * 3
-    val cellSide = remember(gridHeight) { gridHeight / rowsCount }
+    val cellSide = gridHeight / rowsCount
 
     Column(
         modifier = modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally
@@ -127,9 +126,7 @@ fun EmojisView(
             }, onFirstVisibleTypeChanged = { t -> selectedType = t })
         }
 
-        Divider(Modifier.padding(vertical = 4.dp))
-
-        val tabH = keyboardRowH / 2
+        val tabH = keyboardRowH
         Row(
             modifier = Modifier
                 .height(tabH)

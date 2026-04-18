@@ -116,9 +116,11 @@ class MyKeyboardService : InputMethodService() {
     var topBar_noTR: View? = null
     var container: LinearLayout? = null
 
-    override fun onEvaluateFullscreenMode(): Boolean {
-        return false
-    }
+    override fun onEvaluateFullscreenMode(): Boolean = false
+
+    override fun onEvaluateInputViewShown(): Boolean = true
+
+    override fun onShowInputRequested(flags: Int, configChange: Boolean): Boolean = true
 
     override fun onWindowShown() {
         super.onWindowShown()

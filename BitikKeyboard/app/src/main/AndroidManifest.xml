@@ -24,7 +24,7 @@
         </activity>
 
         <service
-            android:name=".keyboard.MyKeyboardService"
+            android:name=".keyboard.KeyboardViewControllerBase"
             android:exported="true"
             android:permission="android.permission.BIND_INPUT_METHOD"
             android:theme="@style/Theme.ShoktuKeyboard">

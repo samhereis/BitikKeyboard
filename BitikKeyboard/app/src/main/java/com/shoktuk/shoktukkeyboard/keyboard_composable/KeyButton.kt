@@ -1,5 +1,7 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import android.graphics.BitmapFactory
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -11,6 +13,7 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,9 +29,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -40,6 +47,31 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscript
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
+/**
+ * Loads a PNG from [assetPath] (relative to the assets folder), tints it with [tint],
+ * and fills the available space. Safe — returns nothing if the asset is missing.
+ */
+@Composable
+fun AssetIcon(assetPath: String, tint: Color, modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val bitmap = remember(assetPath) {
+        runCatching {
+            context.assets.open(assetPath).use { stream ->
+                BitmapFactory.decodeStream(stream)?.asImageBitmap()
+            }
+        }.getOrNull()
+    }
+    if (bitmap != null) {
+        Image(
+            bitmap = bitmap,
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(tint),
+            contentScale = ContentScale.Fit,
+            modifier = modifier.fillMaxSize()
+        )
+    }
+}
+
 @Composable
 fun KeyButton(
     modifier: Modifier = Modifier,
@@ -47,6 +79,7 @@ fun KeyButton(
     title: String? = null,
     icon: (@Composable () -> Unit)? = null,
     isSystem: Boolean,
+    circular: Boolean = false,
     width: Dp? = null,
     backgroundColorIndex: Int? = 0,
     textColor: Color? = null,
@@ -163,6 +196,7 @@ fun KeyButton(
                 textColor = effTextColor,
                 bg = baseBg,
                 corner = KeyboardStyle.buttonCornerRadius,
+                circular = circular,
                 showTranscription = showTranscription,
                 hintTop = hintSecondary,
                 hintBottom = hintPrimary,
@@ -213,6 +247,7 @@ fun KeyButton(
                         textColor = effTextColor,
                         bg = previewBg,
                         KeyboardStyle.buttonCornerRadius,
+                        circular = circular,
                         showTranscription = showTranscription,
                         hintTop = hintSecondary,
                         hintBottom = previewHintBottom,
@@ -235,6 +270,7 @@ fun KeyButton(
                     textColor = effTextColor,
                     bg = previewBg,
                     KeyboardStyle.buttonCornerRadius,
+                    circular = circular,
                     showTranscription = showTranscription,
                     hintTop = hintSecondary,
                     hintBottom = previewHintBottom,
@@ -254,6 +290,7 @@ private fun KeyFaceContent(
     textColor: Color?,
     bg: Color,
     corner: Dp,
+    circular: Boolean = false,
     showTranscription: Boolean,
     hintTop: String?,
     hintBottom: String?,
@@ -261,23 +298,24 @@ private fun KeyFaceContent(
     isSystem: Boolean,
     scale: Float,
 ) {
+    val shape = if (circular) CircleShape else RoundedCornerShape(corner)
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .clip(RoundedCornerShape(corner))
+            .clip(shape)
             .background(bg)
     ) {
         if (icon != null) {
             Box(
                 Modifier
-                    .size((20 * scale).dp)
+                    .size((28 * scale).dp)
                     .align(Alignment.Center)
             ) { icon() }
         } else {
             Text(
                 text = tamga,
                 color = textColor ?: Color.Unspecified,
-                style = if (isSystem) KeyboardStyle.buttonFont else KeyboardViewControllerBase.fontScale,
+                style = KeyboardStyle.buttonFontStyle(),
                 modifier = Modifier.align(Alignment.Center)
             )
         }
@@ -286,20 +324,22 @@ private fun KeyFaceContent(
             Text(
                 hintTop,
                 color = textColor ?: Color.Unspecified,
-                fontSize = (10 * scale).sp,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)
-                    .padding(top = (2 * scale).dp)
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = KeyboardStyle.hintFontSize(scale),
+                    platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
+                ),
+                modifier = Modifier.align(Alignment.TopCenter)
             )
         }
         if (showTranscription && !hintBottom.isNullOrEmpty()) {
             Text(
                 hintBottom,
                 color = textColor ?: Color.Unspecified,
-                fontSize = (10 * scale).sp,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = (2 * scale).dp)
+                style = androidx.compose.ui.text.TextStyle(
+                    fontSize = KeyboardStyle.hintFontSize(scale),
+                    platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
+                ),
+                modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
 

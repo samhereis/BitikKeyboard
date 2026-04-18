@@ -6,112 +6,98 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Divider
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import com.shoktuk.shoktukkeyboard.emoji.EmojisData
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 
 @Composable
 fun StandardKeyboardView(
     rowsModel: KeyboardRowsModel,
-    keyboardState: MutableState<KeyboardState>,
     onKeyPress: (String) -> Unit,
+    onAlphabetChange: () -> Unit = {},
+    onModeChange: (KeyboardState) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
     val isShiftEnabled = remember { mutableStateOf(false) }
     val isSymbolsEnabled = remember { mutableStateOf(false) }
-    val showEmojis = remember { mutableStateOf(false) }
-    val showSavedStrings = remember { mutableStateOf(false) }
 
-    val cfg = LocalWindowInfo.current
-    val savedGridHeight = remember(cfg.containerSize.height) {
-        (cfg.containerSize.width / 5.5f).dp
-    }
-
-    LaunchedEffect(keyboardState.value) { /* react to external keyboard state changes if needed */ }
+    // Reactive mode and writing system from companion states
+    val keyboardMode = KeyboardViewControllerBase.keyboardModeState.value
+    val writingSystem = KeyboardViewControllerBase.writingSystemState.value
+    val bottomPaddingPx = KeyboardViewControllerBase.bottomPaddingState.value
+    val bottomPaddingDp = with(LocalDensity.current) { bottomPaddingPx.toDp() }
 
     Column(
         modifier = modifier
             .fillMaxWidth()
+            .padding(bottom = bottomPaddingDp)
             .background(KeyboardStyle.getColor(0)),
         verticalArrangement = Arrangement.spacedBy(KeyboardStyle.rowSpacingDp)
     ) {
-        when {
-            showEmojis.value -> {
+        when (keyboardMode) {
+            KeyboardState.Emojis -> {
                 EmojisView(
-                    onKeyPress = onKeyPress, onABC = {
+                    onKeyPress = onKeyPress,
+                    onABC = {
                         isShiftEnabled.value = false
                         isSymbolsEnabled.value = false
-                        showEmojis.value = false
-                    }, onBackspace = { onKeyPress("delete") }, emojiByType = EmojisData.defaultCategories()
+                        KeyboardViewControllerBase.keyboardMode = KeyboardState.Main
+                        onModeChange(KeyboardState.Main)
+                    },
+                    onBackspace = { onKeyPress("delete") },
+                    emojiByType = EmojisData.defaultCategories()
                 )
             }
 
-            showSavedStrings.value -> {
-                TopRowView(onKeyPress = onKeyPress)
+            KeyboardState.SavedStrings -> {
+                if (writingSystem == WritingSystem.Bitik) {
+                    TopRowView(onKeyPress = onKeyPress, onAlphabetChange = onAlphabetChange)
+                } else {
+                    TopRowView_Alphabet(onAlphabetChange = onAlphabetChange)
+                }
 
                 HorizontalDivider()
 
                 SavedStringsView(
-                    stringsInit = listOf(
-                        "Hello",
-                        "World",
-                        "SwiftUI",
-                        "Keyboard",
-                        "Premade",
-                        "Texts",
-                        "Grid",
-                        "Buttons",
-                        "Click",
-                        "Tap",
-                        "Sample",
-                        "Preview"
-                    ), onKeyPress = onKeyPress, modifier = Modifier
-                        .fillMaxWidth()
-                        .height(savedGridHeight)
-                        .padding(5.dp)
+                    stringsInit = emptyList(),
+                    onKeyPress = onKeyPress,
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 BottomRowView(
                     isSymbolsEnabled = isSymbolsEnabled,
                     isShiftEnabled = isShiftEnabled,
-                    switcherTitle = "𐱈𐰴𐰀",
-                    switcherTitle_Alt = "𐱈𐰴𐰀",
-                    lastButton = "delete.backward",
+                    onKeyPress = onKeyPress,
                     onSwitcherClick = {
-                        showSavedStrings.value = false
+                        KeyboardViewControllerBase.keyboardMode = KeyboardState.Main
+                        onModeChange(KeyboardState.Main)
                     },
                     onSwitcherHold = {
-                        showSavedStrings.value = false
-                    })
+                        KeyboardViewControllerBase.keyboardMode = KeyboardState.Main
+                        onModeChange(KeyboardState.Main)
+                    }
+                )
             }
 
             else -> {
-                if (KeyboardViewControllerBase.context.writingSystem == WritingSystem.Bitik) {
-                    TopRowView(onKeyPress = onKeyPress)
+                if (writingSystem == WritingSystem.Bitik) {
+                    TopRowView(onKeyPress = onKeyPress, onAlphabetChange = onAlphabetChange)
                 } else {
-                    TopRowView_Alphabet(textContent = "", isBitikMode = remember {
-                        mutableStateOf(KeyboardViewControllerBase.context.writingSystem == WritingSystem.Bitik)
-                    }, onReplaceText = {})
+                    TopRowView_Alphabet(onAlphabetChange = onAlphabetChange)
                 }
 
-                if (isSymbolsEnabled.value) {
+                if (keyboardMode == KeyboardState.Symbols || isSymbolsEnabled.value) {
                     SymbolKeyboardView(
-                        onKeyPress = onKeyPress, isShiftEnabled = isShiftEnabled
+                        onKeyPress = onKeyPress,
+                        isShiftEnabled = isShiftEnabled
                     )
                 } else {
                     LetterKeyboardView(
@@ -121,9 +107,17 @@ fun StandardKeyboardView(
                         isShiftEnabled = isShiftEnabled,
                         onKeyPress = { key ->
                             onKeyPress(key)
-                            if (KeyboardViewControllerBase.autoDisableShift) isShiftEnabled.value = false
+                            if (KeyboardViewControllerBase.autoDisableShift &&
+                                !key.startsWith("sys") && key != "delete"
+                            ) {
+                                isShiftEnabled.value = false
+                            }
                         },
-                        onShiftLongPress = { showSavedStrings.value = true })
+                        onShiftLongPress = {
+                            KeyboardViewControllerBase.keyboardMode = KeyboardState.SavedStrings
+                            onModeChange(KeyboardState.SavedStrings)
+                        }
+                    )
                 }
 
                 BottomRowView(
@@ -131,11 +125,17 @@ fun StandardKeyboardView(
                     isShiftEnabled = isShiftEnabled,
                     onKeyPress = onKeyPress,
                     onSwitcherClick = {
-                        isSymbolsEnabled.value = !isSymbolsEnabled.value
+                        val newSymbols = !isSymbolsEnabled.value
+                        isSymbolsEnabled.value = newSymbols
+                        val newMode = if (newSymbols) KeyboardState.Symbols else KeyboardState.Main
+                        KeyboardViewControllerBase.keyboardMode = newMode
+                        onModeChange(newMode)
                     },
                     onSwitcherHold = {
-                        showEmojis.value = true
-                    })
+                        KeyboardViewControllerBase.keyboardMode = KeyboardState.Emojis
+                        onModeChange(KeyboardState.Emojis)
+                    }
+                )
             }
         }
     }
@@ -145,11 +145,10 @@ fun StandardKeyboardView(
 @Composable
 fun StandardKeyboardViewPreview() {
     val rows = KeyboardRowsModel()
-    val ks = remember { mutableStateOf(KeyboardState.Main) }
     MaterialTheme {
         Column(Modifier.fillMaxWidth()) {
             Spacer(Modifier.weight(1f))
-            StandardKeyboardView(rowsModel = rows, keyboardState = ks, onKeyPress = {})
+            StandardKeyboardView(rowsModel = rows, onKeyPress = {})
         }
     }
 }

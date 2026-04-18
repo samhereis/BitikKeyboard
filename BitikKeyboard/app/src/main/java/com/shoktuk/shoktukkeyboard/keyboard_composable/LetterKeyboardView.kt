@@ -18,19 +18,21 @@ fun LetterKeyboardView(
     onKeyPress: (String) -> Unit,
     onShiftLongPress: () -> Unit = {}
 ) {
-    val isStandardWidth = KeyboardViewControllerBase.maxRowElementsCount < 11.0 || KeyboardViewControllerBase.keyboardMode == KeyboardState.Symbols
-    val keyWidth = if (isStandardWidth) KeyboardStyle.keyWidth() else KeyboardStyle.keyWidth() / 1.025f
-    val systemKeyWidth = if (isStandardWidth) KeyboardStyle.keyWidth() * 2f else KeyboardStyle.keyWidth()
+    val keyWidth = KeyboardStyle.keyWidth()
 
     FixedKeyboardRow(keys = row1, keyWidth = keyWidth, onKeyPress = onKeyPress, isShiftEnabled = isShiftEnabled)
     FixedKeyboardRow(keys = row2, keyWidth = keyWidth, onKeyPress = onKeyPress, isShiftEnabled = isShiftEnabled)
 
-    Row(horizontalArrangement = Arrangement.Center) {
-        // Shift key
+    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
+        // Shift — takes equal share of remaining space after letter keys
         KeyButton(
             modifier = Modifier.weight(1f),
-            key = null,
-            title = if (isShiftEnabled.value) "⬆" else "⇧",
+            icon = {
+                AssetIcon(
+                    assetPath = if (isShiftEnabled.value) "icons/shiftfilled_icon.png" else "icons/shift_icon.png",
+                    tint = KeyboardStyle.getColor(2)
+                )
+            },
             isSystem = true,
             backgroundColorIndex = 6,
             isShiftEnabled = isShiftEnabled,
@@ -56,11 +58,10 @@ fun LetterKeyboardView(
             )
         }
 
-        // Delete key
+        // Delete — takes equal share of remaining space after letter keys
         KeyButton(
             modifier = Modifier.weight(1f),
-            key = null,
-            title = "⌫",
+            icon = { AssetIcon(assetPath = "icons/delete_icon.png", tint = KeyboardStyle.getColor(2)) },
             isSystem = true,
             backgroundColorIndex = 6,
             isShiftEnabled = isShiftEnabled,

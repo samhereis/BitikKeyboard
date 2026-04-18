@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -42,7 +43,9 @@ fun SavedStringsView(
         )
     }
 
-    Surface(modifier = modifier) {
+    val scrollAreaHeight = KeyboardStyle.rowHeight() * 3
+
+    Surface(modifier = modifier.height(scrollAreaHeight)) {
         Box(modifier = Modifier.verticalScroll(rememberScrollState())) {
             FlowLayout(horizontalSpacing = 5.dp, verticalSpacing = 5.dp) {
                 strings.forEach { item ->

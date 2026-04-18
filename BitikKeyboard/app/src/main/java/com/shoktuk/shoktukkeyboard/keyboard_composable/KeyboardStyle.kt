@@ -5,8 +5,10 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
@@ -14,9 +16,21 @@ object KeyboardStyle {
     val keySpacingDp: Dp = 0.dp
     val rowSpacingDp: Dp = 0.dp
     val keyTopPadding: Dp = 4.dp
-    val keySidePadding: Dp = 3.dp
+    val keySidePadding: Dp = 2.dp
     val buttonCornerRadius: Dp = 9.dp
     val buttonFont: TextStyle = TextStyle(fontSize = 20.sp)
+
+    @Composable
+    fun nonScaledSp(dp: Float): TextUnit = with(LocalDensity.current) { dp.dp.toSp() }
+
+    @Composable
+    fun buttonFontStyle(): TextStyle = TextStyle(
+        fontSize = nonScaledSp(20f),
+        platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
+    )
+
+    @Composable
+    fun hintFontSize(scale: Float = 1f): TextUnit = nonScaledSp(8.5f * scale)
 
     @Composable
     fun rowHeight(): Dp {
@@ -34,13 +48,13 @@ object KeyboardStyle {
 
     @Composable
     fun colors(): List<Color> = listOf(
-        MaterialTheme.colorScheme.surface.copy(alpha = 0.9f),          // 0 container bg
-        MaterialTheme.colorScheme.surfaceContainerHigh,                 // 1 key bg
-        MaterialTheme.colorScheme.onSurface,                            // 2 key text
-        MaterialTheme.colorScheme.onSurface,                            // 3 accent text (caps)
-        MaterialTheme.colorScheme.inversePrimary,                       // 4 soft vowel bg
-        MaterialTheme.colorScheme.errorContainer,                       // 5 special key bg
-        MaterialTheme.colorScheme.primaryContainer                      // 6 system key bg
+        MaterialTheme.colorScheme.surfaceContainer,             // 0 keyboard background (like Gboard tinted tray)
+        MaterialTheme.colorScheme.surfaceContainerHighest,      // 1 letter key face
+        MaterialTheme.colorScheme.onSurface,                    // 2 key text
+        MaterialTheme.colorScheme.tertiary,                     // 3 accent text (caps / vowels)
+        MaterialTheme.colorScheme.tertiary,                     // 4 vowel / soft key highlight bg
+        MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),   // 5 subtle divider / hold indicator
+        MaterialTheme.colorScheme.secondaryContainer            // 6 function keys (shift, delete, space, switcher)
     )
 
     @Composable
