@@ -56,6 +56,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ekVariant
@@ -88,6 +89,7 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
     val context = LocalContext.current
 
     var buttonHeight by remember { mutableStateOf(context.keyboardHeight) }
+    var bottomOffset by remember { mutableStateOf(context.bottomOffset) }
 
     var keyboardVariant by remember { mutableStateOf(context.keyboardVariant) }
     var bitikDialect by remember { mutableStateOf(context.bitikDialect) }
@@ -141,6 +143,12 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     label = Loc_Settings.buttonHeight.localizedTitle(context), value = buttonHeight, valueRange = 100f..300f, onValueChange = {
                         buttonHeight = it
                         context.keyboardHeight = buttonHeight
+                        onSettingChanged.invoke()
+                    })
+                SliderSetting(
+                    label = Loc_Settings.bottomOffset.localizedTitle(context), value = bottomOffset, valueRange = -200f..200f, onValueChange = {
+                        bottomOffset = it
+                        context.bottomOffset = bottomOffset
                         onSettingChanged.invoke()
                     })
 

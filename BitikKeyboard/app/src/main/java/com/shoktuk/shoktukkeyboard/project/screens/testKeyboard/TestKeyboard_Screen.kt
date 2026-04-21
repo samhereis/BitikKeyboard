@@ -51,6 +51,7 @@ import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.shoktuk.shoktukkeyboard.keyboard.onSettingChanged
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SliderSetting
 import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_Settings
@@ -61,6 +62,7 @@ fun TestKeyboard_Screen() {
 
     var text by remember { mutableStateOf("") }
     var buttonHeight by remember { mutableStateOf(context.keyboardHeight) }
+    var bottomOffset by remember { mutableStateOf(context.bottomOffset) }
 
     LocalFocusManager.current
 
@@ -78,6 +80,13 @@ fun TestKeyboard_Screen() {
                 modifier = Modifier.padding(bottom = 15.dp), label = Loc_Settings.buttonHeight.localizedTitle(context), value = buttonHeight, valueRange = 100f..300f, onValueChange = {
                     buttonHeight = it
                     context.keyboardHeight = buttonHeight
+                    onSettingChanged.invoke()
+                })
+
+            SliderSetting(
+                modifier = Modifier.padding(bottom = 15.dp), label = Loc_Settings.bottomOffset.localizedTitle(context), value = bottomOffset, valueRange = -200f..200f, onValueChange = {
+                    bottomOffset = it
+                    context.bottomOffset = bottomOffset
                     onSettingChanged.invoke()
                 })
 

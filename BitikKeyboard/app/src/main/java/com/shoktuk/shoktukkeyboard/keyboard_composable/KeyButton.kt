@@ -41,8 +41,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shoktuk.shoktukkeyboard.project.data.Coloring
+import com.shoktuk.shoktukkeyboard.project.data.HoldabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.holdabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
@@ -63,11 +65,7 @@ fun AssetIcon(assetPath: String, tint: Color, modifier: Modifier = Modifier) {
     }
     if (bitmap != null) {
         Image(
-            bitmap = bitmap,
-            contentDescription = null,
-            colorFilter = ColorFilter.tint(tint),
-            contentScale = ContentScale.Fit,
-            modifier = modifier.fillMaxSize()
+            bitmap = bitmap, contentDescription = null, colorFilter = ColorFilter.tint(tint), contentScale = ContentScale.Fit, modifier = modifier.fillMaxSize()
         )
     }
 }
@@ -93,7 +91,8 @@ fun KeyButton(
     sidePaddingRight: Dp = KeyboardStyle.keySidePadding,
     additionalOffsetX: Dp = 0.dp
 ) {
-    val coloringOn = KeyboardViewControllerBase.context.coloring == Coloring.On
+    val coloringOn = KeyboardViewControllerBase.context.coloring == Coloring.On || isSystem
+    val showHoldabilityColoring = KeyboardViewControllerBase.context.holdabilityColoring == HoldabilityColoring.On
     val bgIndex = if (!coloringOn) 1 else (backgroundColorIndex ?: 1)
     val showPreview = remember { mutableStateOf(false) }
     val isHolding = remember { mutableStateOf(false) }
@@ -122,15 +121,13 @@ fun KeyButton(
     ) { key?.let { if (isShiftEnabled.value) it.upperCaseHoldHint else it.lowerCaseHoldHint } ?: "" }
     val showCorner = remember(
         key, isShiftEnabled.value
-    ) { coloringOn && key != null && (if (isShiftEnabled.value) key.upperCaseHold != null else key.lowerCaseHold != null) }
-    val showTranscription =
-        KeyboardViewControllerBase.keyboardMode == KeyboardState.Symbols || KeyboardViewControllerBase.context.letterTranscription == LetterTranscription.On
+    ) { showHoldabilityColoring && key != null && (if (isShiftEnabled.value) key.upperCaseHold != null else key.lowerCaseHold != null) }
+    val showTranscription = KeyboardViewControllerBase.keyboardMode == KeyboardState.Symbols || KeyboardViewControllerBase.context.letterTranscription == LetterTranscription.On
 
     val previewBg = remember(isHolding.value, key, isShiftEnabled.value, baseBg) {
         if (!isHolding.value || key == null) baseBg
         else {
-            val idx =
-                if (isShiftEnabled.value) key.backgroundColorIndexUppercaseHold else key.backgroundColorIndexLowercaseHold
+            val idx = if (isShiftEnabled.value) key.backgroundColorIndexUppercaseHold else key.backgroundColorIndexLowercaseHold
             idx?.let { colors[it.coerceIn(0, colors.lastIndex)] } ?: baseBg
         }
     }
@@ -149,47 +146,40 @@ fun KeyButton(
         modifier = modifier
             .offset(x = additionalOffsetX)
             .padding(
-                start = sidePaddingLeft,
-                end = sidePaddingRight,
-                top = KeyboardStyle.keyTopPadding,
-                bottom = KeyboardStyle.keyTopPadding
+                start = sidePaddingLeft, end = sidePaddingRight, top = KeyboardStyle.keyTopPadding, bottom = KeyboardStyle.keyTopPadding
             )
             .then(if (width != null) Modifier.width(width * scale) else Modifier)
             .height(keyHeight)
             .onGloballyPositioned { coords ->
                 anchorBounds = coords.boundsInWindow()
+            }) {
+        Surface(color = Color.Transparent, modifier = Modifier
+            .matchParentSize()
+            .alpha(if (showPreview.value) 0.25f else 1f)
+            .pointerInput(Unit) {
+                detectTapGestures(onPress = {
+                    showPreview.value = true
+                    val released = try {
+                        tryAwaitRelease()
+                    } catch (_: Throwable) {
+                        false
+                    }
+                    if (released) onKeyPress()
+                    isHolding.value = false
+                    showPreview.value = false
+                }, onLongPress = {
+                    isHolding.value = true
+                    showPreview.value = true
+                    onLongPress()
+                })
             }
-    ) {
-        Surface(
-            color = Color.Transparent,
-            modifier = Modifier
-                .matchParentSize()
-                .alpha(if (showPreview.value) 0.25f else 1f)
-                .pointerInput(Unit) {
-                    detectTapGestures(onPress = {
-                        showPreview.value = true
-                        val released = try {
-                            tryAwaitRelease()
-                        } catch (_: Throwable) {
-                            false
-                        }
-                        if (released) onKeyPress()
-                        isHolding.value = false
-                        showPreview.value = false
-                    }, onLongPress = {
-                        isHolding.value = true
-                        showPreview.value = true
-                        onLongPress()
-                    })
-                }
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragStart = { showPreview.value = true },
-                        onDragEnd = { isHolding.value = false; showPreview.value = false },
-                        onDragCancel = { isHolding.value = false; showPreview.value = false },
-                        onDrag = { _, _ -> })
-                }
-        ) {
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragStart = { showPreview.value = true },
+                    onDragEnd = { isHolding.value = false; showPreview.value = false },
+                    onDragCancel = { isHolding.value = false; showPreview.value = false },
+                    onDrag = { _, _ -> })
+            }) {
             KeyFaceContent(
                 tamga = tamga,
                 icon = icon,
@@ -210,8 +200,7 @@ fun KeyButton(
     if (showPreview.value && previewOnTap) {
         val anchor = anchorBounds
         val previewText = if (isHolding.value) (tamgaHold ?: tamga) else tamga
-        val previewHintBottom =
-            if (isHolding.value) (if (hintHold.isNullOrEmpty()) hintPrimary else hintHold) else hintPrimary
+        val previewHintBottom = if (isHolding.value) (if (hintHold.isNullOrEmpty()) hintPrimary else hintHold) else hintPrimary
         val gapPx = with(density) { 6.dp.toPx().toInt() }
         val keyHpx = with(density) { keyHeight.toPx().toInt() }
 
@@ -234,8 +223,7 @@ fun KeyButton(
                     )
                 }, properties = androidx.compose.ui.window.PopupProperties(
                     focusable = false, clippingEnabled = false
-                ), onDismissRequest = { showPreview.value = false }
-            ) {
+                ), onDismissRequest = { showPreview.value = false }) {
                 Box(
                     modifier = Modifier
                         .width(with(density) { keyWpx.toDp() })
@@ -313,33 +301,22 @@ private fun KeyFaceContent(
             ) { icon() }
         } else {
             Text(
-                text = tamga,
-                color = textColor ?: Color.Unspecified,
-                style = KeyboardStyle.buttonFontStyle(),
-                modifier = Modifier.align(Alignment.Center)
+                text = tamga, color = textColor ?: Color.Unspecified, style = KeyboardStyle.buttonFontStyle(), modifier = Modifier.align(Alignment.Center)
             )
         }
 
         if (showTranscription && !hintTop.isNullOrEmpty()) {
             Text(
-                hintTop,
-                color = textColor ?: Color.Unspecified,
-                style = androidx.compose.ui.text.TextStyle(
-                    fontSize = KeyboardStyle.hintFontSize(scale),
-                    platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
-                ),
-                modifier = Modifier.align(Alignment.TopCenter)
+                hintTop, color = textColor ?: Color.Unspecified, style = androidx.compose.ui.text.TextStyle(
+                    fontSize = KeyboardStyle.hintFontSize(scale), platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
+                ), modifier = Modifier.align(Alignment.TopCenter)
             )
         }
         if (showTranscription && !hintBottom.isNullOrEmpty()) {
             Text(
-                hintBottom,
-                color = textColor ?: Color.Unspecified,
-                style = androidx.compose.ui.text.TextStyle(
-                    fontSize = KeyboardStyle.hintFontSize(scale),
-                    platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
-                ),
-                modifier = Modifier.align(Alignment.BottomCenter)
+                hintBottom, color = textColor ?: Color.Unspecified, style = androidx.compose.ui.text.TextStyle(
+                    fontSize = KeyboardStyle.hintFontSize(scale), platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
+                ), modifier = Modifier.align(Alignment.BottomCenter)
             )
         }
 
@@ -348,7 +325,7 @@ private fun KeyFaceContent(
                 Modifier
                     .align(Alignment.TopCenter)
                     .fillMaxWidth()
-                    .height(2.dp)
+                    .height(1.dp)
                     .background(color = textColor ?: Color.Unspecified)
             )
         }

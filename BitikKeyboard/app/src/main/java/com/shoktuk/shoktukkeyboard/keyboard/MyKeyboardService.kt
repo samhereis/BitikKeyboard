@@ -1,6 +1,7 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import Haptics
+import android.content.res.Configuration
 import android.inputmethodservice.InputMethodService
 import android.view.HapticFeedbackConstants
 import android.view.View
@@ -25,6 +26,7 @@ import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.NavBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
@@ -65,7 +67,6 @@ object onKeyPressed {
 }
 
 object onSettingChanged {
-
     private val listeners = mutableListOf<() -> Unit>()
 
     fun addListener(listener: () -> Unit) {
@@ -74,6 +75,7 @@ object onSettingChanged {
     }
 
     fun invoke() {
+        MyKeyboardService.bottomPadding = null
         listeners.forEach { it() }
     }
 }
@@ -91,7 +93,7 @@ class MyKeyboardService : InputMethodService() {
         var keyboardMode: KeyboardMode = KeyboardMode.Main
 
         var isCaps: Boolean = false
-        var isBitikMode: Boolean = false
+        var isAutoWriteBitikMode: Boolean = false
 
         val buttonMargin: Int = KeyboardTheme.KEY_MARGIN_DP
 
@@ -118,7 +120,10 @@ class MyKeyboardService : InputMethodService() {
 
     override fun onEvaluateFullscreenMode(): Boolean = false
 
-    override fun onEvaluateInputViewShown(): Boolean = true
+    override fun onEvaluateInputViewShown(): Boolean {
+        super.onEvaluateInputViewShown()
+        return true
+    }
 
     override fun onShowInputRequested(flags: Int, configChange: Boolean): Boolean = true
 
@@ -128,6 +133,7 @@ class MyKeyboardService : InputMethodService() {
         context = this
         isCaps = false
         keyboardMode = KeyboardMode.Main
+        MyKeyboardService.bottomPadding = null
 
         if (currentLayout != null) {
             reloadKeyboard()
@@ -142,6 +148,7 @@ class MyKeyboardService : InputMethodService() {
         context = this
         isCaps = false
         keyboardMode = KeyboardMode.Main
+        MyKeyboardService.bottomPadding = null
 
         reloadKeyboard()
 
@@ -161,6 +168,11 @@ class MyKeyboardService : InputMethodService() {
         }
     }
 
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        KeyboardTheme.invalidateColorCache()
+    }
+
     override fun onUpdateSelection(
         oldSelStart: Int, oldSelEnd: Int, newSelStart: Int, newSelEnd: Int, candidatesStart: Int, candidatesEnd: Int
     ) {
@@ -168,6 +180,11 @@ class MyKeyboardService : InputMethodService() {
             oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd
         )
         TopRowBuilder_Old.onTypedListener?.invoke()
+    }
+
+    override fun onWindowHidden() {
+        MyKeyboardService.bottomPadding = null
+        super.onWindowHidden()
     }
 
     fun applyKeyboard() {
@@ -329,32 +346,50 @@ class MyKeyboardService : InputMethodService() {
 
     private fun applyInsetsNowAndOnChange(view: View) {
         if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Enable_Off) {
-            return
-        }
-
-        if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_AllEnabled || context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Enable_1) {
-            ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
-                val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-
-                if (bottomPadding == null) {
-                    bottomPadding = nav.bottom + 25
-                }
-
-                v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding!!)
-                insets // don't consume
-            }
-        }
-
-        if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_AllEnabled || context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Enable_2) {
             view.doOnAttach {
                 val rootInsets = ViewCompat.getRootWindowInsets(it) ?: return@doOnAttach
                 val nav = rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
 
                 if (bottomPadding == null) {
-                    bottomPadding = nav.bottom + 25
+                    bottomPadding = context.bottomOffset
                 }
 
                 it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, bottomPadding!!)
+            }
+
+            ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+                if (bottomPadding == null) {
+                    bottomPadding = context.bottomOffset
+                }
+
+                v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding!!)
+                insets
+            }
+        } else {
+            if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Enable_1) {
+                view.doOnAttach {
+                    val rootInsets = ViewCompat.getRootWindowInsets(it) ?: return@doOnAttach
+                    val nav = rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+                    if (bottomPadding == null) {
+                        bottomPadding = nav.bottom + context.bottomOffset
+                    }
+
+                    it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, bottomPadding!!)
+                }
+            }
+
+            if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Enable_2) {
+                ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+                    val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+
+                    if (bottomPadding == null) {
+                        bottomPadding = nav.bottom + context.bottomOffset
+                    }
+
+                    v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding!!)
+                    insets
+                }
             }
         }
 
@@ -385,7 +420,7 @@ class MyKeyboardService : InputMethodService() {
         val isSys = isSystemKey || listOfAlwaysSyss.contains(key)
         var toPasteAfter = key.replace("sys", "")
 
-        if (isBitikMode && isSys) {
+        if (isAutoWriteBitikMode && isSys) {
             toPasteAfter = toPasteAfter.replace("  ", " ").replace("?", "⸮ ").replace("!", "! ").replace(".", "·").replace(",", "⹁")
 
             if (toPasteAfter == " ") {

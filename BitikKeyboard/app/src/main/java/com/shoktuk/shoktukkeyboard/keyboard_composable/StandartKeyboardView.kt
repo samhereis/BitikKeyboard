@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.shoktuk.shoktukkeyboard.emoji.EmojisData
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
+import kotlin.math.absoluteValue
 
 @Composable
 fun StandardKeyboardView(
@@ -32,7 +33,7 @@ fun StandardKeyboardView(
     // Reactive mode and writing system from companion states
     val keyboardMode = KeyboardViewControllerBase.keyboardModeState.value
     val writingSystem = KeyboardViewControllerBase.writingSystemState.value
-    val bottomPaddingPx = KeyboardViewControllerBase.bottomPaddingState.value
+    val bottomPaddingPx = KeyboardViewControllerBase.bottomPaddingState.value.absoluteValue
     val bottomPaddingDp = with(LocalDensity.current) { bottomPaddingPx.toDp() }
 
     Column(

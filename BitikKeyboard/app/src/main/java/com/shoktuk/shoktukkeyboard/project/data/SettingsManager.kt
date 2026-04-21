@@ -128,10 +128,14 @@ object SettingsManager {
         set(v) = prefs().setEnum(WritingSystem.KEY, v)
 
     var Context.navBarPaddingSolution: NavBarPaddingSolution
-        get() = prefs().getEnum(NavBarPaddingSolution.KEY, NavBarPaddingSolution.Solution_AllEnabled)
+        get() = prefs().getEnum(NavBarPaddingSolution.KEY, NavBarPaddingSolution.Solution_Enable_1)
         set(v) = prefs().setEnum(NavBarPaddingSolution.KEY, v)
 
     var Context.keyboardHeight: Int
         get() = prefs().getIntOrDefault("buttonHeight", 170)
         set(v) = prefs().setInt("buttonHeight", v)
+
+    var Context.bottomOffset: Int
+        get() = prefs().getIntOrDefault("bottomOffset", 0)
+        set(v) = prefs().setInt("bottomOffset", v)
 }

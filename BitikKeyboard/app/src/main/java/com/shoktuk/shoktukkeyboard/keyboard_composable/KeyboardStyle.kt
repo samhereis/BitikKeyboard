@@ -1,21 +1,41 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
-import android.content.res.Configuration
+import android.content.Context
+import android.os.Build
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 object KeyboardStyle {
     val keySpacingDp: Dp = 0.dp
     val rowSpacingDp: Dp = 0.dp
-    val keyTopPadding: Dp = 4.dp
+    val keyTopPadding: Dp = 6.dp
     val keySidePadding: Dp = 2.dp
     val buttonCornerRadius: Dp = 9.dp
     val buttonFont: TextStyle = TextStyle(fontSize = 20.sp)
@@ -25,8 +45,7 @@ object KeyboardStyle {
 
     @Composable
     fun buttonFontStyle(): TextStyle = TextStyle(
-        fontSize = nonScaledSp(20f),
-        platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
+        fontSize = nonScaledSp(20f), platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
     )
 
     @Composable
@@ -36,7 +55,7 @@ object KeyboardStyle {
     fun rowHeight(): Dp {
         val cfg = LocalConfiguration.current
         val h = cfg.screenHeightDp.dp
-        return (h / 4f) / 4f
+        return (h / 4f) / 4.5f
     }
 
     @Composable
@@ -47,15 +66,61 @@ object KeyboardStyle {
     }
 
     @Composable
-    fun colors(): List<Color> = listOf(
-        MaterialTheme.colorScheme.surfaceContainer,             // 0 keyboard background (like Gboard tinted tray)
-        MaterialTheme.colorScheme.surfaceContainerHighest,      // 1 letter key face
-        MaterialTheme.colorScheme.onSurface,                    // 2 key text
-        MaterialTheme.colorScheme.tertiary,                     // 3 accent text (caps / vowels)
-        MaterialTheme.colorScheme.tertiary,                     // 4 vowel / soft key highlight bg
-        MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),   // 5 subtle divider / hold indicator
-        MaterialTheme.colorScheme.secondaryContainer            // 6 function keys (shift, delete, space, switcher)
+    fun colors(): List<Color> {
+        var isDark = isDark()
+        return if (isDark) colors_dark() else colors_light()
+    }
+
+    @Composable
+    fun colors_universal(): List<Color> = listOf(
+        MaterialTheme.colorScheme.surfaceContainer,
+        MaterialTheme.colorScheme.onSecondary,
+        MaterialTheme.colorScheme.onSurface,
+        MaterialTheme.colorScheme.onSurface,
+        MaterialTheme.colorScheme.primary,
+        MaterialTheme.colorScheme.tertiary,
+        MaterialTheme.colorScheme.secondaryContainer
     )
+
+    @Composable
+    fun colors_light(): List<Color> {
+        val context = LocalContext.current
+        val newVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        var scheme = if (newVersion) dynamicDarkColorScheme(context) else MaterialTheme.colorScheme
+
+        val vowel = scheme.surfaceTint
+        val special = scheme.tertiary
+
+        return listOf(
+            MaterialTheme.colorScheme.surfaceContainer,
+            MaterialTheme.colorScheme.surfaceContainerLowest,
+            MaterialTheme.colorScheme.onSurface,
+            MaterialTheme.colorScheme.onSurface,
+            vowel,
+            special,
+            MaterialTheme.colorScheme.secondaryContainer
+        )
+    }
+
+    @Composable
+    fun colors_dark(): List<Color> {
+        val context = LocalContext.current
+        val newVersion = Build.VERSION.SDK_INT >= Build.VERSION_CODES.S
+        var scheme = if (newVersion) dynamicLightColorScheme(context) else MaterialTheme.colorScheme
+
+        val vowel = scheme.surfaceTint
+        val special = scheme.tertiary
+
+        return listOf(
+            MaterialTheme.colorScheme.surfaceContainer,
+            MaterialTheme.colorScheme.surfaceContainerHighest,
+            MaterialTheme.colorScheme.onSurface,
+            MaterialTheme.colorScheme.onSurface,
+            vowel,
+            special,
+            MaterialTheme.colorScheme.secondaryContainer
+        )
+    }
 
     @Composable
     fun getColor(index: Int): Color {
@@ -76,6 +141,64 @@ object KeyboardStyle {
     @Composable
     fun isDark(): Boolean {
         val cfg = LocalConfiguration.current
-        return (cfg.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
+        val nightMode = cfg.uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK
+        if (nightMode == android.content.res.Configuration.UI_MODE_NIGHT_YES) {
+            return true
+        } else {
+            return false
+        }
     }
+}
+
+private val colorLabels = listOf(
+    "0 – keyboard bg", "1 – letter key bg", "2 – key text", "3 – key text caps", "4 – vowel key bg", "5 – special key bg", "6 – function keys"
+)
+
+@Composable
+private fun KeyboardColorsPreview(colors: List<Color>) {
+    val bg = colors[0]
+    val textColor = colors[2]
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(bg)
+            .padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        colors.forEachIndexed { index, color ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center, modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(color)
+                ) {
+                    Text(
+                        text = "a", color = textColor, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
+                Column {
+                    Text(
+                        text = colorLabels.getOrElse(index) { "[$index]" }, style = MaterialTheme.typography.bodySmall, color = textColor
+                    )
+                    Text(
+                        text = "#%08X".format(color.value.toLong() shr 32), style = MaterialTheme.typography.labelSmall, color = textColor.copy(alpha = 0.6f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview(name = "Colors – Light", showBackground = true)
+@Composable
+fun KeyboardStyleColorsPreview_Light() {
+    ShoktukKeyboardTheme(darkTheme = false) { KeyboardColorsPreview(KeyboardStyle.colors_light()) }
+}
+
+@Preview(name = "Colors – Light", showBackground = true)
+@Composable
+fun KeyboardStyleColorsPreview_Dark() {
+    ShoktukKeyboardTheme(darkTheme = true) { KeyboardColorsPreview(KeyboardStyle.colors_dark()) }
 }

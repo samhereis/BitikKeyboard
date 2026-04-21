@@ -177,9 +177,9 @@ enum class WritingSystem(val id: String) {
 }
 
 enum class NavBarPaddingSolution(val id: String) {
-    Solution_AllEnabled("№1"), Solution_Enable_1("№2"), Solution_Enable_2("№3"), Solution_Enable_Off("№4");
+    Solution_Enable_1("№1"), Solution_Enable_2("№2"), Solution_Enable_Off("№3");
 
     companion object {
-        const val KEY = "NavBarPaddingSolution"
+        const val KEY = "NavBarPaddingSolution_2"
     }
 }

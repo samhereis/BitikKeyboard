@@ -3,7 +3,7 @@ package com.shoktuk.shoktukkeyboard.keyboard
 import android.content.Context
 import android.view.inputmethod.InputMethodManager
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +15,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,11 +27,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
@@ -48,7 +54,6 @@ fun TopRowView(
             listOf("𐰀𐰺𐰃𐰉𐰬𐰕", "𐰽𐰞𐰢𐱄𐰽𐰕𐰉𐰃", "𐰶𐰺𐰍𐰕𐰽𐱄𐰣", "𐰌𐰄𐱅𐰚", "𐱀𐰹𐱄𐰸")
         )
     }
-
     LaunchedEffect(Unit) {
         strings = loadSavedStrings(ctx).ifEmpty {
             listOf("𐰀𐰺𐰃𐰉𐰬𐰕", "𐰽𐰞𐰢𐱄𐰽𐰕𐰉𐰃", "𐰶𐰺𐰍𐰕𐰽𐱄𐰣", "𐰌𐰄𐱅𐰚", "𐱀𐰹𐱄𐰸")
@@ -60,149 +65,146 @@ fun TopRowView(
                 KeyboardViewControllerBase.showTextTranscription
 
     val alphabetLabel = KeyboardViewControllerBase.alphabetLabelState.value
+    val textColor     = KeyboardStyle.getColor(2)
 
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .heightIn(min = KeyboardStyle.rowHeight() / 2, max = KeyboardStyle.rowHeight()),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Language/alphabet switcher
-        Box(
-            contentAlignment = Alignment.Center,
+    Surface(color = Color.Transparent) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
-                .background(
-                    color = KeyboardStyle.getColor(6),
-                    shape = MaterialTheme.shapes.small
+                .fillMaxWidth()
+                .heightIn(min = KeyboardStyle.rowHeight() / 2, max = KeyboardStyle.rowHeight())
+        ) {
+
+            // ── Left: alphabet switcher ──────────────────────────────────────────
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .background(KeyboardStyle.getColor(6), shape = MaterialTheme.shapes.small)
+                    .pointerInput(Unit) { detectTapGestures { onAlphabetChange() } }
+                    .padding(horizontal = 10.dp, vertical = 4.dp)
+            ) {
+                Text(alphabetLabel, color = textColor,
+                     style = MaterialTheme.typography.titleMedium)
+            }
+
+            // ── Center ───────────────────────────────────────────────────────────
+            // Same visual container as TopRowView_Alphabet (barely-visible clip background).
+            // Content differs: shows Bitik transcription or scrollable saved strings.
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 28.dp)
+                    .padding(horizontal = 1.dp)
+            ) {
+                // Same subtle background container used by TopRowView_Alphabet
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(KeyboardStyle.getColor(0).copy(alpha = 0.01f))
                 )
-                .clickable { onAlphabetChange() }
-                .padding(horizontal = 10.dp, vertical = 4.dp)
-        ) {
-            Text(
-                text = alphabetLabel,
-                color = KeyboardStyle.getColor(2),
-                style = MaterialTheme.typography.titleMedium
-            )
-        }
 
-        val textColor = KeyboardStyle.getColor(2)
-
-        // Middle content: transcription or saved strings
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .padding(horizontal = 4.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            if (showTranscription) {
-                val (primary, alt) = transcription.value
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text("~ ", style = MaterialTheme.typography.bodySmall, color = textColor)
-                    if (primary.isNotEmpty()) {
-                        val pairs = primary.zip(alt.padEnd(primary.length, ' '))
-                        LazyRow(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
-                            items(pairs) { (bot, top) ->
-                                TwoFloorText(top = top.toString(), bottom = bot.toString(), textColor = textColor)
+                if (showTranscription) {
+                    val (primary, alt) = transcription.value
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("~ ", style = MaterialTheme.typography.bodySmall, color = textColor)
+                        if (primary.isNotEmpty()) {
+                            val pairs = primary.zip(alt.padEnd(primary.length, ' '))
+                            LazyRow(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
+                                items(pairs) { (bot, top) ->
+                                    TwoFloorText(top.toString(), bot.toString(), textColor)
+                                }
                             }
                         }
+                        Text(" ~", style = MaterialTheme.typography.bodySmall, color = textColor)
                     }
-                    Text(" ~", style = MaterialTheme.typography.bodySmall, color = textColor)
-                }
-            } else {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 4.dp),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    strings.forEach { item ->
-                        Text(
-                            text = if (item.isEmpty()) " " else item,
-                            color = textColor,
-                            style = MaterialTheme.typography.titleMedium,
-                            modifier = Modifier
-                                .padding(horizontal = 5.dp)
-                                .background(
-                                    color = KeyboardStyle.getColor(1),
-                                    shape = MaterialTheme.shapes.small
-                                )
-                                .clickable { onKeyPress(item) }
-                                .padding(horizontal = 8.dp, vertical = 4.dp)
-                        )
+                } else {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .horizontalScroll(rememberScrollState()),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        strings.forEach { item ->
+                            Text(
+                                text = item.ifEmpty { " " },
+                                color = textColor,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier
+                                    .background(KeyboardStyle.getColor(1), MaterialTheme.shapes.small)
+                                    .pointerInput(item) { detectTapGestures { onKeyPress(item) } }
+                                    .padding(horizontal = 8.dp, vertical = 4.dp)
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        // IME picker
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .background(
-                    color = KeyboardStyle.getColor(6),
-                    shape = MaterialTheme.shapes.small
-                )
-                .clickable {
-                    val imm = ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.showInputMethodPicker()
-                }
-                .padding(horizontal = 10.dp, vertical = 4.dp)
-        ) {
-            Text(
-                text = "⌨",
-                color = KeyboardStyle.getColor(2),
-                style = MaterialTheme.typography.titleMedium
-            )
+            // ── Right: IME picker ────────────────────────────────────────────────
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .background(KeyboardStyle.getColor(6), shape = MaterialTheme.shapes.small)
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            (ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                                .showInputMethodPicker()
+                        }
+                    }
+                    .padding(horizontal = 10.dp, vertical = 4.dp)
+            ) {
+                Text("⌨", color = textColor, style = MaterialTheme.typography.titleMedium)
+            }
         }
     }
 }
+
+// ── Shared composables ───────────────────────────────────────────────────────
 
 @Composable
 fun TwoFloorText(top: String, bottom: String, textColor: Color = Color.Unspecified) {
-    val fullStyle = MaterialTheme.typography.bodySmall
-    val halfStyle = fullStyle.copy(
-        fontSize = fullStyle.fontSize * 0.5f,
-        lineHeight = fullStyle.fontSize * 0.55f
-    )
-
+    val full = MaterialTheme.typography.bodySmall
+    val half = full.copy(fontSize = full.fontSize * 0.5f, lineHeight = full.fontSize * 0.55f)
     if (top.isBlank() || top == bottom) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(text = bottom, style = fullStyle, color = textColor, maxLines = 1)
+            Text(bottom, style = full, color = textColor, maxLines = 1)
         }
     } else {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Text(
-                text = top,
-                style = halfStyle.copy(fontWeight = FontWeight.Normal),
-                color = textColor,
-                maxLines = 1
-            )
-            Text(
-                text = bottom,
-                style = halfStyle,
-                color = textColor,
-                maxLines = 1
-            )
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+               verticalArrangement = Arrangement.Center) {
+            Text(top,     style = half.copy(fontWeight = FontWeight.Normal), color = textColor, maxLines = 1)
+            Text(bottom,  style = half,                                       color = textColor, maxLines = 1)
         }
     }
 }
 
+// ── Previews ─────────────────────────────────────────────────────────────────
+
+@Preview(name = "TopRowView – Light", showBackground = true)
+@Composable
+private fun TopRowViewPreview_Light() {
+    ShoktukKeyboardTheme(darkTheme = false) { TopRowView() }
+}
+
+@Preview(name = "TopRowView – Dark", showBackground = true,
+    uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun TopRowViewPreview_Dark() {
+    ShoktukKeyboardTheme(darkTheme = true) { TopRowView() }
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
 private suspend fun loadSavedStrings(ctx: Context): List<String> = withContext(Dispatchers.IO) {
     val prefs = ctx.getSharedPreferences("keyboard_prefs", Context.MODE_PRIVATE)
-    val raw = prefs.getString("savedStringsJSON", "") ?: ""
+    val raw   = prefs.getString("savedStringsJSON", "") ?: ""
     if (raw.isBlank()) return@withContext emptyList()
     return@withContext try {
-        val type = object : TypeToken<List<String>>() {}.type
-        Gson().fromJson<List<String>>(raw, type) ?: emptyList()
-    } catch (_: Throwable) {
-        emptyList()
-    }
+        Gson().fromJson<List<String>>(raw, object : TypeToken<List<String>>() {}.type) ?: emptyList()
+    } catch (_: Throwable) { emptyList() }
 }

@@ -79,7 +79,7 @@ object TopRowBuilder_Alphabet {
 
         val newGlow = NewGlowDrawable()
         rowLayout.background = newGlow
-        if (MyKeyboardService.isBitikMode) {
+        if (MyKeyboardService.isAutoWriteBitikMode) {
             newGlow.setVisibleAlpha(1f)
             newGlow.startRotating()
         } else {
@@ -109,7 +109,7 @@ object TopRowBuilder_Alphabet {
         val hintIcon = TextView(service).apply {
             text = "👆"
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-            alpha = if (MyKeyboardService.isBitikMode) 0f else 1f
+            alpha = if (MyKeyboardService.isAutoWriteBitikMode) 0f else 1f
             isClickable = false
             isFocusable = false
             importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
@@ -126,8 +126,8 @@ object TopRowBuilder_Alphabet {
         centerSlot.addView(hintIcon)
         centerSlot.addView(lastWordContainer)
         centerSlot.setOnClickListener {
-            MyKeyboardService.isBitikMode = !MyKeyboardService.isBitikMode
-            onBitikModeChanged.invoke(MyKeyboardService.isBitikMode)
+            MyKeyboardService.isAutoWriteBitikMode = !MyKeyboardService.isAutoWriteBitikMode
+            onBitikModeChanged.invoke(MyKeyboardService.isAutoWriteBitikMode)
         }
 
         rowLayout.addView(switchLanguageView)
@@ -211,7 +211,7 @@ object TopRowBuilder_Alphabet {
         val textView = TextView(container.context).apply {
             text = InputText_Transcribed
             setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
-            setTextColor(KeyboardTheme.getColor(1).toColorInt())
+            setTextColor(KeyboardTheme.getColor(2).toColorInt())
 
             background = android.graphics.drawable.GradientDrawable().apply {
                 cornerRadius = 48f

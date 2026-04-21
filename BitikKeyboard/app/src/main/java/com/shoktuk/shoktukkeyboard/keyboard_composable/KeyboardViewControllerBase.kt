@@ -38,6 +38,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ekVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
@@ -111,7 +112,7 @@ class KeyboardViewControllerBase : InputMethodService() {
         val writingSystemState = mutableStateOf(WritingSystem.Bitik)
         val keyboardModeState = mutableStateOf(KeyboardState.Main)
         val alphabetLabelState = mutableStateOf("𐰌")
-        val isBitikModeState = mutableStateOf(false)
+        val isAutoWriteBitikMode = mutableStateOf(false)
         val alphabetTranscriptionState = mutableStateOf("")
         val transcriptionState = mutableStateOf("" to "")
 
@@ -119,12 +120,6 @@ class KeyboardViewControllerBase : InputMethodService() {
             get() = keyboardModeState.value
             set(value) {
                 keyboardModeState.value = value
-            }
-
-        var isBitikMode: Boolean
-            get() = isBitikModeState.value
-            set(value) {
-                isBitikModeState.value = value
             }
 
         val showTextTranscription: Boolean get() = current_textTranscription == TextTranscription.On
@@ -153,7 +148,7 @@ class KeyboardViewControllerBase : InputMethodService() {
         super.onWindowShown()
         context = this
         keyboardViewLifecycleOwner.onResume()
-        isBitikMode = false
+        isAutoWriteBitikMode.value = false
         bottomPadding = null
         updateDarkTheme()
         reloadKeyboard()
@@ -477,7 +472,7 @@ class KeyboardViewControllerBase : InputMethodService() {
     }
 
     private fun updateAlphabetTranscription() {
-        if (!isBitikMode) {
+        if (!isAutoWriteBitikMode.value) {
             alphabetTranscriptionState.value = ""
             return
         }
@@ -504,26 +499,26 @@ class KeyboardViewControllerBase : InputMethodService() {
 
     private fun applyInsetsNowAndOnChange(view: ComposeView) {
         val solution = context.navBarPaddingSolution
-        if (solution == NavBarPaddingSolution.Solution_Enable_Off) return
-
-        if (solution == NavBarPaddingSolution.Solution_AllEnabled || solution == NavBarPaddingSolution.Solution_Enable_1) {
-            ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
-                val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
-                if (bottomPadding == null) bottomPadding = nav.bottom + 25
-                bottomPaddingState.value = bottomPadding!!
-                insets
+        if (solution == NavBarPaddingSolution.Solution_Enable_Off) {
+            bottomPaddingState.value = context.bottomOffset
+        } else {
+            view.doOnAttach {
+                ViewCompat.requestApplyInsets(it)
+                if (solution == NavBarPaddingSolution.Solution_Enable_2) {
+                    val rootInsets = ViewCompat.getRootWindowInsets(it) ?: return@doOnAttach
+                    val nav = rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                    if (bottomPadding == null) bottomPadding = nav.bottom + context.bottomOffset
+                    bottomPaddingState.value = bottomPadding!!
+                }
             }
-        }
 
-        view.doOnAttach {
-            // Request insets after attach so the listener above fires with real values
-            ViewCompat.requestApplyInsets(it)
-
-            if (solution == NavBarPaddingSolution.Solution_AllEnabled || solution == NavBarPaddingSolution.Solution_Enable_2) {
-                val rootInsets = ViewCompat.getRootWindowInsets(it) ?: return@doOnAttach
-                val nav = rootInsets.getInsets(WindowInsetsCompat.Type.navigationBars())
-                if (bottomPadding == null) bottomPadding = nav.bottom + 25
-                bottomPaddingState.value = bottomPadding!!
+            if (solution == NavBarPaddingSolution.Solution_Enable_1) {
+                ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+                    val nav = insets.getInsets(WindowInsetsCompat.Type.navigationBars())
+                    if (bottomPadding == null) bottomPadding = nav.bottom + context.bottomOffset
+                    bottomPaddingState.value = bottomPadding!!
+                    insets
+                }
             }
         }
     }

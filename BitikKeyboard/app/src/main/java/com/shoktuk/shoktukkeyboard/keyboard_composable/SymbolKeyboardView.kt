@@ -32,7 +32,7 @@ fun SymbolKeyboardView(
     var freeButtonRightString by remember { mutableStateOf("☀️") }
 
     val screenWidth = LocalConfiguration.current.screenWidthDp.dp
-    val keyWidth = screenWidth / 10.25f
+    val keyWidth = screenWidth / 11.25f
 
     LaunchedEffect(Unit) {
         val p = ctx.getSharedPreferences("keyboard_prefs", android.content.Context.MODE_PRIVATE)

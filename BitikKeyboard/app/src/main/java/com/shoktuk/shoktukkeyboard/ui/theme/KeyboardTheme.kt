@@ -6,8 +6,35 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.GradientDrawable
+import android.os.Build
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.darkColorScheme
+import androidx.compose.material3.dynamicDarkColorScheme
+import androidx.compose.material3.dynamicLightColorScheme
+import androidx.compose.material3.lightColorScheme
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.Color as ComposeColor
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
@@ -25,26 +52,8 @@ object KeyboardTheme {
     // 4 = soft tamga key bg
     // 5 = special tamga key bg
     // 6 = system key bg
-    private val colorIndexes_Light = listOf(
-        "#f1f0f7", // 0 container
-        "#ffffff", // 1 key bg
-        "#1B1B17", // 2 key text
-        "#1d192b",  // 3 accent text
-        "#dce2f9",  // 4 soft tamga key bg
-        "#e8def8",  // 5 special tamga key bg
-        "#8a90a5",      // 6 = system key bg
-        "#1B1B17",      // 7 = system key text
-    )
-    private val colorIndexes_Dark = listOf(
-        "#1e1f25", // 0 container
-        "#33343a", // 1 key bg
-        "#fcfaff", // 2 key text
-        "#d8e2ff", // 3 accent text
-        "#2d4766",  // 4 soft tamga key bg
-        "#4a4458",  // 5 special tamga key bg
-        "#8a90a5",      // 6 = system key bg
-        "#1B1B17",      // 7 = system key text
-    )
+
+    // Force full opacity — some OEM themes / API < 31 fallbacks return alpha=0
 
     private const val BASE_SCREEN_WIDTH_DP = 350f
     private const val MAX_SCALE_FACTOR = 1.5f
@@ -71,11 +80,71 @@ object KeyboardTheme {
     const val ENTER_DONE_ICON_FILE = "icons/enter_done_icon.png"
     const val ENTER_NEXT_ICON_FILE = "icons/enter_next_icon.png"
 
+    private var cachedPalette: List<String>? = null
+
+    fun invalidateColorCache() {
+        cachedPalette = null
+    }
+
+    fun getCachedPalette(): List<String> {
+        if (cachedPalette == null) {
+            cachedPalette = getDynamicColorPalette(isNight())
+        }
+
+        return cachedPalette!!
+    }
+
+    fun getDynamicColorPalette(isDark: Boolean): List<String> {
+        val context = MyKeyboardService.context
+        val isS = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
+
+        val scheme = when {
+            isS && isDark -> dynamicDarkColorScheme(context)
+            isS && !isDark -> dynamicLightColorScheme(context)
+            isDark -> darkColorScheme()
+            else -> lightColorScheme()
+        }
+
+        val scheme_alt = when {
+            isS && isDark -> dynamicLightColorScheme(context)
+            isS && !isDark -> dynamicDarkColorScheme(context)
+            isDark -> lightColorScheme()
+            else -> darkColorScheme()
+        }
+
+        return if (!isDark) {
+            listOf(
+                scheme.surfaceContainer.toArgb().toHexColorString(),       // 0
+                scheme.surfaceContainerLowest.toArgb().toHexColorString(), // 1
+                scheme.onSurface.toArgb().toHexColorString(),              // 2
+                scheme.onSurface.toArgb().toHexColorString(),              // 3
+                scheme_alt.surfaceTint.toArgb().toHexColorString(),               // 4 (vowel)
+                scheme_alt.tertiary.toArgb().toHexColorString(),                  // 5 (special)
+                scheme.secondaryContainer.toArgb().toHexColorString()      // 6
+            )
+        } else {
+            listOf(
+                scheme.surfaceContainer.toArgb().toHexColorString(),       // 0
+                scheme.surfaceContainerHighest.toArgb().toHexColorString(),// 1
+                scheme.onSurface.toArgb().toHexColorString(),              // 2
+                scheme.onSurface.toArgb().toHexColorString(),              // 3
+                scheme_alt.surfaceTint.toArgb().toHexColorString(),               // 4 (vowel)
+                scheme_alt.tertiary.toArgb().toHexColorString(),                  // 5 (special)
+                scheme.secondaryContainer.toArgb().toHexColorString()      // 6
+            )
+        }
+    }
+
+    fun getColor(index: Int): String {
+        val palette = getCachedPalette()
+        return palette.getOrElse(index) { "#FF00FF" } // Fallback to Magenta on error
+    }
+
+    fun Int.toHexColorString(): String = String.format("#%08X", this or 0xFF000000.toInt())
+
     private fun isNight(): Boolean = (MyKeyboardService.context.resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
-    fun getColor(index: Int): String = (if (isNight()) colorIndexes_Dark else colorIndexes_Light)[index]
-
-    fun getColorInt(index: Int): Int = Color.parseColor(getColor(index))
+    fun getColorInt(index: Int): Int = getColor(index).toColorInt()
 
     fun containerBg(): Int = getColorInt(0)
 
@@ -181,7 +250,66 @@ object KeyboardTheme {
 
     fun getSystemButtonStyle(context: Context, backgroundColor: Int = 6, textColor: Int = 1): ButtonStyle {
         return ButtonStyle(
-            fillColor = getColor(6), borderColor = getColor(1), borderWidthDp = 0, cornerRadiusDp = 10, textColor = getColor(1), textSizeSp = getSystemButtonTextSize(context)
+            fillColor = getColor(6), borderColor = getColor(1), borderWidthDp = 0, cornerRadiusDp = 10, textColor = getColor(2), textSizeSp = getSystemButtonTextSize(context)
         )
     }
+}
+
+private val colorLabels = listOf(
+    "0 – keyboard bg", "1 – letter key bg", "2 – key text", "3 – key text caps", "4 – vowel key bg", "5 – special key bg", "6 – function keys"
+)
+
+@Composable
+private fun KeyboardThemeColorsPreview(colors: List<String>) {
+    val composeColors = colors.map { hex ->
+        runCatching { ComposeColor(hex.toColorInt()) }.getOrElse { ComposeColor.Gray }
+    }
+    val bg = composeColors.getOrElse(0) { ComposeColor.White }
+    val textColor = composeColors.getOrElse(2) { ComposeColor.Black }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(bg)
+            .padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        composeColors.forEachIndexed { index, color ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(10.dp)
+            ) {
+                Box(
+                    contentAlignment = Alignment.Center, modifier = Modifier
+                        .size(40.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(color)
+                ) {
+                    Text(
+                        text = "a", color = textColor, style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold)
+                    )
+                }
+                Column {
+                    Text(
+                        text = colorLabels.getOrElse(index) { "[$index]" }, style = MaterialTheme.typography.bodySmall, color = textColor
+                    )
+                    Text(
+                        text = colors.getOrElse(index) { "" }, style = MaterialTheme.typography.labelSmall, color = textColor.copy(alpha = 0.6f)
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Preview(name = "KeyboardTheme – Light", showBackground = true)
+@Composable
+private fun KeyboardThemePreview_Light() {
+    val context = LocalContext.current
+    KeyboardThemeColorsPreview(KeyboardTheme.getDynamicColorPalette(false))
+}
+
+@Preview(name = "KeyboardTheme – Dark", showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
+@Composable
+private fun KeyboardThemePreview_Dark() {
+    val context = LocalContext.current
+    KeyboardThemeColorsPreview(KeyboardTheme.getDynamicColorPalette(true))
 }

@@ -46,8 +46,6 @@ fun SliderSetting(
                     text = label, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Spacer(Modifier.height(2.dp))
-
                 Slider(value = value.toFloat(), onValueChange = { onValueChange(it.toInt()) }, valueRange = valueRange, thumb = {
                     SliderDefaults.TickSize
                 })
