@@ -4,6 +4,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.core.content.edit
 import com.github.doyaaaaaken.kotlincsv.dsl.csvReader
+import java.util.Locale
 
 enum class Language(val code: String, val displayName: String) {
     KY_L("ky_latin", "🇰🇬 Qırğız"),
@@ -28,12 +29,28 @@ object LocalizationManager {
 
     fun init(context: Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        val savedLangCode = prefs.getString(KEY_LANGUAGE, Language.KY_K.code)
-        savedLangCode?.let { langCode ->
-            Language.entries.find { it.code == langCode }?.let {
+        val savedLangCode = prefs.getString(KEY_LANGUAGE, null)
+        if (savedLangCode != null) {
+            Language.entries.find { it.code == savedLangCode }?.let {
                 currentLanguage = it
             }
+        } else {
+            currentLanguage = detectSystemLanguage()
         }
+    }
+
+    private fun detectSystemLanguage(): Language {
+        val systemLang = Locale.getDefault().language
+        val match = when (systemLang) {
+            "ky" -> Language.KY_K
+            "tr" -> Language.TR
+            "kk" -> Language.KZ
+            "az" -> Language.AZ
+            "ru" -> Language.RU
+            "en" -> Language.EN
+            else -> null
+        }
+        return match ?: Language.EN
     }
 
     fun setLanguage(context: Context, newLanguage: Language) {
