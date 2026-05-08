@@ -45,18 +45,17 @@ fun <T> CenteredDropdownPopup(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .heightIn(min = 56.dp) // text-field-like height
+                .heightIn(min = 56.dp)
                 .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
         ) {
-            // LEFT: label (non-clickable)
+
             Text(
                 label, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f)
             )
 
-            // RIGHT: value + chevron (clickable, uses default M3 ripple)
             Row(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(10.dp)) // keeps ripple nicely bounded
+                    .clip(RoundedCornerShape(10.dp))
                 .clickable { showPopup = true }
                     .padding(horizontal = 8.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
                 Text(optionLabel(selected), fontSize = 15.sp)
@@ -74,7 +73,7 @@ fun <T> CenteredDropdownPopup(
                     .wrapContentHeight()
                     .heightIn(max = 520.dp)
             ) {
-                // Optional header
+
                 Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
                     Text(label, style = MaterialTheme.typography.titleMedium)
                 }

@@ -42,7 +42,7 @@ fun BottomRowView(
     onAdjustCursor: (Int) -> Unit = {}
 ) {
     val keyWidth = KeyboardStyle.keyWidth()
-    // Use reactive keyboardModeState so recomposition happens on mode change
+
     val keyboardMode = KeyboardViewControllerBase.keyboardModeState.value
     val isBitikMain = keyboardMode == KeyboardState.Main &&
             KeyboardViewControllerBase.current_writingSystem == WritingSystem.Bitik
@@ -74,7 +74,6 @@ fun BottomRowView(
             }
         )
 
-        // Space bar with cursor drag support
         SpaceButton(
             modifier = Modifier.weight(1f),
             isBitikMain = isBitikMain,

@@ -44,16 +44,6 @@ data class ButtonStyle(
 )
 
 object KeyboardTheme {
-    // Palette indexes:
-    // 0 = container background
-    // 1 = key background
-    // 2 = key text (normal)
-    // 3 = key text (accent e.g., Shift active)
-    // 4 = soft tamga key bg
-    // 5 = special tamga key bg
-    // 6 = system key bg
-
-    // Force full opacity — some OEM themes / API < 31 fallbacks return alpha=0
 
     private const val BASE_SCREEN_WIDTH_DP = 350f
     private const val MAX_SCALE_FACTOR = 1.5f
@@ -114,30 +104,30 @@ object KeyboardTheme {
 
         return if (!isDark) {
             listOf(
-                scheme.surfaceContainer.toArgb().toHexColorString(),       // 0
-                scheme.surfaceContainerLowest.toArgb().toHexColorString(), // 1
-                scheme.onSurface.toArgb().toHexColorString(),              // 2
-                scheme.onSurface.toArgb().toHexColorString(),              // 3
-                scheme_alt.surfaceTint.toArgb().toHexColorString(),               // 4 (vowel)
-                scheme_alt.tertiary.toArgb().toHexColorString(),                  // 5 (special)
-                scheme.secondaryContainer.toArgb().toHexColorString()      // 6
+                scheme.surfaceContainer.toArgb().toHexColorString(),
+                scheme.surfaceContainerLowest.toArgb().toHexColorString(),
+                scheme.onSurface.toArgb().toHexColorString(),
+                scheme.onSurface.toArgb().toHexColorString(),
+                scheme_alt.surfaceTint.toArgb().toHexColorString(),
+                scheme_alt.tertiary.toArgb().toHexColorString(),
+                scheme.secondaryContainer.toArgb().toHexColorString()
             )
         } else {
             listOf(
-                scheme.surfaceContainer.toArgb().toHexColorString(),       // 0
-                scheme.surfaceContainerHighest.toArgb().toHexColorString(),// 1
-                scheme.onSurface.toArgb().toHexColorString(),              // 2
-                scheme.onSurface.toArgb().toHexColorString(),              // 3
-                scheme_alt.surfaceTint.toArgb().toHexColorString(),               // 4 (vowel)
-                scheme_alt.tertiary.toArgb().toHexColorString(),                  // 5 (special)
-                scheme.secondaryContainer.toArgb().toHexColorString()      // 6
+                scheme.surfaceContainer.toArgb().toHexColorString(),
+                scheme.surfaceContainerHighest.toArgb().toHexColorString(),
+                scheme.onSurface.toArgb().toHexColorString(),
+                scheme.onSurface.toArgb().toHexColorString(),
+                scheme_alt.surfaceTint.toArgb().toHexColorString(),
+                scheme_alt.tertiary.toArgb().toHexColorString(),
+                scheme.secondaryContainer.toArgb().toHexColorString()
             )
         }
     }
 
     fun getColor(index: Int): String {
         val palette = getCachedPalette()
-        return palette.getOrElse(index) { "#FF00FF" } // Fallback to Magenta on error
+        return palette.getOrElse(index) { "#FF00FF" }
     }
 
     fun Int.toHexColorString(): String = String.format("#%08X", this or 0xFF000000.toInt())

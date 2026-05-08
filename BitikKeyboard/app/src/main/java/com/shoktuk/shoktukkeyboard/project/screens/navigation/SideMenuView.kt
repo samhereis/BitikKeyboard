@@ -7,7 +7,6 @@ import LetterMemorizeScreenCompose
 import LocalizationManager
 import OriginalTamgasView
 import SideMenuHeader
-import SupportScreen
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.net.Uri
@@ -297,9 +296,6 @@ fun SideMenuView() {
                                     SettingScreens.entries.first { it.id == currentRoute }
                                         .id.localized("settings", context)
                                 }
-                                currentRoute == Loc_SideMenu.SUPPORT.titleKey -> {
-                                    Loc_SideMenu.SUPPORT.titleKey.localized("sideBar", context)
-                                }
                                 else -> ""
                             }
                             Text(text = title, fontSize = 15.sp)
@@ -363,7 +359,6 @@ fun SideMenuView() {
                 composable(Loc_BasicInfo.MEMORIZE_TAMGAS.titleKey) { LetterMemorizeScreenCompose() }
 
                 composable(SettingScreens.SavedStrings.id) { SavedStringsScreen() }
-                composable(Loc_SideMenu.SUPPORT.titleKey) { SupportScreen() }
             }
         }
     }
@@ -383,7 +378,7 @@ private fun navigateRoot(
 @Composable
 fun AppVersionText(modifier: Modifier = Modifier) {
     val context = LocalContext.current
-    // Wrap in try-catch to avoid NullPointerException during Compose Preview rendering
+
     val packageInfo = try {
         context.packageManager.getPackageInfo(context.packageName, 0)
     } catch (e: Exception) {

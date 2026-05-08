@@ -49,10 +49,6 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscript
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
 
-/**
- * Loads a PNG from [assetPath] (relative to the assets folder), tints it with [tint],
- * and fills the available space. Safe — returns nothing if the asset is missing.
- */
 @Composable
 fun AssetIcon(assetPath: String, tint: Color, modifier: Modifier = Modifier) {
     val context = LocalContext.current

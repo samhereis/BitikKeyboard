@@ -24,7 +24,7 @@ fun LetterKeyboardView(
     FixedKeyboardRow(keys = row2, keyWidth = keyWidth, onKeyPress = onKeyPress, isShiftEnabled = isShiftEnabled)
 
     Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
-        // Shift — takes equal share of remaining space after letter keys
+
         KeyButton(
             modifier = Modifier.weight(1f),
             icon = {
@@ -58,7 +58,6 @@ fun LetterKeyboardView(
             )
         }
 
-        // Delete — takes equal share of remaining space after letter keys
         KeyButton(
             modifier = Modifier.weight(1f),
             icon = { AssetIcon(assetPath = "icons/delete_icon.png", tint = KeyboardStyle.getColor(2)) },

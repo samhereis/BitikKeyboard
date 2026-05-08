@@ -159,13 +159,13 @@ fun BeautifulNavigationItem(
             )
             .border(1.dp, stroke, RoundedCornerShape(16.dp))
             .clickable(
-                interactionSource = remember { MutableInteractionSource() }, indication = null, // looks cleaner; rely on scale
+                interactionSource = remember { MutableInteractionSource() }, indication = null,
                 onClick = onClick, onClickLabel = "Open"
             )
             .padding(horizontal = 5.dp, vertical = 5.dp)
             .then(
                 Modifier.pointerInput(Unit) {
-                    // simple press feedback
+
                     awaitPointerEventScope {
                         while (true) {
                             val event = awaitPointerEvent()
@@ -207,7 +207,6 @@ fun BeautifulNavigationItem(
 
         Spacer(Modifier.width(12.dp))
 
-        // subtle chevron chip
         Box(
             modifier = Modifier
                 .size(30.dp)

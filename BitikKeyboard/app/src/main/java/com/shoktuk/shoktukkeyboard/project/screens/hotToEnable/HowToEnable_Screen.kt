@@ -51,7 +51,7 @@ fun HowToEnable_Screen() {
             .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Step 1: Activate Keyboard
+
         Column(
             modifier = Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp), horizontalAlignment = Alignment.Start
         ) {
@@ -149,7 +149,6 @@ fun NavBarPaddingSolutionView() {
         }
     }
 }
-
 
 @Preview(showBackground = true)
 @Composable

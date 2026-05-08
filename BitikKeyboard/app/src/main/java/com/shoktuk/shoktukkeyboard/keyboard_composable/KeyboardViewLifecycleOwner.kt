@@ -44,9 +44,6 @@ class KeyboardViewLifecycleOwner : LifecycleOwner, ViewModelStoreOwner, SavedSta
         store.clear()
     }
 
-    /**
-     * Attaches the lifecycle owners to the decor view of the keyboard's window.
-     */
     fun attachToDecorView(decorView: View?) {
         decorView ?: return
         decorView.setViewTreeLifecycleOwner(this)

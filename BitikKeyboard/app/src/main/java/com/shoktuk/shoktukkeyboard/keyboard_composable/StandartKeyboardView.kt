@@ -30,7 +30,6 @@ fun StandardKeyboardView(
     val isShiftEnabled = remember { mutableStateOf(false) }
     val isSymbolsEnabled = remember { mutableStateOf(false) }
 
-    // Reactive mode and writing system from companion states
     val keyboardMode = KeyboardViewControllerBase.keyboardModeState.value
     val writingSystem = KeyboardViewControllerBase.writingSystemState.value
     val bottomPaddingPx = KeyboardViewControllerBase.bottomPaddingState.value.absoluteValue

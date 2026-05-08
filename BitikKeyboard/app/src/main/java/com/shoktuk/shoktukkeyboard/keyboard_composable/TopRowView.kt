@@ -72,10 +72,10 @@ fun TopRowView(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 4.dp)
                 .heightIn(min = KeyboardStyle.rowHeight() / 2, max = KeyboardStyle.rowHeight())
         ) {
 
-            // ── Left: alphabet switcher ──────────────────────────────────────────
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -87,17 +87,14 @@ fun TopRowView(
                      style = MaterialTheme.typography.titleMedium)
             }
 
-            // ── Center ───────────────────────────────────────────────────────────
-            // Same visual container as TopRowView_Alphabet (barely-visible clip background).
-            // Content differs: shows Bitik transcription or scrollable saved strings.
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .weight(1f)
                     .heightIn(min = 28.dp)
-                    .padding(horizontal = 1.dp)
+                    .padding(horizontal = 4.dp)
             ) {
-                // Same subtle background container used by TopRowView_Alphabet
+
                 Box(
                     modifier = Modifier
                         .matchParentSize()
@@ -145,7 +142,6 @@ fun TopRowView(
                 }
             }
 
-            // ── Right: IME picker ────────────────────────────────────────────────
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -164,8 +160,6 @@ fun TopRowView(
     }
 }
 
-// ── Shared composables ───────────────────────────────────────────────────────
-
 @Composable
 fun TwoFloorText(top: String, bottom: String, textColor: Color = Color.Unspecified) {
     val full = MaterialTheme.typography.bodySmall
@@ -183,8 +177,6 @@ fun TwoFloorText(top: String, bottom: String, textColor: Color = Color.Unspecifi
     }
 }
 
-// ── Previews ─────────────────────────────────────────────────────────────────
-
 @Preview(name = "TopRowView – Light", showBackground = true)
 @Composable
 private fun TopRowViewPreview_Light() {
@@ -197,8 +189,6 @@ private fun TopRowViewPreview_Light() {
 private fun TopRowViewPreview_Dark() {
     ShoktukKeyboardTheme(darkTheme = true) { TopRowView() }
 }
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
 
 private suspend fun loadSavedStrings(ctx: Context): List<String> = withContext(Dispatchers.IO) {
     val prefs = ctx.getSharedPreferences("keyboard_prefs", Context.MODE_PRIVATE)

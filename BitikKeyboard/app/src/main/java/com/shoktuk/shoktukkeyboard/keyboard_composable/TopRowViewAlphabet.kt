@@ -54,7 +54,6 @@ fun TopRowView_Alphabet(
     val alphabetLabel = KeyboardViewControllerBase.alphabetLabelState.value
     val ctx = LocalContext.current
 
-    // Glow animation – only runs while bitik mode is active
     val infinite = rememberInfiniteTransition(label = "glowRot")
     val rotation by if (isBitikMode.value) {
         infinite.animateFloat(
@@ -70,17 +69,16 @@ fun TopRowView_Alphabet(
         )
     )
 
-    // Must be outside any conditional – Rules of Compose forbid remember inside if-blocks
     val pillPressed = remember { mutableStateOf(false) }
 
     Surface(color = Color.Transparent) {
         Row(
             verticalAlignment = Alignment.CenterVertically, modifier = Modifier
                 .fillMaxWidth()
+                .padding(horizontal = 4.dp)
                 .heightIn(min = KeyboardStyle.rowHeight() / 2, max = KeyboardStyle.rowHeight())
         ) {
 
-            // ── Left: alphabet switcher ──────────────────────────────────────────
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
@@ -92,19 +90,18 @@ fun TopRowView_Alphabet(
                 )
             }
 
-            // ── Center ───────────────────────────────────────────────────────────
-            // Tapping anywhere in this area toggles isBitikMode.
-            // The pill's own pointerInput consumes its tap, so toggle is NOT also fired when applying.
             Box(
                 modifier = Modifier
                     .weight(1f)
-                    .padding(horizontal = 1.dp)
+                    .padding(horizontal = 4.dp)
                     .pointerInput(Unit) {
                         detectTapGestures {
                             KeyboardViewControllerBase.isAutoWriteBitikMode.value = !KeyboardViewControllerBase.isAutoWriteBitikMode.value
+
+                            KeyboardViewControllerBase.context.refreshTranscription()
                         }
                     }) {
-                // Barely-visible background gives the glow overlay a clipping surface
+
                 Box(
                     modifier = Modifier
                         .matchParentSize()
@@ -112,7 +109,6 @@ fun TopRowView_Alphabet(
                         .background(KeyboardStyle.getColor(0).copy(alpha = 0.01f))
                 )
 
-                // 👆 hint – left side, disappears when bitik mode is on
                 if (!isBitikMode.value) {
                     Text(
                         text = "👆",
@@ -152,13 +148,11 @@ fun TopRowView_Alphabet(
                     }
                 }
 
-                // Rainbow glow border (active only when isBitikMode is on)
                 GlowOverlay(
                     rotation = rotation, active = isBitikMode.value, corner = 12.dp, brush = glowBrush, innerWidth = 15f, innerBlur = 15.dp, innerOpacity = 0.9f, outerWidth = 3f, outerBlur = 3.dp
                 )
             }
 
-            // ── Right: IME picker ────────────────────────────────────────────────
             Box(
                 contentAlignment = Alignment.Center, modifier = Modifier
                     .background(KeyboardStyle.getColor(6), shape = MaterialTheme.shapes.small)
@@ -175,8 +169,6 @@ fun TopRowView_Alphabet(
         }
     }
 }
-
-// ── Glow overlay composable ──────────────────────────────────────────────────
 
 @Composable
 private fun GlowOverlay(

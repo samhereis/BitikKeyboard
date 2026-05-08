@@ -45,7 +45,6 @@ fun BitikRule1() {
     }
 }
 
-
 @Preview(showBackground = true)
 @Composable
 fun BitikRule1_ScreenPreview() {

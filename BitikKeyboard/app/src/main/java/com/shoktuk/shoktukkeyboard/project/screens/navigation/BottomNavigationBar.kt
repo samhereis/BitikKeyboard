@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.sp
 import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_SideMenu
 import localized
 
-
 @Composable
 fun BottomNavigationBar(
     currentRoute: String, onNavigationItemSelected: (MainTabs) -> Unit, modifier: Modifier = Modifier
@@ -43,7 +42,7 @@ fun BottomNavigationBar(
             NavigationBarItem(
                 selected = selected, onClick = { onNavigationItemSelected(tab) }, icon = {
                     Column(
-                        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(vertical = 4.dp) // optional spacing
+                        horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center, modifier = Modifier.padding(vertical = 4.dp)
                     ) {
                         Icon(
                             imageVector = when (tab) {

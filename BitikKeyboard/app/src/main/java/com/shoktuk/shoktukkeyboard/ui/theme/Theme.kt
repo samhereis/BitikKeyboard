@@ -8,7 +8,6 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 
-// Android 13 Tonal Spot Baseline Light (approximate)
 private val DefaultLightColors = lightColorScheme(
     primary = Color(0xFF6750A4),
     onPrimary = Color.White,
@@ -30,7 +29,6 @@ private val DefaultLightColors = lightColorScheme(
     onError = Color.White
 )
 
-// Android 13 Tonal Spot Baseline Dark (approximate)
 private val DefaultDarkColors = darkColorScheme(
     primary = Color(0xFFD0BCFF),
     onPrimary = Color(0xFF381E72),
@@ -59,8 +57,6 @@ fun ShoktukKeyboardTheme(
 ) {
     val context = LocalContext.current
 
-    // On Android 12+ use Material You dynamic colors extracted from the wallpaper.
-    // Falls back to static baseline palette on older versions.
     val colorScheme = when {
         Build.VERSION.SDK_INT >= Build.VERSION_CODES.S ->
             if (darkTheme) dynamicDarkColorScheme(context)

@@ -51,7 +51,7 @@ fun VowelsAndCharactersView() {
             .padding(10.dp), horizontalArrangement = Arrangement.spacedBy(15.dp)
     ) {
         BulletColumnView(
-            items = colLeft, headline = Loc_OriginalBitik.ot_vowels.localizedTitle(LocalContext.current), textColor = Color(0xFF0B84FE), // #ac8f68 converted to ARGB format
+            items = colLeft, headline = Loc_OriginalBitik.ot_vowels.localizedTitle(LocalContext.current), textColor = Color(0xFF0B84FE),
             modifier = Modifier.weight(1f)
         )
         BulletColumnView(

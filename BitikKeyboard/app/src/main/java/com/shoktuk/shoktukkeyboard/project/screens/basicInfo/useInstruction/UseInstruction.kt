@@ -83,7 +83,7 @@ fun UseInstruction() {
             Column {
                 Text(Loc_UsingTheKeyboard.standartColorsConsonants.localizedTitle(LocalContext.current))
                 Text(Loc_UsingTheKeyboard.blueColorIsVowels.localizedTitle(LocalContext.current), color = Color(0xFF5875FF))
-                Text(Loc_UsingTheKeyboard.redIsSpecialLetters.localizedTitle(LocalContext.current), color = Color(0xFFC43494)) // orange
+                Text(Loc_UsingTheKeyboard.redIsSpecialLetters.localizedTitle(LocalContext.current), color = Color(0xFFC43494))
                 HorizontalDivider(Modifier.padding(vertical = 8.dp))
                 Text(Loc_UsingTheKeyboard.disablingTheColoring.localizedTitle(LocalContext.current))
             }
@@ -125,8 +125,6 @@ fun UseInstruction() {
         Spacer(Modifier.height(32.dp))
     }
 }
-
-/* ---------- Support Components ---------- */
 
 @Composable
 fun SectionCard(content: @Composable ColumnScope.() -> Unit) {
@@ -191,7 +189,7 @@ fun VideoPlay(videoName: String) {
             .fillMaxWidth()
             .padding(top = 10.dp)
             .aspectRatio(aspect)
-            .clip(RoundedCornerShape(25.dp)) // ✅ Rounded corners
+            .clip(RoundedCornerShape(25.dp))
     )
 }
 
@@ -200,7 +198,6 @@ fun rawUri(context: android.content.Context, resName: String): Uri {
     return Uri.parse("android.resource://${context.packageName}/$id")
 }
 
-/** Returns width/height ratio, accounting for rotation */
 fun getVideoAspectRatio(context: android.content.Context, resName: String): Float {
     val retriever = MediaMetadataRetriever()
     return try {

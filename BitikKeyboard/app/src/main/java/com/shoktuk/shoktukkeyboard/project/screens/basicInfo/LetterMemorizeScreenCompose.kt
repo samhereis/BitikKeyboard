@@ -67,7 +67,6 @@ fun LetterMemorizeScreenCompose() {
 
     val scope = rememberCoroutineScope()
 
-    // Save index on page change
     LaunchedEffect(pagerState.currentPage) {
         LetterPrefs.save(context, pagerState.currentPage)
     }

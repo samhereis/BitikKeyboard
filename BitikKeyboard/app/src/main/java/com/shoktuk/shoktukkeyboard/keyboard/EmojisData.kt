@@ -1,12 +1,10 @@
 package com.shoktuk.shoktukkeyboard.emoji
 
 data class EmojiCategory(
-    val type: Int, val displayName: String, // SF Symbol name in Swift; you can map to text or icon later
+    val type: Int, val displayName: String,
     val emojis: List<String>
 )
 
-// You can load from JSON or statically define like in Emojis.swift.
-// Here’s a tiny starter – fill out with your full list:
 object EmojisData {
     fun defaultCategories(): List<EmojiCategory> = listOf(
         EmojiCategory(
@@ -92,6 +90,6 @@ object EmojisData {
                 "🇧🇭", "🇧🇩", "🇧🇧", "🇧🇾", "🇧🇪", "🇧🇿", "🇧🇯", "🇧🇲", "🇧🇹", "🇧🇴", "🇧🇦", "🇧🇼", "🇧🇷", "🇧🇳", "🇧🇬", "🇧🇫",
             )
         ),
-        // … add all other sections just like your Emojis.swift …
+
     )
 }

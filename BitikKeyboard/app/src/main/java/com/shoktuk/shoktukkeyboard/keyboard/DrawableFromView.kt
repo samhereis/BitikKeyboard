@@ -47,10 +47,10 @@ private class LiveViewDrawable(private val view: View) : Drawable(), Choreograph
         if (running) choreographer.postFrameCallback(this)
     }
 
-    override fun setAlpha(alpha: Int) { /* background alpha controlled by the view itself */
+    override fun setAlpha(alpha: Int) {
     }
 
-    override fun setColorFilter(colorFilter: ColorFilter?) { /* no-op */
+    override fun setColorFilter(colorFilter: ColorFilter?) {
     }
 
     override fun getOpacity(): Int = PixelFormat.TRANSLUCENT

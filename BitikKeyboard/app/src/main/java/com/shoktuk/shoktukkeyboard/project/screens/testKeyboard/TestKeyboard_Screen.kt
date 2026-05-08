@@ -97,11 +97,6 @@ fun TestKeyboard_Screen() {
             )
         }
 
-        //ResponsibleSearchBar(
-        //    modifier = Modifier
-        //        .align(Alignment.BottomCenter)
-        //        .imePadding()
-        //)
     }
 }
 

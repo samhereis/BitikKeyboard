@@ -6,7 +6,6 @@ import org.json.JSONArray
 private const val PREFS_NAME = "settings_prefs"
 private const val PREF_KEY_SAVED_STRINGS = "savedStringsJSON"
 
-// Your pre-prepared default list
 private val DEFAULT_STRINGS = listOf(
     "𐰽𐰞𐰢𐱄𐰽𐰕𐰉𐰃",
     "𐰀𐰺𐰃𐰉𐰬𐰕",
@@ -25,7 +24,6 @@ fun loadSavedStrings(ctx: Context): MutableList<String> {
         }
     }.getOrElse { mutableListOf() }
 
-    // Fallback: if empty, return defaults
     return if (list.isEmpty()) DEFAULT_STRINGS.toMutableList() else list
 }
 

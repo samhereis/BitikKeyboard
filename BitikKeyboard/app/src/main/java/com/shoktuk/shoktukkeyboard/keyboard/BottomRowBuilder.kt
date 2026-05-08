@@ -65,7 +65,7 @@ object BottomRowBuilder {
             }
         }
 
-        val targetHeight = (buttonHeight * 0.85f).toInt() // shrink height to 75%
+        val targetHeight = (buttonHeight * 0.85f).toInt()
 
         var returnView = SystemKeyBuilder.systemButton_Text(service, if (mode == KeyboardMode.Main) "⓬😀" else "🅰😀", buttonHeight, onClick = {
             try {
@@ -122,7 +122,7 @@ object BottomRowBuilder {
         spaceBtn.setOnTouchListener(object : View.OnTouchListener {
             var downX = 0f
             var lastStep = 0
-            val stepPx = spaceBtn.resources.displayMetrics.density * 10 // ~10dp per char
+            val stepPx = spaceBtn.resources.displayMetrics.density * 10
             var dragging = false
 
             override fun onTouch(v: View, e: MotionEvent): Boolean {

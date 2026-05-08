@@ -5,7 +5,6 @@ import android.view.View
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.sounds
 import com.shoktuk.shoktukkeyboard.project.data.Sounds
 
-
 object ClickSounds {
     fun click(view: View) {
         if (MyKeyboardService.context.sounds == Sounds.On) {

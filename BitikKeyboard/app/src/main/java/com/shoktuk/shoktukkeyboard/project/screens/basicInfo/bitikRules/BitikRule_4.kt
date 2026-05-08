@@ -43,7 +43,7 @@ fun BitikRule4() {
             )
 
             Text(
-                text = "Aybek, Biroq, Beytarap.", color = Color(0xFF2E7D32), // green-ish
+                text = "Aybek, Biroq, Beytarap.", color = Color(0xFF2E7D32),
                 style = MaterialTheme.typography.bodyLarge
             )
 

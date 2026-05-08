@@ -30,7 +30,6 @@ object SettingsManager {
 
     private fun SharedPreferences.setInt(key: String, value: Int) = edit { putInt(key, value) }
 
-    // --- Properties ---
     var Context.keyboardVariant: BitikVariant
         get() = prefs().getEnum(BitikVariant.KEY, BitikVariant.Modern)
         set(v) = prefs().setEnum(BitikVariant.KEY, v)

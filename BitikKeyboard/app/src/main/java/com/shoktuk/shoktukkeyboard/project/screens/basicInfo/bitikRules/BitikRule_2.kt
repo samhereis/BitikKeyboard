@@ -56,7 +56,6 @@ fun BitikRule2() {
                 Text("eK + eL + eT = Kelet", color = MaterialTheme.colorScheme.error)
             }
 
-            // SectionCard 1
             SectionCard {
                 Column {
                     Text("𐰴𐰞𐱄 - Qalat ✅")

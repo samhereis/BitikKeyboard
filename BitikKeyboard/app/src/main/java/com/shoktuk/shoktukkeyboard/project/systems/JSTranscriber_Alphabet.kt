@@ -35,7 +35,7 @@ class JSTranscriber_Alphabet(context: Context) {
             }
         }
 
-        ctx.evaluate(js) // load your JS once
+        ctx.evaluate(js)
         ctx
     } catch (e: Exception) {
         Log.e("JSTranscriber_Alphabet", "Failed to initialize QuickJS context. Transcriber will be disabled.", e)
@@ -47,10 +47,10 @@ class JSTranscriber_Alphabet(context: Context) {
     private fun call(input: String): String {
         return try {
             val safeInput = input
-                .replace("\\", "\\\\")  // escape backslashes
-                .replace("\"", "\\\"")  // escape double quotes
-                .replace("`", "\\`")    // escape backticks
-                .replace("\n", "\\n")   // escape newlines
+                .replace("\\", "\\\\")
+                .replace("\"", "\\\"")
+                .replace("`", "\\`")
+                .replace("\n", "\\n")
                 .replace("\r", "\\r")
 
             val code = """
@@ -66,7 +66,7 @@ class JSTranscriber_Alphabet(context: Context) {
 
             jsCtx?.evaluate(code)?.toString() ?: input
         } catch (e: Exception) {
-            // If JS context or evaluation fails, fall back safely
+
             "Error: ${e.message ?: "Unknown error"}"
         }
     }

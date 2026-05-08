@@ -29,7 +29,7 @@ import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
 
 object SystemKeyBuilder {
-    private const val LONG_PRESS_DELAY = 250L // 0.25 seconds
+    private const val LONG_PRESS_DELAY = 250L
     var longPressRunnable: Runnable? = null
     fun systemButton_Text(
         service: InputMethodService,

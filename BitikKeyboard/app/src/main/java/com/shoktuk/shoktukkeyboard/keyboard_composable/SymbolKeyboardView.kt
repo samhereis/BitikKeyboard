@@ -83,7 +83,6 @@ fun SymbolKeyboardView(
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Spacer(modifier = Modifier.width(0.dp))
 
-            // Free/custom tamga button
             KeyButton(
                 key = KeyboardKey(
                     name = "kg",
@@ -123,7 +122,6 @@ fun SymbolKeyboardView(
 
             Spacer(modifier = Modifier.width(0.dp))
 
-            // Delete key
             KeyButton(
                 title = "⌫",
                 isSystem = true,

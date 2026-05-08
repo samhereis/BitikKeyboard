@@ -270,7 +270,6 @@ object TopRowBuilder_Old {
             }
         }
 
-
         TextView(container.context).apply {
             text = " ~   "
             setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)

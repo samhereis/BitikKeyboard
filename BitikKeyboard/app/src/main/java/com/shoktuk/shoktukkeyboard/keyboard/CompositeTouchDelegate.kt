@@ -25,8 +25,8 @@ fun View.extendHorizontalHit(extraLeftPx: Int, extraRightPx: Int) {
         val existing = parentView.touchDelegate
         val group = when (existing) {
             is CompositeTouchDelegate -> existing
-            null -> CompositeTouchDelegate(parentView).also { parentView.touchDelegate = it } // CHANGED
-            else -> CompositeTouchDelegate(parentView).also {                                // CHANGED
+            null -> CompositeTouchDelegate(parentView).also { parentView.touchDelegate = it }
+            else -> CompositeTouchDelegate(parentView).also {
                 it.add(existing)
                 parentView.touchDelegate = it
             }

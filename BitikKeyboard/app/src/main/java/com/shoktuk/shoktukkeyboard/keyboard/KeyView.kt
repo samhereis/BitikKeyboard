@@ -59,13 +59,11 @@ class KeyView(
     private val visualInsetPx_H = dpToPx(context, if (MyKeyboardService.maxButtonInOneRow > 10) KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_H else (KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_H * 1.5f).toInt())
     private val visualInsetPx_V = dpToPx(context, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_V)
 
-    // NEW:
     private var lastErrorAt = 0L
     private var overlayMainText: TextView? = null
 
     private var hintButtonTextSize = KeyboardTheme.getHintButtonTextSize(context)
 
-    // NEW:
     private fun notifyError(message: String, t: Throwable? = null) {
         val now = System.currentTimeMillis()
         if (now - lastErrorAt >= 1000) {
@@ -147,7 +145,7 @@ class KeyView(
 
     fun pxFromDp(dp: Float, context: Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics)
 
-    fun pxFromSp(sp: Float, context: Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, sp, context.resources.displayMetrics) // use DIP to ignore font scale
+    fun pxFromSp(sp: Float, context: Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, sp, context.resources.displayMetrics)
 
     private fun updateContent() {
         var mainTextSize = style.textSizeSp
@@ -307,7 +305,6 @@ class KeyView(
         }
     }
 
-
     fun showOverlay() {
         try {
             dismissOverlay()
@@ -356,17 +353,17 @@ class KeyView(
     private fun createOverlayView(): View {
         return FrameLayout(context).apply {
             layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
-            background = com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.createDrawableFromStyle(context, style) // CHANGED
+            background = com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.createDrawableFromStyle(context, style)
 
             val pad = dpToPxInt(6)
             setPadding(pad, pad, pad, pad)
 
-            val column = android.widget.LinearLayout(context).apply { // CHANGED
+            val column = android.widget.LinearLayout(context).apply {
                 orientation = android.widget.LinearLayout.VERTICAL
                 gravity = Gravity.CENTER
             }
 
-            val main = TextView(context).apply { // CHANGED
+            val main = TextView(context).apply {
                 text = getCurrentMainText()
                 setTextColor(style.textColor.toColorInt())
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp)
@@ -416,7 +413,7 @@ class KeyView(
             }
             popupWindow?.contentView?.setBackgroundColor(colorToSet)
         } catch (e: Throwable) {
-            notifyError("Failed to update preview.", e) // CHANGED
+            notifyError("Failed to update preview.", e)
         }
     }
 
@@ -493,7 +490,7 @@ class KeyView(
         try {
             popupWindow?.dismiss()
         } catch (e: Throwable) {
-            notifyError("Failed to hide key preview.", e) // CHANGED
+            notifyError("Failed to hide key preview.", e)
         } finally {
             popupWindow = null
             overlayMainText = null

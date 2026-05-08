@@ -313,12 +313,6 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     }, modifier = Modifier.fillMaxWidth()
                 )
 
-                //EnumSwitchSetting(
-                //    label = "Тыбыш", selected = sounds, optionOn = Sounds.On, optionOff = Sounds.Off, onSelect = {
-                //        context.sounds = if (it == Sounds.On) Sounds.On else Sounds.Off
-                //        sounds = context.sounds
-                //    }, modifier = Modifier.fillMaxWidth()
-                //)
             }
         }
 

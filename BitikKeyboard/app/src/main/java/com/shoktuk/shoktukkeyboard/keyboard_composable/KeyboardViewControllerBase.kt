@@ -104,11 +104,8 @@ class KeyboardViewControllerBase : InputMethodService() {
         var current_letterTranscription: LetterTranscription = LetterTranscription.On
         var current_textTranscription: TextTranscription = TextTranscription.On
 
-        // Reactive dark-theme state — updated from onWindowShown/onConfigurationChanged
-        // because LocalConfiguration inside an IME ComposeView may not carry the night-mode bit.
         val isDarkTheme = mutableStateOf(false)
 
-        // Reactive states read by composables
         val writingSystemState = mutableStateOf(WritingSystem.Bitik)
         val keyboardModeState = mutableStateOf(KeyboardState.Main)
         val alphabetLabelState = mutableStateOf("𐰌")
@@ -393,6 +390,8 @@ class KeyboardViewControllerBase : InputMethodService() {
         return result
     }
 
+    fun refreshTranscription() = updateTranscription()
+
     fun replaceWithBitikTranscription() {
         val ic = currentInputConnection ?: return
         val rawText = ic.getTextBeforeCursor(100, 0)?.toString().orEmpty()
@@ -453,10 +452,6 @@ class KeyboardViewControllerBase : InputMethodService() {
             val primary = transcriber.getTranscription(lastWord)
             val alt = transcriber.getTranscription_Alternative(lastWord)
 
-            // If transcription failed, safeCall returns the original Bitik text unchanged.
-            // Bitik (Old Turkic) codepoints are in the supplementary plane (U+10C00+),
-            // encoded as surrogate pairs in UTF-16. Surrogate chars in the result mean
-            // the text was never transcribed — suppress display to avoid rendering lone surrogates as "?".
             if (primary.isEmpty() || primary.any { it.isSurrogate() }) {
                 transcriptionState.value = "" to ""
                 return
@@ -573,7 +568,7 @@ class KeyboardViewControllerBase : InputMethodService() {
                         else -> 1
                     }
                     ic.deleteSurroundingText(deleteCount, 0)
-                    // Also clean up any orphaned surrogate left after cursor
+
                     val after = ic.getTextAfterCursor(1, 0)
                     if (!after.isNullOrEmpty() && after[0].isSurrogate()) {
                         ic.deleteSurroundingText(1, 0)

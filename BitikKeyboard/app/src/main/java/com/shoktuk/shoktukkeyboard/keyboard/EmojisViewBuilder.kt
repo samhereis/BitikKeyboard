@@ -108,7 +108,7 @@ object EmojisViewBuilder {
                     textAlignment = View.TEXT_ALIGNMENT_CENTER
 
                     layoutParams = LinearLayout.LayoutParams(
-                        screenWidth,  // force width = screen width
+                        screenWidth,
                         ViewGroup.LayoutParams.WRAP_CONTENT
                     )
                 }
