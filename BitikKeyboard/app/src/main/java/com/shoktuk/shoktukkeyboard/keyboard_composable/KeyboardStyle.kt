@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,6 +31,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 object KeyboardStyle {
@@ -65,10 +68,15 @@ object KeyboardStyle {
         return w / KeyboardViewControllerBase.maxRowElementsCount.toFloat()
     }
 
+    // Sync with the old solution: resolve the exact same palette used by the
+    // legacy View keyboard (KeyboardTheme's dynamic Material You colors).
     @Composable
     fun colors(): List<Color> {
-        var isDark = isDark()
-        return if (isDark) colors_dark() else colors_light()
+        val context = LocalContext.current
+        val dark = isDark()
+        return remember(dark, context) {
+            KeyboardTheme.getDynamicColorPalette(dark, context).map { Color(it.toColorInt()) }
+        }
     }
 
     @Composable

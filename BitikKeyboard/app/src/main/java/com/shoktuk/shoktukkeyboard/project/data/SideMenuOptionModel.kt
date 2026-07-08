@@ -11,7 +11,13 @@ import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_SideMenu
 import localized
 
 enum class SettingScreens(val id: String) {
-    SavedStrings("savables");
+    SavedStrings("savables"),
+    // ids double as localization keys (see the top-bar title lookup), so they must
+    // match the CSV keys in settings.csv.
+    MainSettings("mainSettings"),
+    Appearance("appearance"),
+    OtherAlphabets("otherAlphabets"),
+    Other("other");
 }
 
 data class SideMenuItem(

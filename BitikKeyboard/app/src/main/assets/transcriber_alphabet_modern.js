@@ -117,8 +117,6 @@
                  new TranscriptionEntry("рт", "𐱈", "𐱈", CharacterType.Special),
                  new TranscriptionEntry("лт", "𐰡", "𐰡", CharacterType.Special),
                  new TranscriptionEntry("нч", "𐰨", "𐰨", CharacterType.Special),
-                 new TranscriptionEntry("чы", "𐰱", "𐰱", CharacterType.Special_Hard),
-                 new TranscriptionEntry("чи", "𐰱", "𐰱", CharacterType.Special_Soft),
                  new TranscriptionEntry("кы", "𐰶", "𐰶", CharacterType.Special_Hard),
                  new TranscriptionEntry("ык", "𐰷", "𐰷", CharacterType.Special_Hard),
                  new TranscriptionEntry("от", "𐱇", "𐱇", CharacterType.Special_Hard),
@@ -171,8 +169,6 @@
                  new TranscriptionEntry("nç", "𐰨", "𐰨", CharacterType.Special),
                  new TranscriptionEntry("qı", "𐰶", "𐰶", CharacterType.Special_Hard),
                  new TranscriptionEntry("ıq", "𐰷", "𐰷", CharacterType.Special_Hard),
-                 new TranscriptionEntry("çı", "𐰱", "𐰱", CharacterType.Special_Hard),
-                 new TranscriptionEntry("çi", "𐰱", "𐰱", CharacterType.Special_Soft),
                  new TranscriptionEntry("ot", "𐱇", "𐱇", CharacterType.Special_Hard),
                  new TranscriptionEntry("oq", "𐰹", "𐰹", CharacterType.Special_Hard),
                  new TranscriptionEntry("uq", "𐰸", "𐰸", CharacterType.Special_Hard),
@@ -218,8 +214,6 @@
                  new TranscriptionEntry("نچ", "𐰨", "𐰨", CharacterType.Special),
                  new TranscriptionEntry("قى", "𐰶", "𐰶", CharacterType.Special_Hard),
                  new TranscriptionEntry("ىق", "𐰷", "𐰷", CharacterType.Special_Hard),
-                 new TranscriptionEntry("چى", "𐰱", "𐰱", CharacterType.Special_Hard),
-                 new TranscriptionEntry("چئ", "𐰱", "𐰱", CharacterType.Special_Soft),
                  new TranscriptionEntry("وت", "𐱇", "𐱇", CharacterType.Special_Hard),
                  new TranscriptionEntry("وق", "𐰹", "𐰹", CharacterType.Special_Hard),
                  new TranscriptionEntry("ۇق", "𐰸", "𐰸", CharacterType.Special_Hard),
@@ -309,11 +303,11 @@
              // RemoveAll(x => x.self == null || string.IsNullOrWhiteSpace(x.result))
              this.transcriptoinUnits = this.transcriptoinUnits.filter(x => !(x.self == null || (x.result == null || x.result.trim() === "")));
 
-             this.TryRemove_A_Special();
-             this.TryRemove_Consonant_A_Consonant();
-             this.TryRemove_Consonant_E_Consonant();
-             this.TryRemove_SoftAfterHard();
-             this.TryRemove_HardAfterSoft();
+             // this.TryRemove_A_Special();
+             // this.TryRemove_Consonant_A_Consonant();
+             // this.TryRemove_Consonant_E_Consonant();
+             // this.TryRemove_SoftAfterHard();
+             // this.TryRemove_HardAfterSoft();
 
              // transcriptoinUnits.RemoveAll(x => toDelete.Contains(x));
              if (this.toDelete.length){

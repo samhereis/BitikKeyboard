@@ -1,5 +1,6 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import android.view.inputmethod.EditorInfo
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -47,6 +48,7 @@ fun BottomRowView(
     val isBitikMain = keyboardMode == KeyboardState.Main &&
             KeyboardViewControllerBase.current_writingSystem == WritingSystem.Bitik
     val density = LocalDensity.current
+    val keyFeedback = rememberKeyFeedback()
 
     Row {
         KeyButton(
@@ -78,7 +80,7 @@ fun BottomRowView(
             modifier = Modifier.weight(1f),
             isBitikMain = isBitikMain,
             isShiftEnabled = isShiftEnabled,
-            onSpace = { onKeyPress("sys ") },
+            onSpace = { keyFeedback(); onKeyPress("sys ") },
             onCursorMove = { delta ->
                 try {
                     KeyboardViewControllerBase.context.moveCursor(delta)
@@ -116,10 +118,17 @@ fun BottomRowView(
             }
         )
 
+        val enterIcon = when (KeyboardViewControllerBase.imeActionState.value) {
+            EditorInfo.IME_ACTION_SEARCH -> "icons/enter_search_icon.png"
+            EditorInfo.IME_ACTION_GO -> "icons/enter_go_icon.png"
+            EditorInfo.IME_ACTION_NEXT -> "icons/enter_next_icon.png"
+            else -> "icons/enter_icon.png"
+        }
+
         KeyButton(
             title = if (keyboardMode == KeyboardState.SavedStrings) "⌫" else "",
             icon = if (keyboardMode != KeyboardState.SavedStrings) {
-                { AssetIcon(assetPath = "icons/enter_icon.png", tint = KeyboardStyle.getColor(2)) }
+                { AssetIcon(assetPath = enterIcon, tint = KeyboardStyle.getColor(2)) }
             } else null,
             isSystem = true,
             width = keyWidth * 1.5f,

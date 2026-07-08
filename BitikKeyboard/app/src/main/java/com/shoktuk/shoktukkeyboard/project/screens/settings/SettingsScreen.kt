@@ -1,5 +1,6 @@
 package com.shoktuk.shoktukkeyboard.project.screens.settings
 
+import BeautifulNavigationItem
 import NavBarPaddingSolutionView
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
@@ -14,7 +15,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -33,6 +37,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.shoktuk.shoktukkeyboard.keyboard.onSettingChanged
 import com.shoktuk.shoktukkeyboard.project.data.AJ_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ANG_Letter_Variant
@@ -51,6 +57,7 @@ import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
 import com.shoktuk.shoktukkeyboard.project.data.Latin_ZH
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingScreens
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ajVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
@@ -72,7 +79,6 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.sounds
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.vibrations
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
@@ -84,8 +90,55 @@ import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_SideMenu
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import localized
 
+/**
+ * Settings landing page: a list of categories that each open a dedicated sub-screen.
+ * Mirrors the iOS categorization (Main Settings / Appearance / Other Alphabets / Other).
+ */
 @Composable
-fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
+fun SettingsScreen(navController: NavController) {
+    val context = LocalContext.current
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState())
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
+    ) {
+        BeautifulNavigationItem(
+            title = Loc_Settings.mainSettings.localizedTitle(context),
+            onClick = { navController.navigate(SettingScreens.MainSettings.id) },
+            leading = Icons.Default.Settings,
+            tint = MaterialTheme.colorScheme.primary
+        )
+        BeautifulNavigationItem(
+            title = Loc_Settings.appearance.localizedTitle(context),
+            onClick = { navController.navigate(SettingScreens.Appearance.id) },
+            leading = Icons.Default.Star,
+            tint = MaterialTheme.colorScheme.primary
+        )
+        BeautifulNavigationItem(
+            title = Loc_Settings.otherAlphabets.localizedTitle(context),
+            onClick = { navController.navigate(SettingScreens.OtherAlphabets.id) },
+            leading = Icons.Default.Favorite,
+            tint = MaterialTheme.colorScheme.primary
+        )
+        BeautifulNavigationItem(
+            title = Loc_Settings.other.localizedTitle(context),
+            onClick = { navController.navigate(SettingScreens.Other.id) },
+            leading = Icons.Default.Info,
+            tint = MaterialTheme.colorScheme.primary
+        )
+
+        NavBarPaddingSolutionView()
+    }
+}
+
+// MARK: - Main Settings (keyboard + letters)
+
+@Composable
+fun MainSettingsScreen() {
     val context = LocalContext.current
 
     var buttonHeight by remember { mutableStateOf(context.keyboardHeight) }
@@ -105,26 +158,12 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
     var ekVariant by remember { mutableStateOf(context.ekVariant) }
     var eshVariant by remember { mutableStateOf(context.eshVariant) }
 
-    var coloring by remember { mutableStateOf(context.coloring) }
-    var holdabilityColoring by remember { mutableStateOf(context.holdabilityColoring) }
-    var vibrations by remember { mutableStateOf(context.vibrations) }
-    var sounds by remember { mutableStateOf(context.sounds) }
-
-    var freeTamga_Click by remember { mutableStateOf(context.freeTamga_Click) }
-    var freeTamga_Hold by remember { mutableStateOf(context.freeTamga_Hold) }
-
-    var latinStatus by remember { mutableStateOf(context.latinStatus) }
-    var latinVariant by remember { mutableStateOf(context.latinVariant) }
-    var latinZH by remember { mutableStateOf(context.latinZH) }
-
-    var arabStatus by remember { mutableStateOf(context.arabicStatus) }
-    var kirilisaStatus by remember { mutableStateOf(context.kirilisaStatus) }
-
     Column(
         Modifier
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
-            .verticalScroll(rememberScrollState()), verticalArrangement = Arrangement.spacedBy(16.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
@@ -276,52 +315,6 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
             tonalElevation = 0.dp,
             shadowElevation = 0.dp,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            color = MaterialTheme.colorScheme.primary
-        ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                Text(
-                    text = Loc_Settings.experience.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
-                )
-
-                EnumSwitchSetting(
-                    label = Loc_Settings.coloring.localizedTitle(LocalContext.current), selected = coloring, optionOn = Coloring.On, optionOff = Coloring.Off, onSelect = {
-                        context.coloring = if (it == Coloring.On) Coloring.On else Coloring.Off
-                        coloring = context.coloring
-                    }, modifier = Modifier.fillMaxWidth()
-                )
-
-                EnumSwitchSetting(
-                    label = Loc_Settings.holdabilityIndicator.localizedTitle(LocalContext.current),
-                    selected = holdabilityColoring,
-                    optionOn = HoldabilityColoring.On,
-                    optionOff = HoldabilityColoring.Off,
-                    onSelect = {
-                        context.holdabilityColoring = if (it == HoldabilityColoring.On) HoldabilityColoring.On else HoldabilityColoring.Off
-                        holdabilityColoring = context.holdabilityColoring
-                    },
-                    modifier = Modifier.fillMaxWidth()
-                )
-
-                EnumSwitchSetting(
-                    label = Loc_Settings.vibration.localizedTitle(LocalContext.current), selected = vibrations, optionOn = Vibrations.On, optionOff = Vibrations.Off, onSelect = {
-                        context.vibrations = if (it == Vibrations.On) Vibrations.On else Vibrations.Off
-                        vibrations = context.vibrations
-                    }, modifier = Modifier.fillMaxWidth()
-                )
-
-            }
-        }
-
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(16.dp),
-            tonalElevation = 0.dp,
-            shadowElevation = 0.dp,
-            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
             color = MaterialTheme.colorScheme.secondary
         ) {
             Column(
@@ -394,14 +387,33 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                 }
             }
         }
+    }
+}
 
+// MARK: - Appearance (coloring, holdability, vibration)
+
+@Composable
+fun AppearanceSettingsScreen() {
+    val context = LocalContext.current
+
+    var coloring by remember { mutableStateOf(context.coloring) }
+    var holdabilityColoring by remember { mutableStateOf(context.holdabilityColoring) }
+    var vibrations by remember { mutableStateOf(context.vibrations) }
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
             tonalElevation = 0.dp,
             shadowElevation = 0.dp,
             border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-            color = MaterialTheme.colorScheme.inverseOnSurface
+            color = MaterialTheme.colorScheme.primary
         ) {
             Column(
                 modifier = Modifier
@@ -409,30 +421,58 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 Text(
-                    text = Loc_Settings.accessability.localizedTitle(LocalContext.current),
-                    style = MaterialTheme.typography.titleMedium,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.Center
+                    text = Loc_Settings.experience.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
-                HorizontalDivider()
-                FreeButtonStringsSection(freeTamga_Click, {
-                    if (!it.isEmpty()) {
-                        context.freeTamga_Click = it
-                    }
-                    freeTamga_Click = it
-                }, freeTamga_Hold, {
-                    if (!it.isEmpty()) {
-                        context.freeTamga_Hold = it
-                    }
-                    freeTamga_Hold = it
-                })
+                EnumSwitchSetting(
+                    label = Loc_Settings.coloring.localizedTitle(LocalContext.current), selected = coloring, optionOn = Coloring.On, optionOff = Coloring.Off, onSelect = {
+                        context.coloring = if (it == Coloring.On) Coloring.On else Coloring.Off
+                        coloring = context.coloring
+                    }, modifier = Modifier.fillMaxWidth()
+                )
 
-                HorizontalDivider()
-                SavabledSetting({ onOpenSavedStrings() })
+                EnumSwitchSetting(
+                    label = Loc_Settings.holdabilityIndicator.localizedTitle(LocalContext.current),
+                    selected = holdabilityColoring,
+                    optionOn = HoldabilityColoring.On,
+                    optionOff = HoldabilityColoring.Off,
+                    onSelect = {
+                        context.holdabilityColoring = if (it == HoldabilityColoring.On) HoldabilityColoring.On else HoldabilityColoring.Off
+                        holdabilityColoring = context.holdabilityColoring
+                    },
+                    modifier = Modifier.fillMaxWidth()
+                )
+
+                EnumSwitchSetting(
+                    label = Loc_Settings.vibration.localizedTitle(LocalContext.current), selected = vibrations, optionOn = Vibrations.On, optionOff = Vibrations.Off, onSelect = {
+                        context.vibrations = if (it == Vibrations.On) Vibrations.On else Vibrations.Off
+                        vibrations = context.vibrations
+                    }, modifier = Modifier.fillMaxWidth()
+                )
             }
         }
+    }
+}
 
+// MARK: - Other Alphabets (latin, arab, kiril)
+
+@Composable
+fun OtherAlphabetsSettingsScreen() {
+    val context = LocalContext.current
+
+    var latinStatus by remember { mutableStateOf(context.latinStatus) }
+    var latinVariant by remember { mutableStateOf(context.latinVariant) }
+    var latinZH by remember { mutableStateOf(context.latinZH) }
+    var arabStatus by remember { mutableStateOf(context.arabicStatus) }
+    var kirilisaStatus by remember { mutableStateOf(context.kirilisaStatus) }
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(16.dp),
@@ -489,8 +529,62 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
                 )
             }
         }
+    }
+}
 
-        NavBarPaddingSolutionView()
+// MARK: - Other (free buttons + savables)
+
+@Composable
+fun OtherSettingsScreen(onOpenSavedStrings: () -> Unit) {
+    val context = LocalContext.current
+
+    var freeTamga_Click by remember { mutableStateOf(context.freeTamga_Click) }
+    var freeTamga_Hold by remember { mutableStateOf(context.freeTamga_Hold) }
+
+    Column(
+        Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(16.dp),
+            tonalElevation = 0.dp,
+            shadowElevation = 0.dp,
+            border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
+            color = MaterialTheme.colorScheme.inverseOnSurface
+        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Text(
+                    text = Loc_Settings.accessability.localizedTitle(LocalContext.current),
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.Center
+                )
+
+                HorizontalDivider()
+                FreeButtonStringsSection(freeTamga_Click, {
+                    if (!it.isEmpty()) {
+                        context.freeTamga_Click = it
+                    }
+                    freeTamga_Click = it
+                }, freeTamga_Hold, {
+                    if (!it.isEmpty()) {
+                        context.freeTamga_Hold = it
+                    }
+                    freeTamga_Hold = it
+                })
+
+                HorizontalDivider()
+                SavabledSetting({ onOpenSavedStrings() })
+            }
+        }
     }
 }
 
@@ -498,8 +592,6 @@ fun SettingsScreen(onOpenSavedStrings: () -> Unit) {
 @Composable
 fun SettingsScreenPreview() {
     ShoktukKeyboardTheme {
-        SettingsScreen(onOpenSavedStrings = {
-
-        })
+        SettingsScreen(navController = rememberNavController())
     }
 }

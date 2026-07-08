@@ -84,8 +84,7 @@ object KeyboardTheme {
         return cachedPalette!!
     }
 
-    fun getDynamicColorPalette(isDark: Boolean): List<String> {
-        val context = MyKeyboardService.context
+    fun getDynamicColorPalette(isDark: Boolean, context: Context = MyKeyboardService.context): List<String> {
         val isS = android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S
 
         val scheme = when {

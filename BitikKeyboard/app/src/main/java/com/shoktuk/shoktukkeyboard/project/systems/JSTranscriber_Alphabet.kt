@@ -1,6 +1,5 @@
 import android.content.Context
 import android.util.Log
-import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
 import com.shoktuk.shoktukkeyboard.project.data.ANG_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
@@ -21,8 +20,8 @@ class JSTranscriber_Alphabet(context: Context) {
 
         var js = context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }
 
-        if (MyKeyboardService.context.bitikDialect == BitikDialect.Orkon) {
-            if (MyKeyboardService.context.angVariant == ANG_Letter_Variant.Off) {
+        if (context.bitikDialect == BitikDialect.Orkon) {
+            if (context.angVariant == ANG_Letter_Variant.Off) {
                 var normalizedSource = Normalizer.normalize(js, Normalizer.Form.NFC)
 
                 var old = """new TranscriptionEntry("ң", "𐰬", "𐰭", CharacterType.Consonant),"""

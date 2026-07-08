@@ -11,6 +11,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -94,30 +95,32 @@ fun StandardKeyboardView(
                     TopRowView_Alphabet(onAlphabetChange = onAlphabetChange)
                 }
 
-                if (keyboardMode == KeyboardState.Symbols || isSymbolsEnabled.value) {
-                    SymbolKeyboardView(
-                        onKeyPress = onKeyPress,
-                        isShiftEnabled = isShiftEnabled
-                    )
-                } else {
-                    LetterKeyboardView(
-                        row1 = rowsModel.row1,
-                        row2 = rowsModel.row2,
-                        row3 = rowsModel.row3,
-                        isShiftEnabled = isShiftEnabled,
-                        onKeyPress = { key ->
-                            onKeyPress(key)
-                            if (KeyboardViewControllerBase.autoDisableShift &&
-                                !key.startsWith("sys") && key != "delete"
-                            ) {
-                                isShiftEnabled.value = false
+                key(KeyboardViewControllerBase.reloadGenerationState.value) {
+                    if (keyboardMode == KeyboardState.Symbols || isSymbolsEnabled.value) {
+                        SymbolKeyboardView(
+                            onKeyPress = onKeyPress,
+                            isShiftEnabled = isShiftEnabled
+                        )
+                    } else {
+                        LetterKeyboardView(
+                            row1 = rowsModel.row1,
+                            row2 = rowsModel.row2,
+                            row3 = rowsModel.row3,
+                            isShiftEnabled = isShiftEnabled,
+                            onKeyPress = { key ->
+                                onKeyPress(key)
+                                if (KeyboardViewControllerBase.autoDisableShift &&
+                                    !key.startsWith("sys") && key != "delete"
+                                ) {
+                                    isShiftEnabled.value = false
+                                }
+                            },
+                            onShiftLongPress = {
+                                KeyboardViewControllerBase.keyboardMode = KeyboardState.SavedStrings
+                                onModeChange(KeyboardState.SavedStrings)
                             }
-                        },
-                        onShiftLongPress = {
-                            KeyboardViewControllerBase.keyboardMode = KeyboardState.SavedStrings
-                            onModeChange(KeyboardState.SavedStrings)
-                        }
-                    )
+                        )
+                    }
                 }
 
                 BottomRowView(

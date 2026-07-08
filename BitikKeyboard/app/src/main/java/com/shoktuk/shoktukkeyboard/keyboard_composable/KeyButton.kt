@@ -136,6 +136,7 @@ fun KeyButton(
     }
 
     val density = LocalDensity.current
+    val keyFeedback = rememberKeyFeedback()
     var anchorBounds by remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
 
     Box(
@@ -160,7 +161,10 @@ fun KeyButton(
                     } catch (_: Throwable) {
                         false
                     }
-                    if (released) onKeyPress()
+                    if (released) {
+                        keyFeedback()
+                        onKeyPress()
+                    }
                     isHolding.value = false
                     showPreview.value = false
                 }, onLongPress = {

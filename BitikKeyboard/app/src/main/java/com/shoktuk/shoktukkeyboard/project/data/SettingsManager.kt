@@ -127,7 +127,7 @@ object SettingsManager {
         set(v) = prefs().setEnum(WritingSystem.KEY, v)
 
     var Context.navBarPaddingSolution: NavBarPaddingSolution
-        get() = prefs().getEnum(NavBarPaddingSolution.KEY, NavBarPaddingSolution.Solution_Enable_1)
+        get() = prefs().getEnum(NavBarPaddingSolution.KEY, NavBarPaddingSolution.Solution_Auto)
         set(v) = prefs().setEnum(NavBarPaddingSolution.KEY, v)
 
     var Context.keyboardHeight: Int

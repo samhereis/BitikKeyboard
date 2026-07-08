@@ -34,11 +34,9 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.navBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.vibrations
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
-import com.shoktuk.shoktukkeyboard.project.data.Vibrations
 import com.shoktuk.shoktukkeyboard.project.data.WordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
@@ -344,7 +342,32 @@ class MyKeyboardService : InputMethodService() {
         return view!!
     }
 
+    // Stable navigation-bar size that ignores current visibility/animation, with a
+    // system-resource fallback if insets aren't reported. Used by the Auto solution.
+    private fun autoNavBarInsetPx(view: View): Int {
+        val decor = window?.window?.decorView ?: view
+        val ignoring = ViewCompat.getRootWindowInsets(decor)
+            ?.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars())?.bottom ?: 0
+        if (ignoring > 0) return ignoring
+        val resId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        return if (resId > 0) resources.getDimensionPixelSize(resId) else 0
+    }
+
     private fun applyInsetsNowAndOnChange(view: View) {
+        if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Auto) {
+            view.doOnAttach {
+                if (bottomPadding == null) bottomPadding = autoNavBarInsetPx(it) + context.bottomOffset
+                it.setPadding(it.paddingLeft, it.paddingTop, it.paddingRight, bottomPadding!!)
+            }
+            ViewCompat.setOnApplyWindowInsetsListener(view) { v, insets ->
+                if (bottomPadding == null) bottomPadding = autoNavBarInsetPx(v) + context.bottomOffset
+                v.setPadding(v.paddingLeft, v.paddingTop, v.paddingRight, bottomPadding!!)
+                insets
+            }
+            ViewCompat.requestApplyInsets(view)
+            return
+        }
+
         if (context.navBarPaddingSolution == NavBarPaddingSolution.Solution_Enable_Off) {
             view.doOnAttach {
                 val rootInsets = ViewCompat.getRootWindowInsets(it) ?: return@doOnAttach
@@ -453,9 +476,9 @@ class MyKeyboardService : InputMethodService() {
         }
 
         try {
-            if (MyKeyboardService.context.vibrations == Vibrations.On) {
-                Haptics.perform(root as View, HapticFeedbackConstants.KEYBOARD_TAP)
-            }
+            // Haptics.perform gates sound (Sounds setting) and vibration (Vibrations
+            // setting) independently, so play it on every key regardless of vibration.
+            Haptics.perform(root as View, HapticFeedbackConstants.KEYBOARD_TAP)
         } catch (e: Exception) {
             print(e.message)
         }

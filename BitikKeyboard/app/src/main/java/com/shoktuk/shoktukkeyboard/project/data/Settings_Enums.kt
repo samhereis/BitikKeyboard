@@ -177,9 +177,10 @@ enum class WritingSystem(val id: String) {
 }
 
 enum class NavBarPaddingSolution(val id: String) {
-    Solution_Enable_1("№1"), Solution_Enable_2("№2"), Solution_Enable_Off("№3");
+    Solution_Auto("Auto"), Solution_Enable_1("№1"), Solution_Enable_2("№2"), Solution_Enable_Off("№3");
 
     companion object {
-        const val KEY = "NavBarPaddingSolution_2"
+        // Bumped so existing installs also land on the new "Auto" default.
+        const val KEY = "NavBarPaddingSolution_3"
     }
 }

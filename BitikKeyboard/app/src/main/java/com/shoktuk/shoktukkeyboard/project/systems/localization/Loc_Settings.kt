@@ -65,6 +65,9 @@ enum class Loc_Settings(
     ready("ready", "tray.full"),
     holdShift("holdShift", "tray.full"),
     andChooseSavables("andChooseSavables", "tray.full"),
+    mainSettings("mainSettings", "keyboard"),
+    appearance("appearance", "paintbrush"),
+    other("other", "ellipsis.circle"),
     buttonHeight("buttonHeight", "tray.full"),
     bottomOffset("bottomOffset", "tray.full");
 

@@ -68,6 +68,7 @@ fun EmojisView(
     modifier: Modifier = Modifier
 ) {
     val ctx = LocalContext.current
+    val keyFeedback = rememberKeyFeedback()
     var selectedType by rememberSaveable { mutableIntStateOf(tabOrder.firstOrNull() ?: 0) }
     var recents by remember { mutableStateOf(RecentsStore.load(ctx)) }
     val rowState = rememberLazyListState()
@@ -97,7 +98,7 @@ fun EmojisView(
                         Text(
                             text = e, style = MaterialTheme.typography.titleMedium, modifier = Modifier
                                 .padding(end = 8.dp)
-                                .clickable { onKeyPress(e) })
+                                .clickable { keyFeedback(); onKeyPress(e) })
                     }
                 }
             } else {
@@ -116,6 +117,7 @@ fun EmojisView(
                 .padding(horizontal = 4.dp)
         ) {
             EmojiSectionsRow(state = rowState, categories = tabOrder.mapNotNull { t -> emojiByType.find { it.type == t } }, rowsCount = rowsCount, cellSide = cellSide, onTapEmoji = { e ->
+                keyFeedback()
                 onKeyPress(e)
                 var list = recents.toMutableList()
                 list.remove(e)
@@ -135,7 +137,7 @@ fun EmojisView(
             Text(
                 text = "ABC", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold), modifier = Modifier
                     .padding(horizontal = 12.dp)
-                    .clickable { onABC() })
+                    .clickable { keyFeedback(); onABC() })
 
             Row(
                 modifier = Modifier.weight(1f), verticalAlignment = Alignment.CenterVertically
@@ -144,6 +146,7 @@ fun EmojisView(
                     val label = emojiByType.find { it.type == t }?.displayName ?: "?"
                     TabChip(
                         label = label, active = selectedType == t, onClick = {
+                            keyFeedback()
                             selectedType = t
                             val index = tabOrder.indexOf(t).coerceAtLeast(0)
                             scope.launch { rowState.animateScrollToItem(index) }
@@ -154,7 +157,7 @@ fun EmojisView(
             Text(
                 text = "⌫", style = MaterialTheme.typography.labelLarge.copy(fontWeight = FontWeight.SemiBold), modifier = Modifier
                     .padding(horizontal = 12.dp)
-                    .clickable { onBackspace() })
+                    .clickable { keyFeedback(); onBackspace() })
         }
     }
 }

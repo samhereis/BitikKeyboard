@@ -25,6 +25,7 @@ media3Ui = "1.10.0"
 wrapperAndroid = "3.2.3"
 foundationLayout = "1.10.6"
 material3 = "1.4.0"
+playReview = "2.0.2"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -58,6 +59,7 @@ androidx-media3-ui = { group = "androidx.media3", name = "media3-ui", version.re
 wrapper-android = { module = "wang.harlon.quickjs:wrapper-android", version.ref = "wrapperAndroid" }
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
+play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

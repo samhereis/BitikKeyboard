@@ -34,6 +34,7 @@ fun SavedStringsView(
     modifier: Modifier = Modifier
 ) {
     val ctx = LocalContext.current
+    val keyFeedback = rememberKeyFeedback()
     var strings by remember { mutableStateOf(stringsInit) }
 
     LaunchedEffect(Unit) {
@@ -57,7 +58,7 @@ fun SavedStringsView(
                                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
                                 shape = MaterialTheme.shapes.small
                             )
-                            .clickable { onKeyPress(item) }
+                            .clickable { keyFeedback(); onKeyPress(item) }
                             .padding(horizontal = 10.dp, vertical = 8.dp)
                     )
                 }

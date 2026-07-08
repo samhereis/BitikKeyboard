@@ -7,10 +7,12 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -43,6 +45,71 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Composable
+fun TopRowFrame(
+    alphabetLabel: String,
+    onAlphabetChange: () -> Unit,
+    centerModifier: Modifier = Modifier,
+    centerContent: @Composable BoxScope.() -> Unit
+) {
+    val ctx = LocalContext.current
+    val textColor = KeyboardStyle.getColor(2)
+    val keyFeedback = rememberKeyFeedback()
+
+    Surface(color = Color.Transparent) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 4.dp)
+                .height(KeyboardStyle.rowHeight())
+        ) {
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .background(KeyboardStyle.getColor(6), shape = MaterialTheme.shapes.small)
+                    .pointerInput(Unit) { detectTapGestures { keyFeedback(); onAlphabetChange() } }
+                    .padding(horizontal = 10.dp, vertical = 4.dp)
+            ) {
+                Text(alphabetLabel, color = textColor, style = MaterialTheme.typography.titleMedium)
+            }
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(horizontal = 4.dp)
+                    .then(centerModifier)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(KeyboardStyle.getColor(0).copy(alpha = 0.01f))
+                )
+                centerContent()
+            }
+
+            Box(
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .background(KeyboardStyle.getColor(6), shape = MaterialTheme.shapes.small)
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            keyFeedback()
+                            (ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
+                                .showInputMethodPicker()
+                        }
+                    }
+                    .padding(horizontal = 10.dp, vertical = 4.dp)
+            ) {
+                Text("⌨", color = textColor, style = MaterialTheme.typography.titleMedium)
+            }
+        }
+    }
+}
+
+@Composable
 fun TopRowView(
     onKeyPress: (String) -> Unit = {},
     onAlphabetChange: () -> Unit = {},
@@ -64,97 +131,49 @@ fun TopRowView(
         KeyboardViewControllerBase.current_bitikVariant != BitikVariant.SAMAGAN &&
                 KeyboardViewControllerBase.showTextTranscription
 
-    val alphabetLabel = KeyboardViewControllerBase.alphabetLabelState.value
-    val textColor     = KeyboardStyle.getColor(2)
+    val textColor = KeyboardStyle.getColor(2)
+    val keyFeedback = rememberKeyFeedback()
 
-    Surface(color = Color.Transparent) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp)
-                .heightIn(min = KeyboardStyle.rowHeight() / 2, max = KeyboardStyle.rowHeight())
-        ) {
-
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .background(KeyboardStyle.getColor(6), shape = MaterialTheme.shapes.small)
-                    .pointerInput(Unit) { detectTapGestures { onAlphabetChange() } }
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
+    TopRowFrame(
+        alphabetLabel = KeyboardViewControllerBase.alphabetLabelState.value,
+        onAlphabetChange = onAlphabetChange
+    ) {
+        if (showTranscription) {
+            val (primary, alt) = transcription.value
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(alphabetLabel, color = textColor,
-                     style = MaterialTheme.typography.titleMedium)
-            }
-
-            Box(
-                contentAlignment = Alignment.Center,
-                modifier = Modifier
-                    .weight(1f)
-                    .heightIn(min = 28.dp)
-                    .padding(horizontal = 4.dp)
-            ) {
-
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(KeyboardStyle.getColor(0).copy(alpha = 0.01f))
-                )
-
-                if (showTranscription) {
-                    val (primary, alt) = transcription.value
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("~ ", style = MaterialTheme.typography.bodySmall, color = textColor)
-                        if (primary.isNotEmpty()) {
-                            val pairs = primary.zip(alt.padEnd(primary.length, ' '))
-                            LazyRow(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
-                                items(pairs) { (bot, top) ->
-                                    TwoFloorText(top.toString(), bot.toString(), textColor)
-                                }
-                            }
-                        }
-                        Text(" ~", style = MaterialTheme.typography.bodySmall, color = textColor)
-                    }
-                } else {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .horizontalScroll(rememberScrollState()),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        strings.forEach { item ->
-                            Text(
-                                text = item.ifEmpty { " " },
-                                color = textColor,
-                                style = MaterialTheme.typography.titleMedium,
-                                modifier = Modifier
-                                    .background(KeyboardStyle.getColor(1), MaterialTheme.shapes.small)
-                                    .pointerInput(item) { detectTapGestures { onKeyPress(item) } }
-                                    .padding(horizontal = 8.dp, vertical = 4.dp)
-                            )
+                Text("~ ", style = MaterialTheme.typography.bodySmall, color = textColor)
+                if (primary.isNotEmpty()) {
+                    val pairs = primary.zip(alt.padEnd(primary.length, ' '))
+                    LazyRow(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
+                        items(pairs) { (bot, top) ->
+                            TwoFloorText(top.toString(), bot.toString(), textColor)
                         }
                     }
                 }
+                Text(" ~", style = MaterialTheme.typography.bodySmall, color = textColor)
             }
-
-            Box(
-                contentAlignment = Alignment.Center,
+        } else {
+            Row(
                 modifier = Modifier
-                    .background(KeyboardStyle.getColor(6), shape = MaterialTheme.shapes.small)
-                    .pointerInput(Unit) {
-                        detectTapGestures {
-                            (ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager)
-                                .showInputMethodPicker()
-                        }
-                    }
-                    .padding(horizontal = 10.dp, vertical = 4.dp)
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState()),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("⌨", color = textColor, style = MaterialTheme.typography.titleMedium)
+                strings.forEach { item ->
+                    Text(
+                        text = item.ifEmpty { " " },
+                        color = textColor,
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier
+                            .background(KeyboardStyle.getColor(1), MaterialTheme.shapes.small)
+                            .pointerInput(item) { detectTapGestures { keyFeedback(); onKeyPress(item) } }
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
             }
         }
     }

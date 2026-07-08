@@ -1,7 +1,5 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
-import android.content.Context
-import android.view.inputmethod.InputMethodManager
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -10,16 +8,12 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -38,7 +32,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -51,8 +44,6 @@ fun TopRowView_Alphabet(
 ) {
     val isBitikMode = KeyboardViewControllerBase.isAutoWriteBitikMode
     val transcription = KeyboardViewControllerBase.alphabetTranscriptionState.value
-    val alphabetLabel = KeyboardViewControllerBase.alphabetLabelState.value
-    val ctx = LocalContext.current
 
     val infinite = rememberInfiniteTransition(label = "glowRot")
     val rotation by if (isBitikMode.value) {
@@ -70,103 +61,63 @@ fun TopRowView_Alphabet(
     )
 
     val pillPressed = remember { mutableStateOf(false) }
+    val keyFeedback = rememberKeyFeedback()
 
-    Surface(color = Color.Transparent) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically, modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp)
-                .heightIn(min = KeyboardStyle.rowHeight() / 2, max = KeyboardStyle.rowHeight())
-        ) {
+    TopRowFrame(
+        alphabetLabel = KeyboardViewControllerBase.alphabetLabelState.value,
+        onAlphabetChange = onAlphabetChange,
+        centerModifier = Modifier.pointerInput(Unit) {
+            detectTapGestures {
+                keyFeedback()
+                KeyboardViewControllerBase.isAutoWriteBitikMode.value = !KeyboardViewControllerBase.isAutoWriteBitikMode.value
+                KeyboardViewControllerBase.context.refreshTranscription()
+            }
+        }
+    ) {
+        if (!isBitikMode.value) {
+            Text(
+                text = "👆",
+                style = MaterialTheme.typography.titleMedium,
+                color = KeyboardStyle.getColor(2).copy(alpha = 0.4f),
+                modifier = Modifier
+                    .align(Alignment.CenterStart)
+                    .padding(start = 8.dp)
+            )
+        }
 
+        if (transcription.isNotEmpty()) {
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
-                    .background(KeyboardStyle.getColor(6), shape = MaterialTheme.shapes.small)
-                    .pointerInput(Unit) { detectTapGestures { onAlphabetChange() } }
-                    .padding(horizontal = 10.dp, vertical = 4.dp)) {
-                Text(
-                    alphabetLabel, color = KeyboardStyle.getColor(2), style = MaterialTheme.typography.titleMedium
-                )
-            }
-
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 4.dp)
-                    .pointerInput(Unit) {
-                        detectTapGestures {
-                            KeyboardViewControllerBase.isAutoWriteBitikMode.value = !KeyboardViewControllerBase.isAutoWriteBitikMode.value
-
-                            KeyboardViewControllerBase.context.refreshTranscription()
-                        }
-                    }) {
-
-                Box(
-                    modifier = Modifier
-                        .matchParentSize()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(KeyboardStyle.getColor(0).copy(alpha = 0.01f))
-                )
-
-                if (!isBitikMode.value) {
-                    Text(
-                        text = "👆",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = KeyboardStyle.getColor(2).copy(alpha = 0.4f),
-                        modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .padding(start = 8.dp)
-                    )
-                }
-
-                Box(
-                    contentAlignment = Alignment.Center,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .height(28.dp)
-                        .widthIn(min = 28.dp)
-                        .clip(RoundedCornerShape(14.dp))
-                        .background(KeyboardStyle.getColor(6))
-                        .graphicsLayer {
-                            scaleX = if (pillPressed.value) 0.9f else 1f
-                            scaleY = if (pillPressed.value) 0.9f else 1f
-                        }
-                        .pointerInput(Unit) {
-                            detectTapGestures(onPress = {
-                                pillPressed.value = true
-                                tryAwaitRelease()
-                                pillPressed.value = false
-                                KeyboardViewControllerBase.context.replaceWithBitikTranscription()
-                            })
-                        }
-                        .padding(horizontal = 12.dp)) {
-                    if (transcription.isNotEmpty()) {
-                        Text(
-                            text = transcription, color = KeyboardStyle.getColor(2), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), maxLines = 1
-                        )
+                    .align(Alignment.Center)
+                    .height(28.dp)
+                    .widthIn(min = 28.dp)
+                    .clip(RoundedCornerShape(14.dp))
+                    .background(KeyboardStyle.getColor(6))
+                    .graphicsLayer {
+                        scaleX = if (pillPressed.value) 0.9f else 1f
+                        scaleY = if (pillPressed.value) 0.9f else 1f
                     }
-                }
-
-                GlowOverlay(
-                    rotation = rotation, active = isBitikMode.value, corner = 12.dp, brush = glowBrush, innerWidth = 15f, innerBlur = 15.dp, innerOpacity = 0.9f, outerWidth = 3f, outerBlur = 3.dp
-                )
-            }
-
-            Box(
-                contentAlignment = Alignment.Center, modifier = Modifier
-                    .background(KeyboardStyle.getColor(6), shape = MaterialTheme.shapes.small)
                     .pointerInput(Unit) {
-                        detectTapGestures {
-                            (ctx.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager).showInputMethodPicker()
-                        }
+                        detectTapGestures(onPress = {
+                            pillPressed.value = true
+                            tryAwaitRelease()
+                            pillPressed.value = false
+                            keyFeedback()
+                            KeyboardViewControllerBase.context.replaceWithBitikTranscription()
+                        })
                     }
-                    .padding(horizontal = 10.dp, vertical = 4.dp)) {
+                    .padding(horizontal = 12.dp)
+            ) {
                 Text(
-                    "⌨", color = KeyboardStyle.getColor(2), style = MaterialTheme.typography.titleMedium
+                    text = transcription, color = KeyboardStyle.getColor(2), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), maxLines = 1
                 )
             }
         }
+
+        GlowOverlay(
+            rotation = rotation, active = isBitikMode.value, corner = 12.dp, brush = glowBrush, innerWidth = 15f, innerBlur = 15.dp, innerOpacity = 0.9f, outerWidth = 3f, outerBlur = 3.dp
+        )
     }
 }
 

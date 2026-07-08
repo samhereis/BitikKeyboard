@@ -12,10 +12,38 @@
 #   public *;
 #}
 
-# Uncomment this to preserve the line number information for
-# debugging stack traces.
-#-keepattributes SourceFile,LineNumberTable
+# Keep line numbers for readable release crash reports, hide original file names.
+-keepattributes SourceFile,LineNumberTable
+-renamesourcefileattribute SourceFile
 
-# If you keep the line number information, uncomment this to
-# hide the original source file name.
-#-renamesourcefileattribute SourceFile
+# ---------------------------------------------------------------------------
+# Gson — model classes deserialized by reflection from bundled JSON assets.
+# Their field names must survive obfuscation so JSON keys still map.
+# ---------------------------------------------------------------------------
+-keepattributes Signature, *Annotation*, EnclosingMethod, InnerClasses
+
+-keep class com.shoktuk.shoktukkeyboard.keyboard.KeyboardLayout { *; }
+-keep class com.shoktuk.shoktukkeyboard.keyboard.KeyEntry { *; }
+
+# Settings/enums are looked up by name (enumValueOf / .name) and some are
+# (de)serialized, so keep the whole data package.
+-keep class com.shoktuk.shoktukkeyboard.project.data.** { *; }
+-keep class com.shoktuk.shoktukkeyboard.emoji.** { *; }
+
+-keepclassmembers,allowobfuscation class * {
+  @com.google.gson.annotations.SerializedName <fields>;
+}
+
+# ---------------------------------------------------------------------------
+# QuickJS — JNI / native bridge, accessed reflectively.
+# ---------------------------------------------------------------------------
+-keep class com.whl.quickjs.** { *; }
+-dontwarn com.whl.quickjs.**
+
+# ---------------------------------------------------------------------------
+# Enums used by name (SettingsManager.getEnum -> enumValueOf).
+# ---------------------------------------------------------------------------
+-keepclassmembers enum * {
+    public static **[] values();
+    public static ** valueOf(java.lang.String);
+}

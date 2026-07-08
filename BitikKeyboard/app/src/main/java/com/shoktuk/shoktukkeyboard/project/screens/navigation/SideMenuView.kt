@@ -75,7 +75,11 @@ import com.shoktuk.shoktukkeyboard.project.data.SideMenuItem
 import com.shoktuk.shoktukkeyboard.project.screens.navigation.BottomNavigationBar
 import com.shoktuk.shoktukkeyboard.project.screens.navigation.ExternalLink_Button
 import com.shoktuk.shoktukkeyboard.project.screens.navigation.MainTabs
+import com.shoktuk.shoktukkeyboard.project.screens.settings.AppearanceSettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.CenteredDropdownPopup
+import com.shoktuk.shoktukkeyboard.project.screens.settings.MainSettingsScreen
+import com.shoktuk.shoktukkeyboard.project.screens.settings.OtherAlphabetsSettingsScreen
+import com.shoktuk.shoktukkeyboard.project.screens.settings.OtherSettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SavedStringsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.testKeyboard.TestKeyboard_Screen
@@ -228,7 +232,8 @@ fun SideMenuView() {
 
                         CenteredDropdownPopup(
                             label = "sideBar_language".localized("sideBar", context),
-                            options = Language.entries,
+                            // Russian temporarily hidden from the picker (enum + CSV column kept).
+                            options = Language.entries.filter { it != Language.RU },
                             selected = currentLanguage,
                             onSelect = { newLang ->
                                 LocalizationManager.setLanguage(context, newLanguage = newLang)
@@ -248,7 +253,8 @@ fun SideMenuView() {
                     ) {
                         CenteredDropdownPopup(
                             label = "sideBar_language".localized("sideBar", context),
-                            options = Language.entries,
+                            // Russian temporarily hidden from the picker (enum + CSV column kept).
+                            options = Language.entries.filter { it != Language.RU },
                             selected = currentLanguage,
                             onSelect = { newLang ->
                                 LocalizationManager.setLanguage(context, newLanguage = newLang)
@@ -343,7 +349,13 @@ fun SideMenuView() {
                     )
                 }
                 composable(MainTabs.SETTINGS.route) {
-                    SettingsScreen(
+                    SettingsScreen(navController = navController)
+                }
+                composable(SettingScreens.MainSettings.id) { MainSettingsScreen() }
+                composable(SettingScreens.Appearance.id) { AppearanceSettingsScreen() }
+                composable(SettingScreens.OtherAlphabets.id) { OtherAlphabetsSettingsScreen() }
+                composable(SettingScreens.Other.id) {
+                    OtherSettingsScreen(
                         onOpenSavedStrings = {
                             navController.navigate(SettingScreens.SavedStrings.id)
                         }

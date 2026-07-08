@@ -5,8 +5,6 @@ import JSTranscriber_Alphabet
 import KeyboardViewLifecycleOwner
 import android.content.Context
 import android.inputmethodservice.InputMethodService
-import android.view.HapticFeedbackConstants
-import android.view.SoundEffectConstants
 import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.ExtractedTextRequest
@@ -113,6 +111,13 @@ class KeyboardViewControllerBase : InputMethodService() {
         val alphabetTranscriptionState = mutableStateOf("")
         val transcriptionState = mutableStateOf("" to "")
 
+        // Current editor IME action (Search/Go/Next/…) so the Enter key can adapt its icon.
+        val imeActionState = mutableStateOf(EditorInfo.IME_ACTION_UNSPECIFIED)
+
+        // Bumped on every reloadKeyboard() so the keys subtree is fully rebuilt
+        // (discarding any stale per-key state) when the alphabet/layout changes.
+        val reloadGenerationState = mutableStateOf(0)
+
         var keyboardMode: KeyboardState
             get() = keyboardModeState.value
             set(value) {
@@ -188,6 +193,7 @@ class KeyboardViewControllerBase : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        imeActionState.value = (info?.imeOptions ?: 0) and EditorInfo.IME_MASK_ACTION
         updateTranscription()
     }
 
@@ -250,6 +256,8 @@ class KeyboardViewControllerBase : InputMethodService() {
         layout.rows.getOrNull(1)?.filter { it.name != "Shift" && it.name != "Del" && it.name != "kgKey" }?.map { processKey(keyEntryToKeyboardKey(it)) }?.let { keyboardRowModel.row2.addAll(it) }
 
         layout.rows.getOrNull(2)?.filter { it.name != "Shift" && it.name != "Del" && it.name != "kgKey" }?.map { processKey(keyEntryToKeyboardKey(it)) }?.let { keyboardRowModel.row3.addAll(it) }
+
+        reloadGenerationState.value = reloadGenerationState.value + 1
     }
 
     private fun updateAlphabetLabel() {
@@ -467,10 +475,6 @@ class KeyboardViewControllerBase : InputMethodService() {
     }
 
     private fun updateAlphabetTranscription() {
-        if (!isAutoWriteBitikMode.value) {
-            alphabetTranscriptionState.value = ""
-            return
-        }
         val ic = currentInputConnection ?: run {
             alphabetTranscriptionState.value = ""
             return
@@ -485,15 +489,41 @@ class KeyboardViewControllerBase : InputMethodService() {
                 return
             }
             val transcriber = jsTranscriber_Alphabet ?: JSTranscriber_Alphabet(this).also { jsTranscriber_Alphabet = it }
-            val transcribed = transcriber.getTranscription(lastWord).ifEmpty { "" }
+            val transcribed = transcriber.getTranscription(lastWord).ifEmpty { lastWord }
             alphabetTranscriptionState.value = TranscriptionProccessor().processTranscription_alphabet(transcribed, this)
         } catch (_: Throwable) {
             alphabetTranscriptionState.value = ""
         }
     }
 
+    // Stable navigation-bar size that ignores current visibility/animation, with a
+    // system-resource fallback if insets aren't reported. Used by the Auto solution.
+    private fun autoNavBarInsetPx(view: View): Int {
+        val decor = window?.window?.decorView ?: view
+        val ignoring = ViewCompat.getRootWindowInsets(decor)
+            ?.getInsetsIgnoringVisibility(WindowInsetsCompat.Type.navigationBars())?.bottom ?: 0
+        if (ignoring > 0) return ignoring
+        val resId = resources.getIdentifier("navigation_bar_height", "dimen", "android")
+        return if (resId > 0) resources.getDimensionPixelSize(resId) else 0
+    }
+
     private fun applyInsetsNowAndOnChange(view: ComposeView) {
         val solution = context.navBarPaddingSolution
+
+        if (solution == NavBarPaddingSolution.Solution_Auto) {
+            view.doOnAttach {
+                ViewCompat.requestApplyInsets(it)
+                if (bottomPadding == null) bottomPadding = autoNavBarInsetPx(it) + context.bottomOffset
+                bottomPaddingState.value = bottomPadding!!
+            }
+            ViewCompat.setOnApplyWindowInsetsListener(view) { _, insets ->
+                if (bottomPadding == null) bottomPadding = autoNavBarInsetPx(view) + context.bottomOffset
+                bottomPaddingState.value = bottomPadding!!
+                insets
+            }
+            return
+        }
+
         if (solution == NavBarPaddingSolution.Solution_Enable_Off) {
             bottomPaddingState.value = context.bottomOffset
         } else {
@@ -523,7 +553,33 @@ class KeyboardViewControllerBase : InputMethodService() {
         val isSys = key.startsWith("sys") || key in alwaysSys
         var toPaste = key.removePrefix("sys")
 
-        if (current_writingSystem == WritingSystem.Bitik && isSys) {
+        if (isAutoWriteBitikMode.value && isSys && current_writingSystem != WritingSystem.Bitik) {
+            // Auto-write mode (alphabet keyboard): on space/punctuation, replace the
+            // typed alphabet word with its Bitik transcription followed by the separator.
+            var separator = toPaste.replace("  ", " ").replace("?", "⸮ ").replace("!", "! ").replace(".", "·").replace(",", "⹁")
+            if (separator == " ") {
+                separator = when (context.wordSeparator) {
+                    WordSeparator.NoSpace -> "⁚"
+                    WordSeparator.SpaceBefore -> "⁚ "
+                    WordSeparator.ArroundSpace -> " ⁚ "
+                    WordSeparator.Off -> " "
+                }
+            }
+
+            val extraSeparators = "·.,⸮⹁:;!?()[]{}\"'"
+            val rawText = ic.getTextBeforeCursor(100, 0)?.toString().orEmpty()
+            val regex = "[^\\p{L}${Regex.escape(extraSeparators)}]+".toRegex()
+            val lastWord = rawText.split(regex).lastOrNull().orEmpty()
+            val transcribed = alphabetTranscriptionState.value
+
+            if (lastWord.isNotEmpty() && transcribed.isNotEmpty()) {
+                ic.deleteSurroundingText(lastWord.length, 0)
+                ic.commitText(transcribed + separator, 1)
+            } else {
+                ic.commitText(separator, 1)
+            }
+            alphabetTranscriptionState.value = ""
+        } else if (current_writingSystem == WritingSystem.Bitik && isSys) {
             toPaste = toPaste.replace("  ", " ").replace("?", "⸮ ").replace("!", "! ").replace(".", "·").replace(",", "⹁")
 
             if (toPaste == " ") {
@@ -576,7 +632,14 @@ class KeyboardViewControllerBase : InputMethodService() {
                 }
 
                 "\n", "Return" -> {
-                    ic.commitText("\n", 1)
+                    val action = (currentInputEditorInfo?.imeOptions ?: 0) and EditorInfo.IME_MASK_ACTION
+                    when (action) {
+                        EditorInfo.IME_ACTION_SEARCH,
+                        EditorInfo.IME_ACTION_GO,
+                        EditorInfo.IME_ACTION_NEXT -> ic.performEditorAction(action)
+
+                        else -> ic.commitText("\n", 1)
+                    }
                 }
 
                 else -> {
@@ -585,9 +648,5 @@ class KeyboardViewControllerBase : InputMethodService() {
             }
         }
 
-        (service.window?.window?.decorView as? View)?.let { v ->
-            v.playSoundEffect(SoundEffectConstants.CLICK)
-            v.performHapticFeedback(HapticFeedbackConstants.KEYBOARD_TAP)
-        }
     }
 }
