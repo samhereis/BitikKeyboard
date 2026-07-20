@@ -55,7 +55,7 @@ object SavedStringsViewBuilder {
             )
         }
 
-        val items = loadSavedStrings(service)
+        val items = loadSavedStrings(service, MyKeyboardService.current_writingSystem)
         if (items.isEmpty()) {
             val tv = TextView(service).apply {
                 text = "𐰀𐰯𐰘, 𐰅𐰲 𐰤𐰼𐰾𐰅 𐰳𐰹 𐰅𐰚𐰤 🥸"

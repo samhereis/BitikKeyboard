@@ -68,7 +68,7 @@ object TopRowBuilder {
             )
         }
 
-        val clipboardItems = loadSavedStrings(service)
+        val clipboardItems = loadSavedStrings(service, MyKeyboardService.current_writingSystem)
 
         val screenWidth = service.resources.displayMetrics.widthPixels
         val maxItemWidth = (screenWidth * 0.5f).toInt()

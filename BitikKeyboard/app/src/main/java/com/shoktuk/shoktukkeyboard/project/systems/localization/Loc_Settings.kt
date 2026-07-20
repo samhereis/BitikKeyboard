@@ -69,7 +69,21 @@ enum class Loc_Settings(
     appearance("appearance", "paintbrush"),
     other("other", "ellipsis.circle"),
     buttonHeight("buttonHeight", "tray.full"),
-    bottomOffset("bottomOffset", "tray.full");
+    bottomOffset("bottomOffset", "tray.full"),
+
+    cloud("cloud", "icloud"),
+    cloudAccount("cloudAccount", "person.icloud"),
+    cloudChecking("cloudChecking", "hourglass"),
+    cloudSignedIn("cloudSignedIn", "checkmark.icloud"),
+    cloudNoAccount("cloudNoAccount", "xmark.icloud"),
+    cloudRestricted("cloudRestricted", "exclamationmark.icloud"),
+    cloudUnavailable("cloudUnavailable", "icloud.slash"),
+    cloudSettingsSynced("cloudSettingsSynced", "gearshape"),
+    cloudSavedStrings("cloudSavedStrings", "tray.full"),
+    cloudLastChecked("cloudLastChecked", "clock"),
+    cloudRefresh("cloudRefresh", "arrow.clockwise"),
+    cloudSignInHint("cloudSignInHint", "info.circle"),
+    cloudError("cloudError", "exclamationmark.triangle");
 
     val fileName: String
         get() = "settings"

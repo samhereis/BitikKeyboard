@@ -120,6 +120,14 @@ enum class Latin_ZH(val id: String) {
     }
 }
 
+enum class Latin_NG(val id: String) {
+    n("ñ"), ng("ŋ");
+
+    companion object {
+        const val KEY = "Latin_NG"
+    }
+}
+
 enum class Arabic_Status(val id: String) {
     Off("Өчүк"), On("Жанык");
 

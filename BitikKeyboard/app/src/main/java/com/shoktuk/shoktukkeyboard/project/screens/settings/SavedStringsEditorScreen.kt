@@ -1,5 +1,6 @@
 package com.shoktuk.shoktukkeyboard.project.screens.settings
 
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
@@ -37,6 +38,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -56,33 +58,61 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
+import com.shoktuk.shoktukkeyboard.project.data.CLOUD_SYNC_ENABLED
+import com.shoktuk.shoktukkeyboard.project.data.SavedStringItem
+import com.shoktuk.shoktukkeyboard.project.data.SavedStringsCloudStore
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_Settings
 import kotlinx.coroutines.launch
+import java.util.UUID
 import kotlin.math.roundToInt
-
-private data class RowItem(val id: Long, var text: String)
 
 @Composable
 fun SavedStringsScreen() {
     val ctx = LocalContext.current
+    val activity = ctx as? ComponentActivity
+    var selectedScript by remember { mutableStateOf(ctx.writingSystem) }
 
-    val items = remember {
-        mutableStateListOf<RowItem>().apply {
-            loadSavedStrings(ctx).forEachIndexed { i, s -> add(RowItem(id = i.toLong(), text = s)) }
-        }
+    val items = remember(selectedScript) {
+        mutableStateListOf<SavedStringItem>().apply { addAll(loadSavedStringItems(ctx, selectedScript)) }
     }
-    var idCounter by remember { mutableStateOf(items.size.toLong()) }
+    var lastSyncedSnapshot by remember(selectedScript) { mutableStateOf(items.associateBy { it.id }) }
     var newString by remember { mutableStateOf("") }
 
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    val heights = remember { mutableStateMapOf<Long, Int>() }
-    var draggingId by remember { mutableStateOf<Long?>(null) }
+    val heights = remember { mutableStateMapOf<String, Int>() }
+    var draggingId by remember { mutableStateOf<String?>(null) }
     var dragOffsetY by remember { mutableStateOf(0f) }
 
-    fun persist() = persistSavedStrings(ctx, items.map { it.text })
-    fun indexOf(id: Long) = items.indexOfFirst { it.id == id }
+    fun persist() {
+        for (index in items.indices) items[index].sortOrder = index
+
+        val now = System.currentTimeMillis()
+        val changed = mutableListOf<SavedStringItem>()
+        for (item in items) {
+            val previous = lastSyncedSnapshot[item.id]
+            if (previous == null || previous.text != item.text || previous.sortOrder != item.sortOrder) {
+                item.modifiedAt = now
+                changed.add(item)
+            }
+        }
+        val deletedIds = (lastSyncedSnapshot.keys - items.map { it.id }.toSet()).toList()
+        lastSyncedSnapshot = items.associateBy { it.id }
+
+        persistSavedStringItems(ctx, selectedScript, items.toList())
+
+        if (CLOUD_SYNC_ENABLED && activity != null && (changed.isNotEmpty() || deletedIds.isNotEmpty())) {
+            scope.launch {
+                SavedStringsCloudStore.save(activity, selectedScript, changed)
+                SavedStringsCloudStore.delete(activity, selectedScript, deletedIds)
+            }
+        }
+    }
+
+    fun indexOf(id: String) = items.indexOfFirst { it.id == id }
     fun swapByIndex(from: Int, to: Int) {
         if (from == to || from !in items.indices || to !in items.indices) return
         val moving = items.removeAt(from)
@@ -105,11 +135,28 @@ fun SavedStringsScreen() {
         }
     }
 
+    LaunchedEffect(selectedScript) {
+        if (!CLOUD_SYNC_ENABLED || activity == null) return@LaunchedEffect
+        val cloud = SavedStringsCloudStore.fetchAll(activity, selectedScript) ?: emptyList()
+        val merged = SavedStringsCloudStore.merge(items.toList(), cloud)
+        items.clear()
+        items.addAll(merged)
+        lastSyncedSnapshot = items.associateBy { it.id }
+        persistSavedStringItems(ctx, selectedScript, items.toList())
+        SavedStringsCloudStore.save(activity, selectedScript, merged)
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(horizontal = 14.dp, vertical = 10.dp), verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
+        Text(
+            "${Loc_Settings.savables.localizedTitle(ctx)} — ${selectedScript.name}",
+            style = MaterialTheme.typography.titleMedium,
+            modifier = Modifier.fillMaxWidth()
+        )
+
         LazyColumn(
             state = listState, modifier = Modifier
                 .weight(1f)
@@ -146,6 +193,14 @@ fun SavedStringsScreen() {
             }
         }
 
+        CenteredDropdownPopup(
+            label = "Add to",
+            selected = selectedScript,
+            options = WritingSystem.entries,
+            onSelect = { selectedScript = it },
+            optionLabel = { it.name }
+        )
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -164,8 +219,9 @@ fun SavedStringsScreen() {
                 onClick = {
                     val t = newString.trim()
                     if (t.isNotEmpty()) {
-                        items.add(RowItem(id = idCounter++, text = t))
-                        newString = ""; persist()
+                        items.add(SavedStringItem(id = UUID.randomUUID().toString(), text = t, sortOrder = items.size, modifiedAt = System.currentTimeMillis()))
+                        persist()
+                        newString = ""
                     }
                 }, enabled = newString.trim().isNotEmpty(), shape = RoundedCornerShape(10.dp), contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
             ) {

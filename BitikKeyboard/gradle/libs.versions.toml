@@ -26,6 +26,10 @@ wrapperAndroid = "3.2.3"
 foundationLayout = "1.10.6"
 material3 = "1.4.0"
 playReview = "2.0.2"
+playServicesAuth = "21.3.0"
+googleApiClientAndroid = "2.7.2"
+googleApiServicesDrive = "v3-rev20260428-2.0.0"
+googleHttpClientAndroid = "1.46.3"
 
 [libraries]
 androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
@@ -60,6 +64,13 @@ wrapper-android = { module = "wang.harlon.quickjs:wrapper-android", version.ref 
 androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3", version.ref = "material3" }
 play-review-ktx = { module = "com.google.android.play:review-ktx", version.ref = "playReview" }
+
+# Google Sign-In Authorization API (Drive appdata scope) + Drive REST client.
+# Version pins are best-effort — verify/bump against Maven Central before shipping.
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
+google-api-client-android = { module = "com.google.api-client:google-api-client-android", version.ref = "googleApiClientAndroid" }
+google-api-services-drive = { module = "com.google.apis:google-api-services-drive", version.ref = "googleApiServicesDrive" }
+google-http-client-android = { module = "com.google.http-client:google-http-client-android", version.ref = "googleHttpClientAndroid" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

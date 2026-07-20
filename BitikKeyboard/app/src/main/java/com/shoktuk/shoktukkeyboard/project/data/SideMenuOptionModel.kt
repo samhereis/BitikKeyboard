@@ -17,7 +17,8 @@ enum class SettingScreens(val id: String) {
     MainSettings("mainSettings"),
     Appearance("appearance"),
     OtherAlphabets("otherAlphabets"),
-    Other("other");
+    Other("other"),
+    Cloud("cloud");
 }
 
 data class SideMenuItem(

@@ -14,6 +14,7 @@ import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EK_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.Latin_NG
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
 import com.shoktuk.shoktukkeyboard.project.data.Latin_ZH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ajVariant
@@ -26,6 +27,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinNG
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
@@ -300,6 +302,12 @@ object KeyboardViewBuilder {
                         keyToSet = keyToSet.copy(
                             lowerCaseHold = null, lowerCaseRomanization = null, lowerCaseRomanization_Alt = null, upperCaseHold = null, upperCaseRomanization = null, upperCaseRomanization_Alt = null
                         )
+                    }
+                }
+
+                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinNG == Latin_NG.ng) {
+                    if (key.name == "ñ") {
+                        keyToSet = keyToSet.copy(lowercase = "ŋ", uppercase = "Ŋ")
                     }
                 }
 

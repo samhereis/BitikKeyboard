@@ -76,7 +76,9 @@ import com.shoktuk.shoktukkeyboard.project.screens.navigation.BottomNavigationBa
 import com.shoktuk.shoktukkeyboard.project.screens.navigation.ExternalLink_Button
 import com.shoktuk.shoktukkeyboard.project.screens.navigation.MainTabs
 import com.shoktuk.shoktukkeyboard.project.screens.settings.AppearanceSettingsScreen
+import com.shoktuk.shoktukkeyboard.project.data.CLOUD_SYNC_ENABLED
 import com.shoktuk.shoktukkeyboard.project.screens.settings.CenteredDropdownPopup
+import com.shoktuk.shoktukkeyboard.project.screens.settings.CloudSettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.MainSettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.OtherAlphabetsSettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.OtherSettingsScreen
@@ -371,6 +373,9 @@ fun SideMenuView() {
                 composable(Loc_BasicInfo.MEMORIZE_TAMGAS.titleKey) { LetterMemorizeScreenCompose() }
 
                 composable(SettingScreens.SavedStrings.id) { SavedStringsScreen() }
+                if (CLOUD_SYNC_ENABLED) {
+                    composable(SettingScreens.Cloud.id) { CloudSettingsScreen() }
+                }
             }
         }
     }

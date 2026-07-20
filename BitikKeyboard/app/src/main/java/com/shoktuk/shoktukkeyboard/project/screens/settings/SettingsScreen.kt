@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.CloudDone
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Settings
@@ -42,6 +43,7 @@ import androidx.navigation.compose.rememberNavController
 import com.shoktuk.shoktukkeyboard.keyboard.onSettingChanged
 import com.shoktuk.shoktukkeyboard.project.data.AJ_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ANG_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.CLOUD_SYNC_ENABLED
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.Arabic_Status
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
@@ -55,6 +57,7 @@ import com.shoktuk.shoktukkeyboard.project.data.HoldabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
+import com.shoktuk.shoktukkeyboard.project.data.Latin_NG
 import com.shoktuk.shoktukkeyboard.project.data.Latin_ZH
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingScreens
@@ -77,6 +80,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinNG
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
@@ -130,6 +134,14 @@ fun SettingsScreen(navController: NavController) {
             leading = Icons.Default.Info,
             tint = MaterialTheme.colorScheme.primary
         )
+        if (CLOUD_SYNC_ENABLED) {
+            BeautifulNavigationItem(
+                title = Loc_Settings.cloud.localizedTitle(context),
+                onClick = { navController.navigate(SettingScreens.Cloud.id) },
+                leading = Icons.Default.CloudDone,
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
 
         NavBarPaddingSolutionView()
     }
@@ -463,6 +475,7 @@ fun OtherAlphabetsSettingsScreen() {
     var latinStatus by remember { mutableStateOf(context.latinStatus) }
     var latinVariant by remember { mutableStateOf(context.latinVariant) }
     var latinZH by remember { mutableStateOf(context.latinZH) }
+    var latinNG by remember { mutableStateOf(context.latinNG) }
     var arabStatus by remember { mutableStateOf(context.arabicStatus) }
     var kirilisaStatus by remember { mutableStateOf(context.kirilisaStatus) }
 
@@ -500,12 +513,16 @@ fun OtherAlphabetsSettingsScreen() {
                     }, modifier = Modifier.fillMaxWidth()
                 )
 
+                HorizontalDivider()
+
                 CenteredDropdownPopup(
                     label = Loc_Settings.latinAlphabet.localizedTitle(LocalContext.current), selected = latinVariant, options = Latin_Variant.entries, onSelect = {
                         context.latinVariant = it
                         latinVariant = context.latinVariant
                     }, optionLabel = { it.id.localized("settings", context) }, modifier = Modifier.fillMaxWidth()
                 )
+
+                HorizontalDivider()
 
                 CenteredDropdownPopup(
                     label = "zh (ж)", selected = latinZH, options = Latin_ZH.entries, onSelect = {
@@ -514,12 +531,25 @@ fun OtherAlphabetsSettingsScreen() {
                     }, modifier = Modifier.fillMaxWidth()
                 )
 
+                HorizontalDivider()
+
+                CenteredDropdownPopup(
+                    label = "ñ (ŋ)", selected = latinNG, options = Latin_NG.entries, onSelect = {
+                        context.latinNG = it
+                        latinNG = context.latinNG
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                )
+
+                HorizontalDivider()
+
                 EnumSwitchSetting(
                     label = Loc_Settings.arabAlphabet.localizedTitle(LocalContext.current), selected = arabStatus, optionOn = Arabic_Status.On, optionOff = Arabic_Status.Off, onSelect = {
                         context.arabicStatus = it
                         arabStatus = context.arabicStatus
                     }, modifier = Modifier.fillMaxWidth()
                 )
+
+                HorizontalDivider()
 
                 EnumSwitchSetting(
                     label = Loc_Settings.kirilAlphabet.localizedTitle(LocalContext.current), selected = kirilisaStatus, optionOn = Kirilisa_Status.On, optionOff = Kirilisa_Status.Off, onSelect = {

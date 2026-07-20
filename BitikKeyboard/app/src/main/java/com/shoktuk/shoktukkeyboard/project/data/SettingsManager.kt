@@ -90,6 +90,10 @@ object SettingsManager {
         get() = prefs().getEnum(Latin_ZH.KEY, Latin_ZH.j)
         set(v) = prefs().setEnum(Latin_ZH.KEY, v)
 
+    var Context.latinNG: Latin_NG
+        get() = prefs().getEnum(Latin_NG.KEY, Latin_NG.n)
+        set(v) = prefs().setEnum(Latin_NG.KEY, v)
+
     var Context.arabicStatus: Arabic_Status
         get() = prefs().getEnum(Arabic_Status.KEY, Arabic_Status.Off)
         set(v) = prefs().setEnum(Arabic_Status.KEY, v)

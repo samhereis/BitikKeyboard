@@ -52,3 +52,16 @@ bottomOffset,Astınan uzaqtıq,Астынан узактык,Bottom offset,Botto
 mainSettings,Tüpkü Jöndöölör,Түпкү Жөндөөлөр,Main Settings,Ana Ayarlar,Негізгі Баптаулар,Əsas Ayarlar,Основные настройки
 appearance,Körünüşü,Көрүнүшү,Appearance,Görünüm,Сыртқы түрі,Görünüş,Внешний вид
 other,Basqa,Башка,Other,Diğer,Басқа,Digər,Прочее
+cloud,Bulut,Булут,Cloud,Bulut,Бұлт,Bulud,Облако
+cloudAccount,Google akkaunt,Google аккаунту,Google account,Google hesabı,Google есептік жазбасы,Google hesabı,Аккаунт Google
+cloudChecking,Tekşerilüüdö…,Текшерилүүдө…,Checking…,Kontrol ediliyor…,Тексерілуде…,Yoxlanılır…,Проверка…
+cloudSignedIn,Kirgen,Кирген,Signed in,Oturum açıldı,Кірген,Daxil olunub,Выполнен вход
+cloudNoAccount,Kirilgen jok,Кирилген жок,Not signed in,Oturum açılmadı,Кірілмеген,Daxil olunmayıb,Вход не выполнен
+cloudRestricted,Çektelgen,Чектелген,Restricted,Kısıtlı,Шектелген,Məhdudlaşdırılıb,Ограничено
+cloudUnavailable,Jetkiliksiz,Жеткиликсиз,Unavailable,Kullanılamıyor,Қолжетімсіз,Əlçatan deyil,Недоступно
+cloudSettingsSynced,Sinhrondolgon jöndöölör,Синхрондолгон жөндөөлөр,Settings synced,Senkronize ayarlar,Синхрондалған баптаулар,Sinxronlaşdırılmış ayarlar,Синхронизировано настроек
+cloudSavedStrings,Drive'dagı saqtalgan katarlar,Drive'дагы сакталган катарлар,Saved strings in Drive,Drive'daki kayıtlı metinler,Drive-дағы сақталған жолдар,Drive-dakı saxlanılan sətirlər,Сохранённые строки в Drive
+cloudLastChecked,Akırkı tekşerüü,Акыркы текшерүү,Last checked,Son kontrol,Соңғы тексеру,Son yoxlama,Последняя проверка
+cloudRefresh,Jañırtuu,Жаңыртуу,Refresh,Yenile,Жаңарту,Yenilə,Обновить
+cloudSignInHint,Google menen kirüü,Google менен кирүү,Sign in with Google,Google ile giriş yap,Google арқылы кіру,Google ilə daxil ol,Войти через Google
+cloudError,Qata,Ката,Error,Hata,Қате,Xəta,Ошибка

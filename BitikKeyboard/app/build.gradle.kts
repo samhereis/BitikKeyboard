@@ -43,6 +43,15 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        resources {
+            excludes += setOf(
+                "META-INF/INDEX.LIST",
+                "META-INF/DEPENDENCIES",
+            )
+        }
+    }
 }
 
 dependencies {
@@ -88,6 +97,14 @@ dependencies {
 
     // Google Play In-App Review (native rate-us popup)
     implementation(libs.play.review.ktx)
+
+    // Google Drive (appdata) sync
+    implementation(libs.play.services.auth)
+    implementation(libs.google.api.client.android)
+    implementation(libs.google.api.services.drive) {
+        exclude(group = "org.apache.httpcomponents")
+    }
+    implementation(libs.google.http.client.android)
 
     // Testing
     implementation(libs.androidx.monitor)
