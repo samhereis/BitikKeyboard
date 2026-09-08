@@ -6,14 +6,14 @@ plugins {
 
 android {
     namespace = "com.shoktuk.shoktukkeyboard"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.shoktuk.shoktukkeyboard"
         minSdk = 25
-        targetSdk = 36
-        versionCode = 57
-        versionName = "3.4.11"
+        targetSdk = 37
+        versionCode = 59
+        versionName = "3.4.12"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

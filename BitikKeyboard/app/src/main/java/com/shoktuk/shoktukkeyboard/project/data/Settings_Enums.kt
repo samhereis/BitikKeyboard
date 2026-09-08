@@ -128,6 +128,14 @@ enum class Latin_NG(val id: String) {
     }
 }
 
+enum class Latin_O(val id: String) {
+    oUmlaut("ö"), oBarred("ө");
+
+    companion object {
+        const val KEY = "Latin_O"
+    }
+}
+
 enum class Arabic_Status(val id: String) {
     Off("Өчүк"), On("Жанык");
 

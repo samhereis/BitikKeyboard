@@ -58,6 +58,7 @@ import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
 import com.shoktuk.shoktukkeyboard.project.data.Latin_NG
+import com.shoktuk.shoktukkeyboard.project.data.Latin_O
 import com.shoktuk.shoktukkeyboard.project.data.Latin_ZH
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingScreens
@@ -81,6 +82,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinNG
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinO
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
@@ -476,6 +478,7 @@ fun OtherAlphabetsSettingsScreen() {
     var latinVariant by remember { mutableStateOf(context.latinVariant) }
     var latinZH by remember { mutableStateOf(context.latinZH) }
     var latinNG by remember { mutableStateOf(context.latinNG) }
+    var latinO by remember { mutableStateOf(context.latinO) }
     var arabStatus by remember { mutableStateOf(context.arabicStatus) }
     var kirilisaStatus by remember { mutableStateOf(context.kirilisaStatus) }
 
@@ -537,6 +540,15 @@ fun OtherAlphabetsSettingsScreen() {
                     label = "ñ (ŋ)", selected = latinNG, options = Latin_NG.entries, onSelect = {
                         context.latinNG = it
                         latinNG = context.latinNG
+                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                )
+
+                HorizontalDivider()
+
+                CenteredDropdownPopup(
+                    label = "ö (ө)", selected = latinO, options = Latin_O.entries, onSelect = {
+                        context.latinO = it
+                        latinO = context.latinO
                     }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
 

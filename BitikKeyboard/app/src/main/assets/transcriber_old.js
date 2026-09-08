@@ -169,7 +169,7 @@ function CorrentText_Old() {
     this._isInitialized = false;
     this._transcriptionList = [
         new TranscriptionEntry("", "", CharacterType.epmty, ""),
-
+        
         // First Row
         new TranscriptionEntry("𐰶", "QI", CharacterType.HardCharacter, "IQ"),
         new TranscriptionEntry("𐰷", "IQ", CharacterType.HardCharacter, "QI"),
@@ -188,7 +188,7 @@ function CorrentText_Old() {
         new TranscriptionEntry("𐰃", "I", CharacterType.HardVowel_HasSoftVariant, "İ"),
         new TranscriptionEntry("𐰱", "ÇI", CharacterType.HardCharacter, "Çİ"),
         new TranscriptionEntry("𐰯", "P", CharacterType.HardConsonant_Single),
-
+        
         // First Row - Shift
         new TranscriptionEntry("𐰭", "eÑ", CharacterType.SoftConsonant),
         new TranscriptionEntry("𐰮", "eÑ", CharacterType.SoftConsonant),
@@ -201,7 +201,7 @@ function CorrentText_Old() {
         new TranscriptionEntry("𐰇", "Ü", CharacterType.SoftVowel, "Ö"),
         new TranscriptionEntry("𐰈", "Ö", CharacterType.SoftVowel, "Ü"),
         new TranscriptionEntry("𐰄", "İ", CharacterType.SoftVowel),
-
+        
         // Second Row
         new TranscriptionEntry("𐰹", "OQ", CharacterType.HardCharacter, "UQ"),
         new TranscriptionEntry("𐰸", "UQ", CharacterType.HardCharacter, "OQ"),
@@ -216,7 +216,7 @@ function CorrentText_Old() {
         new TranscriptionEntry("𐰴", "aQ", CharacterType.HardConsonant),
         new TranscriptionEntry("𐰞", "aL", CharacterType.HardConsonant),
         new TranscriptionEntry("𐰟", "aL", CharacterType.HardConsonant),
-
+        
         // Second Row - Shift
         new TranscriptionEntry("𐰾", "eS", CharacterType.SoftConsonant),
         new TranscriptionEntry("𐰓", "eD", CharacterType.SoftConsonant),
@@ -225,10 +225,10 @@ function CorrentText_Old() {
         new TranscriptionEntry("𐰏", "eG", CharacterType.SoftConsonant),
         new TranscriptionEntry("𐰐", "eG", CharacterType.SoftConsonant),
         new TranscriptionEntry("𐰡", "LT", CharacterType.Character),
-        new TranscriptionEntry("𐰚", "eK", CharacterType.SoftConsonant),
-        new TranscriptionEntry("𐰛", "eK", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰚", "eQ", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰛", "eQ", CharacterType.SoftConsonant),
         new TranscriptionEntry("𐰠", "eL", CharacterType.SoftConsonant),
-
+        
         // Third Row
         new TranscriptionEntry("𐰕", "Z", CharacterType.HardConsonant_Single),
         new TranscriptionEntry("𐱀", "Ş", CharacterType.HardConsonant_Single),
@@ -243,7 +243,7 @@ function CorrentText_Old() {
         new TranscriptionEntry("𐰊", "aB", CharacterType.HardConsonant),
         new TranscriptionEntry("𐰣", "aN", CharacterType.HardConsonant),
         new TranscriptionEntry("𐰢", "M", CharacterType.HardConsonant_Single),
-
+        
         // Third Row - Shift
         new TranscriptionEntry("𐰌", "eB", CharacterType.SoftConsonant),
         new TranscriptionEntry("𐰋", "eB", CharacterType.SoftConsonant),
@@ -285,11 +285,11 @@ CorrentText_Old.prototype._GetTranscription = function(text, isAlternative) {
         ? x.transcriptionAlternative
         : x.transcription;
     };
-
+    
     var textTemp = "";
     var index = 0;
     var lastArgument = this._transcriptionList[0];
-
+    
     while (index < text.length) {
         if (isSurrogate(text, index) && !isSurrogatePair(text, index)) {
             index++;
@@ -303,11 +303,11 @@ CorrentText_Old.prototype._GetTranscription = function(text, isAlternative) {
             index += symbol.length;
             continue;
         }
-
+        
         var currentArgument = new TranscriptionEntry_Copy(transcriptionEntry);
         currentArgument.isAlternative = isAlternative;
         this.singleTranscriptionData.allProcessed.push(currentArgument);
-
+        
         if (getUnicodeCategory(symbol) !== UnicodeCategory.Format) {
             switch (transcriptionEntry.type) {
                 case CharacterType.Character:
@@ -339,17 +339,17 @@ CorrentText_Old.prototype._GetTranscription = function(text, isAlternative) {
                     break;
             }
         }
-
+        
         index += symbol.length;
         lastArgument = transcriptionEntry;
     }
-
+    
     var fv = this.singleTranscriptionData.firstVowel;
     if (fv && fv.recheck) fv.recheck();
-
+    
     this.singleTranscriptionData.allProcessed.forEach(e => {
         textTemp += e.final;
     });
-
+    
     return textTemp;
 };

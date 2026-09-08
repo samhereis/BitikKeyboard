@@ -15,6 +15,7 @@ import com.shoktuk.shoktukkeyboard.project.data.EK_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.Latin_NG
+import com.shoktuk.shoktukkeyboard.project.data.Latin_O
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
 import com.shoktuk.shoktukkeyboard.project.data.Latin_ZH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ajVariant
@@ -28,6 +29,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinNG
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinO
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
@@ -308,6 +310,18 @@ object KeyboardViewBuilder {
                 if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinNG == Latin_NG.ng) {
                     if (key.name == "ñ") {
                         keyToSet = keyToSet.copy(lowercase = "ŋ", uppercase = "Ŋ")
+                    }
+                }
+
+                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinVariant == Latin_Variant.minimal && context.latinO == Latin_O.oBarred) {
+                    if (key.name == "o/u") {
+                        keyToSet = keyToSet.copy(
+                            lowerCaseRomanization = "ö", lowerCaseHold = "ö", upperCaseRomanization = "Ö", upperCaseHold = "Ö"
+                        )
+                    }
+
+                    if (key.name == "rt, lt") {
+                        keyToSet = keyToSet.copy(lowercase = "ө", uppercase = "Ө")
                     }
                 }
 
