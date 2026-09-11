@@ -175,7 +175,9 @@
                  new TranscriptionEntry("uq", "𐰸", "𐰸", CharacterType.Special_Hard),
                  new TranscriptionEntry("ök", "𐰝", "𐰝", CharacterType.Special_Soft),
                  new TranscriptionEntry("ük", "𐰰", "𐰰", CharacterType.Special_Soft),
-                 
+
+                 new TranscriptionEntry("өk", "𐰝", "𐰝", CharacterType.Special_Soft),
+
                  new TranscriptionEntry("ق", "𐰴", "𐰚", CharacterType.Consonant),
                  new TranscriptionEntry("ش", "𐱀", "𐱁", CharacterType.Consonant),
                  new TranscriptionEntry("ە", "𐰅", "𐰅", CharacterType.SoftVowel),

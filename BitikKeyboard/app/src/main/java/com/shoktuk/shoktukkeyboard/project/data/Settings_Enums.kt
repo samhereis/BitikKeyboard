@@ -161,7 +161,7 @@ enum class Vibrations(val id: String) {
 }
 
 enum class Coloring(val id: String) {
-    Off("Өчүк"), On("Жанык");
+    On("Жанык"), Off("Өчүк");
 
     companion object {
         const val KEY = "Coloring"
@@ -169,7 +169,7 @@ enum class Coloring(val id: String) {
 }
 
 enum class HoldabilityColoring(val id: String) {
-    Off("Өчүк"), On("Жанык");
+    On("Жанык"), Off("Өчүк");
 
     companion object {
         const val KEY = "HoldabilityColoring"

@@ -28,13 +28,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
 @Composable
 fun <T> CenteredDropdownPopup(
-    modifier: Modifier = Modifier, label: String, options: List<T>, selected: T, onSelect: (T) -> Unit, optionLabel: (T) -> String = { it.toString() }
+    modifier: Modifier = Modifier,
+    label: String,
+    options: List<T>,
+    selected: T,
+    onSelect: (T) -> Unit,
+    optionLabel: (T) -> String = { it.toString() },
+    onLabelClick: (() -> Unit)? = null,
+    extraContent: (@Composable () -> Unit)? = null
 ) {
     var showPopup by remember { mutableStateOf(false) }
     val shape = RoundedCornerShape(12.dp)
@@ -42,25 +51,38 @@ fun <T> CenteredDropdownPopup(
     Surface(
         modifier = modifier.fillMaxWidth(), shape = shape, tonalElevation = 0.dp, shadowElevation = 0.dp, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = 56.dp)
-                .padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
-
-            Text(
-                label, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.weight(1f)
-            )
-
+        Column(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
-                    .clip(RoundedCornerShape(10.dp))
-                .clickable { showPopup = true }
-                    .padding(horizontal = 8.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
-                Text(optionLabel(selected), fontSize = 15.sp)
-                Spacer(Modifier.width(6.dp))
-                Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                    .fillMaxWidth()
+                    .then(if (extraContent == null) Modifier.heightIn(min = 25.dp) else Modifier)
+                    .padding(start = 12.dp, end = 12.dp, bottom = 0.dp, top = 8.dp), verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                Text(
+                    label,
+                    fontSize = 15.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .weight(1f)
+                        .then(if (onLabelClick != null) Modifier.clickable { onLabelClick() } else Modifier)
+                )
+
+                Row(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(10.dp))
+                    .clickable { showPopup = true }
+                        .padding(horizontal = 8.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Text(optionLabel(selected), fontSize = 15.sp)
+                    Spacer(Modifier.width(6.dp))
+                    Icon(Icons.Default.ArrowDropDown, contentDescription = null)
+                }
+            }
+
+            if (extraContent != null) {
+                Column(modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 8.dp, top = 0.dp)) {
+                    extraContent()
+                }
             }
         }
     }
@@ -104,6 +126,75 @@ fun <T> CenteredDropdownPopup(
                     }
                 }
             }
+        }
+    }
+}
+
+@Preview(name = "CenteredDropdownPopup - plain", showBackground = true)
+@Composable
+private fun CenteredDropdownPopupPreview_Plain() {
+    ShoktukKeyboardTheme {
+        var selected by remember { mutableStateOf("Default") }
+        Column(Modifier.padding(16.dp)) {
+            CenteredDropdownPopup(
+                label = "Bitik variant", options = listOf("Default", "Classic", "Modernized"), selected = selected, onSelect = { selected = it }
+            )
+        }
+    }
+}
+
+@Preview(name = "CenteredDropdownPopup - with How it looks (collapsed)", showBackground = true)
+@Composable
+private fun CenteredDropdownPopupPreview_WithPreview_Collapsed() {
+    ShoktukKeyboardTheme {
+        var selected by remember { mutableStateOf("Default") }
+        var expanded by remember { mutableStateOf(false) }
+        Column(Modifier.padding(16.dp)) {
+            CenteredDropdownPopup(
+                label = "Bitik variant",
+                options = listOf("Default", "Classic", "Modernized"),
+                selected = selected,
+                onSelect = { selected = it },
+                onLabelClick = { expanded = !expanded },
+                extraContent = {
+                    HowItLooksPreviewRow(
+                        items = listOf("Default", "Classic", "Modernized"),
+                        selection = selected,
+                        expanded = expanded,
+                        onExpandedChange = { expanded = it },
+                        label = { it },
+                        imageName = { "keyboard_variant_0" }
+                    )
+                }
+            )
+        }
+    }
+}
+
+@Preview(name = "CenteredDropdownPopup - with How it looks (expanded)", showBackground = true)
+@Composable
+private fun CenteredDropdownPopupPreview_WithPreview_Expanded() {
+    ShoktukKeyboardTheme {
+        var selected by remember { mutableStateOf("Default") }
+        var expanded by remember { mutableStateOf(true) }
+        Column(Modifier.padding(16.dp)) {
+            CenteredDropdownPopup(
+                label = "Bitik variant",
+                options = listOf("Default", "Classic", "Modernized"),
+                selected = selected,
+                onSelect = { selected = it },
+                onLabelClick = { expanded = !expanded },
+                extraContent = {
+                    HowItLooksPreviewRow(
+                        items = listOf("Default", "Classic", "Modernized"),
+                        selection = selected,
+                        expanded = expanded,
+                        onExpandedChange = { expanded = it },
+                        label = { it },
+                        imageName = { "keyboard_variant_0" }
+                    )
+                }
+            )
         }
     }
 }

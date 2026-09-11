@@ -21,6 +21,9 @@ enum class Loc_Settings(
     keyboardDialect_Altay("keyboardDialect_Altay", "a.circle"),
     keyboardDialect_Orhon("keyboardDialect_Orhon", "o.circle"),
 
+    howItLooks("howItLooks", "eye"),
+    whatIsIt("whatIsIt", "questionmark.circle"),
+
     bitikLayout("bitikLayout", "globe"),
 
     textTranscription("textTranscription", "text.alignleft"),

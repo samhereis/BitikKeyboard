@@ -159,10 +159,15 @@ fun MainSettingsScreen() {
     var bottomOffset by remember { mutableStateOf(context.bottomOffset) }
 
     var keyboardVariant by remember { mutableStateOf(context.keyboardVariant) }
+    var keyboardVariantPreviewExpanded by remember { mutableStateOf(false) }
     var bitikDialect by remember { mutableStateOf(context.bitikDialect) }
+    var bitikDialectPreviewExpanded by remember { mutableStateOf(false) }
     var textTranscription by remember { mutableStateOf(context.textTranscription) }
+    var textTranscriptionPreviewExpanded by remember { mutableStateOf(false) }
     var letterTranscription by remember { mutableStateOf(context.letterTranscription) }
+    var letterTranscriptionPreviewExpanded by remember { mutableStateOf(false) }
     var wordSeparator by remember { mutableStateOf(context.wordSeparator) }
+    var wordSeparatorPreviewExpanded by remember { mutableStateOf(false) }
 
     var ajVariant by remember { mutableStateOf(context.ajVariant) }
     var angVariant by remember { mutableStateOf(context.angVariant) }
@@ -275,17 +280,49 @@ fun MainSettingsScreen() {
                 }
 
                 CenteredDropdownPopup(
-                    label = Loc_Settings.keyboardVariant.localizedTitle(LocalContext.current), options = BitikVariant.entries, selected = keyboardVariant, onSelect = { variant ->
+                    label = Loc_Settings.keyboardVariant.localizedTitle(LocalContext.current),
+                    options = BitikVariant.entries,
+                    selected = keyboardVariant,
+                    onSelect = { variant ->
                         keyboardVariant = variant
                         context.keyboardVariant = variant
-                    }, optionLabel = { it.id.localized("settings", context) }, modifier = Modifier.fillMaxWidth()
+                    },
+                    optionLabel = { it.id.localized("settings", context) },
+                    modifier = Modifier.fillMaxWidth(),
+                    onLabelClick = { keyboardVariantPreviewExpanded = !keyboardVariantPreviewExpanded },
+                    extraContent = {
+                        HowItLooksPreviewRow(
+                            items = BitikVariant.entries,
+                            selection = keyboardVariant,
+                            expanded = keyboardVariantPreviewExpanded,
+                            onExpandedChange = { keyboardVariantPreviewExpanded = it },
+                            label = { it.id.localized("settings", context) },
+                            imageName = { it.settingImageName(BitikVariant.KEY) }
+                        )
+                    }
                 )
 
                 CenteredDropdownPopup(
-                    label = Loc_Settings.keyboardDialect.localizedTitle(LocalContext.current), options = BitikDialect.entries, selected = bitikDialect, onSelect = { alpha ->
+                    label = Loc_Settings.keyboardDialect.localizedTitle(LocalContext.current),
+                    options = BitikDialect.entries,
+                    selected = bitikDialect,
+                    onSelect = { alpha ->
                         bitikDialect = alpha
                         context.bitikDialect = alpha
-                    }, optionLabel = { it.id.localized("settings", context) }, modifier = Modifier.fillMaxWidth()
+                    },
+                    optionLabel = { it.id.localized("settings", context) },
+                    modifier = Modifier.fillMaxWidth(),
+                    onLabelClick = { bitikDialectPreviewExpanded = !bitikDialectPreviewExpanded },
+                    extraContent = {
+                        HowItLooksPreviewRow(
+                            items = BitikDialect.entries,
+                            selection = bitikDialect,
+                            expanded = bitikDialectPreviewExpanded,
+                            onExpandedChange = { bitikDialectPreviewExpanded = it },
+                            label = { it.id.localized("settings", context) },
+                            imageName = { it.settingImageName(BitikDialect.KEY) }
+                        )
+                    }
                 )
 
                 if (keyboardVariant != BitikVariant.SAMAGAN) {
@@ -298,7 +335,18 @@ fun MainSettingsScreen() {
                             context.textTranscription = if (it == TextTranscription.On) TextTranscription.On else TextTranscription.Off
                             textTranscription = context.textTranscription
                         },
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(),
+                        onLabelClick = { textTranscriptionPreviewExpanded = !textTranscriptionPreviewExpanded },
+                        extraContent = {
+                            HowItLooksPreviewRow(
+                                items = TextTranscription.entries,
+                                selection = textTranscription,
+                                expanded = textTranscriptionPreviewExpanded,
+                                onExpandedChange = { textTranscriptionPreviewExpanded = it },
+                                label = { if (it == TextTranscription.On) "setting_on".localized("settings", context) else "setting_off".localized("settings", context) },
+                                imageName = { it.settingImageName(TextTranscription.KEY) }
+                            )
+                        }
                     )
                 }
 
@@ -311,14 +359,41 @@ fun MainSettingsScreen() {
                         context.letterTranscription = if (it == LetterTranscription.On) LetterTranscription.On else LetterTranscription.Off
                         letterTranscription = context.letterTranscription
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onLabelClick = { letterTranscriptionPreviewExpanded = !letterTranscriptionPreviewExpanded },
+                    extraContent = {
+                        HowItLooksPreviewRow(
+                            items = LetterTranscription.entries,
+                            selection = letterTranscription,
+                            expanded = letterTranscriptionPreviewExpanded,
+                            onExpandedChange = { letterTranscriptionPreviewExpanded = it },
+                            label = { if (it == LetterTranscription.On) "setting_on".localized("settings", context) else "setting_off".localized("settings", context) },
+                            imageName = { it.settingImageName(LetterTranscription.KEY) }
+                        )
+                    }
                 )
 
                 CenteredDropdownPopup(
-                    label = Loc_Settings.colon.localizedTitle(LocalContext.current), options = WordSeparator.entries, selected = wordSeparator, onSelect = { alpha ->
+                    label = Loc_Settings.colon.localizedTitle(LocalContext.current),
+                    options = WordSeparator.entries,
+                    selected = wordSeparator,
+                    onSelect = { alpha ->
                         context.wordSeparator = alpha
                         wordSeparator = context.wordSeparator
-                    }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    },
+                    optionLabel = { it.id },
+                    modifier = Modifier.fillMaxWidth(),
+                    onLabelClick = { wordSeparatorPreviewExpanded = !wordSeparatorPreviewExpanded },
+                    extraContent = {
+                        HowItLooksPreviewRow(
+                            items = WordSeparator.entries,
+                            selection = wordSeparator,
+                            expanded = wordSeparatorPreviewExpanded,
+                            onExpandedChange = { wordSeparatorPreviewExpanded = it },
+                            label = { it.id },
+                            imageName = { it.settingImageName(WordSeparator.KEY) }
+                        )
+                    }
                 )
             }
         }
@@ -411,7 +486,9 @@ fun AppearanceSettingsScreen() {
     val context = LocalContext.current
 
     var coloring by remember { mutableStateOf(context.coloring) }
+    var coloringPreviewExpanded by remember { mutableStateOf(false) }
     var holdabilityColoring by remember { mutableStateOf(context.holdabilityColoring) }
+    var holdabilityColoringPreviewExpanded by remember { mutableStateOf(false) }
     var vibrations by remember { mutableStateOf(context.vibrations) }
 
     Column(
@@ -439,10 +516,26 @@ fun AppearanceSettingsScreen() {
                 )
 
                 EnumSwitchSetting(
-                    label = Loc_Settings.coloring.localizedTitle(LocalContext.current), selected = coloring, optionOn = Coloring.On, optionOff = Coloring.Off, onSelect = {
+                    label = Loc_Settings.coloring.localizedTitle(LocalContext.current),
+                    selected = coloring,
+                    optionOn = Coloring.On,
+                    optionOff = Coloring.Off,
+                    onSelect = {
                         context.coloring = if (it == Coloring.On) Coloring.On else Coloring.Off
                         coloring = context.coloring
-                    }, modifier = Modifier.fillMaxWidth()
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    onLabelClick = { coloringPreviewExpanded = !coloringPreviewExpanded },
+                    extraContent = {
+                        HowItLooksPreviewRow(
+                            items = Coloring.entries,
+                            selection = coloring,
+                            expanded = coloringPreviewExpanded,
+                            onExpandedChange = { coloringPreviewExpanded = it },
+                            label = { if (it == Coloring.On) "setting_on".localized("settings", context) else "setting_off".localized("settings", context) },
+                            imageName = { it.settingImageName(Coloring.KEY) }
+                        )
+                    }
                 )
 
                 EnumSwitchSetting(
@@ -454,7 +547,18 @@ fun AppearanceSettingsScreen() {
                         context.holdabilityColoring = if (it == HoldabilityColoring.On) HoldabilityColoring.On else HoldabilityColoring.Off
                         holdabilityColoring = context.holdabilityColoring
                     },
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    onLabelClick = { holdabilityColoringPreviewExpanded = !holdabilityColoringPreviewExpanded },
+                    extraContent = {
+                        HowItLooksPreviewRow(
+                            items = HoldabilityColoring.entries,
+                            selection = holdabilityColoring,
+                            expanded = holdabilityColoringPreviewExpanded,
+                            onExpandedChange = { holdabilityColoringPreviewExpanded = it },
+                            label = { if (it == HoldabilityColoring.On) "setting_on".localized("settings", context) else "setting_off".localized("settings", context) },
+                            imageName = { it.settingImageName(HoldabilityColoring.KEY) }
+                        )
+                    }
                 )
 
                 EnumSwitchSetting(
@@ -476,6 +580,7 @@ fun OtherAlphabetsSettingsScreen() {
 
     var latinStatus by remember { mutableStateOf(context.latinStatus) }
     var latinVariant by remember { mutableStateOf(context.latinVariant) }
+    var latinVariantPreviewExpanded by remember { mutableStateOf(false) }
     var latinZH by remember { mutableStateOf(context.latinZH) }
     var latinNG by remember { mutableStateOf(context.latinNG) }
     var latinO by remember { mutableStateOf(context.latinO) }
@@ -516,16 +621,28 @@ fun OtherAlphabetsSettingsScreen() {
                     }, modifier = Modifier.fillMaxWidth()
                 )
 
-                HorizontalDivider()
-
                 CenteredDropdownPopup(
-                    label = Loc_Settings.latinAlphabet.localizedTitle(LocalContext.current), selected = latinVariant, options = Latin_Variant.entries, onSelect = {
+                    label = Loc_Settings.latinAlphabet.localizedTitle(LocalContext.current),
+                    selected = latinVariant,
+                    options = Latin_Variant.entries,
+                    onSelect = {
                         context.latinVariant = it
                         latinVariant = context.latinVariant
-                    }, optionLabel = { it.id.localized("settings", context) }, modifier = Modifier.fillMaxWidth()
+                    },
+                    optionLabel = { it.id.localized("settings", context) },
+                    modifier = Modifier.fillMaxWidth(),
+                    onLabelClick = { latinVariantPreviewExpanded = !latinVariantPreviewExpanded },
+                    extraContent = {
+                        HowItLooksPreviewRow(
+                            items = Latin_Variant.entries,
+                            selection = latinVariant,
+                            expanded = latinVariantPreviewExpanded,
+                            onExpandedChange = { latinVariantPreviewExpanded = it },
+                            label = { it.id.localized("settings", context) },
+                            imageName = { it.settingImageName(Latin_Variant.KEY) }
+                        )
+                    }
                 )
-
-                HorizontalDivider()
 
                 CenteredDropdownPopup(
                     label = "zh (ж)", selected = latinZH, options = Latin_ZH.entries, onSelect = {
@@ -534,16 +651,12 @@ fun OtherAlphabetsSettingsScreen() {
                     }, modifier = Modifier.fillMaxWidth()
                 )
 
-                HorizontalDivider()
-
                 CenteredDropdownPopup(
                     label = "ñ (ŋ)", selected = latinNG, options = Latin_NG.entries, onSelect = {
                         context.latinNG = it
                         latinNG = context.latinNG
                     }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
                 )
-
-                HorizontalDivider()
 
                 CenteredDropdownPopup(
                     label = "ö (ө)", selected = latinO, options = Latin_O.entries, onSelect = {
