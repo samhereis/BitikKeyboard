@@ -25,6 +25,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -32,6 +34,10 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.graphics.toColorInt
+import com.shoktuk.shoktukkeyboard.R
+import com.shoktuk.shoktukkeyboard.project.data.BitikFont
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikFont
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
@@ -46,9 +52,22 @@ object KeyboardStyle {
     @Composable
     fun nonScaledSp(dp: Float): TextUnit = with(LocalDensity.current) { dp.dp.toSp() }
 
+    /// The user's chosen Bitik font (System/Zamanchak), or null (system default) — for any
+    /// composable rendering bitik glyphs outside the main key grid (top-bar transcription,
+    /// savable chips, etc). `alwaysBitik` is for content that is always bitik text even while
+    /// a non-bitik script is the active keyboard (e.g. the "transcribe to bitik" pill).
+    @Composable
+    fun bitikFontFamily(alwaysBitik: Boolean = false): FontFamily? {
+        val context = LocalContext.current
+        if (context.bitikFont != BitikFont.Zamanchak) return null
+
+        val isBitikContent = alwaysBitik || KeyboardViewControllerBase.writingSystemState.value == WritingSystem.Bitik
+        return if (isBitikContent) FontFamily(Font(R.font.zamanchak)) else null
+    }
+
     @Composable
     fun buttonFontStyle(): TextStyle = TextStyle(
-        fontSize = nonScaledSp(20f), platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
+        fontSize = nonScaledSp(20f), fontFamily = bitikFontFamily(), platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
     )
 
     @Composable

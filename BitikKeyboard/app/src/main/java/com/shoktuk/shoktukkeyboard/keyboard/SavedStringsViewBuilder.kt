@@ -59,6 +59,7 @@ object SavedStringsViewBuilder {
         if (items.isEmpty()) {
             val tv = TextView(service).apply {
                 text = "𐰀𐰯𐰘, 𐰅𐰲 𐰤𐰼𐰾𐰅 𐰳𐰹 𐰅𐰚𐰤 🥸"
+                typeface = KeyboardTheme.bitikTypeface(service)
                 setTextColor(KeyboardTheme.getColor(3).toColorInt())
                 gravity = Gravity.CENTER
                 layoutParams = LinearLayout.LayoutParams(
@@ -72,7 +73,11 @@ object SavedStringsViewBuilder {
                 val chip = TextView(service).apply {
                     text = s
                     maxLines = 1
-                    typeface = Typeface.DEFAULT
+                    typeface = if (MyKeyboardService.current_writingSystem == com.shoktuk.shoktukkeyboard.project.data.WritingSystem.Bitik) {
+                        KeyboardTheme.bitikTypeface(service) ?: Typeface.DEFAULT
+                    } else {
+                        Typeface.DEFAULT
+                    }
                     setTextColor(KeyboardTheme.getColor(2).toColorInt())
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, textSp)
                     setPadding(dp(service, 10f), dp(service, 6f), dp(service, 10f), dp(service, 6f))

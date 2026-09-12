@@ -53,6 +53,7 @@ fun SavedStringsView(
                     Text(
                         text = item,
                         maxLines = 1,
+                        fontFamily = KeyboardStyle.bitikFontFamily(),
                         modifier = Modifier
                             .background(
                                 color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),

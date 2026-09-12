@@ -34,6 +34,7 @@ enum class Loc_Settings(
     coloring("coloring", "paintpalette"),
     vibration("vibration", "paintpalette"),
     holdabilityIndicator("holdabilityIndicator", "hand.point.up.left"),
+    bitikFont("bitikFont", "textformat"),
 
     letters("letters", "e.circle"),
     ajLetter("ajLetter", "e.circle"),

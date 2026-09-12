@@ -158,6 +158,7 @@ class KeyView(
             text = getCurrentMainText()
             setTextColor(style.textColor.toColorInt())
             setTextSize(TypedValue.COMPLEX_UNIT_PX, mainPx)
+            typeface = if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) KeyboardTheme.bitikTypeface(context) else null
             maxLines = 1
             ellipsize = null
             includeFontPadding = false
@@ -418,14 +419,13 @@ class KeyView(
     }
 
     private fun addHoldIndicatorIfNeeded(root: View) {
-        if (MyKeyboardService.keyboardMode != KeyboardMode.Symbols) {
-            if (context.coloring == Coloring.Off) {
-                return
-            }
-            if (context.holdabilityColoring == HoldabilityColoring.Off) {
-                return
-            }
+        if (context.holdabilityColoring == HoldabilityColoring.Off) {
+            return
+        }
 
+        // Bitik key data selectively marks which hold values are indicator-worthy; other
+        // scripts don't carry that flag at all, so they just need a hold value to exist.
+        if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
             if (isCaps) {
                 if (key.uppercase_HoldabilityIndicator != "on") {
                     return

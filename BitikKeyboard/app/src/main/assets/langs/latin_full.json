@@ -62,8 +62,12 @@
       {
         "name": "o",
         "lowercase": "o",
+        "lowerCaseRomanization": "ө",
+        "lowerCaseHold": "ө",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "O",
+        "upperCaseRomanization": "Ө",
+        "upperCaseHold": "Ө",
         "backgroundColorIndex_uppercase": 4
       },
       {
@@ -186,7 +190,11 @@
       {
         "name": "n",
         "lowercase": "n",
-        "uppercase": "N"
+        "lowerCaseRomanization": "ŋ",
+        "lowerCaseHold": "ŋ",
+        "uppercase": "N",
+        "upperCaseRomanization": "Ŋ",
+        "upperCaseHold": "Ŋ"
       },
       {
         "name": "m",

@@ -23,6 +23,8 @@
         "lowercase": "𐱀",
         "lowerCaseRomanization": "aŞ",
         "lowerCaseRomanization_Alt": "шъ",
+        "lowerCaseHold": "𐰿",
+        "lowerCase_HoldabilityIndicator": "on",
         "uppercase": "𐱁",
         "upperCaseRomanization": "eŞ",
         "upperCaseRomanization_Alt": "шь",
@@ -46,9 +48,11 @@
         "lowercase": "𐰺",
         "lowerCaseRomanization": "aR",
         "lowerCaseRomanization_Alt": "ръ",
+        "lowerCaseHold": "𐰻",
         "uppercase": "𐰼",
         "upperCaseRomanization": "eR",
-        "upperCaseRomanization_Alt": "рь"
+        "upperCaseRomanization_Alt": "рь",
+        "upperCaseHold": "𐋄"
       },
       {
         "name": "t",
@@ -76,6 +80,7 @@
         "lowercase": "𐰆",
         "lowerCaseRomanization": "О / U",
         "lowerCaseRomanization_Alt": "O / У",
+        "lowerCaseHold": "𐌂",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "𐰈",
         "upperCaseRomanization": "Ü",
@@ -109,9 +114,11 @@
         "lowercase": "𐰯",
         "lowerCaseRomanization": "P",
         "lowerCaseRomanization_Alt": "п",
+        "lowerCaseHold": "𐪍",
         "uppercase": "𐰯",
         "upperCaseRomanization": "P",
-        "upperCaseRomanization_Alt": "п"
+        "upperCaseRomanization_Alt": "п",
+        "upperCaseHold": "𐪍"
       }
     ],
     [
@@ -146,7 +153,8 @@
         "lowerCaseHold": "𐰒",
         "uppercase": "𐰓",
         "upperCaseRomanization": "eD",
-        "upperCaseRomanization_Alt": "дь"
+        "upperCaseRomanization_Alt": "дь",
+        "upperCaseHold": "⊗"
       },
       {
         "name": "nt, nç",
@@ -209,7 +217,8 @@
         "lowerCaseHold": "𐰟",
         "uppercase": "𐰠",
         "upperCaseRomanization": "eL",
-        "upperCaseRomanization_Alt": "ль"
+        "upperCaseRomanization_Alt": "ль",
+        "upperCaseHold": "Ξ"
       }
     ],
     [
@@ -223,7 +232,8 @@
         "lowerCaseRomanization_Alt": "з",
         "uppercase": "𐰕",
         "upperCaseRomanization": "Z",
-        "upperCaseRomanization_Alt": "з"
+        "upperCaseRomanization_Alt": "з",
+        "upperCaseHold": "𐤇"
       },
       {
         "name": "ñ",
@@ -292,6 +302,7 @@
         "lowercase": "𐰢",
         "lowerCaseRomanization": "M",
         "lowerCaseRomanization_Alt": "м",
+        "lowerCaseHold": "߷",
         "uppercase": "𐰢",
         "upperCaseRomanization": "M",
         "upperCaseRomanization_Alt": "м"

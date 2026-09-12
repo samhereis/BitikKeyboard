@@ -1,5 +1,7 @@
 package com.shoktuk.shoktukkeyboard.project.screens.settings
 
+import android.content.Context
+import android.graphics.BitmapFactory
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -49,6 +51,22 @@ fun <T : Enum<T>> T.settingImageName(settingsKey: String): String {
 }
 
 private const val PREVIEW_ASPECT_RATIO = 1170f / 653f
+
+/** Mirrors iOS's `settingPreviewAspectRatio(named:)` — reads the real image dimensions (just the
+ *  header, not a full decode) so previews size to their actual aspect ratio instead of being
+ *  squished into a fixed box. Falls back to the same default ratio iOS uses when the asset is missing. */
+private fun settingPreviewAspectRatio(context: Context, imageName: String): Float {
+    val resId = context.resources.getIdentifier(imageName, "drawable", context.packageName)
+    if (resId == 0) return PREVIEW_ASPECT_RATIO
+
+    val options = BitmapFactory.Options().apply { inJustDecodeBounds = true }
+    BitmapFactory.decodeResource(context.resources, resId, options)
+    return if (options.outWidth > 0 && options.outHeight > 0) {
+        options.outWidth.toFloat() / options.outHeight.toFloat()
+    } else {
+        PREVIEW_ASPECT_RATIO
+    }
+}
 
 @Composable
 fun SettingPreviewImage(imageName: String, modifier: Modifier = Modifier) {
@@ -113,6 +131,12 @@ fun <T> HowItLooksPreviewRow(
         }
 
         if (expanded) {
+            val context = LocalContext.current
+            val thumbnailWidth = 200.dp
+            val thumbnailHeight = items
+                .map { thumbnailWidth / settingPreviewAspectRatio(context, imageName(it)) }
+                .maxOrNull() ?: (thumbnailWidth / PREVIEW_ASPECT_RATIO)
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -130,7 +154,7 @@ fun <T> HowItLooksPreviewRow(
                         SettingPreviewImage(
                             imageName = imageName(item),
                             modifier = Modifier
-                                .size(width = 200.dp, height = 200.dp / PREVIEW_ASPECT_RATIO)
+                                .size(width = thumbnailWidth, height = thumbnailHeight)
                                 .clip(RoundedCornerShape(12.dp))
                                 .background(MaterialTheme.colorScheme.surface)
                                 .then(
@@ -154,6 +178,7 @@ fun <T> HowItLooksPreviewRow(
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 items(items) { item ->
+                    val context = LocalContext.current
                     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                         val isSelected = item == selection
                         Text(
@@ -166,7 +191,7 @@ fun <T> HowItLooksPreviewRow(
                             imageName = imageName(item),
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .aspectRatio(PREVIEW_ASPECT_RATIO)
+                                .aspectRatio(settingPreviewAspectRatio(context, imageName(item)))
                                 .clip(RoundedCornerShape(16.dp))
                                 .background(MaterialTheme.colorScheme.surface)
                                 .then(

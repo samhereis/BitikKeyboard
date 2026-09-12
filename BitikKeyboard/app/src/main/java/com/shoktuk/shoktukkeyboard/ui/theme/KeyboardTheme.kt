@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.Color as ComposeColor
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikFont
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +37,7 @@ import androidx.core.graphics.drawable.toDrawable
 import androidx.core.graphics.toColorInt
 import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService
+import com.shoktuk.shoktukkeyboard.project.data.BitikFont
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 
@@ -71,9 +73,21 @@ object KeyboardTheme {
     const val ENTER_NEXT_ICON_FILE = "icons/enter_next_icon.png"
 
     private var cachedPalette: List<String>? = null
+    private var cachedZamanchakTypeface: android.graphics.Typeface? = null
 
     fun invalidateColorCache() {
         cachedPalette = null
+    }
+
+    /**
+     * The bundled Zamanchak typeface if the user picked it in Appearance settings, loaded once
+     * and cached; null (system default) otherwise. Callers still need to check whether the
+     * currently active script is actually Bitik before applying this to a TextView.
+     */
+    fun bitikTypeface(context: Context): android.graphics.Typeface? {
+        if (context.bitikFont != BitikFont.Zamanchak) return null
+        return cachedZamanchakTypeface ?: androidx.core.content.res.ResourcesCompat.getFont(context, R.font.zamanchak)
+            .also { cachedZamanchakTypeface = it }
     }
 
     fun getCachedPalette(): List<String> {

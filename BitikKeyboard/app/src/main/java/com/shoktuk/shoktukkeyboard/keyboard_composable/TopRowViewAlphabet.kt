@@ -110,7 +110,7 @@ fun TopRowView_Alphabet(
                     .padding(horizontal = 12.dp)
             ) {
                 Text(
-                    text = transcription, color = KeyboardStyle.getColor(2), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), maxLines = 1
+                    text = transcription, color = KeyboardStyle.getColor(2), style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold), fontFamily = KeyboardStyle.bitikFontFamily(alwaysBitik = true), maxLines = 1
                 )
             }
         }

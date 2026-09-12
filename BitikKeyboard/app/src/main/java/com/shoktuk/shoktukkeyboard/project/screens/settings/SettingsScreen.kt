@@ -47,6 +47,7 @@ import com.shoktuk.shoktukkeyboard.project.data.CLOUD_SYNC_ENABLED
 import com.shoktuk.shoktukkeyboard.project.data.AS_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.Arabic_Status
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.BitikFont
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
 import com.shoktuk.shoktukkeyboard.project.data.Coloring
 import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
@@ -67,6 +68,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikFont
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
@@ -489,6 +491,8 @@ fun AppearanceSettingsScreen() {
     var coloringPreviewExpanded by remember { mutableStateOf(false) }
     var holdabilityColoring by remember { mutableStateOf(context.holdabilityColoring) }
     var holdabilityColoringPreviewExpanded by remember { mutableStateOf(false) }
+    var bitikFont by remember { mutableStateOf(context.bitikFont) }
+    var bitikFontPreviewExpanded by remember { mutableStateOf(false) }
     var vibrations by remember { mutableStateOf(context.vibrations) }
 
     Column(
@@ -557,6 +561,29 @@ fun AppearanceSettingsScreen() {
                             onExpandedChange = { holdabilityColoringPreviewExpanded = it },
                             label = { if (it == HoldabilityColoring.On) "setting_on".localized("settings", context) else "setting_off".localized("settings", context) },
                             imageName = { it.settingImageName(HoldabilityColoring.KEY) }
+                        )
+                    }
+                )
+
+                CenteredDropdownPopup(
+                    label = Loc_Settings.bitikFont.localizedTitle(LocalContext.current),
+                    options = BitikFont.entries,
+                    selected = bitikFont,
+                    onSelect = { choice ->
+                        bitikFont = choice
+                        context.bitikFont = choice
+                    },
+                    optionLabel = { it.id.localized("settings", context) },
+                    modifier = Modifier.fillMaxWidth(),
+                    onLabelClick = { bitikFontPreviewExpanded = !bitikFontPreviewExpanded },
+                    extraContent = {
+                        HowItLooksPreviewRow(
+                            items = BitikFont.entries,
+                            selection = bitikFont,
+                            expanded = bitikFontPreviewExpanded,
+                            onExpandedChange = { bitikFontPreviewExpanded = it },
+                            label = { it.id.localized("settings", context) },
+                            imageName = { it.settingImageName(BitikFont.KEY) }
                         )
                     }
                 )

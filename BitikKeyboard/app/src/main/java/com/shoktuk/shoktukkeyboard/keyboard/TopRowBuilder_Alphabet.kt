@@ -231,7 +231,7 @@ object TopRowBuilder_Alphabet {
                 LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT
             )
 
-            typeface = Typeface.DEFAULT_BOLD
+            typeface = KeyboardTheme.bitikTypeface(container.context) ?: Typeface.DEFAULT_BOLD
             paint.isFakeBoldText = true
             paint.strokeWidth = 0.5f
             paint.style = Paint.Style.FILL_AND_STROKE

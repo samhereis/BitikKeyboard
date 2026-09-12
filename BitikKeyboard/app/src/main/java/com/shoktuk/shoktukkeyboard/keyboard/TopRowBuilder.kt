@@ -87,6 +87,7 @@ object TopRowBuilder {
                 bald = false,
                 style = KeyboardTheme.getLetterButtonStyle_Normal(innerClipboardRow.context),
                 weight = 0f,
+                applyBitikFont = true,
                 onClick = {
                     onKeyPressed?.invoke(service.currentInputConnection, clipText, false)
                 })

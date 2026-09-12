@@ -196,7 +196,11 @@
       {
         "name": "n",
         "lowercase": "n",
-        "uppercase": "N"
+        "lowerCaseRomanization": "ŋ",
+        "lowerCaseHold": "ŋ",
+        "uppercase": "N",
+        "upperCaseRomanization": "Ŋ",
+        "upperCaseHold": "Ŋ"
       },
       {
         "name": "m",

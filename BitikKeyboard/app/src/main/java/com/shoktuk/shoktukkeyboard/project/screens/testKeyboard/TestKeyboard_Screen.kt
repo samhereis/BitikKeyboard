@@ -50,6 +50,7 @@ import androidx.compose.ui.unit.dp
 import com.github.skydoves.colorpicker.compose.BrightnessSlider
 import com.github.skydoves.colorpicker.compose.HsvColorPicker
 import com.github.skydoves.colorpicker.compose.rememberColorPickerController
+import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.keyboard.onSettingChanged
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
@@ -60,7 +61,7 @@ import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_Settings
 fun TestKeyboard_Screen() {
     val context = LocalContext.current
 
-    var text by remember { mutableStateOf("") }
+    var text by remember { mutableStateOf("𐰖𐰁𐰕𐰃𐰯 𐰛𐰇𐰼𐰈𐰭𐰈𐰕") }
     var buttonHeight by remember { mutableStateOf(context.keyboardHeight) }
     var bottomOffset by remember { mutableStateOf(context.bottomOffset) }
 
@@ -91,7 +92,12 @@ fun TestKeyboard_Screen() {
                 })
 
             TextField(
-                value = text, onValueChange = { newValue -> text = newValue }, modifier = Modifier
+                value = text,
+                onValueChange = { newValue -> text = newValue },
+                textStyle = LocalTextStyle.current.copy(
+                    fontFamily = androidx.compose.ui.text.font.FontFamily(androidx.compose.ui.text.font.Font(R.font.zamanchak))
+                ),
+                modifier = Modifier
                     .fillMaxWidth()
                     .height(250.dp)
             )

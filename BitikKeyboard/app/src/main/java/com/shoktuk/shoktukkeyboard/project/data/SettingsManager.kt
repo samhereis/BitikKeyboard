@@ -114,6 +114,10 @@ object SettingsManager {
         get() = prefs().getEnum(HoldabilityColoring.KEY, HoldabilityColoring.On)
         set(v) = prefs().setEnum(HoldabilityColoring.KEY, v)
 
+    var Context.bitikFont: BitikFont
+        get() = prefs().getEnum(BitikFont.KEY, BitikFont.Zamanchak)
+        set(v) = prefs().setEnum(BitikFont.KEY, v)
+
     var Context.vibrations: Vibrations
         get() = prefs().getEnum(Vibrations.KEY, Vibrations.On)
         set(v) = prefs().setEnum(Vibrations.KEY, v)

@@ -40,13 +40,14 @@ object SystemKeyBuilder {
         onClick: (() -> Unit)? = null,
         onLongClick: (() -> Unit)? = null,
         textId: Int? = null,
-        weight: Float = 0f
+        weight: Float = 0f,
+        applyBitikFont: Boolean = false
     ): View {
         val root = newContainer(service, style, buttonHeight, weight).apply {
             isHapticFeedbackEnabled = true
         }
 
-        root.addView(makeCenteredContent(service, style, buttonHeight, bald, textId, textToSet = text))
+        root.addView(makeCenteredContent(service, style, buttonHeight, bald, textId, textToSet = text, applyBitikFont = applyBitikFont))
 
         root.setOnClickListener {
             onClick?.invoke()
@@ -164,7 +165,7 @@ object SystemKeyBuilder {
     }
 
     private fun makeCenteredContent(
-        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, bald: Boolean = true, textId: Int? = null, textToSet: String? = null, iconAssetPath: String? = null
+        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, bald: Boolean = true, textId: Int? = null, textToSet: String? = null, iconAssetPath: String? = null, applyBitikFont: Boolean = false
     ): View {
         val container = LinearLayout(service).apply {
             orientation = LinearLayout.VERTICAL
@@ -205,6 +206,8 @@ object SystemKeyBuilder {
                     paint.isFakeBoldText = true
                     paint.strokeWidth = 0.5f
                     paint.style = Paint.Style.FILL_AND_STROKE
+                } else if (applyBitikFont) {
+                    typeface = KeyboardTheme.bitikTypeface(service)
                 }
 
                 layoutParams = LinearLayout.LayoutParams(

@@ -149,6 +149,7 @@ object TopRowBuilder_Old {
                     bald = false,
                     style = KeyboardTheme.getLetterButtonStyle_Normal(innerClipboardRow.context),
                     weight = 0f,
+                    applyBitikFont = true,
                     onClick = {
                         onKeyPressed?.invoke(service.currentInputConnection, clipText, false)
 
@@ -229,6 +230,7 @@ object TopRowBuilder_Old {
             text = "   ~ "
             setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
             setTextColor(KeyboardTheme.getColor(2).toColorInt())
+            typeface = KeyboardTheme.bitikTypeface(container.context)
             gravity = Gravity.CENTER
         }.also(container::addView)
 
@@ -247,6 +249,7 @@ object TopRowBuilder_Old {
                     text = baseChar.toString()
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, halfSp)
                     setTextColor(KeyboardTheme.getColor(2).toColorInt())
+            typeface = KeyboardTheme.bitikTypeface(container.context)
                     gravity = Gravity.CENTER
                     setPadding(0, halfSp.toInt() + 12, 0, 0)
                 }.also(stack::addView)
@@ -255,6 +258,7 @@ object TopRowBuilder_Old {
                     text = InputText_Transcribed_Alt[i].toString()
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, halfSp)
                     setTextColor(KeyboardTheme.getColor(2).toColorInt())
+            typeface = KeyboardTheme.bitikTypeface(container.context)
                     gravity = Gravity.CENTER
                     setPadding(0, 0, 0, halfSp.toInt() + 12)
                 }.also(stack::addView)
@@ -265,6 +269,7 @@ object TopRowBuilder_Old {
                     text = baseChar.toString()
                     setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
                     setTextColor(KeyboardTheme.getColor(2).toColorInt())
+            typeface = KeyboardTheme.bitikTypeface(container.context)
                     gravity = Gravity.CENTER
                 }.also(container::addView)
             }
@@ -274,6 +279,7 @@ object TopRowBuilder_Old {
             text = " ~   "
             setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
             setTextColor(KeyboardTheme.getColor(2).toColorInt())
+            typeface = KeyboardTheme.bitikTypeface(container.context)
             gravity = Gravity.CENTER
         }.also(container::addView)
     }

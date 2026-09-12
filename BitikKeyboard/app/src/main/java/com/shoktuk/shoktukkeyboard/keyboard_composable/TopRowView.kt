@@ -144,7 +144,7 @@ fun TopRowView(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("~ ", style = MaterialTheme.typography.bodySmall, color = textColor)
+                Text("~ ", style = MaterialTheme.typography.bodySmall, color = textColor, fontFamily = KeyboardStyle.bitikFontFamily())
                 if (primary.isNotEmpty()) {
                     val pairs = primary.zip(alt.padEnd(primary.length, ' '))
                     LazyRow(horizontalArrangement = Arrangement.spacedBy(0.dp)) {
@@ -153,7 +153,7 @@ fun TopRowView(
                         }
                     }
                 }
-                Text(" ~", style = MaterialTheme.typography.bodySmall, color = textColor)
+                Text(" ~", style = MaterialTheme.typography.bodySmall, color = textColor, fontFamily = KeyboardStyle.bitikFontFamily())
             }
         } else {
             Row(
@@ -168,6 +168,7 @@ fun TopRowView(
                         text = item.ifEmpty { " " },
                         color = textColor,
                         style = MaterialTheme.typography.titleMedium,
+                        fontFamily = KeyboardStyle.bitikFontFamily(),
                         modifier = Modifier
                             .background(KeyboardStyle.getColor(1), MaterialTheme.shapes.small)
                             .pointerInput(item) { detectTapGestures { keyFeedback(); onKeyPress(item) } }
@@ -181,7 +182,8 @@ fun TopRowView(
 
 @Composable
 fun TwoFloorText(top: String, bottom: String, textColor: Color = Color.Unspecified) {
-    val full = MaterialTheme.typography.bodySmall
+    val fontFamily = KeyboardStyle.bitikFontFamily()
+    val full = MaterialTheme.typography.bodySmall.copy(fontFamily = fontFamily)
     val half = full.copy(fontSize = full.fontSize * 0.5f, lineHeight = full.fontSize * 0.55f)
     if (top.isBlank() || top == bottom) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {

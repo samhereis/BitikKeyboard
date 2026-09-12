@@ -234,7 +234,7 @@ object KeyboardViewBuilder {
                 }
 
                 if (MyKeyboardService.current_bitikDialect == BitikDialect.Altay) {
-                    if (key.name == "s" && as_Def) {
+                    if (key.name == "s" && !as_Def) {
                         keyToSet = getAS(keyToSet)
                         return keyToSet
                     }
@@ -311,16 +311,25 @@ object KeyboardViewBuilder {
                     if (key.name == "ñ") {
                         keyToSet = keyToSet.copy(lowercase = "ŋ", uppercase = "Ŋ")
                     }
+
+                    if (key.name == "n") {
+                        keyToSet = keyToSet.copy(
+                            lowerCaseRomanization = "ñ", lowerCaseHold = "ñ", upperCaseRomanization = "Ñ", upperCaseHold = "Ñ"
+                        )
+                    }
                 }
 
-                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinVariant == Latin_Variant.minimal && context.latinO == Latin_O.oBarred) {
-                    if (key.name == "o/u") {
+                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinO == Latin_O.oBarred) {
+                    val oHintKeyName = if (context.latinVariant == Latin_Variant.minimal) "o/u" else "o"
+                    val oLetterKeyName = if (context.latinVariant == Latin_Variant.minimal) "rt, lt" else "ö"
+
+                    if (key.name == oHintKeyName) {
                         keyToSet = keyToSet.copy(
                             lowerCaseRomanization = "ö", lowerCaseHold = "ö", upperCaseRomanization = "Ö", upperCaseHold = "Ö"
                         )
                     }
 
-                    if (key.name == "rt, lt") {
+                    if (key.name == oLetterKeyName) {
                         keyToSet = keyToSet.copy(lowercase = "ө", uppercase = "Ө")
                     }
                 }

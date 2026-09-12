@@ -73,7 +73,7 @@ enum class EN_Letter_Variant(val id: String) {
 }
 
 enum class AS_Letter_Variant(val id: String) {
-    Default("𐰽"), Second("𐱂");
+    Default("𐱂"), Second("𐰽");
 
     companion object {
         const val KEY = "AS_variant"
@@ -173,6 +173,14 @@ enum class HoldabilityColoring(val id: String) {
 
     companion object {
         const val KEY = "HoldabilityColoring"
+    }
+}
+
+enum class BitikFont(val id: String) {
+    System("bitikFont_System"), Zamanchak("bitikFont_Zamanchak");
+
+    companion object {
+        const val KEY = "BitikFont"
     }
 }
 
