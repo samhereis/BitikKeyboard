@@ -57,7 +57,7 @@ class TranscriptionProccessor {
                 result = result.replace("𐰚", "𐰛")
             }
 
-            if (context.asVariant == AS_Letter_Variant.Second) {
+            if (context.asVariant == AS_Letter_Variant.Default) {
                 result = result.replace("𐰽", "𐱂")
             }
 
