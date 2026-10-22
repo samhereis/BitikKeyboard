@@ -38,7 +38,7 @@
         "lowerCase_HoldabilityIndicator": "on",
         "uppercase": "𐰅",
         "upperCaseRomanization": "E",
-        "upperCaseHold": "𐰂 ",
+        "upperCaseHold": "𐰂",
         "backgroundColorIndex_uppercase": 4
       },
       {
@@ -65,7 +65,6 @@
         "lowerCaseRomanization_Alt": "aJ",
         "lowerCaseHold": "𐰗",
         "uppercase": "𐰘",
-        "upperCaseHold": "𐰙",
         "upperCaseRomanization": "eY",
         "upperCaseRomanization_Alt": "eJ"
       },

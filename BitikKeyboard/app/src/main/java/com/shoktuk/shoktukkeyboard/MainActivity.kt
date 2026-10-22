@@ -1,6 +1,7 @@
 package com.shoktuk.shoktukkeyboard
 
 import LocalizationManager
+import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -8,6 +9,9 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.view.WindowCompat
 import androidx.lifecycle.lifecycleScope
@@ -23,9 +27,13 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private var settingsChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
 
+    /** Screen the keyboard asked for (see [EXTRA_DESTINATION]), kept until the nav host has opened it. */
+    private var requestedDestination by mutableStateOf<String?>(null)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        requestedDestination = intent?.getStringExtra(EXTRA_DESTINATION)
 
         if (CLOUD_SYNC_ENABLED) {
             DriveClient.registerLauncher(this)
@@ -38,7 +46,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             WindowCompat.setDecorFitsSystemWindows(window, false)
             ShoktukKeyboardTheme {
-                SideMenuView()
+                SideMenuView(
+                    requestedDestination = requestedDestination,
+                    onDestinationHandled = { requestedDestination = null }
+                )
             }
         }
 
@@ -56,6 +67,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        setIntent(intent)
+        requestedDestination = intent.getStringExtra(EXTRA_DESTINATION)
+    }
+
     private fun registerSettingsChangeListener() {
         val prefs = getSharedPreferences("settings_prefs", MODE_PRIVATE)
         val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
@@ -66,6 +83,10 @@ class MainActivity : ComponentActivity() {
         }
         prefs.registerOnSharedPreferenceChangeListener(listener)
         settingsChangeListener = listener
+    }
+
+    companion object {
+        const val EXTRA_DESTINATION = "destination"
     }
 }
 

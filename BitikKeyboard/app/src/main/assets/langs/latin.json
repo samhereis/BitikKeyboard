@@ -147,7 +147,11 @@
       {
         "name": "ğ",
         "lowercase": "ğ",
-        "uppercase": "Ğ"
+        "lowerCaseRomanization": "ƣ",
+        "lowerCaseHold": "ƣ",
+        "uppercase": "Ğ",
+        "upperCaseRomanization": "Ƣ",
+        "upperCaseHold": "Ƣ"
       }
     ],
     [

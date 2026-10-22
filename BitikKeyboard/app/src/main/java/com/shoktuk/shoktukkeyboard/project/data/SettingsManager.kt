@@ -146,6 +146,10 @@ object SettingsManager {
         get() = prefs().getIntOrDefault("buttonHeight", 170)
         set(v) = prefs().setInt("buttonHeight", v)
 
+    var Context.savedStringsTextSize: Int
+        get() = prefs().getIntOrDefault("savedStringsTextSize", 15)
+        set(v) = prefs().setInt("savedStringsTextSize", v)
+
     var Context.bottomOffset: Int
         get() = prefs().getIntOrDefault("bottomOffset", 0)
         set(v) = prefs().setInt("bottomOffset", v)

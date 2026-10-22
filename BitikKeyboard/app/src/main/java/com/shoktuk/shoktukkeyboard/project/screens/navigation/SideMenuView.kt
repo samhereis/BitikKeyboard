@@ -39,6 +39,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -94,11 +95,21 @@ import localized
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SideMenuView() {
+fun SideMenuView(
+    requestedDestination: String? = null,
+    onDestinationHandled: () -> Unit = {},
+) {
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     val navController = rememberNavController()
     val context = LocalContext.current
+
+    LaunchedEffect(requestedDestination) {
+        if (requestedDestination == SettingScreens.SavedStrings.id) {
+            navController.navigate(requestedDestination)
+        }
+        if (requestedDestination != null) onDestinationHandled()
+    }
 
     val backStack by navController.currentBackStackEntryAsState()
     val currentRoute = backStack?.destination?.route ?: MainTabs.HOW_TO_ENABLE.route

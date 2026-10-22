@@ -1,6 +1,27 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
+import android.content.Intent
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material3.Icon
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.shoktuk.shoktukkeyboard.MainActivity
+import com.shoktuk.shoktukkeyboard.project.data.SettingScreens
+import java.util.Locale
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -45,27 +66,60 @@ fun SavedStringsView(
     }
 
     val scrollAreaHeight = KeyboardStyle.rowHeight() * 3
+    val chipShape = RoundedCornerShape(12.dp)
+    val accent = MaterialTheme.colorScheme.primary
 
     Surface(modifier = modifier.height(scrollAreaHeight)) {
-        Box(modifier = Modifier.verticalScroll(rememberScrollState())) {
-            FlowLayout(horizontalSpacing = 5.dp, verticalSpacing = 5.dp) {
-                strings.forEach { item ->
-                    Text(
-                        text = item,
-                        maxLines = 1,
-                        fontFamily = KeyboardStyle.bitikFontFamily(),
-                        modifier = Modifier
-                            .background(
-                                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.6f),
-                                shape = MaterialTheme.shapes.small
-                            )
-                            .clickable { keyFeedback(); onKeyPress(item) }
-                            .padding(horizontal = 10.dp, vertical = 8.dp)
-                    )
+        Column {
+            Row(modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp), horizontalArrangement = Arrangement.End) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .background(accent.copy(alpha = 0.12f))
+                        .clickable { keyFeedback(); openSavedStringsEditor(ctx) }
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Icon(Icons.Filled.Edit, contentDescription = null, tint = accent, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(5.dp))
+                    Text(editTitle(), color = accent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                }
+            }
+
+            Box(modifier = Modifier.verticalScroll(rememberScrollState()).padding(horizontal = 6.dp, vertical = 6.dp)) {
+                FlowLayout(horizontalSpacing = 8.dp, verticalSpacing = 8.dp) {
+                    strings.forEach { item ->
+                        Text(
+                            text = item,
+                            maxLines = 1,
+                            fontSize = 18.sp,
+                            fontFamily = KeyboardStyle.bitikFontFamily(),
+                            modifier = Modifier
+                                .clip(chipShape)
+                                .background(accent.copy(alpha = 0.18f))
+                                .border(0.5.dp, accent.copy(alpha = 0.4f), chipShape)
+                                .clickable { keyFeedback(); onKeyPress(item) }
+                                .padding(horizontal = 14.dp, vertical = 10.dp)
+                        )
+                    }
                 }
             }
         }
     }
+}
+
+/** The keyboard doesn't load the app's localization files, so the one label lives here. */
+private fun editTitle(): String {
+    val titles = mapOf("ky" to "Өзгөртүү", "tr" to "Düzenle", "kk" to "Өзгерту", "az" to "Redaktə et", "ru" to "Изменить")
+    return titles[Locale.getDefault().language] ?: "Edit"
+}
+
+/** Opens the app straight on the saved strings editor (MainActivity reads [MainActivity.EXTRA_DESTINATION]). */
+private fun openSavedStringsEditor(context: Context) {
+    val intent = Intent(context, MainActivity::class.java)
+        .putExtra(MainActivity.EXTRA_DESTINATION, SettingScreens.SavedStrings.id)
+        .addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_SINGLE_TOP)
+    context.startActivity(intent)
 }
 
 @Composable

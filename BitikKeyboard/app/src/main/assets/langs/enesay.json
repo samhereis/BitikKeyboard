@@ -63,7 +63,8 @@
         "lowerCase_HoldabilityIndicator": "on",
         "uppercase": "𐱅",
         "upperCaseRomanization": "eT",
-        "upperCaseRomanization_Alt": "ть"
+        "upperCaseRomanization_Alt": "ть",
+        "upperCaseHold": "𐱆"
       },
       {
         "name": "y",
@@ -208,6 +209,7 @@
         "lowercase": "𐰴",
         "lowerCaseRomanization": "aQ",
         "lowerCaseRomanization_Alt": "қ",
+        "lowerCaseHold": "𐰵",
         "uppercase": "𐰚",
         "upperCaseRomanization": "eK",
         "upperCaseRomanization_Alt": "кь",
@@ -234,6 +236,7 @@
         "lowercase": "𐰕",
         "lowerCaseRomanization": "Z",
         "lowerCaseRomanization_Alt": "з",
+        "lowerCaseHold": "𐰔",
         "uppercase": "𐰕",
         "upperCaseRomanization": "Z",
         "upperCaseRomanization_Alt": "з",
@@ -272,7 +275,10 @@
         "lowercase": "𐰨",
         "lowerCaseRomanization": "NÇ",
         "lowerCaseRomanization_Alt": "нч",
+        "lowerCaseHold": "𐓸",
+        "lowerCaseHoldHint": "Çİ чи",
         "backgroundColorIndex_lowercase": 5,
+        "backgroundColorIndex_lowercase_Hold": 1,
         "uppercase": "𐰡",
         "upperCaseRomanization": "LT",
         "upperCaseRomanization_Alt": "лт",

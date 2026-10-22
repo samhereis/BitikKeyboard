@@ -143,7 +143,11 @@
       {
         "name": "ğ",
         "lowercase": "ğ",
-        "uppercase": "Ğ"
+        "lowerCaseRomanization": "ƣ",
+        "lowerCaseHold": "ƣ",
+        "uppercase": "Ğ",
+        "upperCaseRomanization": "Ƣ",
+        "upperCaseHold": "Ƣ"
       },
       {
         "name": "ı",
@@ -180,7 +184,8 @@
       {
         "name": "v",
         "lowercase": "v",
-        "uppercase": "V"
+        "uppercase": "V",
+        "backgroundColorIndex_uppercase": 4
       },
       {
         "name": "b",

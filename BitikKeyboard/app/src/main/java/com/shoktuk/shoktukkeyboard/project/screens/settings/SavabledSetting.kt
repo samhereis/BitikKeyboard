@@ -1,16 +1,19 @@
 package com.shoktuk.shoktukkeyboard.project.screens.settings
 
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -57,9 +60,14 @@ fun SavabledSetting(
                     )
                 }
                 Spacer(Modifier.weight(1f))
-                Icon(
-                    Icons.Filled.Edit, modifier = Modifier.clickable { onOpenSavedStrings() }, contentDescription = null, tint = MaterialTheme.colorScheme.primary
-                )
+                FilledTonalButton(
+                    onClick = onOpenSavedStrings,
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+                ) {
+                    Icon(Icons.Filled.Edit, contentDescription = null, modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(Loc_Settings.changeOrder.localizedTitle(context), style = MaterialTheme.typography.titleMedium)
+                }
             }
 
             Column(modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 8.dp)) {
