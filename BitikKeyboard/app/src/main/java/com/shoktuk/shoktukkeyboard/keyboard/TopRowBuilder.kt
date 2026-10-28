@@ -118,6 +118,9 @@ object TopRowBuilder {
             })
 
         rowLayout.addView(imePicker)
+        rowLayout.addView(
+            SystemKeyBuilder.systemButton_Text(
+                service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) }))
 
         return rowLayout
     }

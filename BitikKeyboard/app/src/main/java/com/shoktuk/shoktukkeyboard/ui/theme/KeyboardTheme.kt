@@ -47,6 +47,8 @@ data class ButtonStyle(
 
 object KeyboardTheme {
 
+    var hintsOnTrailing = true
+
     private const val BASE_SCREEN_WIDTH_DP = 350f
     private const val MAX_SCALE_FACTOR = 1.5f
     const val KEY_MARGIN_DP = 0
@@ -55,7 +57,7 @@ object KeyboardTheme {
 
     private val BASE_LETTER_TEXT_SIZE_SP = 19
     private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 21
-    private val BASE_HINT_TEXT_SIZE_SP = 8.5f
+    private val BASE_HINT_TEXT_SIZE_SP = 9.5f
     private val BASE_SYSTEM_TEXT_SIZE_SP = 17
 
     const val SHIFT_ICON_FILE = "icons/shift_icon.png"

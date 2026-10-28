@@ -4,6 +4,8 @@ import Haptics
 import android.content.res.Configuration
 import android.inputmethodservice.InputMethodService
 import android.view.HapticFeedbackConstants
+import KeyboardViewLifecycleOwner
+import LocalizationManager
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
@@ -43,7 +45,7 @@ import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.whl.quickjs.android.QuickJSLoader
 
 enum class KeyboardMode(val id: String) {
-    Main("Main"), Symbols("Symbols"), Emojis("Emojis"), SavedStrings("SavedStrings");
+    Main("Main"), Symbols("Symbols"), Emojis("Emojis"), SavedStrings("SavedStrings"), Settings("Settings");
 }
 
 object onKeyPressed {
@@ -105,6 +107,20 @@ class MyKeyboardService : InputMethodService() {
 
     private var currentLayout: KeyboardLayout? = null
 
+    val lifecycleOwner = KeyboardViewLifecycleOwner()
+
+    override fun onCreate() {
+        super.onCreate()
+        LocalizationManager.init(applicationContext)
+        lifecycleOwner.onCreate()
+        lifecycleOwner.onResume()
+    }
+
+    override fun onDestroy() {
+        lifecycleOwner.onDestroy()
+        super.onDestroy()
+    }
+
     var root: LinearLayout? = null
     var root_ShiftOn: LinearLayout? = null
     var root_ShiftOff: LinearLayout? = null
@@ -138,7 +154,7 @@ class MyKeyboardService : InputMethodService() {
         }
 
         onSettingChanged.addListener {
-            reloadKeyboard()
+            if (keyboardMode != KeyboardMode.Settings) reloadKeyboard()
         }
     }
 
@@ -194,6 +210,8 @@ class MyKeyboardService : InputMethodService() {
             root = makeEmojiView()
         } else if (keyboardMode == KeyboardMode.SavedStrings) {
             root = makeSavablesView()
+        } else if (keyboardMode == KeyboardMode.Settings) {
+            root = makeSettingsView()
         } else {
             if (isCaps) {
                 root = root_ShiftOn
@@ -205,8 +223,10 @@ class MyKeyboardService : InputMethodService() {
             }
         }
 
-        ensureDetached(topBar)
-        root?.addView(topBar, 0)
+        if (keyboardMode != KeyboardMode.Settings) {
+            ensureDetached(topBar)
+            root?.addView(topBar, 0)
+        }
 
         root?.let {
             applyInsetsNowAndOnChange(it)
@@ -239,6 +259,30 @@ class MyKeyboardService : InputMethodService() {
     private fun onModeChange(mode: KeyboardMode) {
         keyboardMode = mode
         applyKeyboard()
+    }
+
+    fun availableWritingSystems(): List<WritingSystem> {
+        val available = mutableListOf(WritingSystem.Bitik)
+        if (context.latinStatus == Latin_Status.On) available.add(WritingSystem.Latin)
+        if (context.arabicStatus == Arabic_Status.On) available.add(WritingSystem.Arab)
+        if (context.kirilisaStatus == Kirilisa_Status.On) available.add(WritingSystem.Kiril)
+        return available
+    }
+
+    fun switchAlphabetTo(system: WritingSystem) {
+        if (system == context.writingSystem || system !in availableWritingSystems()) return
+        context.writingSystem = system
+        keyboardMode = KeyboardMode.Main
+        reloadKeyboard()
+    }
+
+    fun switchAlphabet(step: Int) {
+        val available = availableWritingSystems()
+        if (available.size < 2) return
+        val current = available.indexOf(context.writingSystem).coerceAtLeast(0)
+        context.writingSystem = available[(current + step + available.size) % available.size]
+        keyboardMode = KeyboardMode.Main
+        reloadKeyboard()
     }
 
     private fun onAlphabetChange() {
@@ -329,6 +373,19 @@ class MyKeyboardService : InputMethodService() {
         })
 
         return root_Emojis!!
+    }
+
+    private fun makeSettingsView(): LinearLayout {
+        val systemKeybHeight = (KeyboardTheme.getButtonHeight() / 1.5f).toInt()
+        val height = KeyboardTheme.getButtonHeight() * 4 + systemKeybHeight
+        val panel = SettingsPanelBuilder.create(this, height) {
+            keyboardMode = KeyboardMode.Main
+            reloadKeyboard()
+        }
+        return LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            addView(panel)
+        }
     }
 
     private fun makeSavablesView(): LinearLayout {

@@ -99,6 +99,7 @@ fun InfoFullScreen(
     drawables: Map<Int, String>,
     onClick: () -> Unit,
 ) {
+    if (LocalInlinePickers.current) return
     Dialog(
         onDismissRequest = onClick, properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {

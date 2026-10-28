@@ -90,6 +90,10 @@ object SettingsManager {
         get() = prefs().getEnum(Latin_ZH.KEY, Latin_ZH.j)
         set(v) = prefs().setEnum(Latin_ZH.KEY, v)
 
+    var Context.latinCH: Latin_CH
+        get() = prefs().getEnum(Latin_CH.KEY, Latin_CH.cedilla)
+        set(v) = prefs().setEnum(Latin_CH.KEY, v)
+
     var Context.latinNG: Latin_NG
         get() = prefs().getEnum(Latin_NG.KEY, Latin_NG.n)
         set(v) = prefs().setEnum(Latin_NG.KEY, v)
@@ -151,6 +155,6 @@ object SettingsManager {
         set(v) = prefs().setInt("savedStringsTextSize", v)
 
     var Context.bottomOffset: Int
-        get() = prefs().getIntOrDefault("bottomOffset", 0)
+        get() = prefs().getIntOrDefault("bottomOffset", 25)
         set(v) = prefs().setInt("bottomOffset", v)
 }

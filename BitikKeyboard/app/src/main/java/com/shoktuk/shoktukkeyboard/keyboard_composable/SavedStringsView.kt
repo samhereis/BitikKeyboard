@@ -108,13 +108,11 @@ fun SavedStringsView(
     }
 }
 
-/** The keyboard doesn't load the app's localization files, so the one label lives here. */
 private fun editTitle(): String {
     val titles = mapOf("ky" to "Өзгөртүү", "tr" to "Düzenle", "kk" to "Өзгерту", "az" to "Redaktə et", "ru" to "Изменить")
     return titles[Locale.getDefault().language] ?: "Edit"
 }
 
-/** Opens the app straight on the saved strings editor (MainActivity reads [MainActivity.EXTRA_DESTINATION]). */
 private fun openSavedStringsEditor(context: Context) {
     val intent = Intent(context, MainActivity::class.java)
         .putExtra(MainActivity.EXTRA_DESTINATION, SettingScreens.SavedStrings.id)

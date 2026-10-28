@@ -58,6 +58,7 @@ import com.shoktuk.shoktukkeyboard.project.data.HoldabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
+import com.shoktuk.shoktukkeyboard.project.data.Latin_CH
 import com.shoktuk.shoktukkeyboard.project.data.Latin_NG
 import com.shoktuk.shoktukkeyboard.project.data.Latin_O
 import com.shoktuk.shoktukkeyboard.project.data.Latin_ZH
@@ -83,6 +84,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinCH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinNG
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinO
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
@@ -609,6 +611,7 @@ fun OtherAlphabetsSettingsScreen() {
     var latinVariant by remember { mutableStateOf(context.latinVariant) }
     var latinVariantPreviewExpanded by remember { mutableStateOf(false) }
     var latinZH by remember { mutableStateOf(context.latinZH) }
+    var latinCH by remember { mutableStateOf(context.latinCH) }
     var latinNG by remember { mutableStateOf(context.latinNG) }
     var latinO by remember { mutableStateOf(context.latinO) }
     var arabStatus by remember { mutableStateOf(context.arabicStatus) }
@@ -677,6 +680,15 @@ fun OtherAlphabetsSettingsScreen() {
                         latinZH = context.latinZH
                     }, modifier = Modifier.fillMaxWidth()
                 )
+
+                if (latinZH == Latin_ZH.j) {
+                    CenteredDropdownPopup(
+                        label = "ch (ч)", selected = latinCH, options = Latin_CH.entries, onSelect = {
+                            context.latinCH = it
+                            latinCH = context.latinCH
+                        }, optionLabel = { it.id }, modifier = Modifier.fillMaxWidth()
+                    )
+                }
 
                 CenteredDropdownPopup(
                     label = "ñ (ŋ)", selected = latinNG, options = Latin_NG.entries, onSelect = {

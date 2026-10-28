@@ -105,7 +105,8 @@ fun SideMenuView(
     val context = LocalContext.current
 
     LaunchedEffect(requestedDestination) {
-        if (requestedDestination == SettingScreens.SavedStrings.id) {
+        val known = MainTabs.entries.map { it.route } + SettingScreens.entries.map { it.id }
+        if (requestedDestination != null && requestedDestination in known) {
             navController.navigate(requestedDestination)
         }
         if (requestedDestination != null) onDestinationHandled()

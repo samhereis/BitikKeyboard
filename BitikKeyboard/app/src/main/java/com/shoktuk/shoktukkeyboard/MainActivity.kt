@@ -2,6 +2,7 @@ package com.shoktuk.shoktukkeyboard
 
 import LocalizationManager
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.SharedPreferences
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -20,6 +21,7 @@ import com.shoktuk.shoktukkeyboard.project.data.DriveClient
 import com.shoktuk.shoktukkeyboard.project.data.RateUsManager
 import com.shoktuk.shoktukkeyboard.project.data.SettingsCloudSync
 import com.shoktuk.shoktukkeyboard.project.data.cloudSyncedKeys
+import Language
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import com.whl.quickjs.android.QuickJSLoader
 import kotlinx.coroutines.launch
@@ -27,13 +29,13 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private var settingsChangeListener: SharedPreferences.OnSharedPreferenceChangeListener? = null
 
-    /** Screen the keyboard asked for (see [EXTRA_DESTINATION]), kept until the nav host has opened it. */
     private var requestedDestination by mutableStateOf<String?>(null)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         requestedDestination = intent?.getStringExtra(EXTRA_DESTINATION)
+        applyScreenshotLanguage()
 
         if (CLOUD_SYNC_ENABLED) {
             DriveClient.registerLauncher(this)
@@ -71,6 +73,13 @@ class MainActivity : ComponentActivity() {
         super.onNewIntent(intent)
         setIntent(intent)
         requestedDestination = intent.getStringExtra(EXTRA_DESTINATION)
+        applyScreenshotLanguage()
+    }
+
+    private fun applyScreenshotLanguage() {
+        if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE == 0) return
+        val code = intent?.getStringExtra(EXTRA_SCREENSHOT_LANGUAGE) ?: return
+        Language.entries.find { it.code == code }?.let { LocalizationManager.setLanguage(this, it) }
     }
 
     private fun registerSettingsChangeListener() {
@@ -87,6 +96,7 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         const val EXTRA_DESTINATION = "destination"
+        const val EXTRA_SCREENSHOT_LANGUAGE = "screenshot_language"
     }
 }
 

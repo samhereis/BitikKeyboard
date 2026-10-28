@@ -3,14 +3,20 @@ import android.util.Log
 import com.shoktuk.shoktukkeyboard.project.data.ANG_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
+import com.shoktuk.shoktukkeyboard.project.data.Latin_CH
+import com.shoktuk.shoktukkeyboard.project.data.Latin_ZH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinCH
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
 import com.whl.quickjs.android.QuickJSLoader
 import com.whl.quickjs.wrapper.QuickJSContext
 import java.text.Normalizer
 
 class JSTranscriber_Alphabet(context: Context) {
+    private val appContext = context.applicationContext
+
     private val jsCtx: QuickJSContext? = try {
         QuickJSLoader.init()
 
@@ -41,7 +47,13 @@ class JSTranscriber_Alphabet(context: Context) {
         null
     }
 
-    fun getTranscription(text: String): String = call(text)
+    fun getTranscription(text: String): String {
+        var input = text
+        if (appContext.latinZH == Latin_ZH.j && appContext.latinCH == Latin_CH.c) {
+            input = input.replace("c", "ç").replace("C", "Ç")
+        }
+        return call(input)
+    }
 
     private fun call(input: String): String {
         return try {

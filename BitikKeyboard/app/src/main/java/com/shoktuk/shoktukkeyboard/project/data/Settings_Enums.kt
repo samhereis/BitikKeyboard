@@ -120,6 +120,14 @@ enum class Latin_ZH(val id: String) {
     }
 }
 
+enum class Latin_CH(val id: String) {
+    cedilla("ç"), c("c");
+
+    companion object {
+        const val KEY = "Latin_CH"
+    }
+}
+
 enum class Latin_NG(val id: String) {
     n("ñ"), ng("ŋ");
 

@@ -14,6 +14,7 @@ import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EK_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
+import com.shoktuk.shoktukkeyboard.project.data.Latin_CH
 import com.shoktuk.shoktukkeyboard.project.data.Latin_NG
 import com.shoktuk.shoktukkeyboard.project.data.Latin_O
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
@@ -31,6 +32,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinNG
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinO
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinCH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
@@ -303,6 +305,14 @@ object KeyboardViewBuilder {
                     if (key.name == "ç") {
                         keyToSet = keyToSet.copy(
                             lowerCaseHold = null, lowerCaseRomanization = null, lowerCaseRomanization_Alt = null, upperCaseHold = null, upperCaseRomanization = null, upperCaseRomanization_Alt = null
+                        )
+                    }
+                }
+
+                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinVariant == Latin_Variant.minimal && context.latinZH == Latin_ZH.j && context.latinCH == Latin_CH.c) {
+                    if (key.name == "ç") {
+                        keyToSet = keyToSet.copy(
+                            lowercase = "c", lowerCaseRomanization = "ç", lowerCaseHold = "ç", uppercase = "C", upperCaseRomanization = "Ç", upperCaseHold = "Ç"
                         )
                     }
                 }

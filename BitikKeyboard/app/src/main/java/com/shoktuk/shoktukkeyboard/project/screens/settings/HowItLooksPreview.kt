@@ -111,6 +111,7 @@ fun <T> HowItLooksPreviewRow(
     headerLabel: String = Loc_Settings.howItLooks.localizedTitle(LocalContext.current)
 ) {
     var fullListItem by remember { mutableStateOf<T?>(null) }
+    val inlinePickers = LocalInlinePickers.current
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
@@ -146,7 +147,7 @@ fun <T> HowItLooksPreviewRow(
             ) {
                 items.forEach { item ->
                     Column(
-                        modifier = Modifier.clickable { fullListItem = item }, verticalArrangement = Arrangement.spacedBy(4.dp)
+                        modifier = if (inlinePickers) Modifier else Modifier.clickable { fullListItem = item }, verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(label(item), fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
 

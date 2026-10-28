@@ -169,7 +169,6 @@ object SavedStringsViewBuilder {
         return root
     }
 
-    /** Accent-tinted fill with a thin accent outline, the same look as the iOS keyboard. */
     private fun tintedBackground(ctx: Context, accent: Int, fillAlpha: Float, strokeDp: Int, cornerDp: Int) = GradientDrawable().apply {
         shape = GradientDrawable.RECTANGLE
         cornerRadius = dp(ctx, cornerDp.toFloat()).toFloat()
@@ -177,13 +176,11 @@ object SavedStringsViewBuilder {
         if (strokeDp > 0) setStroke(dp(ctx, strokeDp.toFloat()), ColorUtils.setAlphaComponent(accent, 140))
     }
 
-    /** The keyboard doesn't load the app's localization files, so the one label lives here. */
     private fun editTitle(): String {
         val titles = mapOf("ky" to "Өзгөртүү", "tr" to "Düzenle", "kk" to "Өзгерту", "az" to "Redaktə et", "ru" to "Изменить")
         return titles[Locale.getDefault().language] ?: "Edit"
     }
 
-    /** Opens the app straight on the saved strings editor (MainActivity reads [MainActivity.EXTRA_DESTINATION]). */
     private fun openSavedStringsEditor(service: InputMethodService) {
         val intent = Intent(service, MainActivity::class.java)
             .putExtra(MainActivity.EXTRA_DESTINATION, SettingScreens.SavedStrings.id)

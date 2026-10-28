@@ -177,8 +177,13 @@ class KeyView(
         val topMaxPx = pxFromSp(hintButtonTextSize, context)
         val topMinPx = pxFromSp(1f, context)
 
+        val trailing = KeyboardTheme.hintsOnTrailing && MyKeyboardService.current_writingSystem != WritingSystem.Bitik
+        val hintPaddingEnd = if (trailing) dpToPx(context, 6) else 0
+        val hintPaddingVertical = dpToPx(context, 3)
+
         subText_top.apply {
             text = second
+            setPadding(0, hintPaddingVertical, hintPaddingEnd, 0)
             maxLines = 1
             isSingleLine = true
             ellipsize = TextUtils.TruncateAt.END
@@ -191,7 +196,7 @@ class KeyView(
             (layoutParams as ConstraintLayout.LayoutParams).apply {
                 width = ConstraintLayout.LayoutParams.MATCH_PARENT
                 height = ConstraintLayout.LayoutParams.MATCH_PARENT
-                gravity = Gravity.TOP or Gravity.CENTER_HORIZONTAL
+                gravity = if (trailing) Gravity.TOP or Gravity.END else Gravity.TOP or Gravity.CENTER_HORIZONTAL
             }.also { layoutParams = it }
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(
@@ -203,6 +208,7 @@ class KeyView(
         val bottomMinPx = pxFromSp(1f, context)
         subText_bottom.apply {
             text = first
+            setPadding(0, 0, hintPaddingEnd, hintPaddingVertical)
             maxLines = 1
             isSingleLine = true
             ellipsize = TextUtils.TruncateAt.END
@@ -215,7 +221,7 @@ class KeyView(
             (layoutParams as ConstraintLayout.LayoutParams).apply {
                 width = ConstraintLayout.LayoutParams.MATCH_PARENT
                 height = ConstraintLayout.LayoutParams.MATCH_PARENT
-                gravity = Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
+                gravity = if (trailing) Gravity.BOTTOM or Gravity.END else Gravity.BOTTOM or Gravity.CENTER_HORIZONTAL
             }.also { layoutParams = it }
 
             TextViewCompat.setAutoSizeTextTypeUniformWithConfiguration(

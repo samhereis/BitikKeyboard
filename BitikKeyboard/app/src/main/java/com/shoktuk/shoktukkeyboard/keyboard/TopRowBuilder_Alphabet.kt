@@ -106,30 +106,7 @@ object TopRowBuilder_Alphabet {
             )
         }
 
-        val hintIcon = TextView(service).apply {
-            text = "👆"
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, 12f)
-            alpha = if (MyKeyboardService.isAutoWriteBitikMode) 0f else 1f
-            isClickable = false
-            isFocusable = false
-            importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_NO
-            setPadding(25, 0, 0, 0)
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                gravity = Gravity.START or Gravity.CENTER_VERTICAL
-                val m = (6 * resources.displayMetrics.density).toInt()
-                marginStart = m
-            }
-        }
-
-        centerSlot.addView(hintIcon)
         centerSlot.addView(lastWordContainer)
-        centerSlot.setOnClickListener {
-            MyKeyboardService.isAutoWriteBitikMode = !MyKeyboardService.isAutoWriteBitikMode
-            onBitikModeChanged.invoke(MyKeyboardService.isAutoWriteBitikMode)
-        }
-
         rowLayout.addView(switchLanguageView)
         rowLayout.addView(centerSlot)
         rowLayout.addView(
@@ -160,12 +137,10 @@ object TopRowBuilder_Alphabet {
                     newGlow.animateAlpha(0f, 400L) { newGlow.stopRotating() }
                 }
             }
-            if (active) {
-                hintIcon.animate().alpha(0f).setDuration(300).setStartDelay(100).start()
-            } else {
-                hintIcon.animate().alpha(1f).setDuration(300).setStartDelay(0).start()
-            }
         }
+        rowLayout.addView(
+            SystemKeyBuilder.systemButton_Text(
+                service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) }))
 
         return rowLayout
     }

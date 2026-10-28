@@ -67,6 +67,7 @@ enum class Loc_Settings(
     changeOrder("changeOrder", "tray.full"),
     add("add", "tray.full"),
     ready("ready", "tray.full"),
+    autoBitik("autoBitik", "sparkles"),
     holdShift("holdShift", "tray.full"),
     andChooseSavables("andChooseSavables", "tray.full"),
     mainSettings("mainSettings", "keyboard"),

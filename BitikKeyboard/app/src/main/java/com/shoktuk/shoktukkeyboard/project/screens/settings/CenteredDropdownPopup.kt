@@ -21,6 +21,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -34,6 +35,8 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
+val LocalInlinePickers = compositionLocalOf { false }
+
 @Composable
 fun <T> CenteredDropdownPopup(
     modifier: Modifier = Modifier,
@@ -46,6 +49,7 @@ fun <T> CenteredDropdownPopup(
     extraContent: (@Composable () -> Unit)? = null
 ) {
     var showPopup by remember { mutableStateOf(false) }
+    val inline = LocalInlinePickers.current
     val shape = RoundedCornerShape(12.dp)
 
     Surface(
@@ -79,6 +83,33 @@ fun <T> CenteredDropdownPopup(
                 }
             }
 
+            if (inline && showPopup) {
+                HorizontalDivider()
+                Column(modifier = Modifier.padding(horizontal = 8.dp)) {
+                    options.forEachIndexed { idx, option ->
+                        val isSel = option == selected
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    onSelect(option)
+                                    showPopup = false
+                                }
+                                .padding(horizontal = 8.dp, vertical = 12.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(selected = isSel, onClick = null)
+                            Spacer(Modifier.width(12.dp))
+                            Text(
+                                optionLabel(option), style = MaterialTheme.typography.bodyLarge,
+                                color = if (isSel) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                        if (idx != options.lastIndex) HorizontalDivider()
+                    }
+                }
+            }
+
             if (extraContent != null) {
                 Column(modifier = Modifier.padding(start = 12.dp, end = 12.dp, bottom = 8.dp, top = 0.dp)) {
                     extraContent()
@@ -87,7 +118,7 @@ fun <T> CenteredDropdownPopup(
         }
     }
 
-    if (showPopup) {
+    if (showPopup && !inline) {
         Dialog(onDismissRequest = { showPopup = false }) {
             Card(
                 shape = RoundedCornerShape(14.dp), modifier = Modifier
