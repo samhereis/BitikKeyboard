@@ -39,7 +39,7 @@ object BottomRowBuilder {
     private var carousel: LanguageCarousel? = null
 
     private fun keyboardLabel(system: WritingSystem) = when (system) {
-        WritingSystem.Bitik -> "Bitik"
+        WritingSystem.Bitik -> "𐰌𐰄𐱆𐰚"
         WritingSystem.Latin -> "Latin"
         WritingSystem.Kiril -> "Кирил"
         WritingSystem.Arab -> "العربية"
@@ -67,7 +67,7 @@ object BottomRowBuilder {
                 maxLines = 1
                 gravity = Gravity.CENTER
                 textSize = 15f
-                setTypeface(null, Typeface.BOLD)
+                setTypeface(KeyboardTheme.typefaceFor(service, text), Typeface.BOLD)
             }
         }
         private val widths = ArrayList<Float>()
@@ -192,6 +192,83 @@ object BottomRowBuilder {
         service.currentInputConnection?.setSelection(start, end)
     }
 
+    /** Enter keeps its tap; dragging sideways from it right away moves the cursor, like the space bar used to. */
+    private fun wireEnterCursorDrag(service: InputMethodService, key: View) {
+        val density = key.resources.displayMetrics.density
+        val stepPx = density * 10
+        val slopPx = density * 12
+        val tint = KeyboardTheme.getSystemButtonStyle(service).textColor.toColorInt()
+        val dragIcon = android.widget.ImageView(service).apply {
+            setImageResource(com.shoktuk.shoktukkeyboard.R.drawable.ic_drag_all)
+            setColorFilter(tint)
+            layoutParams = FrameLayout.LayoutParams(dpToPx(service, 26), dpToPx(service, 26), Gravity.CENTER)
+        }
+        val container = key as? ViewGroup
+
+        fun show(active: Boolean) {
+            container?.let { group ->
+                for (i in 0 until group.childCount) {
+                    val child = group.getChildAt(i)
+                    if (child !== dragIcon) child.alpha = if (active) 0f else 1f
+                }
+                if (active && dragIcon.parent == null && group is FrameLayout) group.addView(dragIcon)
+                if (!active) group.removeView(dragIcon)
+            }
+            key.foreground = if (active) ColorDrawable(tint).apply { alpha = 40 } else null
+        }
+
+        var downX = 0f
+        var lastStep = 0
+        var cursorMode = false
+
+        key.setOnTouchListener { v, e ->
+            when (e.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    downX = e.x
+                    lastStep = 0
+                    cursorMode = false
+                    v.isPressed = true
+                    v.parent?.requestDisallowInterceptTouchEvent(true)
+                    true
+                }
+
+                MotionEvent.ACTION_MOVE -> {
+                    if (!cursorMode && kotlin.math.abs(e.x - downX) > slopPx) {
+                        cursorMode = true
+                        v.isPressed = false
+                        // Steps count from where the drag began, not from the touch-down point.
+                        downX = e.x
+                        Haptics.longPress(key)
+                        show(true)
+                    } else if (cursorMode) {
+                        val step = ((e.x - downX) / stepPx).toInt()
+                        if (step != lastStep) {
+                            val delta = step - lastStep
+                            lastStep = step
+                            val et = extracted(service)
+                            if (et != null) {
+                                val newPos = (et.selectionEnd + delta).coerceIn(0, (et.text?.length ?: 0))
+                                setSel(service, newPos, newPos)
+                            }
+                        }
+                    }
+                    true
+                }
+
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    v.isPressed = false
+                    if (cursorMode) show(false)
+                    else if (e.actionMasked == MotionEvent.ACTION_UP) v.performClick()
+                    cursorMode = false
+                    v.parent?.requestDisallowInterceptTouchEvent(false)
+                    true
+                }
+
+                else -> false
+            }
+        }
+    }
+
     fun createBottomRow(
         service: InputMethodService, isCaps: Boolean, mode: KeyboardMode, buttonHeight: Int, onModeChange: (KeyboardMode) -> Unit,
     ): LinearLayout {
@@ -288,6 +365,7 @@ object BottomRowBuilder {
         val rightArrow = arrow("▸")
         val keyboardName = TextView(service).apply {
             text = keyboardLabel(MyKeyboardService.current_writingSystem)
+            typeface = KeyboardTheme.typefaceFor(service, text)
             gravity = Gravity.CENTER
             setTextColor(mutedColor)
             maxLines = 1
@@ -483,6 +561,7 @@ object BottomRowBuilder {
         }
 
         if (Build.VERSION.SDK_INT >= 21) returnView.clipToOutline = true
+        if (MyKeyboardService.keyboardMode != KeyboardMode.SavedStrings) wireEnterCursorDrag(service, returnView)
         bottomRow.addView(returnView)
         return bottomRow
     }

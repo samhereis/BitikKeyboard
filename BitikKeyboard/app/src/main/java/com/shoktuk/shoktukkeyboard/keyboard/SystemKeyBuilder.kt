@@ -246,6 +246,9 @@ object SystemKeyBuilder {
         }
     }
 
+    /** A tap deletes one character; only a hold this long starts repeating. */
+    private const val HOLD_TO_REPEAT_MILLIS = 400L
+
     private fun wireDelete(root: View, service: InputMethodService) {
         val handler = Handler(Looper.getMainLooper())
         val interval = 100L
@@ -274,7 +277,7 @@ object SystemKeyBuilder {
                     }
 
                     performDelete(service)
-                    handler.postDelayed(repeater, interval)
+                    handler.postDelayed(repeater, HOLD_TO_REPEAT_MILLIS)
                     true
                 }
 

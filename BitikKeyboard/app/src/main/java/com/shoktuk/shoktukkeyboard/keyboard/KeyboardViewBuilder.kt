@@ -128,23 +128,21 @@ object KeyboardViewBuilder {
 
         val shiftKey = row.find { it.name == "Shift" }
         val delKey = row.find { it.name == "Del" }
-        val middleKeys = row.filter { it.name != "Shift" && it.name != "Del" && it.name != "kgKey" }
+        // On the symbols screen the free button is a system key that takes up the row's spare width.
+        val freeKey = if (mode == KeyboardMode.Symbols || mode == KeyboardMode.Emojis) row.find { it.name == "kg" } else null
+        val middleKeys = row.filter { it.name != "Shift" && it.name != "Del" && it.name != "kgKey" && it != freeKey }
 
-        shiftKey?.let {
+        val isArab = MyKeyboardService.current_writingSystem == WritingSystem.Arab
+
+        // Arabic has no case: its shift slot goes to the wider backspace (savables live in the top bar).
+        shiftKey?.takeIf { !isArab }?.let {
             val view = SystemKeyBuilder.forKey(
                 service, it, isCaps, buttonHeight, maxKeyCount, onCapsChange, KeyboardTheme.getSystemButtonStyle(service)
             )
 
-            if (MyKeyboardService.current_writingSystem == WritingSystem.Arab) {
-                view.setOnClickListener {
-                    onModeChange.invoke(KeyboardMode.SavedStrings)
-                    true
-                }
-            } else {
-                view.setOnLongClickListener {
-                    onModeChange.invoke(KeyboardMode.SavedStrings)
-                    true
-                }
+            view.setOnLongClickListener {
+                onModeChange.invoke(KeyboardMode.SavedStrings)
+                true
             }
 
             val params = LinearLayout.LayoutParams(
@@ -155,10 +153,26 @@ object KeyboardViewBuilder {
             rowLayout.addView(view)
         }
 
+        // On the symbols screen the free button is the shift slot's system key: same size and look.
+        freeKey?.let { key ->
+            val entry = process(key, mode)
+            val click = entry.lowercase.orEmpty()
+            val hold = entry.lowerCaseHold
+            val view = SystemKeyBuilder.systemButton_Text(
+                service = service, text = click, buttonHeight = buttonHeight, onClick = {
+                    onKeyPressed?.invoke(service.currentInputConnection, click)
+                }, onLongClick = {
+                    hold?.let { onKeyPressed?.invoke(service.currentInputConnection, it) }
+                })
+            view.layoutParams = LinearLayout.LayoutParams(systemKeybWidth, buttonHeight)
+            rowLayout.addView(view)
+        }
+
         val middleContainer = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f)
+            layoutParams = if (isArab) LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, buttonHeight)
+            else LinearLayout.LayoutParams(0, buttonHeight, 1f)
             clipChildren = false
             clipToPadding = false
         }
@@ -193,8 +207,8 @@ object KeyboardViewBuilder {
         delKey?.let {
             val view = SystemKeyBuilder.forKey(service, it, isCaps, buttonHeight, maxKeyCount, onCapsChange)
             val params = LinearLayout.LayoutParams(
-                systemKeybWidth, buttonHeight
-            )
+                if (isArab) 0 else systemKeybWidth, buttonHeight
+            ).apply { if (isArab) weight = 1f }
             view.layoutParams = params
 
             if (isLeftSide) {
@@ -295,52 +309,46 @@ object KeyboardViewBuilder {
                     }
                 }
             } else {
-                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinVariant == Latin_Variant.minimal && context.latinZH == Latin_ZH.c) {
-                    if (key.name == "j") {
-                        keyToSet = keyToSet.copy(
-                            lowercase = "c", lowerCaseRomanization = "j", lowerCaseHold = "j", uppercase = "C", upperCaseRomanization = "J", upperCaseHold = "J"
-                        )
+                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) {
+                    val minimal = context.latinVariant == Latin_Variant.minimal
+
+                    if (minimal && context.latinZH == Latin_ZH.c) {
+                        if (key.name == "row2_6") {
+                            keyToSet = keyToSet.copy(
+                                lowercase = "c", lowerCaseRomanization = "j", lowerCaseHold = "j", uppercase = "C", upperCaseRomanization = "J", upperCaseHold = "J"
+                            ).withAlternates(listOf("j", "ç", "ć", "č", "ĉ", "ċ"))
+                        }
+
+                        if (key.name == "row3_2") {
+                            keyToSet = keyToSet.copy(
+                                lowerCaseHold = null, lowerCaseRomanization = null, lowerCaseRomanization_Alt = null, upperCaseHold = null, upperCaseRomanization = null, upperCaseRomanization_Alt = null,
+                                lowerCaseAlternates = null, upperCaseAlternates = null
+                            )
+                        }
                     }
 
-                    if (key.name == "ç") {
-                        keyToSet = keyToSet.copy(
-                            lowerCaseHold = null, lowerCaseRomanization = null, lowerCaseRomanization_Alt = null, upperCaseHold = null, upperCaseRomanization = null, upperCaseRomanization_Alt = null
-                        )
-                    }
-                }
-
-                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinVariant == Latin_Variant.minimal && context.latinZH == Latin_ZH.j && context.latinCH == Latin_CH.c) {
-                    if (key.name == "ç") {
+                    if (minimal && context.latinZH == Latin_ZH.j && context.latinCH == Latin_CH.c && key.name == "row3_2") {
                         keyToSet = keyToSet.copy(
                             lowercase = "c", lowerCaseRomanization = "ç", lowerCaseHold = "ç", uppercase = "C", upperCaseRomanization = "Ç", upperCaseHold = "Ç"
-                        )
-                    }
-                }
-
-                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinNG == Latin_NG.ng) {
-                    if (key.name == "ñ") {
-                        keyToSet = keyToSet.copy(lowercase = "ŋ", uppercase = "Ŋ")
+                        ).withAlternates(listOf("ç", "ć", "č", "ĉ", "ċ"))
                     }
 
-                    if (key.name == "n") {
-                        keyToSet = keyToSet.copy(
-                            lowerCaseRomanization = "ñ", lowerCaseHold = "ñ", upperCaseRomanization = "Ñ", upperCaseHold = "Ñ"
-                        )
-                    }
-                }
-
-                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && context.latinO == Latin_O.oBarred) {
-                    val oHintKeyName = if (context.latinVariant == Latin_Variant.minimal) "o/u" else "o"
-                    val oLetterKeyName = if (context.latinVariant == Latin_Variant.minimal) "rt, lt" else "ö"
-
-                    if (key.name == oHintKeyName) {
-                        keyToSet = keyToSet.copy(
-                            lowerCaseRomanization = "ö", lowerCaseHold = "ö", upperCaseRomanization = "Ö", upperCaseHold = "Ö"
-                        )
+                    if (context.latinNG == Latin_NG.ng) {
+                        if (minimal && key.name == "row3_1") {
+                            keyToSet = keyToSet.copy(lowercase = "ŋ", uppercase = "Ŋ").withAlternates(listOf("x", "ñ"))
+                        }
+                        if (!minimal && key.name == "row2_11") {
+                            keyToSet = keyToSet.copy(lowercase = "ŋ", uppercase = "Ŋ").withAlternates(listOf("ŋ", "ñ"))
+                        }
                     }
 
-                    if (key.name == oLetterKeyName) {
-                        keyToSet = keyToSet.copy(lowercase = "ө", uppercase = "Ө")
+                    if (context.latinO == Latin_O.oBarred) {
+                        if (minimal && key.name == "row2_5") {
+                            keyToSet = keyToSet.copy(lowercase = "ө", uppercase = "Ө").withAlternates(listOf("h", "ö"))
+                        }
+                        if (!minimal && key.name == "row3_8") {
+                            keyToSet = keyToSet.copy(lowercase = "ө", uppercase = "Ө").withAlternates(listOf("ө", "ö"))
+                        }
                     }
                 }
 

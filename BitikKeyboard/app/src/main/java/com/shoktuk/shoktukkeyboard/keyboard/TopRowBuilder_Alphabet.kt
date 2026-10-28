@@ -108,6 +108,10 @@ object TopRowBuilder_Alphabet {
 
         centerSlot.addView(lastWordContainer)
         rowLayout.addView(switchLanguageView)
+        rowLayout.addView(
+            SystemKeyBuilder.systemButton_Text(
+                service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
+        )
         rowLayout.addView(centerSlot)
         rowLayout.addView(
             SystemKeyBuilder.systemButton_Icon(

@@ -1,5 +1,6 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
+import Haptics
 import android.content.Context
 import android.graphics.Color
 import android.graphics.Paint
@@ -30,6 +31,7 @@ import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
 import kotlin.math.max
+import kotlin.math.min
 import kotlin.math.roundToInt
 
 class KeyView(
@@ -49,6 +51,9 @@ class KeyView(
     private var isLongPressed = false
     private var currentBackgroundColorIndex = 0
     private var popupWindow: PopupWindow? = null
+    private var picker: AlternatesPicker? = null
+    private var lastRawX = 0f
+    private var lastRawY = 0f
 
     private lateinit var mainText: TextView
     private lateinit var subText_bottom: TextView
@@ -155,7 +160,7 @@ class KeyView(
 
         val mainPx = pxFromSp(mainTextSize, context)
         mainText.apply {
-            text = getCurrentMainText()
+            text = getCurrentMainText()?.markDisplay()
             setTextColor(style.textColor.toColorInt())
             setTextSize(TypedValue.COMPLEX_UNIT_PX, mainPx)
             typeface = if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) KeyboardTheme.bitikTypeface(context) else null
@@ -258,6 +263,15 @@ class KeyView(
                 hasHoldValue = true
             }
 
+            val alternates = currentAlternates()
+            if (isTouchInBounds && alternates.isNotEmpty()) {
+                isLongPressed = true
+                dismissOverlay()
+                Haptics.longPress(this)
+                picker = AlternatesPicker(this, alternates, currentAlternateHints(), lastRawX, lastRawY)
+                return@Runnable
+            }
+
             if (isTouchInBounds && hasHoldValue) {
                 isLongPressed = true
                 onLongPress(getCurrentMainText_Hold())
@@ -272,6 +286,8 @@ class KeyView(
         setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    lastRawX = event.rawX
+                    lastRawY = event.rawY
                     isTouchInBounds = true
                     handler.postDelayed(longPressRunnable, longPressDelay)
                     showOverlay()
@@ -279,6 +295,12 @@ class KeyView(
                 }
 
                 MotionEvent.ACTION_MOVE -> {
+                    lastRawX = event.rawX
+                    lastRawY = event.rawY
+                    picker?.let {
+                        it.moveTo(event.rawX, event.rawY)
+                        return@setOnTouchListener true
+                    }
                     val inBounds = event.x in 0f..width.toFloat() && event.y in 0f..height.toFloat()
                     if (isTouchInBounds != inBounds) {
                         isTouchInBounds = inBounds
@@ -291,6 +313,16 @@ class KeyView(
                 }
 
                 MotionEvent.ACTION_UP -> {
+                    picker?.let {
+                        val chosen = it.selectedText()
+                        it.dismiss()
+                        picker = null
+                        handler.removeCallbacks(longPressRunnable)
+                        onKeyClick(chosen)
+                        TopRowBuilder_Old.onTypedListener?.invoke()
+                        resetState()
+                        return@setOnTouchListener true
+                    }
                     if (isTouchInBounds && !isLongPressed) {
                         performClick()
                     }
@@ -301,6 +333,8 @@ class KeyView(
                 }
 
                 MotionEvent.ACTION_CANCEL -> {
+                    picker?.dismiss()
+                    picker = null
                     handler.removeCallbacks(longPressRunnable)
                     dismissOverlay()
                     resetState()
@@ -371,7 +405,7 @@ class KeyView(
             }
 
             val main = TextView(context).apply {
-                text = getCurrentMainText()
+                text = getCurrentMainText()?.markDisplay()
                 setTextColor(style.textColor.toColorInt())
                 setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp)
                 maxLines = 1
@@ -402,7 +436,7 @@ class KeyView(
             val main = if (isLongPressed) getCurrentMainText_Hold() else getCurrentMainText()
             val hint = if (isLongPressed) getCurrentSubText_Hold() else getCurrentSubText()
 
-            overlayMainText?.text = (main ?: "").toString()
+            overlayMainText?.text = (main ?: "").markDisplay()
 
             var colorToSet: Int = KeyboardTheme.getColor(1).toColorInt()
             colorToSet = if (isCaps) {
@@ -482,6 +516,16 @@ class KeyView(
         (root as ViewGroup).addView(indicator)
     }
 
+    /** Hold always opens the picker: the key's variants, else its legacy hold value, else just its own glyph. */
+    private fun currentAlternates(): List<String> {
+        if (key.name == "Shift" || key.name == "Del" || key.name.isNullOrEmpty()) return emptyList()
+        val variants = (if (isCaps) key.upperCaseAlternates else key.lowerCaseAlternates).orEmpty()
+        if (variants.isNotEmpty()) return variants
+        return listOfNotNull(getCurrentMainText_Hold() ?: getCurrentMainText()).filter { it.isNotEmpty() }
+    }
+
+    private fun currentAlternateHints(): List<String> = (if (isCaps) key.upperCaseAlternateHints else key.lowerCaseAlternateHints).orEmpty()
+
     private fun getCurrentMainText(): String? = if (isCaps) key.uppercase else key.lowercase
 
     private fun getCurrentSubText(): CharSequence? = if (isCaps) key.upperCaseRomanization ?: "" else key.lowerCaseRomanization ?: ""
@@ -491,6 +535,134 @@ class KeyView(
     private fun getCurrentMainText_Hold(): String? = if (isCaps) key.upperCaseHold else key.lowerCaseHold
 
     private fun getCurrentSubText_Hold(): CharSequence? = if (isCaps) key.upperCaseHoldHint ?: "" else key.lowerCaseHoldHint ?: ""
+
+    /** The strip shown above a held key: drag sideways to pick one of its variants, release to type it. */
+    private inner class AlternatesPicker(
+        private val anchor: View, private val items: List<String>, private val hints: List<String>, holdRawX: Float, holdRawY: Float
+    ) {
+        // Neutral backdrop so the highlighted cell stands out even on vowel keys, whose own fill matches the highlight.
+        private val backdrop = KeyboardTheme.getLetterButtonStyle_Normal(context)
+        private val density = resources.displayMetrics.density
+        private val maxCell = 40 * density
+        private val minCell = 26 * density
+        private val cell: Float
+        private val direction: Int
+        private val originX = holdRawX
+        private val originY = holdRawY
+        private var selected = 0
+        private val cells = arrayOfNulls<LinearLayout>(items.size)
+        private val perRow: Int
+        private val rows: Int
+        private val popup: PopupWindow
+
+        init {
+            val location = IntArray(2)
+            anchor.getLocationOnScreen(location)
+            val screenWidth = resources.displayMetrics.widthPixels
+            val midX = location[0] + anchor.width / 2f
+            val margin = 4 * density
+            val rightRoom = screenWidth - midX - margin
+            val leftRoom = midX - margin
+            direction = if (rightRoom >= leftRoom) 1 else -1
+            val steps = max(items.size - 0.5f, 1f)
+            val room = max(rightRoom, leftRoom)
+            cell = (room / steps).coerceIn(minCell, maxCell)
+            // Even at the narrowest cell some variants may not fit on one row: the rest wrap onto rows above.
+            perRow = min(items.size, max((room / cell + 0.51f).toInt(), 1))
+            rows = (items.size + perRow - 1) / perRow
+
+            items.indices.forEach { index ->
+                val c = LinearLayout(context).apply {
+                    orientation = LinearLayout.VERTICAL
+                    gravity = Gravity.CENTER
+                    addView(TextView(context).apply {
+                        text = items[index].markDisplay()
+                        gravity = Gravity.CENTER
+                        setTextColor(backdrop.textColor.toColorInt())
+                        setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp)
+                        includeFontPadding = false
+                    })
+                    val hint = hints.getOrNull(index).orEmpty()
+                    if (hint.isNotEmpty()) {
+                        addView(TextView(context).apply {
+                            text = hint
+                            gravity = Gravity.CENTER
+                            setTextColor(backdrop.textColor.toColorInt())
+                            setTextSize(TypedValue.COMPLEX_UNIT_SP, 9f)
+                            includeFontPadding = false
+                        })
+                    }
+                }
+                cells[index] = c
+            }
+            // Row 0 sits closest to the key; further rows stack above it.
+            val grid = LinearLayout(context).apply { orientation = LinearLayout.VERTICAL }
+            for (r in rows - 1 downTo 0) {
+                val indices = (r * perRow until min((r + 1) * perRow, items.size)).toList()
+                grid.addView(LinearLayout(context).apply {
+                    orientation = LinearLayout.HORIZONTAL
+                    gravity = if (direction > 0) Gravity.START else Gravity.END
+                    (if (direction > 0) indices else indices.reversed()).forEach { index ->
+                        addView(cells[index], LinearLayout.LayoutParams(cell.toInt(), anchor.height))
+                    }
+                }, LinearLayout.LayoutParams((cell * perRow).toInt(), anchor.height))
+            }
+            val pad = (4 * density).toInt()
+            val frame = FrameLayout(context).apply {
+                background = GradientDrawable().apply {
+                    setColor(backdrop.fillColor.toColorInt())
+                    cornerRadius = 12 * density
+                    setStroke((1 * density).toInt(), backdrop.textColor.toColorInt() and 0x00FFFFFF or 0x55000000)
+                }
+                elevation = 6 * density
+                setPadding(pad, pad, pad, pad)
+                addView(grid)
+            }
+            val totalWidth = (cell * perRow).toInt() + 2 * pad
+            popup = PopupWindow(frame, totalWidth, anchor.height * rows + 2 * pad).apply {
+                isTouchable = false
+                isFocusable = false
+            }
+            val left = if (direction > 0) midX - cell / 2f - pad else midX + cell / 2f + pad - totalWidth
+            val xOff = (left - location[0]).toInt()
+            val yOff = -(anchor.height * (rows + 1) + 4 * pad)
+            popup.showAsDropDown(anchor, xOff, yOff, Gravity.START)
+            highlight()
+        }
+
+        private fun highlight() {
+            cells.forEachIndexed { index, c ->
+                c?.background = if (index == selected) GradientDrawable().apply {
+                    setColor(KeyboardTheme.getColor(4).toColorInt())
+                    cornerRadius = 8 * density
+                } else null
+            }
+        }
+
+        fun moveTo(rawX: Float, rawY: Float) {
+            val column = ((rawX - originX) * direction / cell).roundToInt().coerceIn(0, perRow - 1)
+            // Dragging up from the hold point reaches the rows above.
+            val row = ((originY - rawY) / anchor.height).roundToInt().coerceIn(0, rows - 1)
+            val step = (row * perRow + column).coerceAtMost(items.lastIndex)
+            if (step != selected) {
+                selected = step
+                highlight()
+                Haptics.contextClick(anchor)
+            }
+        }
+
+        fun selectedText(): String = items[selected]
+
+        fun dismiss() {
+            try {
+                popup.dismiss()
+            } catch (_: Throwable) {
+            }
+        }
+    }
+
+    private fun String.markDisplay(): String =
+        if (isNotEmpty() && Character.getType(codePointAt(0)) == Character.NON_SPACING_MARK.toInt()) "\u25CC" + this else this
 
     fun dismissOverlay() {
         try {

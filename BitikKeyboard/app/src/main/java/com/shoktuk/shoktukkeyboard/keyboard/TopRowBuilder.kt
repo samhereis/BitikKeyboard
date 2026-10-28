@@ -52,6 +52,10 @@ object TopRowBuilder {
         val switchLanguageView = SystemKeyBuilder.systemButton_Text(
             service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() })
         rowLayout.addView(switchLanguageView)
+        rowLayout.addView(
+            SystemKeyBuilder.systemButton_Text(
+                service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
+        )
 
         val scrollView = HorizontalScrollView(service).apply {
             isHorizontalScrollBarEnabled = false

@@ -14,6 +14,8 @@ data class KeyEntry(
     val backgroundColorIndex_lowercase: Int? = 1,
     val backgroundColorIndex_lowercase_Hold: Int? = 1,
     var lowerCase_HoldabilityIndicator: String? = "",
+    val lowerCaseAlternates: List<String>? = null,
+    val lowerCaseAlternateHints: List<String>? = null,
 
     val uppercase: String? = "",
     val upperCaseRomanization: String? = "",
@@ -23,4 +25,14 @@ data class KeyEntry(
     val backgroundColorIndex_uppercase: Int? = 1,
     val backgroundColorIndex_uppercase_Hold: Int? = 1,
     var uppercase_HoldabilityIndicator: String? = "",
-)
+    val upperCaseAlternates: List<String>? = null,
+    val upperCaseAlternateHints: List<String>? = null,
+) {
+    /** Hold-and-drag list for both cases (first entry = what a plain hold-and-release types). */
+    fun withAlternates(lower: List<String>): KeyEntry = copy(
+        lowerCaseAlternates = lower,
+        lowerCaseAlternateHints = null,
+        upperCaseAlternates = lower.map { it.uppercase() }.filter { it.length == 1 },
+        upperCaseAlternateHints = null
+    )
+}

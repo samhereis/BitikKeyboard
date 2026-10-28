@@ -6,17 +6,17 @@
   "rows": [
     [
       {
-        "name": "q",
+        "name": "row1_0",
         "lowercase": "q",
         "uppercase": "Q"
       },
       {
-        "name": "w",
+        "name": "row1_1",
         "lowercase": "w",
         "uppercase": "W"
       },
       {
-        "name": "a",
+        "name": "row1_2",
         "lowercase": "e",
         "lowerCaseRomanization": "ə",
         "lowerCaseHold": "ə",
@@ -24,25 +24,73 @@
         "uppercase": "E",
         "upperCaseRomanization": "Ə",
         "upperCaseHold": "Ə",
-        "backgroundColorIndex_uppercase": 4
+        "backgroundColorIndex_uppercase": 4,
+        "lowerCaseAlternates": [
+          "ə",
+          "é",
+          "è",
+          "ê",
+          "ë",
+          "ē",
+          "ė",
+          "ę"
+        ],
+        "upperCaseAlternates": [
+          "Ə",
+          "É",
+          "È",
+          "Ê",
+          "Ë",
+          "Ē",
+          "Ė",
+          "Ę"
+        ]
       },
       {
-        "name": "р",
+        "name": "row1_3",
         "lowercase": "r",
-        "uppercase": "R"
+        "uppercase": "R",
+        "lowerCaseAlternates": [
+          "r",
+          "ř"
+        ],
+        "upperCaseAlternates": [
+          "R",
+          "Ř"
+        ]
       },
       {
-        "name": "t",
+        "name": "row1_4",
         "lowercase": "t",
-        "uppercase": "T"
+        "uppercase": "T",
+        "lowerCaseAlternates": [
+          "t",
+          "ť",
+          "þ"
+        ],
+        "upperCaseAlternates": [
+          "T",
+          "Ť",
+          "Þ"
+        ]
       },
       {
-        "name": "y",
+        "name": "row1_5",
         "lowercase": "y",
-        "uppercase": "Y"
+        "uppercase": "Y",
+        "lowerCaseAlternates": [
+          "y",
+          "ý",
+          "ÿ"
+        ],
+        "upperCaseAlternates": [
+          "Y",
+          "Ý",
+          "Ÿ"
+        ]
       },
       {
-        "name": "o, u",
+        "name": "row1_6",
         "lowercase": "u",
         "lowerCaseRomanization": "ū",
         "lowerCaseHold": "ū",
@@ -50,38 +98,94 @@
         "uppercase": "U",
         "upperCaseRomanization": "Ū",
         "upperCaseHold": "Ū",
-        "backgroundColorIndex_uppercase": 4
+        "backgroundColorIndex_uppercase": 4,
+        "lowerCaseAlternates": [
+          "ū",
+          "ú",
+          "ù",
+          "û",
+          "ů"
+        ],
+        "upperCaseAlternates": [
+          "Ū",
+          "Ú",
+          "Ù",
+          "Û",
+          "Ů"
+        ]
       },
       {
-        "name": "i",
+        "name": "row1_7",
         "lowercase": "i",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "İ",
-        "backgroundColorIndex_uppercase": 4
+        "backgroundColorIndex_uppercase": 4,
+        "lowerCaseAlternates": [
+          "i",
+          "í",
+          "ì",
+          "î",
+          "ï",
+          "ī",
+          "į"
+        ],
+        "upperCaseAlternates": [
+          "İ",
+          "Í",
+          "Ì",
+          "Î",
+          "Ï",
+          "Ī",
+          "Į"
+        ]
       },
       {
-        "name": "o",
+        "name": "row1_8",
         "lowercase": "o",
-        "lowerCaseRomanization": "ө",
-        "lowerCaseHold": "ө",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "O",
-        "upperCaseRomanization": "Ө",
-        "upperCaseHold": "Ө",
-        "backgroundColorIndex_uppercase": 4
+        "backgroundColorIndex_uppercase": 4,
+        "lowerCaseAlternates": [
+          "o",
+          "ó",
+          "ò",
+          "ô",
+          "õ",
+          "ø",
+          "ō",
+          "œ"
+        ],
+        "upperCaseAlternates": [
+          "O",
+          "Ó",
+          "Ò",
+          "Ô",
+          "Õ",
+          "Ø",
+          "Ō",
+          "Œ"
+        ]
       },
       {
-        "name": "p",
+        "name": "row1_9",
         "lowercase": "p",
         "uppercase": "P"
       },
       {
-        "name": "ş",
+        "name": "row1_10",
         "lowercase": "ş",
-        "uppercase": "Ş"
+        "uppercase": "Ş",
+        "lowerCaseAlternates": [
+          "ş",
+          "š"
+        ],
+        "upperCaseAlternates": [
+          "Ş",
+          "Š"
+        ]
       },
       {
-        "name": "ü",
+        "name": "row1_11",
         "lowercase": "ü",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "Ü",
@@ -90,76 +194,162 @@
     ],
     [
       {
-        "name": "oq, uq",
+        "name": "row2_0",
         "lowercase": "a",
         "lowerCaseRomanization": "ä",
-        "lowerCaseHold":"ä",
+        "lowerCaseHold": "ä",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "A",
         "upperCaseRomanization": "Ä",
         "upperCaseHold": "Ä",
-        "backgroundColorIndex_uppercase": 4
+        "backgroundColorIndex_uppercase": 4,
+        "lowerCaseAlternates": [
+          "ä",
+          "á",
+          "à",
+          "â",
+          "ã",
+          "å",
+          "ā",
+          "æ"
+        ],
+        "upperCaseAlternates": [
+          "Ä",
+          "Á",
+          "À",
+          "Â",
+          "Ã",
+          "Å",
+          "Ā",
+          "Æ"
+        ]
       },
       {
-        "name": "s",
+        "name": "row2_1",
         "lowercase": "s",
-        "uppercase": "S"
+        "uppercase": "S",
+        "lowerCaseAlternates": [
+          "s",
+          "ś",
+          "š",
+          "ş",
+          "ß"
+        ],
+        "upperCaseAlternates": [
+          "S",
+          "Ś",
+          "Š",
+          "Ş",
+          "ẞ"
+        ]
       },
       {
-        "name": "d",
+        "name": "row2_2",
         "lowercase": "d",
-        "uppercase": "D"
+        "uppercase": "D",
+        "lowerCaseAlternates": [
+          "d",
+          "ď",
+          "ð"
+        ],
+        "upperCaseAlternates": [
+          "D",
+          "Ď",
+          "Ð"
+        ]
       },
       {
-        "name": "f",
+        "name": "row2_3",
         "lowercase": "f",
         "uppercase": "F"
       },
       {
-        "name": "g",
+        "name": "row2_4",
         "lowercase": "g",
-        "uppercase": "G"
+        "uppercase": "G",
+        "lowerCaseAlternates": [
+          "g",
+          "ĝ",
+          "ġ",
+          "ģ",
+          "ǧ",
+          "ǵ"
+        ],
+        "upperCaseAlternates": [
+          "G",
+          "Ĝ",
+          "Ġ",
+          "Ģ",
+          "Ǧ",
+          "Ǵ"
+        ]
       },
       {
-        "name": "h",
+        "name": "row2_5",
         "lowercase": "h",
         "uppercase": "H"
       },
       {
-        "name": "j",
+        "name": "row2_6",
         "lowercase": "j",
         "uppercase": "J"
       },
       {
-        "name": "k",
+        "name": "row2_7",
         "lowercase": "k",
         "uppercase": "K"
       },
       {
-        "name": "l",
+        "name": "row2_8",
         "lowercase": "l",
-        "uppercase": "L"
+        "uppercase": "L",
+        "lowerCaseAlternates": [
+          "l",
+          "ł",
+          "ľ"
+        ],
+        "upperCaseAlternates": [
+          "L",
+          "Ł",
+          "Ľ"
+        ]
       },
       {
-        "name": "ğ",
+        "name": "row2_9",
         "lowercase": "ğ",
         "lowerCaseRomanization": "ƣ",
         "lowerCaseHold": "ƣ",
         "uppercase": "Ğ",
         "upperCaseRomanization": "Ƣ",
-        "upperCaseHold": "Ƣ"
+        "upperCaseHold": "Ƣ",
+        "lowerCaseAlternates": [
+          "ƣ",
+          "ɣ"
+        ],
+        "upperCaseAlternates": [
+          "Ƣ",
+          "Ɣ"
+        ]
       },
       {
-        "name": "ı",
+        "name": "row2_10",
         "lowercase": "ı",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "I",
         "backgroundColorIndex_uppercase": 4
       },
       {
-        "name": "ñ",
+        "name": "row2_11",
         "lowercase": "ñ",
-        "uppercase": "Ñ"
+        "uppercase": "Ñ",
+        "lowerCaseAlternates": [
+          "ñ",
+          "ŋ"
+        ],
+        "upperCaseAlternates": [
+          "Ñ",
+          "Ŋ"
+        ]
       }
     ],
     [
@@ -167,56 +357,96 @@
         "name": "Shift"
       },
       {
-        "name": "z",
+        "name": "row3_0",
         "lowercase": "z",
-        "uppercase": "Z"
+        "uppercase": "Z",
+        "lowerCaseAlternates": [
+          "z",
+          "ž",
+          "ź",
+          "ż"
+        ],
+        "upperCaseAlternates": [
+          "Z",
+          "Ž",
+          "Ź",
+          "Ż"
+        ]
       },
       {
-        "name": "x",
+        "name": "row3_1",
         "lowercase": "x",
         "uppercase": "X"
       },
       {
-        "name": "c",
+        "name": "row3_2",
         "lowercase": "c",
-        "uppercase": "C"
+        "uppercase": "C",
+        "lowerCaseAlternates": [
+          "c",
+          "ć",
+          "č",
+          "ĉ",
+          "ċ"
+        ],
+        "upperCaseAlternates": [
+          "C",
+          "Ć",
+          "Č",
+          "Ĉ",
+          "Ċ"
+        ]
       },
       {
-        "name": "v",
+        "name": "row3_3",
         "lowercase": "v",
         "uppercase": "V",
         "backgroundColorIndex_uppercase": 4
       },
       {
-        "name": "b",
+        "name": "row3_4",
         "lowercase": "b",
         "uppercase": "B"
       },
       {
-        "name": "n",
+        "name": "row3_5",
         "lowercase": "n",
-        "lowerCaseRomanization": "ŋ",
-        "lowerCaseHold": "ŋ",
         "uppercase": "N",
-        "upperCaseRomanization": "Ŋ",
-        "upperCaseHold": "Ŋ"
+        "lowerCaseAlternates": [
+          "n",
+          "ń",
+          "ň"
+        ],
+        "upperCaseAlternates": [
+          "N",
+          "Ń",
+          "Ň"
+        ]
       },
       {
-        "name": "m",
+        "name": "row3_6",
         "lowercase": "m",
         "uppercase": "M"
       },
       {
-        "name": "ç",
+        "name": "row3_7",
         "lowercase": "ç",
         "uppercase": "Ç"
       },
       {
-        "name": "ö",
+        "name": "row3_8",
         "lowercase": "ö",
         "backgroundColorIndex_lowercase": 4,
         "uppercase": "Ö",
-        "backgroundColorIndex_uppercase": 4
+        "backgroundColorIndex_uppercase": 4,
+        "lowerCaseAlternates": [
+          "ö",
+          "ө"
+        ],
+        "upperCaseAlternates": [
+          "Ö",
+          "Ө"
+        ]
       },
       {
         "name": "Del"

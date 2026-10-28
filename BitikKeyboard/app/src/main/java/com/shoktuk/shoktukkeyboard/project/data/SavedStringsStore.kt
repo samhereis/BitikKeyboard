@@ -18,10 +18,11 @@ private val DEFAULT_STRINGS: Map<WritingSystem, List<String>> = mapOf(
 
 private fun keyFor(script: WritingSystem) = "savedStringsJSON_${script.name}"
 
+/** Seeded defaults get ids derived from their content, so syncing never sees the same default twice. */
 private fun defaultItems(script: WritingSystem): List<SavedStringItem> {
     val now = System.currentTimeMillis()
     return (DEFAULT_STRINGS[script] ?: emptyList()).mapIndexed { index, text ->
-        SavedStringItem(id = UUID.randomUUID().toString(), text = text, sortOrder = index, modifiedAt = now)
+        SavedStringItem(id = UUID.nameUUIDFromBytes("$index|$text".toByteArray()).toString(), text = text, sortOrder = index, modifiedAt = now)
     }
 }
 

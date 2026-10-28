@@ -92,6 +92,17 @@ object KeyboardTheme {
             .also { cachedZamanchakTypeface = it }
     }
 
+    /** Zamanchak regardless of the user's font setting: system fonts have no Old Turkic glyphs. */
+    fun zamanchakTypeface(context: Context): android.graphics.Typeface? =
+        cachedZamanchakTypeface ?: androidx.core.content.res.ResourcesCompat.getFont(context, R.font.zamanchak)
+            .also { cachedZamanchakTypeface = it }
+
+    /** Old Turkic text keeps the user's chosen Bitik font, falling back to Zamanchak; anything else uses [normal]. */
+    fun typefaceFor(context: Context, text: CharSequence, normal: android.graphics.Typeface? = null): android.graphics.Typeface? {
+        val hasOldTurkic = text.codePoints().anyMatch { it in 0x10C00..0x10C4F }
+        return if (hasOldTurkic) (bitikTypeface(context) ?: zamanchakTypeface(context)) else normal
+    }
+
     fun getCachedPalette(): List<String> {
         if (cachedPalette == null) {
             cachedPalette = getDynamicColorPalette(isNight())

@@ -97,6 +97,10 @@ object TopRowBuilder_Old {
         var switchLanguageView = SystemKeyBuilder.systemButton_Text(
             service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() })
         rowLayout.addView(switchLanguageView)
+        rowLayout.addView(
+            SystemKeyBuilder.systemButton_Text(
+                service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
+        )
         val jsTranscriber = JSTranscriber(service)
 
         if (mode == TextTranscription.On) {

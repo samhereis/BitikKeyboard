@@ -36,7 +36,8 @@ object SavedStringsCloudStore {
                 byId[item.id] = item
             }
         }
-        return byId.values.sortedBy { it.sortOrder }
+        // Older installs saved their seeded defaults under random ids; the same text in the same slot is the same item.
+        return byId.values.groupBy { "${it.sortOrder}|${it.text}" }.values.map { group -> group.maxByOrNull { it.modifiedAt }!! }.sortedBy { it.sortOrder }
     }
 
     private fun fileName(script: WritingSystem, id: String) = "${filePrefix(script)}$id.json"
