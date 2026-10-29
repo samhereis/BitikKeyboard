@@ -6,6 +6,7 @@ import android.graphics.Typeface
 import android.graphics.Outline
 import android.graphics.drawable.ColorDrawable
 import android.inputmethodservice.InputMethodService
+import android.graphics.Color
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
@@ -72,6 +73,13 @@ object BottomRowBuilder {
 
     private const val KEEP_VISIBLE = "keepVisible"
 
+    /** Every key that can drag the cursor (space, enter) has one of these; they all show together while the cursor moves. */
+    private val cursorDragIcons = ArrayList<android.widget.ImageView>()
+
+    private fun showCursorDragIcons(active: Boolean) {
+        cursorDragIcons.forEach { it.alpha = if (active) 1f else 0f }
+    }
+
     /** A choice shown above a carousel item: Bitik's dialects, Latin's minimal / full layouts. */
     private class SubOption(val label: String, val isCurrent: Boolean, val children: List<SubOption> = emptyList(), val apply: () -> Unit)
 
@@ -115,31 +123,44 @@ object BottomRowBuilder {
      * A row with every keyboard and a highlight card under it. The card follows the finger (see [moveTo]), the items it
      * passes over light up, and [snapTo] settles it on one item.
      */
+    /** The system blue iOS uses for the picker's card. */
+    private const val CARD_BLUE = 0xFF007AFF.toInt()
+
+    /** The picker's card as on iOS: a blue capsule with a soft blue glow. */
+    private fun styleCard(card: View, density: Float) {
+        card.background = GradientDrawable().apply {
+            setColor(CARD_BLUE)
+            cornerRadius = 15 * density
+        }
+        card.elevation = 5 * density
+        if (Build.VERSION.SDK_INT >= 28) {
+            card.outlineSpotShadowColor = CARD_BLUE
+            card.outlineAmbientShadowColor = CARD_BLUE
+        }
+    }
+
     private class LanguageCarousel(
         service: InputMethodService, private val anchor: View, private val systems: List<WritingSystem>, start: Int, private val textColor: Int, private val fill: Int, fingerX: Float
     ) {
         private val density = service.resources.displayMetrics.density
         private val hPad = (10 * density).toInt()
-        private val windowHeight = (44 * density).toInt()
+        private val windowHeight = (38 * density).toInt()
         private val labels = systems.map { system ->
             TextView(service).apply {
-                text = keyboardLabel(system)
+                val name = keyboardLabel(system)
+                // A check mark shows which keyboard is in use right now.
+                text = if (system == MyKeyboardService.current_writingSystem) "✓ $name" else name
                 setTextColor(textColor)
                 maxLines = 1
                 gravity = Gravity.CENTER
                 textSize = 15f
-                setTypeface(KeyboardTheme.typefaceFor(service, text), Typeface.BOLD)
+                setTypeface(KeyboardTheme.typefaceFor(service, name), Typeface.BOLD)
             }
         }
         private val widths = ArrayList<Float>()
         val centers = ArrayList<Float>()
         private val totalWidth: Int
-        private val card = View(service).apply {
-            background = GradientDrawable().apply {
-                setColor(textColor and 0x00FFFFFF or 0x2A000000)
-                cornerRadius = 16 * density
-            }
-        }
+        private val card = View(service).apply { styleCard(this, density) }
         private val popup: PopupWindow
         private val frame: FrameLayout
         private var cardCenter = 0f
@@ -160,16 +181,19 @@ object BottomRowBuilder {
                 row.addView(label)
             }
             totalWidth = x.toInt()
-            val inset = (5 * density).toInt()
+            val inset = (4 * density).toInt()
 
             frame = FrameLayout(service).apply {
                 background = GradientDrawable().apply {
-                    setColor(fill)
-                    cornerRadius = 22 * density
-                    setStroke((1 * density).toInt(), textColor and 0x00FFFFFF or 0x55000000)
+                    setColor(fill and 0x00FFFFFF or 0xEE000000.toInt())
+                    cornerRadius = 19 * density
+                    setStroke((1 * density).toInt(), textColor and 0x00FFFFFF or 0x1F000000)
                 }
-                elevation = 6 * density
+                elevation = 12 * density
+                clipChildren = false
                 addView(card, FrameLayout.LayoutParams(widths[start].toInt(), windowHeight - 2 * inset).apply { topMargin = inset })
+                // The card's glow lifts it above its siblings, so the labels sit higher still.
+                row.elevation = 6 * density
                 addView(row, FrameLayout.LayoutParams(totalWidth, ViewGroup.LayoutParams.MATCH_PARENT))
             }
             val screenWidth = service.resources.displayMetrics.widthPixels
@@ -217,27 +241,27 @@ object BottomRowBuilder {
                 return rawY < location[1] - floor * (windowHeight + 4 * density)
             }
 
+            private var options: List<SubOption> = emptyList()
+
             fun show(centerX: Float, options: List<SubOption>) {
                 hide()
+                this.options = options
                 count = options.size
                 if (options.isEmpty()) return
                 val screenWidth = anchor.resources.displayMetrics.widthPixels
                 val width = options.size * cell
                 val margin = 4 * density
                 left = (centerX - width / 2f).coerceIn(margin, screenWidth - width - margin)
-                val inset = (5 * density).toInt()
+                val inset = (4 * density).toInt()
                 val newCard = View(anchor.context).apply {
-                    background = GradientDrawable().apply {
-                        setColor(textColor and 0x00FFFFFF or 0x2A000000)
-                        cornerRadius = 16 * density
-                    }
+                    styleCard(this, density)
                     alpha = 0f
                 }
                 card = newCard
                 labels = options.map { option ->
                     TextView(anchor.context).apply {
-                        text = option.label
-                        setTextColor(textColor)
+                        text = if (option.isCurrent) "✓ ${option.label}" else option.label
+                        setTextColor(if (option.isCurrent) CARD_BLUE else textColor)
                         textSize = 15f
                         gravity = Gravity.CENTER
                         setTypeface(null, if (option.isCurrent) Typeface.BOLD else Typeface.NORMAL)
@@ -248,12 +272,14 @@ object BottomRowBuilder {
                 labels.forEach { row.addView(it, LinearLayout.LayoutParams(cell, ViewGroup.LayoutParams.MATCH_PARENT)) }
                 val box = FrameLayout(anchor.context).apply {
                     background = GradientDrawable().apply {
-                        setColor(fill)
-                        cornerRadius = 22 * density
-                        setStroke((1 * density).toInt(), textColor and 0x00FFFFFF or 0x55000000)
+                        setColor(fill and 0x00FFFFFF or 0xEE000000.toInt())
+                        cornerRadius = 19 * density
+                        setStroke((1 * density).toInt(), textColor and 0x00FFFFFF or 0x1F000000)
                     }
-                    elevation = 6 * density
+                    elevation = 12 * density
+                    clipChildren = false
                     addView(newCard, FrameLayout.LayoutParams(cell, windowHeight - 2 * inset).apply { topMargin = inset })
+                    row.elevation = 6 * density
                     addView(row, FrameLayout.LayoutParams(width, ViewGroup.LayoutParams.MATCH_PARENT))
                 }
                 val window = PopupWindow(box, width, windowHeight).apply {
@@ -274,7 +300,10 @@ object BottomRowBuilder {
                     alpha = 1f
                     translationX = (index * cell).toFloat()
                 }
-                labels.forEachIndexed { i, label -> label.alpha = if (i == index) 1f else 0.5f }
+                labels.forEachIndexed { i, label ->
+                    label.alpha = if (i == index) 1f else if (options.getOrNull(i)?.isCurrent == true) 1f else 0.6f
+                    label.setTextColor(if (i == index) Color.WHITE else if (options.getOrNull(i)?.isCurrent == true) CARD_BLUE else textColor)
+                }
                 return index
             }
 
@@ -338,8 +367,11 @@ object BottomRowBuilder {
 
             labels.forEachIndexed { i, label ->
                 val t = (1f - kotlin.math.abs(cardCenter - centers[i]) / (widths[i] * 0.8f)).coerceIn(0f, 1f)
-                label.alpha = 0.4f + 0.6f * t
-                label.scaleX = 1f + 0.12f * t
+                val isCurrent = systems[i] == MyKeyboardService.current_writingSystem
+                val base = if (isCurrent) CARD_BLUE else textColor
+                label.setTextColor(androidx.core.graphics.ColorUtils.blendARGB(base, Color.WHITE, t))
+                label.alpha = if (isCurrent) 1f else 0.6f + 0.4f * t
+                label.scaleX = 1f + 0.2f * t
                 label.scaleY = label.scaleX
             }
             shownIndex = index
@@ -380,13 +412,17 @@ object BottomRowBuilder {
         val stepPx = density * 10
         val slopPx = density * 12
         val tint = KeyboardTheme.getSystemButtonStyle(service).textColor.toColorInt()
+        // Added once and only faded in and out, like the space bar's icon, so it can't be lost between drags.
         val dragIcon = android.widget.ImageView(service).apply {
             setImageResource(com.shoktuk.shoktukkeyboard.R.drawable.ic_drag_all)
             setColorFilter(tint)
+            alpha = 0f
             layoutParams = FrameLayout.LayoutParams(dpToPx(service, 26), dpToPx(service, 26), Gravity.CENTER)
             tag = KEEP_VISIBLE
         }
         val container = key as? ViewGroup
+        container?.addView(dragIcon)
+        cursorDragIcons.add(dragIcon)
 
         fun show(active: Boolean) {
             setLabelsHidden(key, active)
@@ -395,9 +431,9 @@ object BottomRowBuilder {
                     val child = group.getChildAt(i)
                     if (child !== dragIcon) child.alpha = if (active) 0f else 1f
                 }
-                if (active && dragIcon.parent == null && group is FrameLayout) group.addView(dragIcon)
-                if (!active) group.removeView(dragIcon)
+                group.bringChildToFront(dragIcon)
             }
+            showCursorDragIcons(active)
             key.foreground = if (active) ColorDrawable(tint).apply { alpha = 40 } else null
         }
 
@@ -576,13 +612,15 @@ object BottomRowBuilder {
             layoutParams = FrameLayout.LayoutParams(dpToPx(service, 26), dpToPx(service, 26), Gravity.CENTER)
         }
         spaceBtn.addView(dragIcon)
+        cursorDragIcons.clear()
+        cursorDragIcons.add(dragIcon)
 
         fun showCursorMode(active: Boolean) {
             setLabelsHidden(spaceBtn, active)
             keyboardName.alpha = if (active) 0f else 1f
             leftArrow.alpha = if (active || !canSwitchKeyboard) 0f else 1f
             rightArrow.alpha = leftArrow.alpha
-            dragIcon.alpha = if (active) 1f else 0f
+            showCursorDragIcons(active)
             spaceBtn.foreground = if (active) ColorDrawable(spaceTextColor).apply { alpha = 40 } else null
         }
 

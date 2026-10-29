@@ -36,7 +36,9 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.shoktuk.shoktukkeyboard.project.data.BitikTranscriptionAlphabets
+import com.shoktuk.shoktukkeyboard.project.data.Coloring
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
@@ -105,6 +107,7 @@ fun KeyboardSettingsPanel(onClose: () -> Unit) {
                             var textTr by remember { mutableStateOf(context.textTranscription) }
                             var letterTr by remember { mutableStateOf(context.letterTranscription) }
                             var toBitik by remember { mutableStateOf(context.bitikTranscriptionAlphabets) }
+                            var coloringState by remember { mutableStateOf(context.coloring) }
                             Surface(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, tonalElevation = 2.dp) {
                                 Column {
                                     if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
@@ -122,6 +125,11 @@ fun KeyboardSettingsPanel(onClose: () -> Unit) {
                                     QuickToggle(Loc_Settings.letterTranscription.localizedTitle(context), letterTr == LetterTranscription.On, Modifier.fillMaxWidth()) {
                                         context.letterTranscription = if (it) LetterTranscription.On else LetterTranscription.Off
                                         letterTr = context.letterTranscription
+                                    }
+                                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                                    QuickToggle(Loc_Settings.coloring.localizedTitle(context), coloringState == Coloring.On, Modifier.fillMaxWidth()) {
+                                        context.coloring = if (it) Coloring.On else Coloring.Off
+                                        coloringState = context.coloring
                                     }
                                 }
                             }

@@ -4,7 +4,6 @@ import Haptics
 import android.content.Context
 import android.content.SharedPreferences
 import android.graphics.Paint
-import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.inputmethodservice.InputMethodService
 import android.os.Build
@@ -17,6 +16,7 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
+import android.view.animation.OvershootInterpolator
 import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
@@ -281,10 +281,10 @@ object EmojisViewBuilder {
             background = GradientDrawable().apply {
                 shape = GradientDrawable.RECTANGLE
                 cornerRadius = dpToPx(service, 50).toFloat()
-                setColor(KeyboardTheme.getColor(4).toColorInt())
-                alpha = 70
+                // Same as iOS: the system blue at 18%.
+                setColor(0x2E007AFF)
             }
-            layoutParams = FrameLayout.LayoutParams(0, chipSide, Gravity.CENTER_VERTICAL)
+            layoutParams = FrameLayout.LayoutParams(0, buttonHeight / 2, Gravity.CENTER_VERTICAL)
         }
         picker.addView(pill)
 
@@ -313,12 +313,12 @@ object EmojisViewBuilder {
             val index = visibleTypes.indexOf(type)
             chips.forEach { (t, chip) ->
                 val on = t == type
-                chip.alpha = if (on) 1f else 0.4f
-                chip.typeface = if (on) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+                // iOS tints the selected symbol blue; emoji can't be tinted, so the others fade instead.
+                chip.animate().alpha(if (on) 1f else 0.55f).scaleX(if (on) 1.12f else 1f).scaleY(if (on) 1.12f else 1f).setDuration(150).start()
             }
             if (index < 0) return
             val x = cellWidth() * index
-            if (animate) pill.animate().translationX(x).setDuration(160).start() else pill.translationX = x
+            if (animate) pill.animate().translationX(x).setDuration(280).setInterpolator(OvershootInterpolator(0.8f)).start() else pill.translationX = x
         }
 
         picker.addOnLayoutChangeListener { _, l, _, r, _, _, _, _, _ ->

@@ -110,11 +110,9 @@ object KeyboardLetters_Kiril {
         KeyEntry(
             name = "row2_1",
             lowercase = "ы",
-            lowerCaseRomanization = "ӹ",
             backgroundColorIndex_lowercase = 4,
             lowerCaseAlternates = listOf("ӹ"),
             uppercase = "Ы",
-            upperCaseRomanization = "Ӹ",
             backgroundColorIndex_uppercase = 4,
             upperCaseAlternates = listOf("Ӹ")
         ),
@@ -201,10 +199,8 @@ object KeyboardLetters_Kiril {
         KeyEntry(
             name = "row3_2",
             lowercase = "с",
-            lowerCaseRomanization = "ҫ",
             lowerCaseAlternates = listOf("ҫ"),
             uppercase = "С",
-            upperCaseRomanization = "Ҫ",
             upperCaseAlternates = listOf("Ҫ")
         ),
         KeyEntry(
@@ -215,11 +211,9 @@ object KeyboardLetters_Kiril {
         KeyEntry(
             name = "row3_4",
             lowercase = "и",
-            lowerCaseRomanization = "і",
             backgroundColorIndex_lowercase = 4,
             lowerCaseAlternates = listOf("і", "ӣ", "ӥ"),
             uppercase = "И",
-            upperCaseRomanization = "І",
             backgroundColorIndex_uppercase = 4,
             upperCaseAlternates = listOf("І", "Ӣ", "Ӥ")
         ),
