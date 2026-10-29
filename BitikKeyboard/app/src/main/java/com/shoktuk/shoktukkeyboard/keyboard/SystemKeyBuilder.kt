@@ -206,8 +206,10 @@ object SystemKeyBuilder {
                     paint.isFakeBoldText = true
                     paint.strokeWidth = 0.5f
                     paint.style = Paint.Style.FILL_AND_STROKE
+                    if (applyBitikFont) KeyboardTheme.typefaceFor(service, textToSet.orEmpty())?.let { typeface = it }
                 } else if (applyBitikFont) {
-                    typeface = KeyboardTheme.bitikTypeface(service)
+                    // The user's Bitik font when set; otherwise Zamanchak for Old Turkic text, since system fonts lack those glyphs.
+                    typeface = KeyboardTheme.bitikTypeface(service) ?: KeyboardTheme.typefaceFor(service, textToSet.orEmpty())
                 }
 
                 layoutParams = LinearLayout.LayoutParams(

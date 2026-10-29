@@ -27,7 +27,9 @@ import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.NavBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
+import com.shoktuk.shoktukkeyboard.project.data.BitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
@@ -223,7 +225,7 @@ class MyKeyboardService : InputMethodService() {
             }
         }
 
-        if (keyboardMode != KeyboardMode.Settings) {
+        if (keyboardMode != KeyboardMode.Settings && keyboardMode != KeyboardMode.SavedStrings) {
             ensureDetached(topBar)
             root?.addView(topBar, 0)
         }
@@ -263,9 +265,11 @@ class MyKeyboardService : InputMethodService() {
     }
 
     fun availableWritingSystems(): List<WritingSystem> {
-        val available = mutableListOf(WritingSystem.Bitik)
-        if (context.latinStatus == Latin_Status.On) available.add(WritingSystem.Latin)
+        // Order: Arabic, Bitik, Latin, Kiril. Bitik is the default and is always available.
+        val available = mutableListOf<WritingSystem>()
         if (context.arabicStatus == Arabic_Status.On) available.add(WritingSystem.Arab)
+        available.add(WritingSystem.Bitik)
+        if (context.latinStatus == Latin_Status.On) available.add(WritingSystem.Latin)
         if (context.kirilisaStatus == Kirilisa_Status.On) available.add(WritingSystem.Kiril)
         return available
     }
@@ -291,10 +295,7 @@ class MyKeyboardService : InputMethodService() {
             context.writingSystem = WritingSystem.Bitik
             keyboardMode = KeyboardMode.Emojis
         } else {
-            val availableLanguages = mutableListOf<WritingSystem>(WritingSystem.Bitik)
-            if (context.latinStatus == Latin_Status.On) availableLanguages.add(WritingSystem.Latin)
-            if (context.arabicStatus == Arabic_Status.On) availableLanguages.add(WritingSystem.Arab)
-            if (context.kirilisaStatus == Kirilisa_Status.On) availableLanguages.add(WritingSystem.Kiril)
+            val availableLanguages = availableWritingSystems()
 
             var currentLanguageIndex = availableLanguages.indexOf(context.writingSystem)
 
@@ -322,7 +323,12 @@ class MyKeyboardService : InputMethodService() {
                 topBar = topBar_modern
             }
         } else {
-            topBar_noTR = TopRowBuilder_Alphabet.createTopRow(this, systemKeybHeight, TextTranscription.Off, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
+            // With "transcription to Bitik" off, the alphabets show the saved strings row instead.
+            topBar_noTR = if (context.bitikTranscriptionAlphabets == BitikTranscriptionAlphabets.On) {
+                TopRowBuilder_Alphabet.createTopRow(this, systemKeybHeight, TextTranscription.Off, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
+            } else {
+                TopRowBuilder.createTopRow(this, systemKeybHeight, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
+            }
             topBar = topBar_noTR
         }
 

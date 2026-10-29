@@ -9,6 +9,7 @@ import android.util.TypedValue
 import android.view.Gravity
 import android.view.ViewGroup
 import android.content.res.ColorStateList
+import android.widget.ImageView
 import android.widget.SeekBar
 import android.widget.LinearLayout
 import android.widget.ScrollView
@@ -19,6 +20,7 @@ import com.google.android.flexbox.FlexDirection
 import com.google.android.flexbox.FlexWrap
 import com.google.android.flexbox.FlexboxLayout
 import com.shoktuk.shoktukkeyboard.MainActivity
+import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.project.data.SettingScreens
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.savedStringsTextSize
 import com.shoktuk.shoktukkeyboard.project.screens.settings.loadSavedStrings
@@ -48,7 +50,8 @@ object SavedStringsViewBuilder {
         }
 
         val accent = KeyboardTheme.getColorInt(4)
-        val editRowHeight = dp(service, 40f)
+        // Same size as the settings panel's header: a 48dp row with a 48dp back button and a 24dp arrow.
+        val editRowHeight = dp(service, 48f)
         val chips = mutableListOf<TextView>()
         val minTextSp = 11
         val maxTextSp = 28
@@ -57,7 +60,7 @@ object SavedStringsViewBuilder {
             orientation = LinearLayout.HORIZONTAL
             gravity = Gravity.END or Gravity.CENTER_VERTICAL
             layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, editRowHeight)
-            setPadding(dp(service, 6f), 0, dp(service, 6f), 0)
+            setPadding(dp(service, 4f), 0, dp(service, 12f), 0)
         }
         val editButton = TextView(service).apply {
             text = "✎  ${editTitle()}"
@@ -95,6 +98,14 @@ object SavedStringsViewBuilder {
                 }
             })
         }
+        val backButton = ImageView(service).apply {
+            setImageResource(R.drawable.ic_arrow_back)
+            setColorFilter(KeyboardTheme.getColor(2).toColorInt())
+            contentDescription = "Back"
+            setPadding(dp(service, 12f), dp(service, 12f), dp(service, 12f), dp(service, 12f))
+            setOnClickListener { onModeChange(KeyboardMode.Main) }
+        }
+        editRow.addView(backButton, LinearLayout.LayoutParams(dp(service, 48f), dp(service, 48f)))
         editRow.addView(sizeIcon)
         editRow.addView(sizeSlider)
         editRow.addView(editButton)
@@ -103,7 +114,7 @@ object SavedStringsViewBuilder {
         val scroll = ScrollView(service).apply {
             isVerticalScrollBarEnabled = false
             layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, KeyboardTheme.getButtonHeight() * 3 - editRowHeight
+                ViewGroup.LayoutParams.MATCH_PARENT, KeyboardTheme.getButtonHeight() * 3
             )
         }
 

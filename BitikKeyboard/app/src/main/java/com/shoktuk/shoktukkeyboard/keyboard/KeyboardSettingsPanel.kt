@@ -1,13 +1,13 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
-import android.content.Context
-import android.content.SharedPreferences
 import android.view.ViewGroup
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -16,7 +16,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
-import androidx.compose.material.icons.automirrored.filled.Undo
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -26,9 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import com.shoktuk.shoktukkeyboard.project.screens.settings.LocalInlinePickers
 import androidx.compose.runtime.CompositionLocalProvider
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -37,6 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import com.shoktuk.shoktukkeyboard.project.data.BitikTranscriptionAlphabets
+import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikTranscriptionAlphabets
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
+import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.screens.settings.AppearanceSettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.MainSettingsScreen
@@ -44,39 +48,11 @@ import com.shoktuk.shoktukkeyboard.project.screens.settings.OtherAlphabetsSettin
 import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_Settings
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
-private const val SETTINGS_PREFS = "settings_prefs"
-
 @Composable
 fun KeyboardSettingsPanel(onClose: () -> Unit) {
     val context = LocalContext.current
-    val prefs = remember { context.getSharedPreferences(SETTINGS_PREFS, Context.MODE_PRIVATE) }
-    val snapshot = remember { prefs.all.toMap() }
-    var version by remember { mutableIntStateOf(0) }
     var page by remember { mutableStateOf<Int?>(null) }
     var autoBitik by remember { mutableStateOf(MyKeyboardService.isAutoWriteBitikMode) }
-
-    DisposableEffect(prefs) {
-        val listener = SharedPreferences.OnSharedPreferenceChangeListener { _, _ -> version++ }
-        prefs.registerOnSharedPreferenceChangeListener(listener)
-        onDispose { prefs.unregisterOnSharedPreferenceChangeListener(listener) }
-    }
-    val hasChanges = remember(version) { prefs.all != snapshot }
-
-    fun revert() {
-        prefs.edit().apply {
-            clear()
-            snapshot.forEach { (key, value) ->
-                when (value) {
-                    is Boolean -> putBoolean(key, value)
-                    is Int -> putInt(key, value)
-                    is Long -> putLong(key, value)
-                    is Float -> putFloat(key, value)
-                    is String -> putString(key, value)
-                    is Set<*> -> putStringSet(key, value.filterIsInstance<String>().toSet())
-                }
-            }
-        }.apply()
-    }
 
     ShoktukKeyboardTheme {
         Surface(modifier = Modifier.fillMaxSize()) {
@@ -97,9 +73,8 @@ fun KeyboardSettingsPanel(onClose: () -> Unit) {
                             }
                         }
                     }
-                    IconButton(onClick = ::revert, enabled = hasChanges) {
-                        Icon(Icons.AutoMirrored.Filled.Undo, contentDescription = null)
-                    }
+                    // Keeps the Auto Bitik switch centred against the back button.
+                    Spacer(Modifier.size(48.dp))
                 }
 
                 Box(Modifier.weight(1f).fillMaxWidth()) {
@@ -110,13 +85,43 @@ fun KeyboardSettingsPanel(onClose: () -> Unit) {
                         else -> Column(
                             Modifier.verticalScroll(rememberScrollState()).padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            listOf(Loc_Settings.mainSettings, Loc_Settings.appearance, Loc_Settings.otherAlphabets).forEachIndexed { index, title ->
-                                Surface(
-                                    modifier = Modifier.fillMaxWidth().clickable { page = index }, shape = MaterialTheme.shapes.large, tonalElevation = 2.dp
-                                ) {
-                                    Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                                        Text(title.localizedTitle(context), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
-                                        Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+                            // The three pages share one card, split by thin dividers.
+                            Surface(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, tonalElevation = 2.dp) {
+                                Column {
+                                    listOf(Loc_Settings.mainSettings, Loc_Settings.appearance, Loc_Settings.otherAlphabets).forEachIndexed { index, title ->
+                                        if (index > 0) HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                                        Row(
+                                            Modifier.fillMaxWidth().clickable { page = index }.padding(16.dp),
+                                            verticalAlignment = Alignment.CenterVertically
+                                        ) {
+                                            Text(title.localizedTitle(context), Modifier.weight(1f), style = MaterialTheme.typography.bodyLarge)
+                                            Icon(Icons.AutoMirrored.Filled.KeyboardArrowRight, contentDescription = null)
+                                        }
+                                    }
+                                }
+                            }
+
+                            // Quick access; the same two settings stay in the full Main Settings page.
+                            var textTr by remember { mutableStateOf(context.textTranscription) }
+                            var letterTr by remember { mutableStateOf(context.letterTranscription) }
+                            var toBitik by remember { mutableStateOf(context.bitikTranscriptionAlphabets) }
+                            Surface(modifier = Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.large, tonalElevation = 2.dp) {
+                                Column {
+                                    if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
+                                        QuickToggle(Loc_Settings.textTranscription.localizedTitle(context), textTr == TextTranscription.On, Modifier.fillMaxWidth()) {
+                                            context.textTranscription = if (it) TextTranscription.On else TextTranscription.Off
+                                            textTr = context.textTranscription
+                                        }
+                                    } else {
+                                        QuickToggle("Transcription to Bitik", toBitik == BitikTranscriptionAlphabets.On, Modifier.fillMaxWidth()) {
+                                            context.bitikTranscriptionAlphabets = if (it) BitikTranscriptionAlphabets.On else BitikTranscriptionAlphabets.Off
+                                            toBitik = context.bitikTranscriptionAlphabets
+                                        }
+                                    }
+                                    HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                                    QuickToggle(Loc_Settings.letterTranscription.localizedTitle(context), letterTr == LetterTranscription.On, Modifier.fillMaxWidth()) {
+                                        context.letterTranscription = if (it) LetterTranscription.On else LetterTranscription.Off
+                                        letterTr = context.letterTranscription
                                     }
                                 }
                             }
@@ -125,6 +130,14 @@ fun KeyboardSettingsPanel(onClose: () -> Unit) {
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun QuickToggle(title: String, checked: Boolean, modifier: Modifier, onChange: (Boolean) -> Unit) {
+    Row(modifier.padding(horizontal = 16.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+        Text(title, Modifier.weight(1f).padding(end = 8.dp), style = MaterialTheme.typography.bodyLarge)
+        Switch(checked = checked, onCheckedChange = onChange)
     }
 }
 

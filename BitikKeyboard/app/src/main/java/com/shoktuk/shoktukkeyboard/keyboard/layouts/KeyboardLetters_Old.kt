@@ -43,18 +43,22 @@ object KeyboardLetters_Old {
             lowercase = "𐰺",
             lowerCaseRomanization = "aR",
             lowerCaseAlternates = listOf("𐰻", "𐱈"),
+            lowerCaseAlternateHints = listOf("", "RT"),
             uppercase = "𐰼",
             upperCaseRomanization = "eR",
-            upperCaseAlternates = listOf("𐱈")
+            upperCaseAlternates = listOf("𐱈"),
+            upperCaseAlternateHints = listOf("RT")
         ),
         KeyEntry(
             name = "row1_4",
             lowercase = "𐱄",
             lowerCaseRomanization = "aT",
             lowerCaseAlternates = listOf("𐱃", "𐱇", "𐰦", "𐰡", "𐱈"),
+            lowerCaseAlternateHints = listOf("", "OT", "NT", "LT", "RT"),
             uppercase = "𐱅",
             upperCaseRomanization = "eT",
-            upperCaseAlternates = listOf("𐱆", "𐰦", "𐰡", "𐱈")
+            upperCaseAlternates = listOf("𐱆", "𐰦", "𐰡", "𐱈"),
+            upperCaseAlternateHints = listOf("", "NT", "LT", "RT")
         ),
         KeyEntry(
             name = "row1_5",
@@ -73,11 +77,12 @@ object KeyboardLetters_Old {
             lowerCaseRomanization_Alt = "O",
             backgroundColorIndex_lowercase = 4,
             lowerCaseAlternates = listOf("𐱇"),
+            lowerCaseAlternateHints = listOf("OT"),
             uppercase = "𐰈",
             upperCaseRomanization = "Ü",
             upperCaseRomanization_Alt = "Ö",
             backgroundColorIndex_uppercase = 4,
-            upperCaseAlternates = listOf("𐰇", "𐱇")
+            upperCaseAlternates = listOf("𐰇")
         ),
         KeyEntry(
             name = "row1_7",
@@ -149,7 +154,7 @@ object KeyboardLetters_Old {
             name = "row2_4",
             lowercase = "𐰍",
             lowerCaseRomanization = "aĞ",
-            lowerCaseAlternates = listOf("𐰎"),
+            lowerCaseAlternates = listOf("𐰎", "𐋄"),
             uppercase = "𐰏",
             upperCaseRomanization = "eG",
             upperCaseAlternates = listOf("𐰐")
@@ -176,6 +181,7 @@ object KeyboardLetters_Old {
             name = "row2_7",
             lowercase = "𐰴",
             lowerCaseRomanization = "aQ",
+            lowerCaseAlternates = listOf("𐰵"),
             uppercase = "𐰚",
             upperCaseRomanization = "eK",
             upperCaseAlternates = listOf("𐰛")
@@ -184,10 +190,12 @@ object KeyboardLetters_Old {
             name = "row2_8",
             lowercase = "𐰞",
             lowerCaseRomanization = "aL",
-            lowerCaseAlternates = listOf("𐰡", "Ξ", "𐰟"),
+            lowerCaseAlternates = listOf("𐰟", "𐰡"),
+            lowerCaseAlternateHints = listOf("", "LT"),
             uppercase = "𐰠",
             upperCaseRomanization = "eL",
-            upperCaseAlternates = listOf("𐰡", "Ξ")
+            upperCaseAlternates = listOf("𐰡"),
+            upperCaseAlternateHints = listOf("LT")
         )
     )
 
@@ -212,21 +220,21 @@ object KeyboardLetters_Old {
             name = "row3_2",
             lowercase = "𐰲",
             lowerCaseRomanization = "Ç",
-            lowerCaseAlternates = listOf("𐰱", "𐰨", "𐓸", "𐰳"),
+            lowerCaseAlternates = listOf("𐰳", "𐰨", "𐰱"),
+            lowerCaseAlternateHints = listOf("", "NÇ", "ÇI"),
             uppercase = "𐰲",
             upperCaseRomanization = "Ç",
-            upperCaseAlternates = listOf("𐰱", "𐰨", "𐓸", "𐰳")
+            upperCaseAlternates = listOf("𐰳", "𐰨", "𐰱"),
+            upperCaseAlternateHints = listOf("", "NÇ", "ÇI")
         ),
         KeyEntry(
             name = "row3_3",
             lowercase = "𐰨",
             lowerCaseRomanization = "NÇ",
             backgroundColorIndex_lowercase = 5,
-            lowerCaseAlternates = listOf("𐰩"),
             uppercase = "𐰨",
             upperCaseRomanization = "NÇ",
-            backgroundColorIndex_uppercase = 5,
-            upperCaseAlternates = listOf("𐰩")
+            backgroundColorIndex_uppercase = 5
         ),
         KeyEntry(
             name = "row3_4",
@@ -241,10 +249,10 @@ object KeyboardLetters_Old {
             name = "row3_5",
             lowercase = "𐰣",
             lowerCaseRomanization = "aN",
-            lowerCaseAlternates = listOf("𐰪", "𐰫", "𐰦", "𐰨"),
+            lowerCaseAlternates = listOf("𐰨", "𐰦", "𐰫", "𐰪"),
             uppercase = "𐰥",
             upperCaseRomanization = "eN",
-            upperCaseAlternates = listOf("𐰤", "𐰦", "𐰨")
+            upperCaseAlternates = listOf("𐰤", "𐰨", "𐰦", "𐰫", "𐰪")
         ),
         KeyEntry(
             name = "row3_6",

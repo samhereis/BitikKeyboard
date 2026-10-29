@@ -32,6 +32,15 @@ enum class LetterTranscription(val id: String) {
     }
 }
 
+/** Whether the alphabets' top bar transcribes what is typed into Bitik. */
+enum class BitikTranscriptionAlphabets(val id: String) {
+    On("Жанык"), Off("Өчүк");
+
+    companion object {
+        const val KEY = "bitik_transcription_alphabets"
+    }
+}
+
 enum class WordSeparator(val id: String) {
     Off("Жок"), NoSpace("⁚"), SpaceBefore("{ }⁚"), ArroundSpace("{ }⁚{ }");
 

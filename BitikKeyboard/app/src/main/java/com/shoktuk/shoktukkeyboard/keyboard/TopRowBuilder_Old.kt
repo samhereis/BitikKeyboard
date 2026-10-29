@@ -95,7 +95,7 @@ object TopRowBuilder_Old {
         }
 
         var switchLanguageView = SystemKeyBuilder.systemButton_Text(
-            service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() })
+            service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() }, applyBitikFont = true)
         rowLayout.addView(switchLanguageView)
         rowLayout.addView(
             SystemKeyBuilder.systemButton_Text(
@@ -179,6 +179,9 @@ object TopRowBuilder_Old {
         }
 
         rowLayout.addView(
+            SystemKeyBuilder.systemButton_Text(
+                service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) }))
+        rowLayout.addView(
             SystemKeyBuilder.systemButton_Icon(
                 service, KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight, onClick = {
                     val imm = service.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
@@ -186,9 +189,6 @@ object TopRowBuilder_Old {
                     TopRowBuilder_Old.onTypedListener.invoke()
                 })
         )
-        rowLayout.addView(
-            SystemKeyBuilder.systemButton_Text(
-                service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) }))
 
         return rowLayout
     }
@@ -197,7 +197,7 @@ object TopRowBuilder_Old {
         service: InputMethodService, buttonHeight: Int,
     ): LinearLayout = LinearLayout(service).apply {
         orientation = LinearLayout.HORIZONTAL
-        gravity = Gravity.CENTER_VERTICAL
+        gravity = Gravity.CENTER
         layoutParams = LinearLayout.LayoutParams(
             0, buttonHeight, 1f
         ).apply {

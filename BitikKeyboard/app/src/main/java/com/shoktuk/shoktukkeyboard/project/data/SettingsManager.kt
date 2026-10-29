@@ -46,6 +46,10 @@ object SettingsManager {
         get() = prefs().getEnum(LetterTranscription.KEY, LetterTranscription.On)
         set(v) = prefs().setEnum(LetterTranscription.KEY, v)
 
+    var Context.bitikTranscriptionAlphabets: BitikTranscriptionAlphabets
+        get() = prefs().getEnum(BitikTranscriptionAlphabets.KEY, BitikTranscriptionAlphabets.On)
+        set(v) = prefs().setEnum(BitikTranscriptionAlphabets.KEY, v)
+
     var Context.wordSeparator: WordSeparator
         get() = prefs().getEnum(WordSeparator.KEY, WordSeparator.NoSpace)
         set(v) = prefs().setEnum(WordSeparator.KEY, v)

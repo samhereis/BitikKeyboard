@@ -9,16 +9,18 @@ object KeyboardLetters_Kiril {
         KeyEntry(
             name = "row1_0",
             lowercase = "й",
-            lowerCaseAlternates = listOf("ј", "ҋ"),
+            lowerCaseAlternates = listOf("ҋ"),
             uppercase = "Й",
-            upperCaseAlternates = listOf("Ј", "Ҋ")
+            upperCaseAlternates = listOf("Ҋ")
         ),
         KeyEntry(
             name = "row1_1",
             lowercase = "ң",
-            lowerCaseAlternates = listOf("ҥ"),
+            lowerCaseRomanization = "ц",
+            lowerCaseAlternates = listOf("ц", "ҥ"),
             uppercase = "Ң",
-            upperCaseAlternates = listOf("Ҥ")
+            upperCaseRomanization = "Ц",
+            upperCaseAlternates = listOf("Ц", "Ҥ")
         ),
         KeyEntry(
             name = "row1_2",
@@ -199,11 +201,11 @@ object KeyboardLetters_Kiril {
         KeyEntry(
             name = "row3_2",
             lowercase = "с",
-            lowerCaseRomanization = "ц",
-            lowerCaseAlternates = listOf("ц", "ҫ"),
+            lowerCaseRomanization = "ҫ",
+            lowerCaseAlternates = listOf("ҫ"),
             uppercase = "С",
-            upperCaseRomanization = "Ц",
-            upperCaseAlternates = listOf("Ц", "Ҫ")
+            upperCaseRomanization = "Ҫ",
+            upperCaseAlternates = listOf("Ҫ")
         ),
         KeyEntry(
             name = "row3_3",

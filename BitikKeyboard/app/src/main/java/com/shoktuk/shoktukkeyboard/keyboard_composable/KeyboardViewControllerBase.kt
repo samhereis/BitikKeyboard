@@ -277,9 +277,11 @@ class KeyboardViewControllerBase : InputMethodService() {
             ctx.writingSystem = WritingSystem.Bitik
             keyboardMode = KeyboardState.Main
         } else {
-            val available = mutableListOf(WritingSystem.Bitik)
-            if (ctx.latinStatus == Latin_Status.On) available.add(WritingSystem.Latin)
+            // Order: Arabic, Bitik, Latin, Kiril.
+            val available = mutableListOf<WritingSystem>()
             if (ctx.arabicStatus == Arabic_Status.On) available.add(WritingSystem.Arab)
+            available.add(WritingSystem.Bitik)
+            if (ctx.latinStatus == Latin_Status.On) available.add(WritingSystem.Latin)
             if (ctx.kirilisaStatus == Kirilisa_Status.On) available.add(WritingSystem.Kiril)
 
             var idx = available.indexOf(ctx.writingSystem)

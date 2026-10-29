@@ -12,23 +12,23 @@ object KeyboardLetters_Arab {
             lowerCaseRomanization_Alt = "u",
             backgroundColorIndex_lowercase = 4,
             lowerCaseAlternates = listOf("ض", "ۆ", "ۈ", "ۊ"),
-            lowerCaseAlternateHints = listOf("d", "ö", "ü", "u"),
+            lowerCaseAlternateHints = listOf("ḍ", "ö", "ü", "u"),
             uppercase = "ۇ",
             upperCaseRomanization_Alt = "u",
             backgroundColorIndex_uppercase = 4,
             upperCaseAlternates = listOf("ض", "ۆ", "ۈ", "ۊ"),
-            upperCaseAlternateHints = listOf("d", "ö", "ü", "u")
+            upperCaseAlternateHints = listOf("ḍ", "ö", "ü", "u")
         ),
         KeyEntry(
             name = "row1_1",
             lowercase = "پ",
             lowerCaseRomanization_Alt = "p",
             lowerCaseAlternates = listOf("ص", "ݐ", "ڦ"),
-            lowerCaseAlternateHints = listOf("s", "p", "p"),
+            lowerCaseAlternateHints = listOf("ṣ", "p", "p"),
             uppercase = "پ",
             upperCaseRomanization_Alt = "p",
             upperCaseAlternates = listOf("ص", "ݐ", "ڦ"),
-            upperCaseAlternateHints = listOf("s", "p", "p")
+            upperCaseAlternateHints = listOf("ṣ", "p", "p")
         ),
         KeyEntry(
             name = "row1_2",
@@ -36,12 +36,12 @@ object KeyboardLetters_Arab {
             lowerCaseRomanization_Alt = "ü",
             backgroundColorIndex_lowercase = 4,
             lowerCaseAlternates = listOf("ث"),
-            lowerCaseAlternateHints = listOf("th"),
+            lowerCaseAlternateHints = listOf("ṯ"),
             uppercase = "ۉ",
             upperCaseRomanization_Alt = "ü",
             backgroundColorIndex_uppercase = 4,
             upperCaseAlternates = listOf("ث"),
-            upperCaseAlternateHints = listOf("th")
+            upperCaseAlternateHints = listOf("ṯ")
         ),
         KeyEntry(
             name = "row1_3",
@@ -70,11 +70,11 @@ object KeyboardLetters_Arab {
             lowercase = "ڭ",
             lowerCaseRomanization_Alt = "ñ",
             lowerCaseAlternates = listOf("غ", "ݣ"),
-            lowerCaseAlternateHints = listOf("gh", "ñ"),
+            lowerCaseAlternateHints = listOf("ġ", "ñ"),
             uppercase = "ڭ",
             upperCaseRomanization_Alt = "ñ",
             upperCaseAlternates = listOf("غ", "ݣ"),
-            upperCaseAlternateHints = listOf("gh", "ñ")
+            upperCaseAlternateHints = listOf("ġ", "ñ")
         ),
         KeyEntry(
             name = "row1_6",
@@ -105,18 +105,18 @@ object KeyboardLetters_Arab {
             lowercase = "ۋ",
             lowerCaseRomanization_Alt = "v",
             lowerCaseAlternates = listOf("خ", "ڤ", "ڥ"),
-            lowerCaseAlternateHints = listOf("x", "v", "v"),
+            lowerCaseAlternateHints = listOf("ḫ", "v", "v"),
             uppercase = "ۋ",
             upperCaseRomanization_Alt = "v",
             upperCaseAlternates = listOf("خ", "ڤ", "ڥ"),
-            upperCaseAlternateHints = listOf("x", "v", "v")
+            upperCaseAlternateHints = listOf("ḫ", "v", "v")
         ),
         KeyEntry(
             name = "row1_9",
             lowercase = "ح",
-            lowerCaseRomanization_Alt = "h",
+            lowerCaseRomanization_Alt = "ḥ",
             uppercase = "ح",
-            upperCaseRomanization_Alt = "h"
+            upperCaseRomanization_Alt = "ḥ"
         ),
         KeyEntry(
             name = "row1_10",
@@ -135,11 +135,11 @@ object KeyboardLetters_Arab {
         KeyEntry(
             name = "row2_0",
             lowercase = "ش",
-            lowerCaseRomanization_Alt = "ş",
+            lowerCaseRomanization_Alt = "š",
             lowerCaseAlternates = listOf("ڛ", "ڜ"),
             lowerCaseAlternateHints = listOf("s", "ş"),
             uppercase = "ش",
-            upperCaseRomanization_Alt = "ş",
+            upperCaseRomanization_Alt = "š",
             upperCaseAlternates = listOf("ڛ", "ڜ"),
             upperCaseAlternateHints = listOf("s", "ş")
         ),
@@ -193,12 +193,12 @@ object KeyboardLetters_Arab {
             lowerCaseRomanization_Alt = "a",
             backgroundColorIndex_lowercase = 4,
             lowerCaseAlternates = listOf("أ", "إ", "آ", "ٱ", "ٲ", "ٳ"),
-            lowerCaseAlternateHints = listOf("ʼa", "ʼi", "ā", "a", "a", "a"),
+            lowerCaseAlternateHints = listOf("ʾa", "ʾi", "ʾā", "a", "a", "a"),
             uppercase = "ا",
             upperCaseRomanization_Alt = "a",
             backgroundColorIndex_uppercase = 4,
             upperCaseAlternates = listOf("أ", "إ", "آ", "ٱ", "ٲ", "ٳ"),
-            upperCaseAlternateHints = listOf("ʼa", "ʼi", "ā", "a", "a", "a")
+            upperCaseAlternateHints = listOf("ʾa", "ʾi", "ʾā", "a", "a", "a")
         ),
         KeyEntry(
             name = "row2_6",
@@ -245,11 +245,11 @@ object KeyboardLetters_Arab {
             lowercase = "چ",
             lowerCaseRomanization_Alt = "ç",
             lowerCaseAlternates = listOf("ة", "ڇ", "ڿ", "ݘ"),
-            lowerCaseAlternateHints = listOf("t", "ç", "c", "c"),
+            lowerCaseAlternateHints = listOf("ẗ", "ç", "c", "c"),
             uppercase = "چ",
             upperCaseRomanization_Alt = "ç",
             upperCaseAlternates = listOf("ة", "ڇ", "ڿ", "ݘ"),
-            upperCaseAlternateHints = listOf("t", "ç", "c", "c")
+            upperCaseAlternateHints = listOf("ẗ", "ç", "c", "c")
         )
     )
 
@@ -270,11 +270,11 @@ object KeyboardLetters_Arab {
             lowercase = "گ",
             lowerCaseRomanization_Alt = "g",
             lowerCaseAlternates = listOf("ظ", "ڳ", "ڲ", "ڰ", "ڴ"),
-            lowerCaseAlternateHints = listOf("z", "g", "g", "g", "g"),
+            lowerCaseAlternateHints = listOf("ẓ", "g", "g", "g", "g"),
             uppercase = "گ",
             upperCaseRomanization_Alt = "g",
             upperCaseAlternates = listOf("ظ", "ڳ", "ڲ", "ڰ", "ڴ"),
-            upperCaseAlternateHints = listOf("z", "g", "g", "g", "g")
+            upperCaseAlternateHints = listOf("ẓ", "g", "g", "g", "g")
         ),
         KeyEntry(
             name = "row3_2",
@@ -282,12 +282,12 @@ object KeyboardLetters_Arab {
             lowerCaseRomanization_Alt = "ö",
             backgroundColorIndex_lowercase = 4,
             lowerCaseAlternates = listOf("ط"),
-            lowerCaseAlternateHints = listOf("t"),
+            lowerCaseAlternateHints = listOf("ṭ"),
             uppercase = "ۅ",
             upperCaseRomanization_Alt = "ö",
             backgroundColorIndex_uppercase = 4,
             upperCaseAlternates = listOf("ط"),
-            upperCaseAlternateHints = listOf("t")
+            upperCaseAlternateHints = listOf("ṭ")
         ),
         KeyEntry(
             name = "row3_3",
@@ -295,12 +295,12 @@ object KeyboardLetters_Arab {
             lowerCaseRomanization_Alt = "i",
             backgroundColorIndex_lowercase = 4,
             lowerCaseAlternates = listOf("ذ", "ء", "ٸ"),
-            lowerCaseAlternateHints = listOf("z", "ʼ", "ʼy"),
+            lowerCaseAlternateHints = listOf("ḏ", "ʾ", "ʾy"),
             uppercase = "ئ",
             upperCaseRomanization_Alt = "i",
             backgroundColorIndex_uppercase = 4,
             upperCaseAlternates = listOf("ذ", "ء", "ٸ"),
-            upperCaseAlternateHints = listOf("z", "ʼ", "ʼy")
+            upperCaseAlternateHints = listOf("ḏ", "ʾ", "ʾy")
         ),
         KeyEntry(
             name = "row3_4",
@@ -341,12 +341,12 @@ object KeyboardLetters_Arab {
             lowerCaseRomanization_Alt = "o",
             backgroundColorIndex_lowercase = 4,
             lowerCaseAlternates = listOf("ؤ", "ٷ", "ٶ", "ۄ"),
-            lowerCaseAlternateHints = listOf("ʼw", "u", "ö", "u"),
+            lowerCaseAlternateHints = listOf("ʾw", "u", "ö", "u"),
             uppercase = "و",
             upperCaseRomanization_Alt = "o",
             backgroundColorIndex_uppercase = 4,
             upperCaseAlternates = listOf("ؤ", "ٷ", "ٶ", "ۄ"),
-            upperCaseAlternateHints = listOf("ʼw", "u", "ö", "u")
+            upperCaseAlternateHints = listOf("ʾw", "u", "ö", "u")
         ),
         KeyEntry(
             name = "row3_8",

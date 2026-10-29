@@ -3,16 +3,21 @@ package com.shoktuk.shoktukkeyboard.emoji
 import Haptics
 import android.content.Context
 import android.content.SharedPreferences
+import android.graphics.Paint
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
 import android.inputmethodservice.InputMethodService
 import android.os.Build
+import android.transition.AutoTransition
+import android.transition.TransitionManager
 import android.util.TypedValue
 import android.view.Gravity
 import android.view.HapticFeedbackConstants
+import android.view.MotionEvent
 import android.view.View
+import android.view.ViewConfiguration
 import android.view.ViewGroup
-import android.view.ViewTreeObserver
+import android.widget.FrameLayout
 import android.widget.HorizontalScrollView
 import android.widget.LinearLayout
 import android.widget.TableLayout
@@ -103,6 +108,7 @@ object EmojisViewBuilder {
                     setTextColor(KeyboardTheme.getColor(3).toColorInt())
                     setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonHeight / 3f)
                     text = "𐰁𐰶𐰺𐰶 𐰅𐰢𐰈𐰙𐰄𐰠𐰅𐰼 𐰢𐰃𐰣𐰑𐰁 𐰉𐰆𐰞𐱇"
+                    typeface = KeyboardTheme.zamanchakTypeface(service)
 
                     gravity = Gravity.CENTER
                     textAlignment = View.TEXT_ALIGNMENT_CENTER
@@ -156,8 +162,9 @@ object EmojisViewBuilder {
         }
         mainHScroll.addView(hStack)
 
-        val sectionLeftX = hashMapOf<Int, Int>()
-        val sectionCenterX = hashMapOf<Int, Int>()
+        // Sections in display order. Positions are read from the views when needed, so nothing depends on layout listeners.
+        val sectionViews = linkedMapOf<Int, View>()
+        val glyphPaint = Paint()
         var selectedType = tabOrder.firstOrNull() ?: 0
 
         fun registerRecent(emoji: String) {
@@ -170,7 +177,9 @@ object EmojisViewBuilder {
 
         for (type in tabOrder) {
             val cat = emojiByType.firstOrNull { it.type == type } ?: continue
-            if (cat.emojis.isEmpty()) continue
+            // Newer emoji the phone's font can't draw would show as empty boxes, so leave them out.
+            val drawable = cat.emojis.filter { glyphPaint.hasGlyph(it) }
+            if (drawable.isEmpty()) continue
 
             val cellSide = max(1, floor(gridAreaHeight.toFloat() / rowsCount.toFloat()).toInt())
 
@@ -190,9 +199,8 @@ object EmojisViewBuilder {
                 isStretchAllColumns = false
             }
 
-            val perCol = ceil(cat.emojis.size / rowsCount.toFloat()).toInt().coerceAtLeast(1)
             val rows = Array(rowsCount) { mutableListOf<String>() }
-            for ((idx, e) in cat.emojis.withIndex()) {
+            for ((idx, e) in drawable.withIndex()) {
                 rows[idx % rowsCount].add(e)
             }
 
@@ -223,16 +231,7 @@ object EmojisViewBuilder {
 
             section.addView(table)
 
-            section.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
-                override fun onGlobalLayout() {
-                    section.viewTreeObserver.removeOnGlobalLayoutListener(this)
-                    val left = section.left
-                    val center = left + section.width / 2
-                    sectionLeftX[type] = left
-                    sectionCenterX[type] = center
-                }
-            })
-
+            sectionViews[type] = section
             hStack.addView(section)
         }
 
@@ -267,66 +266,132 @@ object EmojisViewBuilder {
                 }
             })
 
-        val tabsScroll = HorizontalScrollView(service).apply {
-            isHorizontalScrollBarEnabled = false
+        var pickerDownX = 0f
+        var pickerDragging = false
+        var pickerScrubbing = false
+        val visibleTypes = sectionViews.keys.toList()
+        val chipSide = (buttonHeight / 2.5f).toInt()
+        val chips = linkedMapOf<Int, TextView>()
+
+        val picker = FrameLayout(service).apply {
             layoutParams = LinearLayout.LayoutParams(0, ViewGroup.LayoutParams.MATCH_PARENT, 1f)
+            isHapticFeedbackEnabled = true
         }
-        val tabsRow = LinearLayout(service).apply {
+        val pill = View(service).apply {
+            background = GradientDrawable().apply {
+                shape = GradientDrawable.RECTANGLE
+                cornerRadius = dpToPx(service, 50).toFloat()
+                setColor(KeyboardTheme.getColor(4).toColorInt())
+                alpha = 70
+            }
+            layoutParams = FrameLayout.LayoutParams(0, chipSide, Gravity.CENTER_VERTICAL)
+        }
+        picker.addView(pill)
+
+        val chipRow = LinearLayout(service).apply {
             orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            layoutParams = LinearLayout.LayoutParams(
-                ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT
-            )
+            gravity = Gravity.CENTER_VERTICAL
+            layoutParams = FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
         }
-        tabsScroll.addView(tabsRow)
+        for (type in visibleTypes) {
+            val label = emojiByType.firstOrNull { it.type == type }?.displayName ?: "?"
+            chipRow.addView(TextView(service).apply {
+                text = label
+                setTextColor(KeyboardTheme.getColor(1).toColorInt())
+                setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonHeight / 4f)
+                gravity = Gravity.CENTER
+                layoutParams = LinearLayout.LayoutParams(0, chipSide, 1f)
+            }.also { chips[type] = it })
+        }
+        picker.addView(chipRow)
 
-        fun scrollSectionToCenter(type: Int) {
-            val knownCenter = sectionCenterX[type]
-            val viewportW = mainHScroll.width
-            if (knownCenter != null && viewportW > 0) {
-                val target = (knownCenter - viewportW / 2).coerceAtLeast(0)
-                mainHScroll.smoothScrollTo(target, 0)
-                return
+        fun cellWidth(): Float = if (visibleTypes.isEmpty()) 0f else picker.width.toFloat() / visibleTypes.size
+
+        /** Moves the highlight to [type]. Only touches the existing views, nothing is rebuilt. */
+        fun select(type: Int, animate: Boolean = true) {
+            selectedType = type
+            val index = visibleTypes.indexOf(type)
+            chips.forEach { (t, chip) ->
+                val on = t == type
+                chip.alpha = if (on) 1f else 0.4f
+                chip.typeface = if (on) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
             }
-            val left = sectionLeftX[type] ?: return
-            mainHScroll.smoothScrollTo(left, 0)
+            if (index < 0) return
+            val x = cellWidth() * index
+            if (animate) pill.animate().translationX(x).setDuration(160).start() else pill.translationX = x
         }
 
-        fun rebuildTabs() {
-            tabsRow.removeAllViews()
-            for (type in tabOrder) {
-                val label = emojiByType.firstOrNull { it.type == type }?.displayName ?: "?"
-                val isSelected = (selectedType == type)
-                val chip = TextView(service).apply {
-                    text = label
-                    setTextColor(KeyboardTheme.getColor(1).toColorInt())
-                    setTextSize(TypedValue.COMPLEX_UNIT_PX, buttonHeight / 4f)
-                    typeface = if (isSelected) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-                    gravity = Gravity.CENTER
-                    val side = (buttonHeight / 2.5f).toInt()
-                    layoutParams = LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT, side
-                    ).apply {
-                        setMargins(dp(service, 6f), dp(service, 2f), dp(service, 6f), dp(service, 2f))
+        picker.addOnLayoutChangeListener { _, l, _, r, _, _, _, _, _ ->
+            val w = cellWidth()
+            if (r - l > 0 && w > 0f) {
+                pill.layoutParams = (pill.layoutParams as FrameLayout.LayoutParams).apply { width = w.toInt() }
+                select(selectedType, animate = false)
+            }
+        }
+
+        fun scrollToSection(type: Int, smooth: Boolean) {
+            val left = sectionViews[type]?.left ?: return
+            if (smooth) mainHScroll.smoothScrollTo(left, 0) else mainHScroll.scrollTo(left, 0)
+        }
+
+        val touchSlop = ViewConfiguration.get(service).scaledTouchSlop
+
+        /** The finger's place across the whole screen sets the grid's scroll position, like a scrollbar handle. */
+        fun scrub(rawX: Float) {
+            val screenW = service.resources.displayMetrics.widthPixels.toFloat()
+            val margin = dp(service, 12f)
+            val fraction = ((rawX - margin) / (screenW - margin * 2)).coerceIn(0f, 1f)
+            val maxScroll = (hStack.width - mainHScroll.width).coerceAtLeast(0)
+            mainHScroll.scrollTo((fraction * maxScroll).toInt(), 0)
+        }
+
+        // ABC and delete slide away while scrubbing so the picker can use the whole width: the icons keep their size and spread out.
+        fun setScrubbing(on: Boolean) {
+            if (pickerScrubbing == on) return
+            pickerScrubbing = on
+            TransitionManager.beginDelayedTransition(bottom, AutoTransition().setDuration(180))
+            bottom.getChildAt(0).visibility = if (on) View.GONE else View.VISIBLE
+            bottom.getChildAt(bottom.childCount - 1).visibility = if (on) View.GONE else View.VISIBLE
+            // The pill snaps between categories, so it is hidden while the finger drags.
+            pill.animate().alpha(if (on) 0f else 1f).setDuration(120).start()
+        }
+
+        picker.setOnTouchListener { v, ev ->
+            val w = cellWidth()
+            if (w <= 0f || visibleTypes.isEmpty()) return@setOnTouchListener false
+            when (ev.actionMasked) {
+                MotionEvent.ACTION_DOWN -> {
+                    v.parent?.requestDisallowInterceptTouchEvent(true)
+                    pickerDownX = ev.rawX
+                    pickerDragging = false
+                }
+                MotionEvent.ACTION_MOVE -> {
+                    if (abs(ev.rawX - pickerDownX) > touchSlop) {
+                        pickerDragging = true
+                        setScrubbing(true)
                     }
-                    setPadding(dp(service, 10f), 0, dp(service, 10f), 0)
-                    alpha = if (isSelected) 1f else 0.25f
-                    tag = "tab_$type"
-                    isHapticFeedbackEnabled = true
+                    if (pickerDragging) scrub(ev.rawX)
                 }
-                chip.setOnClickListener {
-                    Haptics.perform(it, HapticFeedbackConstants.KEYBOARD_TAP)
-                    selectedType = type
-                    scrollSectionToCenter(type)
-                    rebuildTabs()
+                MotionEvent.ACTION_UP -> {
+                    if (pickerDragging) {
+                        scrub(ev.rawX)  // the release point counts too, so a drag to the end reaches the end
+                    } else {
+                        val type = visibleTypes[(ev.x / w).toInt().coerceIn(0, visibleTypes.size - 1)]
+                        Haptics.perform(v, HapticFeedbackConstants.KEYBOARD_TAP)
+                        scrollToSection(type, smooth = true)
+                    }
+                    pickerDragging = false
+                    setScrubbing(false)
                 }
-                tabsRow.addView(chip)
+                MotionEvent.ACTION_CANCEL -> {
+                    pickerDragging = false
+                    setScrubbing(false)
+                }
             }
-            tabsRow.gravity = Gravity.CENTER
+            true
         }
 
-        rebuildTabs()
-        bottom.addView(tabsScroll)
+        bottom.addView(picker)
 
         bottom.addView(
             SystemKeyBuilder.systemButton_Icon(
@@ -349,31 +414,24 @@ object EmojisViewBuilder {
                 }
             })
 
+        // Small to look at, big to hit: no pill behind them, but the touch area stays as it was.
+        bottom.getChildAt(0).background = null
+        bottom.getChildAt(bottom.childCount - 1).background = null
+
         root.addView(bottom)
 
-        mainHScroll.viewTreeObserver.addOnScrollChangedListener {
-            if (sectionCenterX.isNotEmpty() && mainHScroll.width > 0) {
-                val viewportCenter = mainHScroll.scrollX + mainHScroll.width / 2
-                var nearestType = selectedType
-                var best = Int.MAX_VALUE
-                for ((type, center) in sectionCenterX) {
-                    val d = abs(center - viewportCenter)
-                    if (d < best) {
-                        best = d
-                        nearestType = type
-                    }
-                }
-                if (nearestType != selectedType) {
-                    selectedType = nearestType
-                    rebuildTabs()
+        // The highlight always shows the section at the grid's leading edge, whoever is moving the grid.
+        mainHScroll.setOnScrollChangeListener { _, scrollX, _, _, _ ->
+            if (sectionViews.isNotEmpty()) {
+                val leading = sectionViews.entries.lastOrNull { it.value.left <= scrollX + 1 }?.key ?: sectionViews.keys.first()
+                if (leading != selectedType) {
+                    if (pickerDragging) Haptics.perform(picker, HapticFeedbackConstants.KEYBOARD_TAP)
+                    select(leading)
                 }
             }
         }
 
-        mainHScroll.post {
-            scrollSectionToCenter(selectedType)
-            rebuildTabs()
-        }
+        select(selectedType, animate = false)
 
         return root
     }

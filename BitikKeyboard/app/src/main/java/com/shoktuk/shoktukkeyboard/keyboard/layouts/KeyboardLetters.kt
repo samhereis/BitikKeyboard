@@ -15,8 +15,7 @@ object KeyboardLetters {
             uppercase = "𐰦",
             upperCaseRomanization = "NT",
             upperCaseRomanization_Alt = "нт",
-            backgroundColorIndex_uppercase = 5,
-            upperCaseAlternates = listOf("𐰫")
+            backgroundColorIndex_uppercase = 5
         ),
         KeyEntry(
             name = "row1_1",
@@ -47,10 +46,12 @@ object KeyboardLetters {
             lowerCaseRomanization = "aR",
             lowerCaseRomanization_Alt = "ръ",
             lowerCaseAlternates = listOf("𐰻", "𐱈"),
+            lowerCaseAlternateHints = listOf("", "RT"),
             uppercase = "𐰼",
             upperCaseRomanization = "еR",
             upperCaseRomanization_Alt = "рь",
-            upperCaseAlternates = listOf("𐋄", "𐱈")
+            upperCaseAlternates = listOf("𐱈"),
+            upperCaseAlternateHints = listOf("RT")
         ),
         KeyEntry(
             name = "row1_4",
@@ -58,10 +59,12 @@ object KeyboardLetters {
             lowerCaseRomanization = "aT",
             lowerCaseRomanization_Alt = "тъ",
             lowerCaseAlternates = listOf("𐱃", "𐱇", "𐰦", "𐰡", "𐱈"),
+            lowerCaseAlternateHints = listOf("", "OT", "NT", "LT", "RT"),
             uppercase = "𐱅",
             upperCaseRomanization = "еT",
             upperCaseRomanization_Alt = "ть",
-            upperCaseAlternates = listOf("𐱆", "𐰦", "𐰡", "𐱈")
+            upperCaseAlternates = listOf("𐱆", "𐰦", "𐰡", "𐱈"),
+            upperCaseAlternateHints = listOf("", "NT", "LT", "RT")
         ),
         KeyEntry(
             name = "row1_5",
@@ -170,7 +173,7 @@ object KeyboardLetters {
             lowercase = "𐰍",
             lowerCaseRomanization = "aĞ",
             lowerCaseRomanization_Alt = "ғ",
-            lowerCaseAlternates = listOf("𐰎"),
+            lowerCaseAlternates = listOf("𐰎", "𐋄"),
             uppercase = "𐰏",
             upperCaseRomanization = "еG",
             upperCaseRomanization_Alt = "гь",
@@ -212,11 +215,13 @@ object KeyboardLetters {
             lowercase = "𐰞",
             lowerCaseRomanization = "aL",
             lowerCaseRomanization_Alt = "лъ",
-            lowerCaseAlternates = listOf("𐰡", "Ξ", "𐰟"),
+            lowerCaseAlternates = listOf("𐰟", "𐰡"),
+            lowerCaseAlternateHints = listOf("", "LT"),
             uppercase = "𐰠",
             upperCaseRomanization = "еL",
             upperCaseRomanization_Alt = "ль",
-            upperCaseAlternates = listOf("𐰡", "Ξ")
+            upperCaseAlternates = listOf("𐰡"),
+            upperCaseAlternateHints = listOf("LT")
         )
     )
 
@@ -248,11 +253,13 @@ object KeyboardLetters {
             lowercase = "𐰲",
             lowerCaseRomanization = "Ç",
             lowerCaseRomanization_Alt = "ч",
-            lowerCaseAlternates = listOf("𐰱", "𐰨", "𐓸"),
+            lowerCaseAlternates = listOf("𐰳", "𐰨", "𐰱"),
+            lowerCaseAlternateHints = listOf("", "NÇ", "ÇI"),
             uppercase = "𐰲",
             upperCaseRomanization = "Ç",
             upperCaseRomanization_Alt = "ч",
-            upperCaseAlternates = listOf("𐰱", "𐰨", "𐓸")
+            upperCaseAlternates = listOf("𐰳", "𐰨", "𐰱"),
+            upperCaseAlternateHints = listOf("", "NÇ", "ÇI")
         ),
         KeyEntry(
             name = "row3_3",
@@ -281,11 +288,13 @@ object KeyboardLetters {
             lowercase = "𐰣",
             lowerCaseRomanization = "aN",
             lowerCaseRomanization_Alt = "нъ",
-            lowerCaseAlternates = listOf("𐰪", "𐰫", "𐰦", "𐰨"),
+            lowerCaseAlternates = listOf("𐰨", "𐰦", "𐰫", "𐰪"),
+            lowerCaseAlternateHints = listOf("NÇ", "NT", "NT", "NY"),
             uppercase = "𐰥",
             upperCaseRomanization = "еN",
             upperCaseRomanization_Alt = "нь",
-            upperCaseAlternates = listOf("𐰤", "𐰦", "𐰨")
+            upperCaseAlternates = listOf("𐰤", "𐰨", "𐰦", "𐰫", "𐰪"),
+            upperCaseAlternateHints = listOf("", "NÇ", "NT", "NT", "NY")
         ),
         KeyEntry(
             name = "row3_6",

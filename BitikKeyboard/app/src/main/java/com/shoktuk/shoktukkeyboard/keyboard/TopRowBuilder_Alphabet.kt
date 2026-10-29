@@ -78,7 +78,7 @@ object TopRowBuilder_Alphabet {
         }
 
         val newGlow = NewGlowDrawable()
-        rowLayout.background = newGlow
+        
         if (MyKeyboardService.isAutoWriteBitikMode) {
             newGlow.setVisibleAlpha(1f)
             newGlow.startRotating()
@@ -88,9 +88,12 @@ object TopRowBuilder_Alphabet {
         }
 
         val switchLanguageView = SystemKeyBuilder.systemButton_Text(
-            service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() })
+            service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() }, applyBitikFont = true)
 
         val centerSlot = FrameLayout(service).apply {
+            background = newGlow
+            val gap = (service.resources.displayMetrics.density * 6).toInt()
+            setPadding(gap, 0, gap, 0)
             layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f)
             clipToPadding = false
             clipChildren = false
@@ -113,6 +116,9 @@ object TopRowBuilder_Alphabet {
                 service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
         )
         rowLayout.addView(centerSlot)
+        rowLayout.addView(
+            SystemKeyBuilder.systemButton_Text(
+                service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) }))
         rowLayout.addView(
             SystemKeyBuilder.systemButton_Icon(
                 service, KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight, onClick = {
@@ -142,9 +148,6 @@ object TopRowBuilder_Alphabet {
                 }
             }
         }
-        rowLayout.addView(
-            SystemKeyBuilder.systemButton_Text(
-                service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) }))
 
         return rowLayout
     }

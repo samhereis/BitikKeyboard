@@ -68,7 +68,9 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ajVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.asVariant
+import com.shoktuk.shoktukkeyboard.project.data.BitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikFont
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
@@ -616,6 +618,7 @@ fun OtherAlphabetsSettingsScreen() {
     var latinO by remember { mutableStateOf(context.latinO) }
     var arabStatus by remember { mutableStateOf(context.arabicStatus) }
     var kirilisaStatus by remember { mutableStateOf(context.kirilisaStatus) }
+    var bitikTranscriptionAlphabets by remember { mutableStateOf(context.bitikTranscriptionAlphabets) }
 
     Column(
         Modifier
@@ -642,6 +645,18 @@ fun OtherAlphabetsSettingsScreen() {
                     style = MaterialTheme.typography.titleMedium,
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
+                )
+
+                EnumSwitchSetting(
+                    label = "Transcription to Bitik",
+                    selected = bitikTranscriptionAlphabets,
+                    optionOn = BitikTranscriptionAlphabets.On,
+                    optionOff = BitikTranscriptionAlphabets.Off,
+                    onSelect = {
+                        context.bitikTranscriptionAlphabets = it
+                        bitikTranscriptionAlphabets = context.bitikTranscriptionAlphabets
+                    },
+                    modifier = Modifier.fillMaxWidth()
                 )
 
                 EnumSwitchSetting(
