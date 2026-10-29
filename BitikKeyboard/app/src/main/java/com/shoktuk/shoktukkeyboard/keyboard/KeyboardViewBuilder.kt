@@ -38,12 +38,6 @@ import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
 object KeyboardViewBuilder {
-    var aj_Def = context.ajVariant == AJ_Letter_Variant.Ach
-    var eb_Def = context.ebVariant == EB_Letter_Variant.Default
-    var en_Def = context.enVariant == EN_Letter_Variant.Default
-    var as_Def = context.asVariant == AS_Letter_Variant.Default
-    var esh_Def = context.eshVariant == ESH_Letter_Variant.Default
-
     fun buildKeyboardView(
         service: InputMethodService,
         layout: KeyboardLayout,
@@ -53,12 +47,6 @@ object KeyboardViewBuilder {
         onCapsChange: (Boolean) -> Unit,
         onModeChange: (KeyboardMode) -> Unit,
     ): LinearLayout {
-        aj_Def = context.ajVariant == AJ_Letter_Variant.Ach
-        eb_Def = context.ebVariant == EB_Letter_Variant.Default
-        en_Def = context.enVariant == EN_Letter_Variant.Default
-        as_Def = context.asVariant == AS_Letter_Variant.Default
-        esh_Def = context.eshVariant == ESH_Letter_Variant.Default
-
         val screenWidthPx = service.resources.displayMetrics.widthPixels
         val baseDesignWidthDp = 360f
         val density = service.resources.displayMetrics.density
@@ -157,7 +145,7 @@ object KeyboardViewBuilder {
         freeKey?.let { key ->
             val entry = process(key, mode)
             val click = entry.lowercase.orEmpty()
-            val hold = entry.lowerCaseHold
+            val hold = entry.lowerCaseAlternates?.firstOrNull()
             val view = SystemKeyBuilder.systemButton_Text(
                 service = service, text = click, buttonHeight = buttonHeight, onClick = {
                     onKeyPressed?.invoke(service.currentInputConnection, click)
@@ -219,156 +207,9 @@ object KeyboardViewBuilder {
         return rowLayout
     }
 
+    /** Per-key touches that are not letter swaps (swaps live in [LayoutSwaps]): the free symbol key. */
     fun process(key: KeyEntry, mode: KeyboardMode): KeyEntry {
         var keyToSet = key
-
-        if (mode == KeyboardMode.Main) {
-            if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
-                if (context.keyboardVariant != BitikVariant.CLASSIC) {
-                    if (key.name == "y" && !aj_Def) {
-                        keyToSet = key.copy(
-                            lowercase = if (context.ajVariant == AJ_Letter_Variant.Ach) "𐰖" else "𐰗", lowerCaseHold = if (context.ajVariant == AJ_Letter_Variant.Ach) "𐰗" else null
-                        )
-                        return keyToSet
-                    }
-
-                    if (key.name == "j" && !aj_Def) {
-                        keyToSet = key.copy(
-                            lowercase = if (context.ajVariant == AJ_Letter_Variant.Ach) "𐰳" else "𐰖", lowerCaseHold = if (context.ajVariant == AJ_Letter_Variant.Ach) null else "𐰳"
-                        )
-                        return keyToSet
-                    }
-                }
-
-                if (key.name == "b" && !eb_Def) {
-                    keyToSet = getEB(keyToSet)
-                    return keyToSet
-                }
-                if (key.name == "n" && !en_Def) {
-                    keyToSet = getEN(keyToSet)
-                    return keyToSet
-                }
-
-                if (MyKeyboardService.current_bitikDialect == BitikDialect.Altay) {
-                    if (key.name == "s" && !as_Def) {
-                        keyToSet = getAS(keyToSet)
-                        return keyToSet
-                    }
-
-                    if (key.name == "k" && context.ekVariant == EK_Letter_Variant.Second) {
-                        keyToSet = getEK(keyToSet)
-                        return keyToSet
-                    }
-
-                    if (context.keyboardVariant != BitikVariant.CLASSIC) {
-                        if (key.name == "ş" && !esh_Def) {
-                            keyToSet = getESH(keyToSet)
-                        }
-                        return keyToSet
-                    }
-                }
-
-                if (MyKeyboardService.current_bitikDialect == BitikDialect.Orkon) {
-                    if (key.name == "ñ" && context.angVariant == ANG_Letter_Variant.Off) {
-                        keyToSet = getANG(keyToSet)
-                        return keyToSet
-                    }
-
-                    if (key.name == "s") {
-                        keyToSet = getAS(keyToSet)
-                        return keyToSet
-                    }
-
-                    if (key.name == "ş") {
-                        keyToSet = keyToSet.copy(
-                            lowercase = "𐱁",
-                            lowerCaseHold = "𐱀",
-                            lowerCaseRomanization = "Ş",
-                            upperCaseRomanization_Alt = "ш",
-                            upperCaseHold = "𐰿",
-                            upperCaseRomanization = "Ş",
-                            lowerCaseRomanization_Alt = "ш",
-                        )
-                        return keyToSet
-                    }
-
-                    if (key.name == "t") {
-                        keyToSet = keyToSet.copy(
-                            lowercase = "𐱃", lowerCaseHold = "𐱄"
-                        )
-                        return keyToSet
-                    }
-
-                    if (context.keyboardVariant == BitikVariant.CLASSIC) {
-                        if (key.name == "oq, uq") {
-                            keyToSet = keyToSet.copy(
-                                uppercase = "𐰰", upperCaseHold = "𐰝"
-                            )
-                        }
-                        return keyToSet
-                    }
-                }
-            } else {
-                if (MyKeyboardService.current_writingSystem == WritingSystem.Latin) {
-                    val minimal = context.latinVariant == Latin_Variant.minimal
-
-                    if (minimal && context.latinZH == Latin_ZH.c) {
-                        if (key.name == "row2_6") {
-                            keyToSet = keyToSet.copy(
-                                lowercase = "c", lowerCaseRomanization = "j", lowerCaseHold = "j", uppercase = "C", upperCaseRomanization = "J", upperCaseHold = "J"
-                            ).withAlternates(listOf("j", "ç", "ć", "č", "ĉ", "ċ"))
-                        }
-
-                        if (key.name == "row3_2") {
-                            keyToSet = keyToSet.copy(
-                                lowerCaseHold = null, lowerCaseRomanization = null, lowerCaseRomanization_Alt = null, upperCaseHold = null, upperCaseRomanization = null, upperCaseRomanization_Alt = null,
-                                lowerCaseAlternates = null, upperCaseAlternates = null
-                            )
-                        }
-                    }
-
-                    if (minimal && context.latinZH == Latin_ZH.j && context.latinCH == Latin_CH.c && key.name == "row3_2") {
-                        keyToSet = keyToSet.copy(
-                            lowercase = "c", lowerCaseRomanization = "ç", lowerCaseHold = "ç", uppercase = "C", upperCaseRomanization = "Ç", upperCaseHold = "Ç"
-                        ).withAlternates(listOf("ç", "ć", "č", "ĉ", "ċ"))
-                    }
-
-                    if (context.latinNG == Latin_NG.ng) {
-                        if (minimal && key.name == "row3_1") {
-                            keyToSet = keyToSet.copy(lowercase = "ŋ", uppercase = "Ŋ").withAlternates(listOf("x", "ñ"))
-                        }
-                        if (!minimal && key.name == "row2_11") {
-                            keyToSet = keyToSet.copy(lowercase = "ŋ", uppercase = "Ŋ").withAlternates(listOf("ŋ", "ñ"))
-                        }
-                    }
-
-                    if (context.latinO == Latin_O.oBarred) {
-                        if (minimal && key.name == "row2_5") {
-                            keyToSet = keyToSet.copy(lowercase = "ө", uppercase = "Ө").withAlternates(listOf("h", "ö"))
-                        }
-                        if (!minimal && key.name == "row3_8") {
-                            keyToSet = keyToSet.copy(lowercase = "ө", uppercase = "Ө").withAlternates(listOf("ө", "ö"))
-                        }
-                    }
-                }
-
-                if (key.name == "⸮" || key.name == "?") {
-                    keyToSet = key.copy(
-                        lowercase = "?", lowerCaseHold = "⸮", lowerCaseRomanization = "⸮", uppercase = "?", upperCaseHold = "⸮", upperCaseRomanization = "⸮"
-                    )
-                    return keyToSet
-                }
-            }
-        }
-
-        if (MyKeyboardService.current_writingSystem == WritingSystem.Kiril || MyKeyboardService.current_writingSystem == WritingSystem.Latin) {
-            if (key.name == "⸮" || key.name == "?") {
-                keyToSet = key.copy(
-                    lowercase = "?", lowerCaseHold = "⸮", lowerCaseRomanization = "⸮", uppercase = "?", upperCaseHold = "⸮", upperCaseRomanization = "⸮"
-                )
-                return keyToSet
-            }
-        }
 
         if (mode == KeyboardMode.Emojis) {
             if (key.name == "kg") {
@@ -376,47 +217,11 @@ object KeyboardViewBuilder {
                 val b = context.freeTamga_Hold
 
                 keyToSet = key.copy(
-                    lowercase = a, lowerCaseHold = b, lowerCaseRomanization = b, uppercase = b, upperCaseHold = b, upperCaseRomanization = a
+                    lowercase = a, lowerCaseAlternates = listOf(b), lowerCaseRomanization = b, uppercase = b, upperCaseAlternates = listOf(b), upperCaseRomanization = a
                 )
             }
         }
 
         return keyToSet
-    }
-
-    private fun getANG(key: KeyEntry): KeyEntry {
-        return key.copy(
-            lowercase = "𐰭", lowerCaseRomanization = "Ñ", lowerCaseRomanization_Alt = "ң", upperCaseRomanization = "Ñ", upperCaseRomanization_Alt = "ң"
-        )
-    }
-
-    private fun getEK(key: KeyEntry): KeyEntry {
-        return key.copy(
-            uppercase = "𐰛", upperCaseHold = "𐰚"
-        )
-    }
-
-    private fun getEB(key: KeyEntry): KeyEntry {
-        return key.copy(
-            uppercase = "𐰋", upperCaseHold = "𐰌"
-        )
-    }
-
-    private fun getEN(key: KeyEntry): KeyEntry {
-        return key.copy(
-            uppercase = "𐰥", upperCaseHold = "𐰤"
-        )
-    }
-
-    private fun getAS(key: KeyEntry): KeyEntry {
-        return key.copy(
-            lowercase = "𐰽", lowerCaseHold = "𐱂"
-        )
-    }
-
-    private fun getESH(key: KeyEntry): KeyEntry {
-        return key.copy(
-            uppercase = "𐰿", upperCaseHold = "𐱁"
-        )
     }
 }

@@ -225,8 +225,8 @@ function CorrentText_Old() {
         new TranscriptionEntry("𐰏", "eG", CharacterType.SoftConsonant),
         new TranscriptionEntry("𐰐", "eG", CharacterType.SoftConsonant),
         new TranscriptionEntry("𐰡", "LT", CharacterType.Character),
-        new TranscriptionEntry("𐰚", "eQ", CharacterType.SoftConsonant),
-        new TranscriptionEntry("𐰛", "eQ", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰚", "eK", CharacterType.SoftConsonant),
+        new TranscriptionEntry("𐰛", "eK", CharacterType.SoftConsonant),
         new TranscriptionEntry("𐰠", "eL", CharacterType.SoftConsonant),
         
         // Third Row

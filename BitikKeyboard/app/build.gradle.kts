@@ -107,6 +107,7 @@ dependencies {
     implementation(libs.google.http.client.android)
 
     // Testing
+    testImplementation("junit:junit:4.13.2")
     implementation(libs.androidx.monitor)
     implementation(libs.androidx.junit.ktx)
     implementation(libs.androidx.compose.foundation.layout)

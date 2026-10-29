@@ -243,26 +243,13 @@ class KeyView(
 
     private fun setupClickListeners() {
         setOnClickListener {
-            var text = getCurrentMainText()
-            if (isLongPressed) {
-                text = getCurrentMainText_Hold()
-            }
-            text = text?.replace("\uD803\\", "")
+            val text = getCurrentMainText()?.replace("\uD803\\", "")
             onKeyClick(text!!)
         }
     }
 
     private fun setupTouchHandling() {
         val longPressRunnable = Runnable {
-            var hasHoldValue: Boolean = false;
-
-            if (isCaps && key.upperCaseHold != null) {
-                hasHoldValue = true
-            }
-            if (!isCaps && key.lowerCaseHold != null) {
-                hasHoldValue = true
-            }
-
             val alternates = currentAlternates()
             if (isTouchInBounds && alternates.isNotEmpty()) {
                 isLongPressed = true
@@ -270,14 +257,6 @@ class KeyView(
                 Haptics.longPress(this)
                 picker = AlternatesPicker(this, alternates, currentAlternateHints(), lastRawX, lastRawY)
                 return@Runnable
-            }
-
-            if (isTouchInBounds && hasHoldValue) {
-                isLongPressed = true
-                onLongPress(getCurrentMainText_Hold())
-                applyStyle()
-                updateContent()
-                updateOverlay()
             }
 
             TopRowBuilder_Old.onTypedListener?.invoke()
@@ -433,25 +412,12 @@ class KeyView(
 
     private fun updateOverlay() {
         try {
-            val main = if (isLongPressed) getCurrentMainText_Hold() else getCurrentMainText()
-            val hint = if (isLongPressed) getCurrentSubText_Hold() else getCurrentSubText()
+            val main = getCurrentMainText()
 
             overlayMainText?.text = (main ?: "").markDisplay()
 
-            var colorToSet: Int = KeyboardTheme.getColor(1).toColorInt()
-            colorToSet = if (isCaps) {
-                when {
-                    key.backgroundColorIndex_uppercase_Hold != null -> KeyboardTheme.getColor(key.backgroundColorIndex_uppercase_Hold!!).toColorInt()
-                    key.backgroundColorIndex_lowercase != null -> KeyboardTheme.getColor(key.backgroundColorIndex_lowercase!!).toColorInt()
-                    else -> colorToSet
-                }
-            } else {
-                when {
-                    key.backgroundColorIndex_lowercase_Hold != null -> KeyboardTheme.getColor(key.backgroundColorIndex_lowercase_Hold!!).toColorInt()
-                    key.backgroundColorIndex_lowercase != null -> KeyboardTheme.getColor(key.backgroundColorIndex_lowercase!!).toColorInt()
-                    else -> colorToSet
-                }
-            }
+            val index = if (isCaps) key.backgroundColorIndex_uppercase else key.backgroundColorIndex_lowercase
+            val colorToSet = KeyboardTheme.getColor(index ?: 1).toColorInt()
             popupWindow?.contentView?.setBackgroundColor(colorToSet)
         } catch (e: Throwable) {
             notifyError("Failed to update preview.", e)
@@ -463,26 +429,8 @@ class KeyView(
             return
         }
 
-        // Bitik key data selectively marks which hold values are indicator-worthy; other
-        // scripts don't carry that flag at all, so they just need a hold value to exist.
-        if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
-            if (isCaps) {
-                if (key.uppercase_HoldabilityIndicator != "on") {
-                    return
-                }
-            } else {
-                if (key.lowerCase_HoldabilityIndicator != "on") {
-                    return
-                }
-            }
-        }
-
-        val hasHoldVariant = if (isCaps) {
-            key.upperCaseHold != null
-        } else {
-            key.lowerCaseHold != null
-        }
-        if (!hasHoldVariant) return
+        // The indicator marks keys whose hold picker offers more than the key's own letter.
+        if (currentAlternates().isEmpty()) return
 
         val radius = dpToPx(context, 6).toFloat()
         val clipToParentOutline = true
@@ -516,15 +464,20 @@ class KeyView(
         (root as ViewGroup).addView(indicator)
     }
 
-    /** Hold always opens the picker: the key's variants, else its legacy hold value, else just its own glyph. */
+    /** The picker lists only the key's *other* letters (its own is what a tap types); keys without any open nothing. */
     private fun currentAlternates(): List<String> {
         if (key.name == "Shift" || key.name == "Del" || key.name.isNullOrEmpty()) return emptyList()
-        val variants = (if (isCaps) key.upperCaseAlternates else key.lowerCaseAlternates).orEmpty()
-        if (variants.isNotEmpty()) return variants
-        return listOfNotNull(getCurrentMainText_Hold() ?: getCurrentMainText()).filter { it.isNotEmpty() }
+        val base = getCurrentMainText()
+        return (if (isCaps) key.upperCaseAlternates else key.lowerCaseAlternates).orEmpty().filter { it != base }
     }
 
-    private fun currentAlternateHints(): List<String> = (if (isCaps) key.upperCaseAlternateHints else key.lowerCaseAlternateHints).orEmpty()
+    private fun currentAlternateHints(): List<String> {
+        val base = getCurrentMainText()
+        val all = (if (isCaps) key.upperCaseAlternates else key.lowerCaseAlternates).orEmpty()
+        val hints = (if (isCaps) key.upperCaseAlternateHints else key.lowerCaseAlternateHints).orEmpty()
+        if (hints.isEmpty()) return emptyList()
+        return all.indices.filter { all[it] != base }.map { hints.getOrElse(it) { "" } }
+    }
 
     private fun getCurrentMainText(): String? = if (isCaps) key.uppercase else key.lowercase
 
@@ -532,9 +485,7 @@ class KeyView(
 
     private fun getCurrentSubText_Alt(): CharSequence? = if (isCaps) key.upperCaseRomanization_Alt ?: "" else key.lowerCaseRomanization_Alt ?: ""
 
-    private fun getCurrentMainText_Hold(): String? = if (isCaps) key.upperCaseHold else key.lowerCaseHold
 
-    private fun getCurrentSubText_Hold(): CharSequence? = if (isCaps) key.upperCaseHoldHint ?: "" else key.lowerCaseHoldHint ?: ""
 
     /** The strip shown above a held key: drag sideways to pick one of its variants, release to type it. */
     private inner class AlternatesPicker(
@@ -577,6 +528,7 @@ class KeyView(
                     gravity = Gravity.CENTER
                     addView(TextView(context).apply {
                         text = items[index].markDisplay()
+                        typeface = if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) (KeyboardTheme.bitikTypeface(context) ?: KeyboardTheme.zamanchakTypeface(context)) else null
                         gravity = Gravity.CENTER
                         setTextColor(backdrop.textColor.toColorInt())
                         setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp)

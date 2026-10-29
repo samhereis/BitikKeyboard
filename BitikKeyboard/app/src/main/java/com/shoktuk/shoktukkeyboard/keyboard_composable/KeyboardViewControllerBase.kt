@@ -310,17 +310,15 @@ class KeyboardViewControllerBase : InputMethodService() {
             lowercase = entry.lowercase,
             lowerCaseRomanization = entry.lowerCaseRomanization?.ifEmpty { null },
             lowerCaseRomanization2 = entry.lowerCaseRomanization_Alt?.ifEmpty { null },
-            lowerCaseHold = entry.lowerCaseHold?.ifEmpty { null },
-            lowerCaseHoldHint = entry.lowerCaseHoldHint?.ifEmpty { null },
+            lowerCaseHold = entry.lowerCaseAlternates?.firstOrNull()?.ifEmpty { null },
             backgroundColorIndexLowercase = entry.backgroundColorIndex_lowercase ?: 1,
-            backgroundColorIndexLowercaseHold = entry.backgroundColorIndex_lowercase_Hold ?: 1,
+            backgroundColorIndexLowercaseHold = entry.backgroundColorIndex_lowercase ?: 1,
             uppercase = entry.uppercase?.ifEmpty { entry.lowercase } ?: entry.lowercase,
             upperCaseRomanization = entry.upperCaseRomanization?.ifEmpty { null },
             upperCaseRomanization2 = entry.upperCaseRomanization_Alt?.ifEmpty { null },
-            upperCaseHold = entry.upperCaseHold?.ifEmpty { null },
-            upperCaseHoldHint = entry.upperCaseHoldHint?.ifEmpty { null },
+            upperCaseHold = entry.upperCaseAlternates?.firstOrNull()?.ifEmpty { null },
             backgroundColorIndexUppercase = entry.backgroundColorIndex_uppercase ?: 1,
-            backgroundColorIndexUppercaseHold = entry.backgroundColorIndex_uppercase_Hold ?: 1
+            backgroundColorIndexUppercaseHold = entry.backgroundColorIndex_uppercase ?: 1
         )
     }
 
@@ -390,7 +388,7 @@ class KeyboardViewControllerBase : InputMethodService() {
                 )
             }
             if (key.name == "t") return result.copy(lowercase = "𐱃", lowerCaseHold = "𐱄")
-            if (ctx.keyboardVariant == BitikVariant.CLASSIC && key.name == "oq, uq") {
+            if (ctx.keyboardVariant == BitikVariant.CLASSIC && key.name == "row2_0") {
                 return result.copy(uppercase = "𐰰", upperCaseHold = "𐰝")
             }
         }

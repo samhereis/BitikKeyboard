@@ -9,30 +9,26 @@ data class KeyEntry(
     val lowercase: String,
     val lowerCaseRomanization: String? = "",
     val lowerCaseRomanization_Alt: String? = "",
-    val lowerCaseHold: String? = "",
-    val lowerCaseHoldHint: String? = "",
     val backgroundColorIndex_lowercase: Int? = 1,
-    val backgroundColorIndex_lowercase_Hold: Int? = 1,
-    var lowerCase_HoldabilityIndicator: String? = "",
     val lowerCaseAlternates: List<String>? = null,
     val lowerCaseAlternateHints: List<String>? = null,
 
     val uppercase: String? = "",
     val upperCaseRomanization: String? = "",
     val upperCaseRomanization_Alt: String? = "",
-    val upperCaseHold: String? = "",
-    val upperCaseHoldHint: String? = "",
     val backgroundColorIndex_uppercase: Int? = 1,
-    val backgroundColorIndex_uppercase_Hold: Int? = 1,
-    var uppercase_HoldabilityIndicator: String? = "",
     val upperCaseAlternates: List<String>? = null,
     val upperCaseAlternateHints: List<String>? = null,
 ) {
     /** Hold-and-drag list for both cases (first entry = what a plain hold-and-release types). */
-    fun withAlternates(lower: List<String>): KeyEntry = copy(
-        lowerCaseAlternates = lower,
-        lowerCaseAlternateHints = null,
-        upperCaseAlternates = lower.map { it.uppercase() }.filter { it.length == 1 },
-        upperCaseAlternateHints = null
-    )
+    fun withAlternates(lower: List<String>): KeyEntry {
+        // The key's own letter is what a tap types, so it never belongs in its alternates (same as iOS).
+        val upper = lower.map { it.uppercase() }.filter { it.length == 1 }
+        return copy(
+            lowerCaseAlternates = lower.filter { it != lowercase },
+            lowerCaseAlternateHints = null,
+            upperCaseAlternates = upper.filter { it != uppercase },
+            upperCaseAlternateHints = null
+        )
+    }
 }

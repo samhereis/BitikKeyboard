@@ -67,7 +67,7 @@ object SettingsManager {
         set(v) = prefs().setEnum(EN_Letter_Variant.KEY, v)
 
     var Context.asVariant: AS_Letter_Variant
-        get() = prefs().getEnum(AS_Letter_Variant.KEY, AS_Letter_Variant.Default)
+        get() = prefs().getEnum(AS_Letter_Variant.KEY, AS_Letter_Variant.Second)
         set(v) = prefs().setEnum(AS_Letter_Variant.KEY, v)
 
     var Context.ekVariant: EK_Letter_Variant
@@ -127,7 +127,7 @@ object SettingsManager {
         set(v) = prefs().setEnum(Vibrations.KEY, v)
 
     var Context.sounds: Sounds
-        get() = prefs().getEnum(Sounds.KEY, Sounds.Off)
+        get() = prefs().getEnum(Sounds.KEY, Sounds.On)
         set(v) = prefs().setEnum(Sounds.KEY, v)
 
     var Context.freeTamga_Click: String

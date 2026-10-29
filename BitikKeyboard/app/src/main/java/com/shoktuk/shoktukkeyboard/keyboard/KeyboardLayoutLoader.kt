@@ -1,24 +1,31 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
-import com.google.gson.Gson
-import java.io.InputStreamReader
+import com.shoktuk.shoktukkeyboard.keyboard.layouts.KeyboardLetters
+import com.shoktuk.shoktukkeyboard.keyboard.layouts.KeyboardLetters_Arab
+import com.shoktuk.shoktukkeyboard.keyboard.layouts.KeyboardLetters_Kiril
+import com.shoktuk.shoktukkeyboard.keyboard.layouts.KeyboardLetters_Latin
+import com.shoktuk.shoktukkeyboard.keyboard.layouts.KeyboardLetters_Latin_Full
+import com.shoktuk.shoktukkeyboard.keyboard.layouts.KeyboardLetters_Old
+import com.shoktuk.shoktukkeyboard.keyboard.layouts.KeyboardSymbols
 
+/** Hands out the layout classes (the Kotlin twins of the iOS `KeyboardLetters_*` structs) and applies the settings swaps. */
 object KeyboardLayoutLoader {
 
     fun loadKeyboardLayout(context: Context, mode: KeyboardMode, language: String): KeyboardLayout {
-        var fileName = ""
+        if (mode == KeyboardMode.Symbols) return LayoutSwaps.applySymbols(KeyboardSymbols.layout(), MyKeyboardService.current_writingSystem)
 
-        if (mode == KeyboardMode.Symbols) {
-            fileName = "langs/keyboard_symbols.json"
-        } else {
-            fileName = "langs/${language}.json"
+        val layout = when (language) {
+            "latin" -> KeyboardLetters_Latin.layout()
+            "latin_full" -> KeyboardLetters_Latin_Full.layout()
+            "kiril" -> KeyboardLetters_Kiril.layout()
+            "arabic" -> KeyboardLetters_Arab.layout()
+            "enesay_old" -> KeyboardLetters_Old.layout()
+            "enesay_modern", "enesay" -> KeyboardLetters.layout()
+            else -> error("No layout class for \"$language\"")
         }
 
-        context.assets.open(fileName).use { inputStream ->
-            InputStreamReader(inputStream).use { reader ->
-                return Gson().fromJson(reader, KeyboardLayout::class.java)
-            }
-        }
+        // Like iOS: the data is used as is, then the settings' letter swaps are applied once, here.
+        return if (mode == KeyboardMode.Main) LayoutSwaps.apply(layout, MyKeyboardService.current_writingSystem, context) else layout
     }
 }
