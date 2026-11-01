@@ -633,6 +633,8 @@ object BottomRowBuilder {
             var downX = 0f
             var lastStep = 0
             var cursorMode = false
+            /** Set by holding the space bar: the drag then picks a keyboard / layout instead of moving the cursor. */
+            var holdPicker = false
             var carouselActive = false
             var startIndex = 0
             var selected = 0
@@ -640,10 +642,28 @@ object BottomRowBuilder {
             var thirdIndex = -1
             var view: View? = null
 
-            val enterCursorMode = Runnable {
-                cursorMode = true
+            /** Shows the picker the moment the hold registers, even if the finger never moves. */
+            fun openCarousel(v: View) {
+                val systems = MyKeyboardService.context.availableWritingSystems()
+                carouselActive = true
+                startIndex = systems.indexOf(MyKeyboardService.current_writingSystem).coerceAtLeast(0)
+                selected = startIndex
+                subIndex = -1
+                thirdIndex = -1
+                carousel = LanguageCarousel(service, v, systems, startIndex, spaceTextColor, spaceStyle.fillColor.toColorInt(), downRawX)
+                carousel?.showSub(startIndex, subOptionsFor(systems[startIndex]))
+            }
+
+            // A plain drag moves the cursor right away; holding first (where there is a picker) lets the drag choose instead.
+            val enterHoldMode = Runnable {
                 view?.let { Haptics.longPress(it) }
-                showCursorMode(true)
+                if (canSwitchKeyboard) {
+                    holdPicker = true
+                    view?.let { openCarousel(it) }
+                } else {
+                    cursorMode = true
+                    showCursorMode(true)
+                }
             }
 
             override fun onTouch(v: View, e: MotionEvent): Boolean {
@@ -654,14 +674,23 @@ object BottomRowBuilder {
                         downRawX = e.rawX
                         lastStep = 0
                         cursorMode = false
+                        holdPicker = false
                         carouselActive = false
-                        handler.postDelayed(enterCursorMode, SPACE_HOLD_MILLIS)
+                        handler.postDelayed(enterHoldMode, SPACE_HOLD_MILLIS)
                         v.parent?.requestDisallowInterceptTouchEvent(true)
                         return true
                     }
 
                     MotionEvent.ACTION_MOVE -> {
-                        val dx = e.x - downX
+                        var dx = e.x - downX
+                        if (!cursorMode && !holdPicker && kotlin.math.abs(dx) > slopPx) {
+                            // Dragged before the hold: move the cursor from here on, without jumping by the slop.
+                            handler.removeCallbacks(enterHoldMode)
+                            cursorMode = true
+                            downX = e.x
+                            dx = 0f
+                            showCursorMode(true)
+                        }
                         if (cursorMode) {
                             val step = (dx / stepPx).toInt()
                             if (step != lastStep) {
@@ -671,18 +700,8 @@ object BottomRowBuilder {
                                 val newPos = (et.selectionEnd + delta).coerceIn(0, (et.text?.length ?: 0))
                                 setSel(service, newPos, newPos)
                             }
-                        } else if (canSwitchKeyboard && (carouselActive || kotlin.math.abs(dx) > slopPx)) {
+                        } else if (holdPicker && carouselActive) {
                             val systems = MyKeyboardService.context.availableWritingSystems()
-                            if (!carouselActive) {
-                                handler.removeCallbacks(enterCursorMode)
-                                carouselActive = true
-                                startIndex = systems.indexOf(MyKeyboardService.current_writingSystem).coerceAtLeast(0)
-                                selected = startIndex
-                                subIndex = -1
-                                thirdIndex = -1
-                                carousel = LanguageCarousel(service, v, systems, startIndex, spaceTextColor, spaceStyle.fillColor.toColorInt(), downRawX)
-                                carousel?.showSub(startIndex, subOptionsFor(systems[startIndex]))
-                            }
                             carousel?.let { active ->
                                 // The finger's height picks the floor: 0 = main carousel, 1 = sub choices, 2 = the sub choice's own choices.
                                 val optionsHere = subOptionsFor(systems[selected])
@@ -727,7 +746,7 @@ object BottomRowBuilder {
                     }
 
                     MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
-                        handler.removeCallbacks(enterCursorMode)
+                        handler.removeCallbacks(enterHoldMode)
                         if (carouselActive) {
                             val active = carousel
                             val target = MyKeyboardService.context.availableWritingSystems().getOrNull(selected)
@@ -742,10 +761,11 @@ object BottomRowBuilder {
                                 }
                             }
                             if (!apply) keyboardName.text = keyboardLabel(MyKeyboardService.current_writingSystem)
-                        } else if (!cursorMode && kotlin.math.abs(e.x - downX) <= slopPx && e.actionMasked == MotionEvent.ACTION_UP) {
+                        } else if (!cursorMode && !holdPicker && kotlin.math.abs(e.x - downX) <= slopPx && e.actionMasked == MotionEvent.ACTION_UP) {
                             onKeyPressed?.invoke(service.currentInputConnection, " ", true)
                         }
                         carouselActive = false
+                        holdPicker = false
                         if (cursorMode) showCursorMode(false)
                         cursorMode = false
                         v.parent?.requestDisallowInterceptTouchEvent(false)
