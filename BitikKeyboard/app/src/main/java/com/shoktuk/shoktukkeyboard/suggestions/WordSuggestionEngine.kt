@@ -43,6 +43,9 @@ object WordSuggestionEngine {
     /** Cyrillic typing matches the word files as they are; Latin typing matches their transliteration. */
     private var cyrillic = false
 
+    /** Arabic typing matches the transliteration into the Arabic keyboard's letters. */
+    private var arabic = false
+
     /** Called on the main thread when a file a lookup was waiting for has finished loading. */
     var onShardLoaded: (() -> Unit)? = null
 
@@ -56,26 +59,28 @@ object WordSuggestionEngine {
      * Sets the script being typed and the Latin letter settings (the engine spells Latin words the way the keys do).
      * Cached files are dropped when any of them changes.
      */
-    fun configure(context: Context, cyrillic: Boolean, zh: String = "j", ch: String = "ç", ng: String = "ñ", o: String = "ö") {
+    fun configure(context: Context, cyrillic: Boolean, zh: String = "j", ch: String = "ç", ng: String = "ñ", o: String = "ö", arabic: Boolean = false) {
         if (!configured) {
             appContext = context.applicationContext
+            LearnedWords.attach(appContext)
             exceptions = HarmonyExceptions.load(appContext)
             configured = true
         }
-        val sig = "$cyrillic|$zh|$ch|$ng|$o"
+        val sig = "$cyrillic|$zh|$ch|$ng|$o|$arabic"
         if (sig == signature) return
         signature = sig
         this.cyrillic = cyrillic
+        this.arabic = arabic
         this.zh = zh; this.ch = ch; this.ng = ng; this.o = o
         val map = buildTable()
         table = arrayOfNulls(0xD0)
         for ((c, v) in map) if (c.code in 0x430 until 0x500) table[c.code - 0x430] = v
         extra = map
-        cache.clear(); recency.clear(); loading.clear()
+        cache.clear(); recency.clear(); loading.clear(); learnedSpelled.clear()
         generation++
         latinFirst.clear()
         if (!cyrillic) for (c in ALPHABET) {
-            val first = fold(transliterate(c.toString(), HarmonyExceptions())).firstOrNull() ?: continue
+            val first = fold(spell(c.toString(), HarmonyExceptions())).firstOrNull() ?: continue
             latinFirst.getOrPut(first) { ArrayList() }.add(c)
         }
     }
@@ -84,9 +89,12 @@ object WordSuggestionEngine {
 
     /** Reads the writing system and Latin letter settings from the keyboard service. */
     fun configureFor(service: com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService) {
-        val kiril = com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.current_writingSystem == com.shoktuk.shoktukkeyboard.project.data.WritingSystem.Kiril
+        val system = com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.current_writingSystem
+        val kiril = system == com.shoktuk.shoktukkeyboard.project.data.WritingSystem.Kiril
+        val arab = system == com.shoktuk.shoktukkeyboard.project.data.WritingSystem.Arab
         with(com.shoktuk.shoktukkeyboard.project.data.SettingsManager) {
-            configure(service, kiril, service.latinZH.id, service.latinCH.id, service.latinNG.id, service.latinO.id)
+            if (arab) configure(service, false, "j", "ç", "ñ", "ö", arabic = true)
+            else configure(service, kiril, service.latinZH.id, service.latinCH.id, service.latinNG.id, service.latinO.id)
         }
     }
 
@@ -97,6 +105,12 @@ object WordSuggestionEngine {
 
     /** Up to [limit] completions of [prefix], shortest first among the most frequent, then near-misses for typos. */
     fun completions(prefix: String, limit: Int = 40, neighbours: Set<Long> = emptySet()): List<Suggestion> {
+        val result = rawCompletions(prefix, limit, neighbours)
+        if (!configured || prefix.isEmpty()) return result
+        return applyLearned(result, prefix, if (cyrillic) prefix.lowercase() else fold(prefix.lowercase()), limit)
+    }
+
+    private fun rawCompletions(prefix: String, limit: Int, neighbours: Set<Long>): List<Suggestion> {
         if (!configured || prefix.isEmpty()) return emptyList()
         val lower = if (cyrillic) prefix.lowercase() else fold(prefix.lowercase())
         val first = lower.firstOrNull() ?: return emptyList()
@@ -137,7 +151,7 @@ object WordSuggestionEngine {
             if (!seen.add(e.word)) return false
             val w = applyCase(prefix, e.word)
             val c = applyCase(prefix, e.cyr)
-            result.add(Suggestion(w, c, if (cyrillic) applyCase(prefix, transliterate(e.cyr, exceptions)) else w))
+            result.add(Suggestion(w, c, if (cyrillic) applyCase(prefix, spell(e.cyr, exceptions)) else if (arabic) applyCase(prefix, transliterate(e.cyr, exceptions)) else w))
             return result.size == limit
         }
         for (m in matches) if (add(m)) return result
@@ -149,19 +163,24 @@ object WordSuggestionEngine {
 
     // ---------------------------------------------------------------- Bitik
 
-    /** Latin units compared loosely: q/ğ fold to k/g, ŋ and ñ to n (the ң spelling depends on a setting). */
-    fun bitikNorm(s: String): String = s.replace('q', 'k').replace('ğ', 'g').replace('ŋ', 'n').replace('ñ', 'n')
-
     /**
-     * Words (Latin spelling) the typed Bitik glyphs can stand for. `readings[i]` lists every Latin spelling glyph `i`
-     * can have (already through [bitikNorm]), so a glyph for "o" or "u" finds both bolot and bulut. A vowel of the word
-     * that no glyph covers is skipped (short writing), never two in a row. Exact fits come first, then longer words.
+     * Words (Cyrillic, as in the word list) the typed Bitik glyphs can stand for. `readings[i]` lists every Cyrillic
+     * spelling glyph `i` can have, so a glyph for "о" or "у" finds both bolot and bulut. A vowel of the word that no
+     * glyph covers is skipped (short writing), never two in a row. Exact fits come first, then longer words.
+     * Needs [configure] with `cyrillic = true`. Each result carries the Latin spelling for display in [Suggestion.latin].
      */
     fun bitikCompletions(readings: List<List<String>>, limit: Int = 12): List<Suggestion> {
-        if (!configured || readings.isEmpty()) return emptyList()
-        val firsts = readings[0].mapNotNull { it.firstOrNull() }.toSet()
+        if (!configured || !cyrillic || readings.isEmpty()) return emptyList()
         val letters = LinkedHashSet<Char>()
-        for (f in firsts) lettersFor(f)?.let { letters.addAll(it) }
+        for (f in readings[0].mapNotNull { it.firstOrNull() }) {
+            if (ALPHABET.indexOf(f) >= 0) letters.add(f)
+            when (f) {
+                'й' -> letters.addAll(listOf('ю', 'я', 'ё'))
+                'т' -> letters.add('ц')
+                'ш' -> letters.add('щ')
+                'е' -> letters.add('э')
+            }
+        }
         inUse = HashSet(letters)
 
         class Hit(val entry: Entry, val exact: Boolean)
@@ -185,35 +204,127 @@ object WordSuggestionEngine {
         val out = ArrayList<Suggestion>()
         for (h in hits) {
             if (!seen.add(h.entry.word)) continue
-            out.add(Suggestion(h.entry.word, h.entry.cyr, h.entry.word))
+            out.add(Suggestion(h.entry.word, h.entry.word, transliterate(h.entry.word, exceptions)))
             if (out.size == limit) break
         }
-        return out
+        return applyLearnedBitik(out, readings, limit)
     }
 
-    private fun nc(c: Char): Char = when (c) { 'q' -> 'k'; 'ğ' -> 'g'; 'ŋ', 'ñ' -> 'n'; else -> c }
+    // ---------------------------------------------------------------- Personalize T9
 
-    private fun isVowel(c: Char) = c == 'a' || c == 'e' || c == 'ı' || c == 'i' || c == 'o' || c == 'u' || c == 'ö' || c == 'ü'
+    private val learnedSpelled = HashMap<String, Pair<String, String>>()  // learned Cyrillic word -> (shown, key) for the current script
+
+    /** The Cyrillic spelling of a word typed on this keyboard, as the word list knows it (null for any word it doesn't know). */
+    fun cyrillicSpelling(typed: String): String? {
+        if (!configured) return null
+        val lower = if (cyrillic) typed.lowercase() else fold(typed.lowercase())
+        val first = lower.firstOrNull() ?: return null
+        for (letter in lettersFor(first) ?: return null) {
+            val entries = (shard(letter, wait = false) ?: continue).entries
+            var low = 0
+            var high = entries.size
+            while (low < high) {
+                val mid = (low + high) ushr 1
+                if (entries[mid].key < lower) low = mid + 1 else high = mid
+            }
+            if (low < entries.size && entries[low].key == lower) return entries[low].cyr
+        }
+        return null
+    }
+
+    /** A word typed on the keyboard has been finished: count it as used once more. */
+    fun learnTyped(typed: String) {
+        if (typed.length < 2) return
+        cyrillicSpelling(typed)?.let { LearnedWords.learn(it) }
+    }
+
+    /** [result] with the learned words first (most used first): used words it already holds, and learned words (used twice or more) that start with the typed letters. */
+    private fun applyLearned(result: List<Suggestion>, prefix: String, lower: String, limit: Int): List<Suggestion> {
+        val learned = LearnedWords.snapshot()
+        if (learned.isEmpty()) return result
+        val boosted = ArrayList<Pair<Suggestion, Int>>()
+        val rest = ArrayList<Suggestion>()
+        val seen = HashSet<String>()
+        for (s in result) {
+            seen.add(s.word)
+            val n = learned[s.cyr.lowercase()]
+            if (n != null) boosted.add(s to n) else rest.add(s)
+        }
+        for ((cyr, n) in learned) {
+            if (n < 2) continue
+            val (shown, key) = learnedSpelled.getOrPut(cyr) {
+                val shown = if (cyrillic) cyr else spell(cyr, exceptions)
+                shown to (if (cyrillic) cyr else fold(shown.lowercase()))
+            }
+            if (key.length <= lower.length || !key.startsWith(lower)) continue
+            val word = applyCase(prefix, shown)
+            if (!seen.add(word)) continue
+            val latin = if (cyrillic) applyCase(prefix, spell(cyr, exceptions)) else if (arabic) applyCase(prefix, transliterate(cyr, exceptions)) else word
+            boosted.add(Suggestion(word, applyCase(prefix, cyr), latin) to n)
+        }
+        boosted.sortByDescending { it.second }
+        return (boosted.map { it.first } + rest).take(limit)
+    }
+
+    private fun applyLearnedBitik(hits: List<Suggestion>, readings: List<List<String>>, limit: Int): List<Suggestion> {
+        val learned = LearnedWords.snapshot()
+        if (learned.isEmpty()) return hits
+        val boosted = ArrayList<Pair<Suggestion, Int>>()
+        val rest = ArrayList<Suggestion>()
+        val seen = HashSet<String>()
+        for (h in hits) {
+            seen.add(h.word)
+            val n = learned[h.word]
+            if (n != null) boosted.add(h to n) else rest.add(h)
+        }
+        for ((cyr, n) in learned) {
+            if (n < 2 || cyr in seen || bitikMatch(cyr, readings) <= 0) continue
+            boosted.add(Suggestion(cyr, cyr, transliterate(cyr, exceptions)) to n)
+        }
+        boosted.sortByDescending { it.second }
+        return (boosted.map { it.first } + rest).take(limit)
+    }
+
+    private fun isVowel(c: Char) = c == 'а' || c == 'е' || c == 'и' || c == 'о' || c == 'у' || c == 'ы' || c == 'ө' || c == 'ү'
+
+    /** How many sounds a Cyrillic letter stands for in Bitik: я = йа, ю = йу, ё = йо, ц = тс; ь and ъ are silent. */
+    private fun soundCount(c: Char): Int = when (c) { 'я', 'ю', 'ё', 'ц' -> 2; 'ъ', 'ь' -> 0; else -> 1 }
+
+    private fun sound(c: Char, sub: Int): Char = when (c) {
+        'я' -> if (sub == 0) 'й' else 'а'
+        'ю' -> if (sub == 0) 'й' else 'у'
+        'ё' -> if (sub == 0) 'й' else 'о'
+        'ц' -> if (sub == 0) 'т' else 'с'
+        'э' -> 'е'
+        'щ' -> 'ш'
+        else -> c
+    }
 
     /** 2 = the glyphs spell exactly this word, 1 = the word starts with what they spell, 0 = no match. */
     private fun bitikMatch(w: String, g: List<List<String>>): Int {
         val n = w.length
-        fun go(gi: Int, wi: Int): Int {
-            if (gi == g.size) return if (wi == n) 2 else 1
+        fun go(gi: Int, wi0: Int, sub0: Int, prevVowel: Boolean): Int {
+            var wi = wi0; var sub = sub0
+            while (wi < n && sub >= soundCount(w[wi])) { wi++; sub = 0 }
+            if (gi == g.size) return if (wi >= n) 2 else 1
             if (wi >= n) return 0
             var best = 0
             for (r in g[gi]) {
-                var ok = wi + r.length <= n
-                if (ok) for (k in r.indices) if (nc(w[wi + k]) != r[k]) { ok = false; break }
+                var cw = wi; var cs = sub; var ok = true
+                for (ch in r) {
+                    while (cw < n && cs >= soundCount(w[cw])) { cw++; cs = 0 }
+                    if (cw >= n || sound(w[cw], cs) != ch) { ok = false; break }
+                    cs++
+                }
                 if (ok) {
-                    best = max(best, go(gi + 1, wi + r.length))
+                    best = max(best, go(gi + 1, cw, cs, r.isNotEmpty() && isVowel(r.last())))
                     if (best == 2) return 2
                 }
             }
-            if (gi > 0 && isVowel(nc(w[wi])) && (wi == 0 || !isVowel(nc(w[wi - 1])))) best = max(best, go(gi, wi + 1))
+            if (gi > 0 && !prevVowel && isVowel(sound(w[wi], sub))) best = max(best, go(gi, wi, sub + 1, true))
             return best
         }
-        return go(0, 0)
+        return go(0, 0, 0, false)
     }
 
     /** Words whose beginning is within about one typo of [typed] (a neighbouring key costs half), nearest first. */
@@ -377,7 +488,7 @@ object WordSuggestionEngine {
     // ------------------------------------------------------- files and cache
 
     private fun lettersFor(first: Char): List<Char>? =
-        if (cyrillic) (if (ALPHABET.indexOf(first) >= 0) listOf(first) else null) else latinFirst[if (first == 'q') 'k' else if (first == 'ğ') 'g' else first]
+        if (cyrillic) (if (ALPHABET.indexOf(first) >= 0) listOf(first) else null) else latinFirst[fold(first.toString()).first()]
 
     private fun shard(letter: Char, wait: Boolean): Shard? {
         cache[letter]?.let { recency.remove(letter); recency.add(letter); return it }
@@ -421,17 +532,34 @@ object WordSuggestionEngine {
         val total = max(words.size, 1).toFloat()
         val list = ArrayList<Entry>(words.size)
         for ((i, w) in words.withIndex()) {
-            val word = if (cyrillic) w else transliterate(w, exceptions)
+            val word = if (cyrillic) w else spell(w, exceptions)
             list.add(Entry(word, if (cyrillic) word else fold(word), i / total, word.length, w))
         }
         list.sortBy { it.key }
         return Shard(list.toTypedArray())
     }
 
-    private fun fold(s: String): String = s.replace('q', 'k').replace('ğ', 'g')
+    private fun fold(s: String): String = s.replace('q', 'k').replace('ğ', 'g').replace('ق', 'ك').replace('ع', 'گ')
+
+    /** The word as the keyboard spells it: Latin letters, or the Arabic keyboard's letters. */
+    private fun spell(word: String, exceptions: HarmonyExceptions): String {
+        val latin = transliterate(word, exceptions)
+        if (!arabic) return latin
+        val sb = StringBuilder(latin.length)
+        for (c in latin) sb.append(ARABIC_LETTERS[c] ?: c)
+        return sb.toString()
+    }
+
+    private val ARABIC_LETTERS = mapOf(
+        'a' to 'ا', 'b' to 'ب', 'c' to 'چ', 'ç' to 'چ', 'd' to 'د', 'e' to 'ە', 'f' to 'ف', 'g' to 'گ', 'ğ' to 'ع', 'h' to 'ه',
+        'ı' to 'ى', 'i' to 'ئ', 'j' to 'ج', 'k' to 'ك', 'l' to 'ل', 'm' to 'م', 'n' to 'ن', 'ñ' to 'ڭ', 'ŋ' to 'ڭ', 'o' to 'و',
+        'ö' to 'ۅ', 'p' to 'پ', 'q' to 'ق', 'r' to 'ر', 's' to 'س', 'ş' to 'ش', 't' to 'ت', 'u' to 'ۇ', 'ü' to 'ۉ', 'v' to 'ۋ',
+        'y' to 'ي', 'z' to 'ز',
+    )
 
     private fun applyCase(typed: String, word: String): String {
-        if (typed.length > 1 && typed == typed.uppercase()) return word.uppercase()
+        // Scripts without case (Arabic) read the same in upper case, so they must not count as typed in capitals.
+        if (typed.length > 1 && typed == typed.uppercase() && typed != typed.lowercase()) return word.uppercase()
         if (typed.first().isUpperCase()) return word.replaceFirstChar { it.uppercase() }
         return word
     }
@@ -460,67 +588,4 @@ object WordSuggestionEngine {
         }
         return sb.toString()
     }
-}
-
-/** к/г exceptions to the harmony rule, loaded from `words/latin_exceptions.txt` (same format as on iOS). */
-class HarmonyExceptions {
-    private val exact = HashMap<String, BooleanArray?>()
-    private val stems = ArrayList<Pair<String, BooleanArray?>>()
-
-    companion object {
-        fun load(context: Context): HarmonyExceptions {
-            val result = HarmonyExceptions()
-            try {
-                context.assets.open("words/latin_exceptions.txt").bufferedReader().useLines { lines ->
-                    for (raw in lines) {
-                        var line = raw.trim().lowercase()
-                        if (line.isEmpty() || line.startsWith("#")) continue
-                        var pattern: BooleanArray? = null
-                        val eq = line.indexOf('=')
-                        if (eq >= 0) {
-                            pattern = line.substring(eq + 1).mapNotNull { ch ->
-                                when (ch) { 'q', 'ğ' -> true; 'k', 'g' -> false; else -> null }
-                            }.toBooleanArray()
-                            line = line.substring(0, eq).trim()
-                        }
-                        if (line.endsWith("*")) result.stems.add(line.dropLast(1) to pattern) else result.exact[line] = pattern
-                    }
-                }
-            } catch (_: java.io.IOException) {
-            }
-            result.stems.sortByDescending { it.first.length }  // the most specific stem wins
-            return result
-        }
-    }
-
-    private val back = setOf('а', 'о', 'ы', 'у', 'я', 'ё', 'ю')
-    private val front = setOf('е', 'э', 'и', 'ө', 'ү')
-
-    /** For each к/г in [word], in order: whether it is hard (q/ğ). */
-    fun hardness(word: String): BooleanArray {
-        val count = word.count { it == 'к' || it == 'г' }
-        if (exact.containsKey(word)) return fromPattern(exact[word], count)
-        stems.firstOrNull { word.startsWith(it.first) }?.let { return fromPattern(it.second, count) }
-        // Harmony: a к/г follows the nearest vowel after it, or the one before it at the end of a word.
-        val out = BooleanArray(count)
-        var n = 0
-        for (i in word.indices) {
-            if (word[i] != 'к' && word[i] != 'г') continue
-            var hard = false
-            var decided = false
-            for (j in i + 1 until word.length) {
-                if (word[j] in back) { hard = true; decided = true; break }
-                if (word[j] in front) { decided = true; break }
-            }
-            if (!decided) for (j in i - 1 downTo 0) {
-                if (word[j] in back) { hard = true; break }
-                if (word[j] in front) break
-            }
-            out[n++] = hard
-        }
-        return out
-    }
-
-    private fun fromPattern(pattern: BooleanArray?, count: Int) =
-        BooleanArray(count) { if (pattern != null && it < pattern.size) pattern[it] else false }
 }

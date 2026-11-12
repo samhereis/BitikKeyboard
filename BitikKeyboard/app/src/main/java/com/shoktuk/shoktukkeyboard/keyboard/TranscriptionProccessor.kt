@@ -29,7 +29,7 @@ class TranscriptionProccessor {
         var result = text
 
         if(context.ajVariant == AJ_Letter_Variant.Jaa) {
-            result = result.replace("𐰳", "𐰖")
+            // The "ай" keyboard types ж as 𐰖; the transcription tables know it as 𐰳.
             result = result.replace("𐰖", "𐰳")
         }
 

@@ -26,6 +26,12 @@ class JSTranscriber_Alphabet(context: Context) {
 
         var js = context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }
 
+        // The original Bitik has one Ş tamga (𐱀) and no Ж tamga: 𐰳 reads Ç there, and ж is written with the Y tamgas
+        // (aY/aJ = 𐰖, eY/eJ = 𐰘). So Ş loses its soft 𐱁 and Ж is spelled like Й.
+        if (context.keyboardVariant == BitikVariant.CLASSIC) {
+            js = js.replace("\"𐱀\", \"𐱁\"", "\"𐱀\", \"𐱀\"").replace("\"𐰳\", \"𐰙\"", "\"𐰖\", \"𐰘\"")
+        }
+
         if (context.bitikDialect == BitikDialect.Orkon) {
             if (context.angVariant == ANG_Letter_Variant.Off) {
                 var normalizedSource = Normalizer.normalize(js, Normalizer.Form.NFC)

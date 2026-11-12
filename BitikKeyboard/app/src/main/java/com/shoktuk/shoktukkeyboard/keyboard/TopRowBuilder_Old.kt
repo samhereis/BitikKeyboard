@@ -32,36 +32,6 @@ import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.screens.settings.loadSavedStrings
 import com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
-import java.util.WeakHashMap
-
-class OnTypedListener {
-    private val listeners = WeakHashMap<View, () -> Unit>()
-
-    fun addOnTypedListener(view: View, listener: () -> Unit) {
-        listeners[view] = listener
-    }
-
-    fun removeOnTypedListener(view: View) {
-        listeners.remove(view)
-    }
-
-    fun removeAll() {
-        listeners.clear()
-    }
-
-    fun invoke() {
-        cleanupNulls()
-        listeners.values.forEach { it.invoke() }
-    }
-
-    fun cleanupNulls() {
-        val it = listeners.entries.iterator()
-        while (it.hasNext()) {
-            val e = it.next()
-            if (e.key == null || e.value == null) it.remove()
-        }
-    }
-}
 
 object TopRowBuilder_Old {
     var onTypedListener: OnTypedListener = OnTypedListener()
@@ -98,16 +68,14 @@ object TopRowBuilder_Old {
         var switchLanguageView = SystemKeyBuilder.systemButton_Text(
             service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() }, applyBitikFont = true)
         rowLayout.addView(switchLanguageView)
-        rowLayout.addView(
-            SystemKeyBuilder.systemButton_Text(
-                service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
-        )
+        val starButton = SystemKeyBuilder.systemButton_Text(
+            service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
+        rowLayout.addView(starButton)
         val jsTranscriber = JSTranscriber(service)
 
         if (context.suggestionsEnabled(WritingSystem.Bitik)) {
             val strip = BitikSuggestionStrip.createContainer(service, buttonHeight)
             rowLayout.addView(strip)
-            BitikSuggestionStrip.addDivider(rowLayout)
             onTypedListener.addOnTypedListener(strip) {
                 strip.post { BitikSuggestionStrip.update(service.currentInputConnection, jsTranscriber, strip) }
             }
@@ -186,9 +154,10 @@ object TopRowBuilder_Old {
             rowLayout.addView(scrollView)
         }
 
-        rowLayout.addView(
-            SystemKeyBuilder.systemButton_Text(
-                service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) }))
+        val gearButton = SystemKeyBuilder.systemButton_Text(
+            service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) })
+        rowLayout.addView(gearButton)
+        BitikSuggestionStrip.sideButtons = if (context.suggestionsEnabled(WritingSystem.Bitik)) listOf(starButton, gearButton) else emptyList()
         rowLayout.addView(
             SystemKeyBuilder.systemButton_Icon(
                 service, KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight, onClick = {
@@ -215,13 +184,7 @@ object TopRowBuilder_Old {
     }
 
     fun updateLastWord(inputConnection: InputConnection?, transcriber: JSTranscriber, container: LinearLayout?, buttonStyle: ButtonStyle?) {
-        val extraSeparators = "·.,⸮⹁:;!?()[]{}\"'"
-
-        text_Original = inputConnection?.getTextBeforeCursor(100, 0)?.toString().orEmpty()
-        val regex = "[^\\p{L}${Regex.escape(extraSeparators)}]+".toRegex()
-        inputText_LastWord = text_Original.split(regex).lastOrNull().orEmpty()
-
-        inputText_LastWord = TranscriptionProccessor().processTranscription_bitik(inputText_LastWord, context)
+        inputText_LastWord = TranscriptionProccessor().processTranscription_bitik(LastWord.extract(inputConnection), context)
 
         InputText_Transcribed = transcriber.getTranscription(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
         InputText_Transcribed_Alt = transcriber.getTranscription_Alternative(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
@@ -241,13 +204,7 @@ object TopRowBuilder_Old {
         val fullSp = buttonStyle.textSizeSp
         val halfSp = fullSp / 2f
 
-        TextView(container.context).apply {
-            text = "   ~ "
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
-            setTextColor(KeyboardTheme.getColor(2).toColorInt())
-            typeface = KeyboardTheme.bitikTypeface(container.context)
-            gravity = Gravity.CENTER
-        }.also(container::addView)
+        container.addView(LastWord.bitikLabel(container.context, "   ~ ", fullSp))
 
         InputText_Transcribed.forEachIndexed { i, baseChar ->
             if (i < InputText_Transcribed_Alt.length && InputText_Transcribed_Alt[i] != baseChar) {
@@ -260,42 +217,20 @@ object TopRowBuilder_Old {
                     setPadding(0, halfSp.toInt(), 0, 5)
                 }
 
-                TextView(container.context).apply {
-                    text = baseChar.toString()
-                    setTextSize(TypedValue.COMPLEX_UNIT_SP, halfSp)
-                    setTextColor(KeyboardTheme.getColor(2).toColorInt())
-            typeface = KeyboardTheme.bitikTypeface(container.context)
-                    gravity = Gravity.CENTER
+                LastWord.bitikLabel(container.context, baseChar.toString(), halfSp).apply {
                     setPadding(0, halfSp.toInt() + 12, 0, 0)
                 }.also(stack::addView)
 
-                TextView(container.context).apply {
-                    text = InputText_Transcribed_Alt[i].toString()
-                    setTextSize(TypedValue.COMPLEX_UNIT_SP, halfSp)
-                    setTextColor(KeyboardTheme.getColor(2).toColorInt())
-            typeface = KeyboardTheme.bitikTypeface(container.context)
-                    gravity = Gravity.CENTER
+                LastWord.bitikLabel(container.context, InputText_Transcribed_Alt[i].toString(), halfSp).apply {
                     setPadding(0, 0, 0, halfSp.toInt() + 12)
                 }.also(stack::addView)
 
                 container.addView(stack)
             } else {
-                TextView(container.context).apply {
-                    text = baseChar.toString()
-                    setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
-                    setTextColor(KeyboardTheme.getColor(2).toColorInt())
-            typeface = KeyboardTheme.bitikTypeface(container.context)
-                    gravity = Gravity.CENTER
-                }.also(container::addView)
+                container.addView(LastWord.bitikLabel(container.context, baseChar.toString(), fullSp))
             }
         }
 
-        TextView(container.context).apply {
-            text = " ~   "
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
-            setTextColor(KeyboardTheme.getColor(2).toColorInt())
-            typeface = KeyboardTheme.bitikTypeface(container.context)
-            gravity = Gravity.CENTER
-        }.also(container::addView)
+        container.addView(LastWord.bitikLabel(container.context, " ~   ", fullSp))
     }
 }

@@ -82,6 +82,8 @@ import com.shoktuk.shoktukkeyboard.project.screens.settings.CenteredDropdownPopu
 import com.shoktuk.shoktukkeyboard.project.screens.settings.CloudSettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.MainSettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.OtherAlphabetsSettingsScreen
+import com.shoktuk.shoktukkeyboard.project.screens.settings.SuggestionsSettingsScreen
+import com.shoktuk.shoktukkeyboard.project.screens.settings.PersonalizedT9Screen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.OtherSettingsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SavedStringsScreen
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SettingsScreen
@@ -368,11 +370,14 @@ fun SideMenuView(
                 composable(SettingScreens.MainSettings.id) { MainSettingsScreen() }
                 composable(SettingScreens.Appearance.id) { AppearanceSettingsScreen() }
                 composable(SettingScreens.OtherAlphabets.id) { OtherAlphabetsSettingsScreen() }
+                composable(SettingScreens.Suggestions.id) { SuggestionsSettingsScreen(onOpenLearnedWords = { navController.navigate(SettingScreens.PersonalizedT9.id) }) }
+                composable(SettingScreens.PersonalizedT9.id) { PersonalizedT9Screen() }
                 composable(SettingScreens.Other.id) {
                     OtherSettingsScreen(
                         onOpenSavedStrings = {
                             navController.navigate(SettingScreens.SavedStrings.id)
-                        }
+                        },
+                        onOpenPersonalizedT9 = { navController.navigate(SettingScreens.PersonalizedT9.id) }
                     )
                 }
 
@@ -401,37 +406,6 @@ private fun navigateRoot(
         popUpTo(navController.graph.findStartDestination().id) { saveState = true }
         launchSingleTop = true
         restoreState = true
-    }
-}
-
-@Composable
-fun AppVersionText(modifier: Modifier = Modifier) {
-    val context = LocalContext.current
-
-    val packageInfo = try {
-        context.packageManager.getPackageInfo(context.packageName, 0)
-    } catch (e: Exception) {
-        null
-    }
-
-    val versionName = packageInfo?.versionName ?: "1.0.0"
-    val versionCode = packageInfo?.let {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            it.longVersionCode.toString()
-        } else {
-            @Suppress("DEPRECATION") it.versionCode.toString()
-        }
-    } ?: "1"
-
-    Box(
-        modifier = modifier.fillMaxWidth(), contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = "v$versionName ($versionCode)",
-            style = MaterialTheme.typography.titleSmall,
-            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-            modifier = Modifier.alpha(0.8f)
-        )
     }
 }
 

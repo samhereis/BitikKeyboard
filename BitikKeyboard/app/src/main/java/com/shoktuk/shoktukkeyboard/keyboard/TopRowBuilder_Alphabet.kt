@@ -23,6 +23,7 @@ import com.shoktuk.shoktukkeyboard.project.data.Arabic_Status
 import com.shoktuk.shoktukkeyboard.project.data.BitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.suggestions.SuggestionNeighbours
+import com.shoktuk.shoktukkeyboard.suggestions.SuggestionViews
 import com.shoktuk.shoktukkeyboard.suggestions.WordSuggestionEngine
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
@@ -31,6 +32,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.suggestionsEnabled
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.suggestionTranscription
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle
@@ -196,14 +198,11 @@ object TopRowBuilder_Alphabet {
     }
 
     fun updateLastWord(inputConnection: InputConnection?, transcriber: JSTranscriber_Alphabet, container: LinearLayout?, buttonStyle: ButtonStyle?) {
-        val extraSeparators = "·.,⸮⹁:;!?()[]{}\"'"
         WordSuggestionEngine.onShardLoaded = { TopRowBuilder_Old.onTypedListener.invoke() }
         WordSuggestionEngine.configureFor(context)
         showSideButtons(true)
 
-        text_Original = inputConnection?.getTextBeforeCursor(100, 0)?.toString().orEmpty()
-        val regex = "[^\\p{L}${Regex.escape(extraSeparators)}]+".toRegex()
-        inputText_LastWord = text_Original.split(regex).lastOrNull().orEmpty()
+        LastWord.extract(inputConnection)
         InputText_Transcribed = transcriber.getTranscription(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
 
         InputText_Transcribed = TranscriptionProccessor().processTranscription_alphabet(InputText_Transcribed, context)
@@ -216,19 +215,12 @@ object TopRowBuilder_Alphabet {
         }
 
         container.removeAllViews()
-        val fullSp = buttonStyle.textSizeSp
+        val fullSp = buttonStyle.textSizeSp - 2f
 
         val textView = TextView(container.context).apply {
             text = InputText_Transcribed
             setTextSize(TypedValue.COMPLEX_UNIT_SP, fullSp)
             setTextColor(KeyboardTheme.getColor(2).toColorInt())
-
-            background = android.graphics.drawable.GradientDrawable().apply {
-                cornerRadius = 48f
-
-                val base = KeyboardTheme.getColor(6).toColorInt()
-                setColor(base)
-            }
 
             gravity = Gravity.CENTER
             textAlignment = View.TEXT_ALIGNMENT_CENTER
@@ -258,63 +250,27 @@ object TopRowBuilder_Alphabet {
             }
         }
 
-        val suggests = (context.writingSystem == WritingSystem.Latin || context.writingSystem == WritingSystem.Kiril) && context.suggestionsEnabled(context.writingSystem)
+        // Password, e-mail and similar fields get nothing here at all (not even the Bitik read-out of what is typed).
+        if (!MyKeyboardService.canSuggest()) return
+        val suggests = (context.writingSystem == WritingSystem.Latin || context.writingSystem == WritingSystem.Kiril || context.writingSystem == WritingSystem.Arab) && context.suggestionsEnabled(context.writingSystem)
         if (!suggests) {
             container.addView(textView)
             return
         }
 
-        // Latin and Kiril: a scrollable strip. First the Bitik transcription (if switched on), then completions.
-        val density = container.resources.displayMetrics.density
+        // A scrollable strip: first the Bitik transcription (if switched on), then completions.
         val bitikOn = context.bitikTranscriptionAlphabets == BitikTranscriptionAlphabets.On
-        val kiril = context.writingSystem == WritingSystem.Kiril
-        val strip = LinearLayout(container.context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            layoutDirection = View.LAYOUT_DIRECTION_LTR
-        }
-        val scroll = android.widget.HorizontalScrollView(container.context).apply {
-            isHorizontalScrollBarEnabled = false
-            overScrollMode = View.OVER_SCROLL_NEVER
-            // Chips fade out into the edges like a tunnel instead of being cut off.
-            isHorizontalFadingEdgeEnabled = true
-            setFadingEdgeLength((26 * density).toInt())
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.MATCH_PARENT)
-            addView(strip, android.widget.FrameLayout.LayoutParams(android.widget.FrameLayout.LayoutParams.WRAP_CONTENT, android.widget.FrameLayout.LayoutParams.MATCH_PARENT))
-        }
+        val strip = SuggestionViews.strip(container.context)
         container.clipChildren = true
         container.clipToPadding = true
         (container.parent as? ViewGroup)?.apply { clipChildren = true }
-        container.addView(scroll)
-
-        val textColor = KeyboardTheme.getColor(2).toColorInt()
-        val chipColor = KeyboardTheme.getColor(6).toColorInt()
-        fun chipBackground() = android.graphics.drawable.GradientDrawable().apply { cornerRadius = 48f; setColor(chipColor) }
-        fun label(text: String, sp: Float, bitik: Boolean = false, alpha: Float = 1f) = TextView(container.context).apply {
-            this.text = text
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, sp)
-            setTextColor(textColor)
-            this.alpha = alpha
-            gravity = Gravity.CENTER
-            maxLines = 1
-            includeFontPadding = false
-            if (bitik) { typeface = KeyboardTheme.bitikTypeface(container.context) ?: Typeface.DEFAULT_BOLD; paint.isFakeBoldText = true }
-        }
-        /** A plain chip: [text] in the Bitik font or the system font. */
-        fun chip(text: String, bitik: Boolean, onClick: () -> Unit) = label(text, fullSp, bitik = bitik).apply {
-            setPadding((14 * density).toInt(), 0, (14 * density).toInt(), 0)
-            background = chipBackground()
-            layoutParams = LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, (container.height * 0.82f).toInt().coerceAtLeast(1)).apply {
-                gravity = Gravity.CENTER_VERTICAL
-                marginEnd = (6 * density).toInt()
-            }
-            setOnClickListener { onClick() }
-        }
+        container.addView(strip.scroll, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+        val cardHeight = (container.height * 0.94f).toInt().coerceAtLeast(1)
 
         if (bitikOn && InputText_Transcribed.isNotEmpty() && inputText_LastWord.isNotBlank()) {
             val last = inputText_LastWord
             val bitikWord = InputText_Transcribed
-            strip.addView(chip(bitikWord, true) { commitBitik(inputConnection, last.length, bitikWord, false) })
+            strip.row.addView(SuggestionViews.wordCard(container.context, cardHeight, bitikWord, fullSp, bitik = true) { commitBitik(inputConnection, last.length, bitikWord, false) })
         }
 
         // Only the trailing letters are a word being typed ("." and "," stay in the text).
@@ -323,10 +279,16 @@ object TopRowBuilder_Alphabet {
         val neighbours = SuggestionNeighbours.pairs
         // Building a chip costs a view each, so only the best few are shown (the strip scrolls).
         val words = WordSuggestionEngine.completions(typed, 16, neighbours)
-        showSideButtons(strip.childCount + words.size <= 3)
+        val showCyrillic = context.writingSystem != WritingSystem.Kiril && context.suggestionTranscription(context.writingSystem)
+        showSideButtons(strip.row.childCount + words.size <= 3)
         for (suggestion in words) {
             val word = suggestion.word
-            strip.addView(chip(word, false) { commitBitik(inputConnection, typed.length, word, true) })
+            // Latin words show their Cyrillic spelling, Arabic ones their Latin spelling.
+            val cyrillic = if (showCyrillic) (if (context.writingSystem == WritingSystem.Arab) suggestion.latin else suggestion.cyr) else null
+            strip.row.addView(SuggestionViews.wordCard(container.context, cardHeight, word, fullSp, transcription = cyrillic) {
+                com.shoktuk.shoktukkeyboard.suggestions.LearnedWords.learn(suggestion.cyr)
+                commitBitik(inputConnection, typed.length, word, true)
+            })
         }
     }
 

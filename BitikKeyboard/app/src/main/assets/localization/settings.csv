@@ -20,7 +20,7 @@ letterTranscription,Tamğa transkripsiya,Тамга транскрипция,Let
 colon,Eki çekit,Эки чекит,Colon,İki nokta,Екі нүкте,İki nöqtə,Двоеточие
 experience,Seziliş,Сезилиш,Experience,Deneyim,Тәжірибе,Təcrübə,Прочее визуальное
 coloring,Tüstöö,Түстөө,Coloring,Renklendirme,Түстерлеу,Rəngləmə,Окрашивание
-vibration,Dirildöö,Дириолөө,Vibration,Titreşim,Діріл,Vibrasiya,Вибрация
+vibration,Dirildöö,Дирилдөө,Vibration,Titreşim,Діріл,Vibrasiya,Вибрация
 clickSound,Basuu ünü,Басуу үнү,Click sound,Tıklama sesi,Басу дыбысы,Klik səsi,Звук нажатия
 holdabilityIndicator,Uzaq basa aluu belgisi,Узак баса алуу белгиси,Holdability indicator,Basılı tutma göstergesi,Ұзақ басу индикаторы,Saxlama göstəricisi,Индикатор удерживания
 bitikFont,Bitik şrifti,Битик шрифти,Bitik font,Bitik Yazı Tipi,Битик қарпы,Bitik Şrifti,Шрифт Битика
@@ -47,7 +47,7 @@ latinAlphabet_Kyrgyz,Azğana,Азгана,Minimal,Az,Минимал,Minimal,Ми
 latinAlphabet_Full,Toluq,Толук,Full,Tam,Tолық,Tam,Полная
 arabAlphabet,Arab aribi,Араб ариби,Arabic script,Араб Yazısı,Араб Жазуы,Ərəb Yazısı,Арабица
 kirilAlphabet,Kiril aribi,Кирил ариби,Cyrilic script,Kiril Alfabesi,Кирилл Элипбисы,Kiril Əlifbası,Кириллица
-changeOrder,İrettöö,Итеттөө,Edit,Düzenle,Өзгерту,Redaktə et,Изменить
+changeOrder,İrettöö,Иреттөө,Edit,Düzenle,Өзгерту,Redaktə et,Изменить
 add,Qoş,Кош,Add,Ekle,Қосу,Əlavə et,Добавить
 ready,Dayar,Даяр,Ready,Hazır,Даяр,Hazır,Готово
 holdShift,Shift basıp turuñuz,Shift басып туруңуз,Hold on Shift,Shift'e basılı tutun,Shift-ті басып тұрыңыз,Shift-i basılı saxlayın,Удерживайте Shift
@@ -71,3 +71,29 @@ cloudRefresh,Jañırtuu,Жаңыртуу,Refresh,Yenile,Жаңарту,Yenilə,�
 cloudSignInHint,Google menen kirüü,Google менен кирүү,Sign in with Google,Google ile giriş yap,Google арқылы кіру,Google ilə daxil ol,Войти через Google
 cloudError,Qata,Ката,Error,Hata,Қате,Xəta,Ошибка
 autoBitik,Avto Bitik,Авто Битик,Auto Bitik,Otomatik Bitik,Авто Битік,Avto Bitik,Авто Битик
+suggestions,T9,Т9,T9,T9,Т9,T9,Т9
+suggestionTranscription,T9 transkripsiya,Т9 транскрипция,T9 transcription,T9 transkripsiyonu,Т9 транскрипциясы,T9 transkripsiyası,Т9 транскрипция
+transcription,Transkripsiya,Транскрипция,Transcription,Transkripsiyon,Транскрипция,Transkripsiya,Транскрипция
+transcriptionScript,Transkripsiya jazuusu,Транскрипция жазуусу,Transcription script,Transkripsiyon alfabesi,Транскрипция жазуы,Transkripsiya əlifbası,Письмо транскрипции
+scriptLatin,Latın,Латын,Latin,Latin,Латын,Latın,Латиница
+scriptCyrillic,Kirill,Кирилл,Cyrillic,Kiril,Кирилл,Kiril,Кириллица
+suggestionsBitikNote,Ar bir Bitik sözdün astında: anın latınça je kirillçe jazılışı.,Ар бир Битик сөздүн астында: анын латынча же кириллче жазылышы.,Under each Bitik word: its Latin or Cyrillic spelling.,Her Bitik kelimenin altında: Latin veya Kiril yazımı.,Әр Битик сөздің астында: оның латын немесе кирилл жазылуы.,Hər Bitik sözün altında: onun latın və ya kiril yazılışı.,Под каждым словом Битика: его написание латиницей или кириллицей.
+suggestionsCyrillicNote,Ar bir sözdün astında: anın kirillçe jazılışı.,Ар бир сөздүн астында: анын кириллче жазылышы.,Under each word: its Cyrillic spelling.,Her kelimenin altında: Kiril yazımı.,Әр сөздің астында: оның кирилл жазылуы.,Hər sözün altında: onun kiril yazılışı.,Под каждым словом: его написание кириллицей.
+suggestionsArabNote,Ar bir sözdün astında: anın latınça jazılışı.,Ар бир сөздүн астында: анын латынча жазылышы.,Under each word: its Latin spelling.,Her kelimenin altında: Latin yazımı.,Әр сөздің астында: оның латын жазылуы.,Hər sözün altında: onun latın yazılışı.,Под каждым словом: его написание латиницей.
+personalizeT9,T9 jekeleştiriü,Т9 жекелештирүү,Personalize T9,T9'u kişiselleştir,Т9-ды жекелендіру,T9-u fərdiləşdir,Персонализация Т9
+personalizeT9Note,"Siz jazğan sözdördü estep saqtap, köp qoldonulğandardı aldığa çığarat. Öçürsöñüz, üyröngönü bütkül öçürülöt.","Сиз жазган сөздөрдү эстеп сактап, көп колдонулгандарды алдыга чыгарат. Өчүрсөңүз, үйрөнгөнү бүткүл өчүрүлөт.",Remembers the words you write and suggests the ones you use most first. Turning it off deletes everything it learned.,Yazdığınız kelimeleri hatırlar ve en çok kullandıklarınızı öne çıkarır. Kapatırsanız öğrendiği her şey silinir.,"Жазған сөздеріңізді есте сақтап, жиі қолданылғандарды алға шығарады. Өшірсеңіз, үйренгені түгел жойылады.","Yazdığınız sözləri yadda saxlayır və ən çox işlətdiklərinizi önə çıxarır. Söndürsəniz, öyrəndiyi hər şey silinir.","Запоминает слова, которые вы пишете, и ставит самые частые первыми. При выключении всё выученное удаляется."
+personalizedT9,Jekeleştirilgen T9,Жекелештирилген Т9,Personalized T9,Kişiselleştirilmiş T9,Жекелендірілген Т9,Fərdiləşdirilmiş T9,Персонализированный Т9
+cloudSettingsPage,iCloud'dağı jöndöölör,iCloud'дагы жөндөөлөр,Settings in iCloud,iCloud'daki ayarlar,iCloud-тағы баптаулар,iCloud-dakı ayarlar,Настройки в iCloud
+cloudDeleteAll,iCloud'dan bardığın öçürüü,iCloud'дан бардыгын өчүрүү,Delete everything from iCloud,Her şeyi iCloud'dan sil,Барлығын iCloud-тан жою,Hamısını iCloud-dan sil,Удалить всё из iCloud
+cloudDeleteAllNote,"Sinhrondolğon jöndöölördü, saqtalmalardı jana jekeleştirilgen T9 sözdördü iCloud'dan öçüröt. Bul tüzmöktögü maalımat qalat jana qayradan sinhrondolup ketişi mümkün.","Синхрондолгон жөндөөлөрдү, сакталмаларды жана жекелештирилген Т9 сөздөрдү iCloud'дан өчүрөт. Бул түзмөктөгү маалымат калат жана кайрадан синхрондолуп кетиши мүмкүн.","Removes the synced settings, saved strings and Personalized T9 words from iCloud. What is stored on this device stays and can sync up again.","Senkronize edilen ayarları, kayıtlı metinleri ve kişiselleştirilmiş T9 kelimelerini iCloud'dan siler. Bu cihazdakiler kalır ve yeniden senkronize olabilir.","Синхрондалған баптауларды, сақталған жолдарды және жекелендірілген Т9 сөздерін iCloud-тан жояды. Бұл құрылғыдағылар қалады және қайта синхрондалуы мүмкін.","Sinxronlaşdırılmış ayarları, saxlanmış mətnləri və fərdiləşdirilmiş T9 sözlərini iCloud-dan silir. Bu cihazdakılar qalır və yenidən sinxronlaşa bilər.","Удаляет из iCloud синхронизированные настройки, сохранённые строки и слова персонализированного Т9. То, что хранится на этом устройстве, остаётся и может снова синхронизироваться."
+cloudDeleteAllDone,Öçürüldü.,Өчүрүлдү.,Deleted.,Silindi.,Жойылды.,Silindi.,Удалено.
+cloudDeleteAllConfirm,iCloud'dan bardığın öçürösüzbü?,iCloud'дан бардыгын өчүрөсүзбү?,Delete everything from iCloud?,Her şey iCloud'dan silinsin mi?,Барлығы iCloud-тан жойылсын ба?,Hamısı iCloud-dan silinsin?,Удалить всё из iCloud?
+cannotUndo,Munu qaytaruuğa bolboyt.,Муну кайтарууга болбойт.,This cannot be undone.,Bu geri alınamaz.,Мұны қайтару мүмкін емес.,Bunu geri qaytarmaq olmaz.,Это нельзя отменить.
+remove,Alıp taştoo,Алып таштоо,Remove,Kaldır,Алып тастау,Sil,Убрать
+delete,Öçürüü,Өчүрүү,Delete,Sil,Жою,Sil,Удалить
+cancel,Bolturboo,Болтурбоо,Cancel,İptal,Бас тарту,Ləğv et,Отмена
+cloudEmpty,iCloud'da eç nerse jok,iCloud'да эч нерсе жок,Nothing in iCloud,iCloud'da hiçbir şey yok,iCloud-та ештеңе жоқ,iCloud-da heç nə yoxdur,В iCloud ничего нет
+t9Empty,Ali eç nerse üyrönülö elek,Али эч нерсе үйрөнүлө элек,Nothing learned yet,Henüz bir şey öğrenilmedi,Әлі ештеңе үйренілмеді,Hələ heç nə öyrənilməyib,Пока ничего не выучено
+t9WordsCount,%d söz,%d сөз,%d words,%d kelime,%d сөз,%d söz,%d слов
+t9ClearConfirm,Üyrönülgön sözdördün bardığın öçürösüzbü?,Үйрөнүлгөн сөздөрдүн бардыгын өчүрөсүзбү?,Delete every learned word?,Öğrenilen tüm kelimeler silinsin mi?,Үйренілген сөздердің барлығы жойылсын ба?,Öyrənilmiş bütün sözlər silinsin?,Удалить все выученные слова?
+t9ClearNote,Alar bul tüzmöktön jana iCloud'dan öçürülöt. Munu qaytaruuğa bolboyt.,Алар бул түзмөктөн жана iCloud'дан өчүрүлөт. Муну кайтарууга болбойт.,They are removed from this device and from iCloud. This cannot be undone.,Bu cihazdan ve iCloud'dan silinirler. Bu geri alınamaz.,Олар осы құрылғыдан және iCloud-тан жойылады. Мұны қайтару мүмкін емес.,Onlar bu cihazdan və iCloud-dan silinir. Bunu geri qaytarmaq olmaz.,Они удаляются с этого устройства и из iCloud. Это нельзя отменить.

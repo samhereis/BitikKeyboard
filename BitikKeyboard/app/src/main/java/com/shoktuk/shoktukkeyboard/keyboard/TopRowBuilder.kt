@@ -55,16 +55,14 @@ object TopRowBuilder {
         val switchLanguageView = SystemKeyBuilder.systemButton_Text(
             service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() }, applyBitikFont = true)
         rowLayout.addView(switchLanguageView)
-        rowLayout.addView(
-            SystemKeyBuilder.systemButton_Text(
-                service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
-        )
+        val starButton = SystemKeyBuilder.systemButton_Text(
+            service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
+        rowLayout.addView(starButton)
 
         if (context.suggestionsEnabled(WritingSystem.Bitik)) {
             val jsTranscriber = JSTranscriber(service)
             val strip = BitikSuggestionStrip.createContainer(service, buttonHeight)
             rowLayout.addView(strip)
-            BitikSuggestionStrip.addDivider(rowLayout)
             TopRowBuilder_Old.onTypedListener.addOnTypedListener(strip) {
                 strip.post { BitikSuggestionStrip.update(service.currentInputConnection, jsTranscriber, strip) }
             }
@@ -134,9 +132,10 @@ object TopRowBuilder {
                 TopRowBuilder_Old.onTypedListener?.invoke()
             })
 
-        rowLayout.addView(
-            SystemKeyBuilder.systemButton_Text(
-                service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) }))
+        val gearButton = SystemKeyBuilder.systemButton_Text(
+            service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) })
+        rowLayout.addView(gearButton)
+        BitikSuggestionStrip.sideButtons = if (context.suggestionsEnabled(WritingSystem.Bitik)) listOf(starButton, gearButton) else emptyList()
         rowLayout.addView(imePicker)
 
         return rowLayout

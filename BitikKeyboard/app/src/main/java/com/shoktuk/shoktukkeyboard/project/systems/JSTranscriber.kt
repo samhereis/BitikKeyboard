@@ -21,7 +21,7 @@ class JSTranscriber(context: Context) {
         QuickJSLoader.init()
         val ctx = QuickJSContext.create()
         val jsFile = if (context.keyboardVariant == BitikVariant.CLASSIC) "transcriber_old.js" else "transcriber_modern.js"
-        var js = context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }
+        var js = com.shoktuk.shoktukkeyboard.keyboard.BitikReadings.forVariant(context.assets.open(jsFile).bufferedReader(Charsets.UTF_8).use { it.readText() }, context)
 
         if (context.bitikDialect == BitikDialect.Orkon) {
             if (context.angVariant == ANG_Letter_Variant.Off) {

@@ -42,6 +42,48 @@ object SettingsManager {
         prefs().setString(SUGGESTIONS_OFF_KEY, off.sorted().joinToString(","))
     }
 
+    private const val SUGGESTION_TRANSCRIPTION_KEY = "suggestionTranscriptionScripts"
+
+    /**
+     * Whether suggestions of [script] show a small transcription under each word: Latin shows the Cyrillic spelling,
+     * Arabic the Latin one, Bitik the Latin or Cyrillic one (its own setting). On for all three until turned off.
+     */
+    fun Context.suggestionTranscription(script: WritingSystem): Boolean =
+        prefs().getStringOrDefault(SUGGESTION_TRANSCRIPTION_KEY, "${WritingSystem.Bitik.id},${WritingSystem.Latin.id},${WritingSystem.Arab.id}").split(",").contains(script.id)
+
+    private const val PERSONALIZE_KEY = "personalizeT9"
+
+    /** "Personalize T9": remember the words you write to rank suggestions. Turning it off forgets them all. */
+    var Context.personalizeT9: Boolean
+        get() = prefs().getStringOrDefault(PERSONALIZE_KEY, "on") != "off"
+        set(value) {
+            prefs().setString(PERSONALIZE_KEY, if (value) "on" else "off")
+            if (!value) com.shoktuk.shoktukkeyboard.suggestions.LearnedWords.clear(this)
+        }
+
+    private const val SUGGESTION_SCRIPT_KEY = "suggestionTranscriptionScript"
+
+    /**
+     * The spelling shown under Bitik suggestions: "kiril" or "latin". With nothing stored yet it is picked from the
+     * system language (Russian and Kyrgyz read Cyrillic) and stored.
+     */
+    var Context.suggestionTranscriptionScript: String
+        get() {
+            val stored = prefs().getStringOrDefault(SUGGESTION_SCRIPT_KEY, "")
+            if (stored.isNotEmpty()) return stored
+            val language = java.util.Locale.getDefault().language
+            val chosen = if (language == "ru" || language == "ky") "kiril" else "latin"
+            prefs().setString(SUGGESTION_SCRIPT_KEY, chosen)
+            return chosen
+        }
+        set(v) = prefs().setString(SUGGESTION_SCRIPT_KEY, v)
+
+    fun Context.setSuggestionTranscription(script: WritingSystem, on: Boolean) {
+        val scripts = prefs().getStringOrDefault(SUGGESTION_TRANSCRIPTION_KEY, "${WritingSystem.Bitik.id},${WritingSystem.Latin.id},${WritingSystem.Arab.id}").split(",").filter { it.isNotEmpty() && it != script.id }.toMutableList()
+        if (on) scripts.add(script.id)
+        prefs().setString(SUGGESTION_TRANSCRIPTION_KEY, scripts.sorted().joinToString(","))
+    }
+
     var Context.keyboardVariant: BitikVariant
         get() = prefs().getEnum(BitikVariant.KEY, BitikVariant.Modern)
         set(v) = prefs().setEnum(BitikVariant.KEY, v)

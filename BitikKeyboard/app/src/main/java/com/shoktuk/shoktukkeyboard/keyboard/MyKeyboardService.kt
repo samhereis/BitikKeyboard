@@ -18,6 +18,7 @@ import com.shoktuk.shoktukkeyboard.emoji.EmojisData
 import com.shoktuk.shoktukkeyboard.emoji.EmojisViewBuilder
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.inputText_LastWord
+import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.text_Original
 import com.shoktuk.shoktukkeyboard.project.data.Arabic_Status
 import com.shoktuk.shoktukkeyboard.project.data.BitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
@@ -46,42 +47,6 @@ import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.whl.quickjs.android.QuickJSLoader
 
-enum class KeyboardMode(val id: String) {
-    Main("Main"), Symbols("Symbols"), Emojis("Emojis"), SavedStrings("SavedStrings"), Settings("Settings");
-}
-
-object onKeyPressed {
-    var text_Original: String = ""
-    var inputText_LastWord: String = ""
-    var InputText_Transcribed: String = ""
-    var InputText_Transcribed_Alt: String = ""
-
-    private val listeners = mutableListOf<(InputConnection, String, Boolean) -> Unit>()
-
-    fun addListener(listener: (InputConnection, String, Boolean) -> Unit) {
-        listeners.clear()
-        listeners.add(listener)
-    }
-
-    fun invoke(ic: InputConnection, key: String, isSystemKey: Boolean = false) {
-        listeners.forEach { it(ic, key, isSystemKey) }
-    }
-}
-
-object onSettingChanged {
-    private val listeners = mutableListOf<() -> Unit>()
-
-    fun addListener(listener: () -> Unit) {
-        listeners.clear()
-        listeners.add(listener)
-    }
-
-    fun invoke() {
-        MyKeyboardService.bottomPadding = null
-        listeners.forEach { it() }
-    }
-}
-
 class MyKeyboardService : InputMethodService() {
     companion object {
         lateinit var context: MyKeyboardService
@@ -96,6 +61,26 @@ class MyKeyboardService : InputMethodService() {
 
         var isCaps: Boolean = false
         var isAutoWriteBitikMode: Boolean = false
+
+        /** False while the field is a password, e-mail, web address, number or other field where suggestions must not show or be learned. */
+        var fieldAllowsSuggestions: Boolean = true
+            private set
+
+        /** Whether suggestions may show / be learned in the current field. */
+        fun canSuggest(): Boolean = fieldAllowsSuggestions
+
+        fun allowsSuggestions(info: EditorInfo?): Boolean {
+            val type = info?.inputType ?: return true
+            if (type == 0) return true
+            if (type and android.text.InputType.TYPE_MASK_CLASS != android.text.InputType.TYPE_CLASS_TEXT) return false
+            if (type and android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS != 0) return false
+            return when (type and android.text.InputType.TYPE_MASK_VARIATION) {
+                android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD, android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD,
+                android.text.InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD, android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS,
+                android.text.InputType.TYPE_TEXT_VARIATION_WEB_EMAIL_ADDRESS, android.text.InputType.TYPE_TEXT_VARIATION_URI -> false
+                else -> true
+            }
+        }
 
         val buttonMargin: Int = KeyboardTheme.KEY_MARGIN_DP
 
@@ -178,6 +163,7 @@ class MyKeyboardService : InputMethodService() {
 
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
+        fieldAllowsSuggestions = allowsSuggestions(info)
         TopRowBuilder_Old.onTypedListener?.invoke()
         onKeyPressed.addListener { ic, key, isSystemKey ->
             handleKeyPress(ic, key, isSystemKey)
@@ -200,6 +186,7 @@ class MyKeyboardService : InputMethodService() {
 
     override fun onWindowHidden() {
         MyKeyboardService.bottomPadding = null
+        com.shoktuk.shoktukkeyboard.suggestions.LearnedWords.flush()
         super.onWindowHidden()
     }
 
@@ -315,18 +302,13 @@ class MyKeyboardService : InputMethodService() {
         var systemKeybHeight = (KeyboardTheme.getButtonHeight() / 1.5f).toInt()
 
         if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
-            if (context.keyboardVariant != BitikVariant.SAMAGAN) {
-                topBar_old = TopRowBuilder_Old.createTopRow(this, systemKeybHeight, current_textTranscription, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
-                topBar = topBar_old
-            } else {
-                topBar_modern = TopRowBuilder.createTopRow(this, systemKeybHeight, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
-                topBar = topBar_modern
-            }
+            topBar_old = TopRowBuilder_Old.createTopRow(this, systemKeybHeight, current_textTranscription, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
+            topBar = topBar_old
         } else {
             // With "transcription to Bitik" off, the alphabets show the saved strings row instead.
             // Latin and Kiril always get the suggestion bar (its Bitik chip hides itself when transcription is off).
             com.shoktuk.shoktukkeyboard.suggestions.SuggestionNeighbours.update(currentLayout!!)
-            val suggestions = current_writingSystem == WritingSystem.Latin || current_writingSystem == WritingSystem.Kiril
+            val suggestions = current_writingSystem == WritingSystem.Latin || current_writingSystem == WritingSystem.Kiril || current_writingSystem == WritingSystem.Arab
             topBar_noTR = if (suggestions || context.bitikTranscriptionAlphabets == BitikTranscriptionAlphabets.On) {
                 TopRowBuilder_Alphabet.createTopRow(this, systemKeybHeight, TextTranscription.Off, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
             } else {
@@ -509,6 +491,13 @@ class MyKeyboardService : InputMethodService() {
     fun handleKeyPress(ic: InputConnection, key: String, isSystemKey: Boolean) {
         val isSys = isSystemKey || listOfAlwaysSyss.contains(key)
         var toPasteAfter = key.replace("sys", "")
+
+        // A space or punctuation ends the word being typed: it counts as used once more.
+        if (current_writingSystem != WritingSystem.Bitik && canSuggest() && toPasteAfter.firstOrNull()?.isLetter() == false) {
+            // Only a piece made of letters alone counts ("abc123", "me@mail.com" or "don't" never do).
+            val token = text_Original.split(Regex("\\s+")).lastOrNull().orEmpty()
+            if (token.length >= 2 && token.all { it.isLetter() }) com.shoktuk.shoktukkeyboard.suggestions.WordSuggestionEngine.learnTyped(token)
+        }
 
         if (isAutoWriteBitikMode && isSys) {
             toPasteAfter = toPasteAfter.replace("  ", " ").replace("?", "⸮ ").replace("!", "! ").replace(".", "·").replace(",", "⹁")

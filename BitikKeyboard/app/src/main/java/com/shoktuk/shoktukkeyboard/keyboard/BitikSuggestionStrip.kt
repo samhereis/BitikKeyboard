@@ -19,10 +19,18 @@ import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed_Alt
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.inputText_LastWord
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.text_Original
+import com.shoktuk.shoktukkeyboard.project.data.AJ_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.BitikVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ajVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.angVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.suggestionTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.suggestionTranscriptionScript
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.data.WordSeparator
+import com.shoktuk.shoktukkeyboard.suggestions.SuggestionViews
 import com.shoktuk.shoktukkeyboard.suggestions.WordSuggestionEngine
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 
@@ -32,28 +40,50 @@ object BitikReadings {
     private var table: Map<String, List<String>> = emptyMap()
     private val entry = Regex("""new TranscriptionEntry\("([^"]+)",\s*"([^"]*)",\s*CharacterType\.\w+(?:,\s*"([^"]*)")?\)""")
 
-    /** Readings of [glyph], already folded with [WordSuggestionEngine.bitikNorm]. */
+    /** On the Modern keyboard 𐰩 is the U key (the tables list it as NÇ) and 𐰆 is only O (the tables give U / O). */
+    fun forVariant(source: String, ctx: Context): String =
+        if (ctx.keyboardVariant != BitikVariant.SAMAGAN) source
+        else source
+            .replace("""new TranscriptionEntry("𐰩", "NÇ", CharacterType.Character),""", """new TranscriptionEntry("𐰩", "U", CharacterType.HardVowel),""")
+            .replace("""new TranscriptionEntry("𐰆", "U", CharacterType.HardVowel, "O"),""", """new TranscriptionEntry("𐰆", "O", CharacterType.HardVowel),""")
+
+    /** Cyrillic letter for each capital the transcription tables use as a Latin letter. */
+    private val cyrillicOf = mapOf(
+        'A' to 'а', 'B' to 'б', 'D' to 'д', 'E' to 'е', 'G' to 'г', 'Ğ' to 'г', 'I' to 'ы', 'İ' to 'и', 'J' to 'ж',
+        'K' to 'к', 'Q' to 'к', 'L' to 'л', 'M' to 'м', 'N' to 'н', 'Ñ' to 'ң', 'O' to 'о', 'Ö' to 'ө', 'P' to 'п',
+        'R' to 'р', 'S' to 'с', 'Ş' to 'ш', 'T' to 'т', 'U' to 'у', 'Ü' to 'ү', 'Y' to 'й', 'Z' to 'з', 'Ç' to 'ч',
+    )
+
+    /** Every Cyrillic spelling [glyph] can have, read from the transcription file of the current variant. */
     fun of(ctx: Context, glyph: String): List<String> {
         val name = if (ctx.keyboardVariant == BitikVariant.CLASSIC) "transcriber_old.js" else "transcriber_modern.js"
-        if (name != file) {
-            file = name
+        val swapsAJ = ctx.keyboardVariant != BitikVariant.CLASSIC && ctx.ajVariant == AJ_Letter_Variant.Jaa
+        val tableKey = name + ctx.keyboardVariant.name + swapsAJ
+        if (tableKey != file) {
+            file = tableKey
             val map = HashMap<String, MutableList<String>>()
             try {
-                val source = ctx.assets.open(name).bufferedReader(Charsets.UTF_8).use { it.readText() }
+                val source = forVariant(ctx.assets.open(name).bufferedReader(Charsets.UTF_8).use { it.readText() }, ctx)
                 for (m in entry.findAll(source)) {
                     val key = m.groupValues[1]
                     for (g in 2..3) {
                         val text = m.groupValues[g]
                         if (text.isEmpty()) continue
                         // Capitals are the letters; a lowercase "a"/"e" in front only hints at an implied vowel.
-                        val sb = StringBuilder()
-                        for (ch in text) if (ch.isUpperCase()) sb.append(when (ch) { 'I' -> 'ı'; 'İ' -> 'i'; else -> ch.lowercaseChar() })
-                        val reading = WordSuggestionEngine.bitikNorm(sb.toString())
+                        val reading = text.mapNotNull { cyrillicOf[it] }.joinToString("")
                         if (reading.isNotEmpty()) { val list = map.getOrPut(key) { ArrayList() }; if (!list.contains(reading)) list.add(reading) }
                     }
                 }
             } catch (_: java.io.IOException) {
             }
+            // On the Modern keyboard every key means one thing (its first reading, except 𐰱 which is чы or чи); 𐰆 is only "о".
+            if (ctx.keyboardVariant == BitikVariant.SAMAGAN) {
+                for (k in map.keys.toList()) map[k] = map[k]!!.take(1).toMutableList()
+                map["𐰆"] = mutableListOf("о")
+                map["𐰱"] = mutableListOf("чы", "чи")
+            }
+            // With the "ай" setting 𐰖 is the ж tamga and 𐰗 the й one (as in the Bitik spelling of words).
+            if (swapsAJ) { map["𐰖"] = mutableListOf("ж"); map["𐰗"] = mutableListOf("й") }
             table = map
         }
         return table[glyph].orEmpty()
@@ -65,29 +95,17 @@ object BitikReadings {
  * each letter with its other reading above); after it come cards with the Bitik word and its Latin spelling below.
  */
 object BitikSuggestionStrip {
+    /** The ★ and ⚙ buttons of the current Bitik row: hidden while the strip holds more than three items. */
+    var sideButtons: List<View> = emptyList()
+
     private var alphabetTranscriber: JSTranscriber_Alphabet? = null
+    private var alphabetKey = ""
 
     private fun separator(): String = when (context.wordSeparator) {
         WordSeparator.NoSpace -> "⁚"
         WordSeparator.SpaceBefore -> "⁚ "
         WordSeparator.ArroundSpace -> " ⁚ "
         WordSeparator.Off -> " "
-    }
-
-    /** A thin rule along the bottom of the row, between the cards and the first key row, so a tap meant for a key never hits a card. */
-    fun addDivider(row: LinearLayout) {
-        val density = row.resources.displayMetrics.density
-        val paint = android.graphics.Paint().apply { color = KeyboardTheme.getColor(2).toColorInt(); alpha = 40; strokeWidth = density }
-        row.foreground = object : android.graphics.drawable.Drawable() {
-            override fun draw(canvas: android.graphics.Canvas) {
-                val y = bounds.bottom - density
-                canvas.drawLine(bounds.left + 8 * density, y, bounds.right - 8 * density, y, paint)
-            }
-            override fun setAlpha(a: Int) {}
-            override fun setColorFilter(f: android.graphics.ColorFilter?) {}
-            @Deprecated("Deprecated in Java") override fun getOpacity() = android.graphics.PixelFormat.TRANSLUCENT
-        }
-        row.setPadding(row.paddingLeft, row.paddingTop, row.paddingRight, (2 * density).toInt())
     }
 
     /** A container for the strip; [update] fills it. */
@@ -101,53 +119,27 @@ object BitikSuggestionStrip {
     }
 
     fun update(ic: InputConnection?, transcriber: JSTranscriber, container: FrameLayout) {
-        val extraSeparators = "·.,⸮⹁:;!?()[]{}\"'"
         WordSuggestionEngine.onShardLoaded = { TopRowBuilder_Old.onTypedListener.invoke() }
-        WordSuggestionEngine.configure(context, cyrillic = false, zh = with(com.shoktuk.shoktukkeyboard.project.data.SettingsManager) { context.latinZH.id },
-            ch = with(com.shoktuk.shoktukkeyboard.project.data.SettingsManager) { context.latinCH.id },
-            ng = with(com.shoktuk.shoktukkeyboard.project.data.SettingsManager) { context.latinNG.id },
-            o = with(com.shoktuk.shoktukkeyboard.project.data.SettingsManager) { context.latinO.id })
+        with(com.shoktuk.shoktukkeyboard.project.data.SettingsManager) {
+            WordSuggestionEngine.configure(context, cyrillic = true, zh = context.latinZH.id, ch = context.latinCH.id,
+                ng = context.latinNG.id, o = context.latinO.id)
+        }
 
-        text_Original = ic?.getTextBeforeCursor(100, 0)?.toString().orEmpty()
-        val regex = "[^\\p{L}${Regex.escape(extraSeparators)}]+".toRegex()
-        val raw = text_Original.split(regex).lastOrNull().orEmpty()
+        val raw = LastWord.extract(ic)
         inputText_LastWord = TranscriptionProccessor().processTranscription_bitik(raw, context)
         InputText_Transcribed = transcriber.getTranscription(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
         InputText_Transcribed_Alt = transcriber.getTranscription_Alternative(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
 
         container.removeAllViews()
-        if (text_Original.isEmpty() || inputText_LastWord.isEmpty()) return
+        sideButtons.forEach { it.visibility = View.VISIBLE }
+        if (text_Original.isEmpty() || inputText_LastWord.isEmpty() || !MyKeyboardService.canSuggest()) return
 
         val density = container.resources.displayMetrics.density
-        val textColor = KeyboardTheme.getColor(2).toColorInt()
-        val chipColor = KeyboardTheme.getColor(6).toColorInt()
-        val bitikFace = KeyboardTheme.bitikTypeface(container.context) ?: Typeface.DEFAULT_BOLD
         val height = container.layoutParams.height.coerceAtLeast(1)
-
-        val strip = LinearLayout(container.context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER_VERTICAL
-            layoutDirection = View.LAYOUT_DIRECTION_LTR
-        }
-        val scroll = HorizontalScrollView(container.context).apply {
-            isHorizontalScrollBarEnabled = false
-            overScrollMode = View.OVER_SCROLL_NEVER
-            isHorizontalFadingEdgeEnabled = true
-            setFadingEdgeLength((20 * density).toInt())
-            addView(strip, FrameLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.MATCH_PARENT))
-        }
-        container.addView(scroll, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
-
-        fun label(text: String, sp: Float, bitik: Boolean = false, alpha: Float = 1f) = TextView(container.context).apply {
-            this.text = text
-            setTextSize(TypedValue.COMPLEX_UNIT_SP, sp)
-            setTextColor(textColor)
-            this.alpha = alpha
-            gravity = Gravity.CENTER
-            maxLines = 1
-            includeFontPadding = false
-            if (bitik) { typeface = bitikFace; paint.isFakeBoldText = true }
-        }
+        val cardHeight = (height * 0.94f).toInt()
+        val sp = KeyboardTheme.getSystemButtonStyle(container.context).textSizeSp
+        val strip = SuggestionViews.strip(container.context)
+        container.addView(strip.scroll, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
         fun commit(bitik: String) {
             ic ?: return
@@ -159,62 +151,45 @@ object BitikSuggestionStrip {
         }
 
         // 1. The literal Latin reading, as the old read-out showed it: each letter with its other reading above.
-        val literal = LinearLayout(container.context).apply {
-            orientation = LinearLayout.HORIZONTAL
-            gravity = Gravity.CENTER
-            setPadding((8 * density).toInt(), 0, (8 * density).toInt(), 0)
-            layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, height).apply { marginEnd = (6 * density).toInt() }
-            setOnClickListener {
-                // The literal card is what is already typed: it only ends the word.
-                ic?.commitText(separator(), 1)
-                TopRowBuilder_Old.onTypedListener.invoke()
-            }
-        }
-        val fullSp = 16f
-        val halfSp = 9f
+        val literal = LinearLayout(container.context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER }
         InputText_Transcribed.forEachIndexed { i, base ->
             val alt = InputText_Transcribed_Alt.getOrNull(i)
             if (alt != null && alt != base) {
+                // Two floors, both at half size: the other reading above, the main one below.
                 literal.addView(LinearLayout(container.context).apply {
                     orientation = LinearLayout.VERTICAL
                     gravity = Gravity.CENTER
-                    addView(label(alt.toString(), halfSp, bitik = true, alpha = 0.7f))
-                    addView(label(base.toString(), fullSp, bitik = true))
+                    addView(SuggestionViews.text(container.context, alt.toString(), sp / 2f, bitik = true))
+                    addView(SuggestionViews.text(container.context, base.toString(), sp / 2f, bitik = true))
                 })
-            } else literal.addView(label(base.toString(), fullSp, bitik = true))
+            } else literal.addView(SuggestionViews.text(container.context, base.toString(), sp, bitik = true))
         }
-        strip.addView(literal)
+        // What is already typed: tapping only ends the word.
+        strip.row.addView(SuggestionViews.card(container.context, cardHeight, literal, null) {
+            ic?.commitText(separator(), 1)
+            TopRowBuilder_Old.onTypedListener.invoke()
+        })
 
         // 2. Cards: the Bitik word with its Latin spelling below.
         val glyphs = ArrayList<String>()
         var i = 0
-        while (i < inputText_LastWord.length) {
-            val cp = inputText_LastWord.codePointAt(i)
+        while (i < raw.length) {
+            val cp = raw.codePointAt(i)
             glyphs.add(String(Character.toChars(cp)))
             i += Character.charCount(cp)
         }
         val readings = glyphs.map { BitikReadings.of(context, it) }
         if (readings.isEmpty() || readings.any { it.isEmpty() }) return
-        val literalLatin = InputText_Transcribed.lowercase()
         val words = WordSuggestionEngine.bitikCompletions(readings, 12)
-        val transcriberAlphabet = alphabetTranscriber ?: JSTranscriber_Alphabet(context).also { alphabetTranscriber = it }
+        // The alphabet file is patched per variant, dialect and ang setting, so a changed setting needs a new transcriber.
+        val key = "${context.keyboardVariant}${context.bitikDialect}${context.angVariant}"
+        if (key != alphabetKey || alphabetTranscriber == null) { alphabetTranscriber = JSTranscriber_Alphabet(context); alphabetKey = key }
+        val transcriberAlphabet = alphabetTranscriber!!
         for (w in words) {
-            if (w.latin.lowercase() == literalLatin) continue
             val bitik = TranscriptionProccessor().processTranscription_alphabet(
-                transcriberAlphabet.getTranscription(w.latin).orEmpty().ifEmpty { w.latin }, context)
-            strip.addView(LinearLayout(container.context).apply {
-                orientation = LinearLayout.VERTICAL
-                gravity = Gravity.CENTER
-                background = android.graphics.drawable.GradientDrawable().apply { cornerRadius = 48f; setColor(chipColor) }
-                setPadding((12 * density).toInt(), 0, (12 * density).toInt(), 0)
-                addView(label(bitik, fullSp, bitik = true))
-                addView(label(w.latin, halfSp, alpha = 0.6f))
-                layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, (height * 0.94f).toInt()).apply {
-                    gravity = Gravity.CENTER_VERTICAL
-                    marginEnd = (6 * density).toInt()
-                }
-                setOnClickListener { commit(bitik) }
-            })
+                transcriberAlphabet.getTranscription(w.cyr).orEmpty().ifEmpty { w.cyr }, context)
+            strip.row.addView(SuggestionViews.wordCard(container.context, cardHeight, bitik, sp, bitik = true, transcription = if (context.suggestionTranscription(WritingSystem.Bitik)) (if (context.suggestionTranscriptionScript == "kiril") w.cyr else w.latin) else null) { com.shoktuk.shoktukkeyboard.suggestions.LearnedWords.learn(w.cyr); commit(bitik) })
         }
+        sideButtons.forEach { it.visibility = if (strip.row.childCount <= 3) View.VISIBLE else View.GONE }
     }
 }

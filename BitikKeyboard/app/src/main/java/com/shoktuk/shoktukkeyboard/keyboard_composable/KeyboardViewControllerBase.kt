@@ -55,41 +55,6 @@ import com.shoktuk.shoktukkeyboard.project.data.WordSeparator
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 
-enum class KeyboardState(val id: String) {
-    Main("Main"), Symbols("Symbols"), Emojis("Emojis"), SavedStrings("SavedStrings");
-}
-
-object onKeyPressed_Composable {
-    var text_Original: String = ""
-    var inputText_LastWord: String = ""
-    var InputText_Transcribed: String = ""
-    var InputText_Transcribed_Alt: String = ""
-
-    private val listeners = mutableListOf<(InputConnection, String, Boolean) -> Unit>()
-
-    fun addListener(listener: (InputConnection, String, Boolean) -> Unit) {
-        listeners.clear()
-        listeners.add(listener)
-    }
-
-    fun invoke(ic: InputConnection, key: String, isSystemKey: Boolean = false) {
-        listeners.forEach { it(ic, key, isSystemKey) }
-    }
-}
-
-object onSettingChanged_Composable {
-    private val listeners = mutableListOf<() -> Unit>()
-
-    fun addListener(listener: () -> Unit) {
-        listeners.clear()
-        listeners.add(listener)
-    }
-
-    fun invoke() {
-        listeners.forEach { it() }
-    }
-}
-
 class KeyboardViewControllerBase : InputMethodService() {
     companion object {
         lateinit var context: KeyboardViewControllerBase

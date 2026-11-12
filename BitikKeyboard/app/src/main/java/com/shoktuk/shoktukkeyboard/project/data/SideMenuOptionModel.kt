@@ -17,6 +17,8 @@ enum class SettingScreens(val id: String) {
     MainSettings("mainSettings"),
     Appearance("appearance"),
     OtherAlphabets("otherAlphabets"),
+    Suggestions("suggestions"),
+    PersonalizedT9("personalizedT9"),
     Other("other"),
     Cloud("cloud");
 }
