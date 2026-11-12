@@ -30,6 +30,18 @@ object SettingsManager {
 
     private fun SharedPreferences.setInt(key: String, value: Int) = edit { putInt(key, value) }
 
+    private const val SUGGESTIONS_OFF_KEY = "suggestionsOffScripts"
+
+    /** Whether the suggestion strip is on for [script]; each of the four scripts has its own switch (on by default). */
+    fun Context.suggestionsEnabled(script: WritingSystem): Boolean =
+        !prefs().getStringOrDefault(SUGGESTIONS_OFF_KEY, "").split(",").contains(script.id)
+
+    fun Context.setSuggestionsEnabled(script: WritingSystem, on: Boolean) {
+        val off = prefs().getStringOrDefault(SUGGESTIONS_OFF_KEY, "").split(",").filter { it.isNotEmpty() && it != script.id }.toMutableList()
+        if (!on) off.add(script.id)
+        prefs().setString(SUGGESTIONS_OFF_KEY, off.sorted().joinToString(","))
+    }
+
     var Context.keyboardVariant: BitikVariant
         get() = prefs().getEnum(BitikVariant.KEY, BitikVariant.Modern)
         set(v) = prefs().setEnum(BitikVariant.KEY, v)

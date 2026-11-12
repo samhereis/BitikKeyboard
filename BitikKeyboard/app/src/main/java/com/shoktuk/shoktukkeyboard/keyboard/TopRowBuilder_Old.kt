@@ -26,6 +26,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.suggestionsEnabled
 import com.shoktuk.shoktukkeyboard.project.data.TextTranscription
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.screens.settings.loadSavedStrings
@@ -103,7 +104,14 @@ object TopRowBuilder_Old {
         )
         val jsTranscriber = JSTranscriber(service)
 
-        if (mode == TextTranscription.On) {
+        if (context.suggestionsEnabled(WritingSystem.Bitik)) {
+            val strip = BitikSuggestionStrip.createContainer(service, buttonHeight)
+            rowLayout.addView(strip)
+            BitikSuggestionStrip.addDivider(rowLayout)
+            onTypedListener.addOnTypedListener(strip) {
+                strip.post { BitikSuggestionStrip.update(service.currentInputConnection, jsTranscriber, strip) }
+            }
+        } else if (mode == TextTranscription.On) {
             val lastWordContainer = createLastWordContainer(service, buttonHeight).apply {
                 clipChildren = false
                 clipToPadding = false

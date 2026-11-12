@@ -324,7 +324,10 @@ class MyKeyboardService : InputMethodService() {
             }
         } else {
             // With "transcription to Bitik" off, the alphabets show the saved strings row instead.
-            topBar_noTR = if (context.bitikTranscriptionAlphabets == BitikTranscriptionAlphabets.On) {
+            // Latin and Kiril always get the suggestion bar (its Bitik chip hides itself when transcription is off).
+            com.shoktuk.shoktukkeyboard.suggestions.SuggestionNeighbours.update(currentLayout!!)
+            val suggestions = current_writingSystem == WritingSystem.Latin || current_writingSystem == WritingSystem.Kiril
+            topBar_noTR = if (suggestions || context.bitikTranscriptionAlphabets == BitikTranscriptionAlphabets.On) {
                 TopRowBuilder_Alphabet.createTopRow(this, systemKeybHeight, TextTranscription.Off, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })
             } else {
                 TopRowBuilder.createTopRow(this, systemKeybHeight, onModeChange = { onModeChange(it) }, onAlphabetChange = { onAlphabetChange() })

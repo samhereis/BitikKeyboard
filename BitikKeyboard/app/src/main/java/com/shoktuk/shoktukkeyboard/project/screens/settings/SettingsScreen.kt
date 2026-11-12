@@ -91,6 +91,9 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinNG
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinO
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinZH
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.suggestionsEnabled
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.setSuggestionsEnabled
+import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.vibrations
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.wordSeparator
@@ -646,6 +649,15 @@ fun OtherAlphabetsSettingsScreen() {
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center
                 )
+
+                Text("Suggestions", style = MaterialTheme.typography.titleSmall, modifier = Modifier.fillMaxWidth())
+                listOf("Bitik" to WritingSystem.Bitik, Loc_Settings.latinAlphabet.localizedTitle(context) to WritingSystem.Latin, "Кириллица" to WritingSystem.Kiril, "عربى" to WritingSystem.Arab).forEach { (name, script) ->
+                    var on by remember { mutableStateOf(context.suggestionsEnabled(script)) }
+                    androidx.compose.foundation.layout.Row(Modifier.fillMaxWidth(), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+                        Text(name, Modifier.weight(1f))
+                        androidx.compose.material3.Switch(checked = on, onCheckedChange = { on = it; context.setSuggestionsEnabled(script, it) })
+                    }
+                }
 
                 EnumSwitchSetting(
                     label = "Transcription to Bitik",

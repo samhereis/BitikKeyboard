@@ -15,6 +15,9 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.writingSystem
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.suggestionsEnabled
+import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.Companion.context
+import JSTranscriber
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.project.screens.settings.loadSavedStrings
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
@@ -57,6 +60,15 @@ object TopRowBuilder {
                 service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
         )
 
+        if (context.suggestionsEnabled(WritingSystem.Bitik)) {
+            val jsTranscriber = JSTranscriber(service)
+            val strip = BitikSuggestionStrip.createContainer(service, buttonHeight)
+            rowLayout.addView(strip)
+            BitikSuggestionStrip.addDivider(rowLayout)
+            TopRowBuilder_Old.onTypedListener.addOnTypedListener(strip) {
+                strip.post { BitikSuggestionStrip.update(service.currentInputConnection, jsTranscriber, strip) }
+            }
+        } else {
         val scrollView = HorizontalScrollView(service).apply {
             isHorizontalScrollBarEnabled = false
             layoutParams = LinearLayout.LayoutParams(
@@ -113,6 +125,7 @@ object TopRowBuilder {
 
         scrollView.addView(innerClipboardRow)
         rowLayout.addView(scrollView)
+        }
 
         val imePicker = SystemKeyBuilder.systemButton_Icon(
             service = service, assetPath = KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight = buttonHeight, onClick = {

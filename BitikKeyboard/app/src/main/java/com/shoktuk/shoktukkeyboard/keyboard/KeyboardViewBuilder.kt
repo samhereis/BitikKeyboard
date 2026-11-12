@@ -53,7 +53,7 @@ object KeyboardViewBuilder {
         val maxWidthPx = (baseDesignWidthDp * density).toInt()
         val sideMarginPx = if (screenWidthPx > maxWidthPx) (screenWidthPx - maxWidthPx) / 2 else 0
 
-        val container = LinearLayout(service).apply {
+        val container = GlideContainer(service, mode == KeyboardMode.Main).apply {
             orientation = LinearLayout.VERTICAL
             gravity = Gravity.CENTER_HORIZONTAL
             layoutParams = LinearLayout.LayoutParams(

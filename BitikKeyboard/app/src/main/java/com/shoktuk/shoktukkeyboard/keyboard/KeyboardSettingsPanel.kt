@@ -39,6 +39,8 @@ import com.shoktuk.shoktukkeyboard.project.data.BitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.Coloring
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.suggestionsEnabled
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.setSuggestionsEnabled
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.textTranscription
@@ -64,7 +66,14 @@ fun KeyboardSettingsPanel(onClose: () -> Unit) {
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = null)
                     }
                     Box(Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        if (MyKeyboardService.current_writingSystem != WritingSystem.Bitik) {
+                        if (MyKeyboardService.current_writingSystem == WritingSystem.Bitik) {
+                            // Bitik has no Auto Bitik; the suggestions switch takes its place up here.
+                            var on by remember { mutableStateOf(context.suggestionsEnabled(WritingSystem.Bitik)) }
+                            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                Text("Suggestions", style = MaterialTheme.typography.titleSmall)
+                                Switch(checked = on, onCheckedChange = { on = it; context.setSuggestionsEnabled(WritingSystem.Bitik, it) })
+                            }
+                        } else {
                             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 Text(Loc_Settings.autoBitik.localizedTitle(context), style = MaterialTheme.typography.titleSmall)
                                 Switch(checked = autoBitik, onCheckedChange = {
@@ -116,6 +125,12 @@ fun KeyboardSettingsPanel(onClose: () -> Unit) {
                                             textTr = context.textTranscription
                                         }
                                     } else {
+                                        var sugg by remember { mutableStateOf(context.suggestionsEnabled(MyKeyboardService.current_writingSystem)) }
+                                        QuickToggle("Suggestions", sugg, Modifier.fillMaxWidth()) {
+                                            context.setSuggestionsEnabled(MyKeyboardService.current_writingSystem, it)
+                                            sugg = it
+                                        }
+                                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                                         QuickToggle("Transcription to Bitik", toBitik == BitikTranscriptionAlphabets.On, Modifier.fillMaxWidth()) {
                                             context.bitikTranscriptionAlphabets = if (it) BitikTranscriptionAlphabets.On else BitikTranscriptionAlphabets.Off
                                             toBitik = context.bitikTranscriptionAlphabets

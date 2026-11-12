@@ -1,0 +1,15 @@
+# Exceptions to the к/г vowel-harmony rule used when the Latin keyboard transliterates the word list.
+#
+# By default к and г are hard (q, ğ) next to a back vowel (а о ы у) and soft (k, g) next to a front vowel (е э и ө ү).
+# Loanwords often break that. Add them here; the list is meant to grow over time.
+#
+#   word          every к/г in the word is soft (k, g)
+#   word=qk       explicit choice for each к/г, in order: k q g ğ  (e.g. =gk means soft г, soft к)
+#   stem*         the line applies to every word that starts with the stem (газет* covers газетанын, газеттер…)
+#
+# Blank lines and lines starting with # are ignored. Use lower case.
+газета
+газет*
+школа
+школ*
+украин*

@@ -36,7 +36,7 @@ import kotlin.math.roundToInt
 
 class KeyView(
     context: Context,
-    private val key: KeyEntry,
+    val key: KeyEntry,
     private val isCaps: Boolean,
     private val buttonHeight: Int,
     private val buttonWidth: Int,
