@@ -496,7 +496,7 @@ class MyKeyboardService : InputMethodService() {
         if (current_writingSystem != WritingSystem.Bitik && canSuggest() && toPasteAfter.firstOrNull()?.isLetter() == false) {
             // Only a piece made of letters alone counts ("abc123", "me@mail.com" or "don't" never do).
             val token = text_Original.split(Regex("\\s+")).lastOrNull().orEmpty()
-            if (token.length >= 2 && token.all { it.isLetter() }) com.shoktuk.shoktukkeyboard.suggestions.WordSuggestionEngine.learnTyped(token)
+            if (token.length >= 2 && token.all { it.isLetter() }) com.shoktuk.shoktukkeyboard.suggestions.SuggestionWorker.background { com.shoktuk.shoktukkeyboard.suggestions.WordSuggestionEngine.learnTyped(token) }
         }
 
         if (isAutoWriteBitikMode && isSys) {

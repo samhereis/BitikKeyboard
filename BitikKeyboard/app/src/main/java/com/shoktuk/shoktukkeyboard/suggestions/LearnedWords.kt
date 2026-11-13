@@ -1,10 +1,11 @@
 package com.shoktuk.shoktukkeyboard.suggestions
 
 import android.content.Context
-import android.os.Handler
-import android.os.Looper
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.personalizeT9
 import java.io.File
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.Executors
+import java.util.concurrent.TimeUnit
 
 /**
  * The words the user writes and how many times, for "Personalize T9". Every word is kept in Cyrillic whatever script it was
@@ -13,9 +14,9 @@ import java.io.File
 object LearnedWords {
     private const val FILE = "learned_words.tsv"
     private var appContext: Context? = null
-    private var counts: HashMap<String, Int>? = null
-    private val main = Handler(Looper.getMainLooper())
-    private var saveScheduled = false
+    private var counts: ConcurrentHashMap<String, Int>? = null
+    @Volatile private var saveScheduled = false
+    private val saver = Executors.newSingleThreadScheduledExecutor()
 
     /** Bumped on every change, for caches built from the list. */
     var version = 0
@@ -27,9 +28,10 @@ object LearnedWords {
 
     private fun isEnabled(): Boolean = appContext?.personalizeT9 ?: false
 
-    private fun load(): HashMap<String, Int> {
+    @Synchronized
+    private fun load(): ConcurrentHashMap<String, Int> {
         counts?.let { return it }
-        val map = HashMap<String, Int>()
+        val map = ConcurrentHashMap<String, Int>()
         appContext?.let { ctx ->
             try {
                 val file = File(ctx.filesDir, FILE)
@@ -81,7 +83,7 @@ object LearnedWords {
     /** Forgets everything, in memory and on disk. */
     fun clear(context: Context) {
         attach(context)
-        counts = HashMap()
+        counts = ConcurrentHashMap()
         version++
         try { File(context.filesDir, FILE).delete() } catch (_: Exception) {}
     }
@@ -89,7 +91,8 @@ object LearnedWords {
     private fun scheduleSave() {
         if (saveScheduled) return
         saveScheduled = true
-        main.postDelayed({ flush() }, 3000)
+        // Written on its own thread a few seconds later, so neither typing nor a lookup waits for the disk.
+        saver.schedule({ flush() }, 3, TimeUnit.SECONDS)
     }
 
     /** Writes the list to disk now (also when the keyboard goes away). */
@@ -98,7 +101,8 @@ object LearnedWords {
         val ctx = appContext ?: return
         val map = counts ?: return
         try {
-            File(ctx.filesDir, FILE).writeText(map.entries.joinToString("\n") { "${it.key}\t${it.value}" })
+            val text = map.entries.joinToString("\n") { "${it.key}\t${it.value}" }
+            File(ctx.filesDir, FILE).writeText(text)
         } catch (_: Exception) {
         }
     }

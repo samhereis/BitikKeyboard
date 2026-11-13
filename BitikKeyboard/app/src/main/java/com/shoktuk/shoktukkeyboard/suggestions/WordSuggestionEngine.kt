@@ -1,10 +1,6 @@
 package com.shoktuk.shoktukkeyboard.suggestions
 
 import android.content.Context
-import android.graphics.PointF
-import android.os.Handler
-import android.os.Looper
-import java.util.concurrent.Executors
 import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
@@ -14,8 +10,8 @@ import kotlin.math.min
  *
  * The word list (Kyrgyz Cyrillic, merged from many corpora) is split into one asset file per first letter,
  * `words/kyw_<hex of the letter>.txt`, most frequent word first. Only the file(s) for the letter being typed are read,
- * transliterated to Kyrgyz Latin and kept in memory (a small cache holds the rest). Files load on a background thread
- * and [onShardLoaded] fires when one a lookup was waiting for is ready. Matching ignores hard/soft к/г: the key folds
+ * transliterated to Kyrgyz Latin and kept in memory (a small cache holds the rest). Everything here runs on the
+ * [SuggestionWorker] thread, never on the main thread, so a file simply loads when a lookup needs it. Matching ignores hard/soft к/г: the key folds
  * q→k and ğ→g, so "kal" finds "qalğan".
  */
 object WordSuggestionEngine {
@@ -23,20 +19,88 @@ object WordSuggestionEngine {
     class Suggestion(val word: String, val cyr: String, val latin: String)
 
     private class Entry(val word: String, val key: String, val pct: Float, val len: Int, val cyr: String)
-    private class Shard(val entries: Array<Entry>)
+    /**
+     * One loaded word file, sorted by key. [best] answers "which entry of this range is the most frequent" in constant
+     * time (a sparse table over blocks of [BLOCK] entries), so the most frequent words of any prefix are found without
+     * looking at every word that starts with it, however long the run is.
+     */
+    private class Shard(val entries: Array<Entry>) {
+        private val n = entries.size
+        private val levels: Array<IntArray>
 
+        init {
+            val blocks = (n + BLOCK - 1) / BLOCK
+            val first = IntArray(blocks) { b -> scanBest(b * BLOCK, minOf(n, (b + 1) * BLOCK) - 1) }
+            val list = ArrayList<IntArray>()
+            list.add(first)
+            var span = 1
+            while (span * 2 <= blocks) {
+                val prev = list.last()
+                list.add(IntArray(blocks - span * 2 + 1) { i -> if (entries[prev[i]].pct <= entries[prev[i + span]].pct) prev[i] else prev[i + span] })
+                span *= 2
+            }
+            levels = list.toTypedArray()
+        }
+
+        private fun scanBest(from: Int, to: Int): Int {
+            var best = from
+            for (i in from + 1..to) if (entries[i].pct < entries[best].pct) best = i
+            return best
+        }
+
+        /** The run of entries whose key starts with [c]. */
+        fun firstCharRange(c: Char): IntRange {
+            fun bound(prefix: String): Int { var lo = 0; var hi = n; while (lo < hi) { val mid = (lo + hi) ushr 1; if (entries[mid].key < prefix) lo = mid + 1 else hi = mid }; return lo }
+            val from = bound(c.toString())
+            return from until bound((c + 1).toString())
+        }
+
+        /** Index of the most frequent entry in `from..to` (inclusive). */
+        fun best(from: Int, to: Int): Int {
+            val bf = from / BLOCK; val bt = to / BLOCK
+            if (bt - bf < 2) return scanBest(from, to)
+            var best = scanBest(from, (bf + 1) * BLOCK - 1)
+            val tail = scanBest(bt * BLOCK, to)
+            if (entries[tail].pct < entries[best].pct) best = tail
+            val lo = bf + 1; val hi = bt - 1
+            val level = 31 - Integer.numberOfLeadingZeros(hi - lo + 1)
+            val a = levels[level][lo]; val b = levels[level][hi - (1 shl level) + 1]
+            val mid = if (entries[a].pct <= entries[b].pct) a else b
+            return if (entries[mid].pct < entries[best].pct) mid else best
+        }
+
+        /** The [k] most frequent entries of `from until to`, most frequent first. Costs about k lookups, whatever the run length. */
+        fun top(from: Int, to: Int, k: Int, below: Float = Float.MAX_VALUE, accept: (Entry) -> Boolean = { true }): List<Entry> {
+            val out = ArrayList<Entry>(k)
+            if (from >= to) return out
+            val heap = java.util.PriorityQueue<IntArray>(compareBy { entries[it[2]].pct })
+            heap.add(intArrayOf(from, to, best(from, to - 1)))
+            while (out.size < k) {
+                val seg = heap.poll() ?: break
+                if (entries[seg[2]].pct >= below) break  // everything left is rarer still
+                if (accept(entries[seg[2]])) out.add(entries[seg[2]])
+                if (seg[2] > seg[0]) heap.add(intArrayOf(seg[0], seg[2], best(seg[0], seg[2] - 1)))
+                if (seg[2] + 1 < seg[1]) heap.add(intArrayOf(seg[2] + 1, seg[1], best(seg[2] + 1, seg[1] - 1)))
+            }
+            return out
+        }
+    }
+
+    private const val BLOCK = 32
     private const val ALPHABET = "абвгдеёжзийклмнңоөпрстуүфхцчшщыэюя"
     private const val MAX_CACHED_ENTRIES = 250_000
 
-    private lateinit var appContext: Context
+    /** A point on screen (the engine has no Android dependency, so it can run in plain JVM tests). */
+    class GlidePoint(val x: Float, val y: Float)
+
+    /** Where the word files come from: the app's assets on a device, a folder in tests and benchmarks. */
+    fun interface Source { fun open(path: String): java.io.InputStream? }
+
+    private lateinit var source: Source
     private var configured = false
-    private val main = Handler(Looper.getMainLooper())
-    private val io = Executors.newSingleThreadExecutor()
     private val cache = HashMap<Char, Shard>()
     private val recency = ArrayList<Char>()
-    private val loading = HashSet<Char>()
     private var inUse = HashSet<Char>()
-    private var pendingRefresh = false
     private var exceptions = HarmonyExceptions()
     private val latinFirst = HashMap<Char, MutableList<Char>>()  // typed Latin first letter -> Cyrillic first letters
 
@@ -45,9 +109,6 @@ object WordSuggestionEngine {
 
     /** Arabic typing matches the transliteration into the Arabic keyboard's letters. */
     private var arabic = false
-
-    /** Called on the main thread when a file a lookup was waiting for has finished loading. */
-    var onShardLoaded: (() -> Unit)? = null
 
     private var zh = "j"
     private var ch = "ç"
@@ -61,9 +122,18 @@ object WordSuggestionEngine {
      */
     fun configure(context: Context, cyrillic: Boolean, zh: String = "j", ch: String = "ç", ng: String = "ñ", o: String = "ö", arabic: Boolean = false) {
         if (!configured) {
-            appContext = context.applicationContext
-            LearnedWords.attach(appContext)
-            exceptions = HarmonyExceptions.load(appContext)
+            LearnedWords.attach(context.applicationContext)
+            val assets = context.applicationContext.assets
+            configure(Source { path -> try { assets.open(path) } catch (e: java.io.IOException) { null } }, cyrillic, zh, ch, ng, o, arabic)
+            return
+        }
+        configure(source, cyrillic, zh, ch, ng, o, arabic)
+    }
+
+    fun configure(source: Source, cyrillic: Boolean, zh: String = "j", ch: String = "ç", ng: String = "ñ", o: String = "ö", arabic: Boolean = false) {
+        if (!configured) {
+            this.source = source
+            exceptions = HarmonyExceptions.load(source)
             configured = true
         }
         val sig = "$cyrillic|$zh|$ch|$ng|$o|$arabic"
@@ -76,8 +146,7 @@ object WordSuggestionEngine {
         table = arrayOfNulls(0xD0)
         for ((c, v) in map) if (c.code in 0x430 until 0x500) table[c.code - 0x430] = v
         extra = map
-        cache.clear(); recency.clear(); loading.clear(); learnedSpelled.clear()
-        generation++
+        cache.clear(); recency.clear(); learnedSpelled.clear()
         latinFirst.clear()
         if (!cyrillic) for (c in ALPHABET) {
             val first = fold(spell(c.toString(), HarmonyExceptions())).firstOrNull() ?: continue
@@ -85,16 +154,18 @@ object WordSuggestionEngine {
         }
     }
 
-    private var generation = 0
-
-    /** Reads the writing system and Latin letter settings from the keyboard service. */
-    fun configureFor(service: com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService) {
+    /**
+     * Reads the writing system and Latin letter settings from the keyboard service (call on the main thread) and returns
+     * the call that applies them; run that on the [SuggestionWorker] before looking anything up.
+     */
+    fun configurator(service: com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService): () -> Unit {
         val system = com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.current_writingSystem
         val kiril = system == com.shoktuk.shoktukkeyboard.project.data.WritingSystem.Kiril
         val arab = system == com.shoktuk.shoktukkeyboard.project.data.WritingSystem.Arab
         with(com.shoktuk.shoktukkeyboard.project.data.SettingsManager) {
-            if (arab) configure(service, false, "j", "ç", "ñ", "ö", arabic = true)
-            else configure(service, kiril, service.latinZH.id, service.latinCH.id, service.latinNG.id, service.latinO.id)
+            val zh = service.latinZH.id; val ch = service.latinCH.id; val ng = service.latinNG.id; val o = service.latinO.id
+            return if (arab) { { configure(service, false, "j", "ç", "ñ", "ö", arabic = true) } }
+            else { { configure(service, kiril, zh, ch, ng, o) } }
         }
     }
 
@@ -119,8 +190,7 @@ object WordSuggestionEngine {
 
         val matches = ArrayList<Entry>()
         for (letter in letters) {
-            val shard = shard(letter, wait = false)
-            if (shard == null) { pendingRefresh = true; continue }
+            val shard = shard(letter)
             val entries = shard.entries
             var low = 0
             var high = entries.size
@@ -128,21 +198,20 @@ object WordSuggestionEngine {
                 val mid = (low + high) ushr 1
                 if (entries[mid].key < lower) low = mid + 1 else high = mid
             }
-            var i = low
-            while (i < entries.size && entries[i].key.startsWith(lower)) {
-                if (entries[i].key != lower) matches.add(entries[i])
-                i++
+            // The run of entries whose key starts with the typed text; the ones equal to it are not completions.
+            var start = low
+            while (start < entries.size && entries[start].key == lower) start++
+            var end = start
+            run {
+                var lo2 = start; var hi2 = entries.size
+                while (lo2 < hi2) { val mid = (lo2 + hi2) ushr 1; if (entries[mid].key.startsWith(lower)) lo2 = mid + 1 else hi2 = mid }
+                end = lo2
             }
+            // The 120 most frequent of the run (so rare one-off strings never get in).
+            matches.addAll(shard.top(start, end, 120))
         }
-        // Most frequent matches first (so rare one-off strings never get in), then the shortest first.
-        if (matches.size > 120) {
-            // Keep the 120 most frequent without sorting everything: find the cut-off rank first.
-            val ranks = FloatArray(matches.size) { matches[it].pct }
-            ranks.sort()
-            val cut = ranks[119]
-            matches.retainAll { it.pct <= cut }
-            if (matches.size > 120) { matches.sortBy { it.pct }; matches.subList(120, matches.size).clear() }
-        }
+        matches.sortBy { it.pct }
+        if (matches.size > 120) matches.subList(120, matches.size).clear()
         matches.sortWith(compareBy<Entry>({ it.len }, { it.pct }))
 
         val seen = HashSet<String>()
@@ -169,6 +238,10 @@ object WordSuggestionEngine {
      * glyph covers is skipped (short writing), never two in a row. Exact fits come first, then longer words.
      * Needs [configure] with `cyrillic = true`. Each result carries the Latin spelling for display in [Suggestion.latin].
      */
+    /** Tests only: answer by checking every word one by one (the slow reference) instead of walking the trie. */
+    internal var glideFullScan = false
+    internal var useScan = false
+
     fun bitikCompletions(readings: List<List<String>>, limit: Int = 12): List<Suggestion> {
         if (!configured || !cyrillic || readings.isEmpty()) return emptyList()
         val letters = LinkedHashSet<Char>()
@@ -186,12 +259,10 @@ object WordSuggestionEngine {
         class Hit(val entry: Entry, val exact: Boolean)
         val hits = ArrayList<Hit>()
         for (letter in letters) {
-            val shard = shard(letter, wait = false)
-            if (shard == null) { pendingRefresh = true; continue }
-            for (entry in shard.entries) {
-                val r = bitikMatch(entry.key, readings)
-                if (r > 0) hits.add(Hit(entry, r == 2))
-            }
+            val shard = shard(letter)
+            val found = if (useScan) HashMap<Entry, Boolean>().also { m -> for (entry in shard.entries) { val r = bitikMatch(entry.key, readings); if (r > 0) m[entry] = r == 2 } } else bitikHits(shard, readings)
+            for ((entry, exact) in found) hits.add(Hit(entry, exact))
+            if (SuggestionWorker.isStale()) return emptyList()
         }
         hits.sortBy { it.entry.pct }
         if (hits.size > 120) hits.subList(120, hits.size).clear()
@@ -210,6 +281,91 @@ object WordSuggestionEngine {
         return applyLearnedBitik(out, readings, limit)
     }
 
+    /**
+     * Words a swipe over Bitik keys can mean. `readings[i]` lists every Cyrillic spelling of the i-th key the finger passed.
+     * A word fits when its sounds can be read off those keys in order: the first and last key are the word's first and last
+     * glyph, keys crossed on the way may be left out, and a vowel no key covers may be skipped (short writing). The fewer
+     * crossed keys a word leaves out, the better; frequency breaks ties. Needs [configure] with `cyrillic = true`.
+     */
+    fun bitikGlideMatches(readings: List<List<String>>, limit: Int = 8): List<Suggestion> {
+        if (!configured || !cyrillic) return emptyList()
+        val n = minOf(readings.size, 40)
+        if (n < 2 || readings.take(n).any { it.isEmpty() }) return emptyList()
+        val keys = readings.take(n)
+        val firstSounds = HashSet<Char>(); val lastSounds = HashSet<Char>()
+        val letters = LinkedHashSet<Char>()
+        for (r in keys[0]) {
+            val f = r.firstOrNull() ?: continue
+            firstSounds.add(f)
+            if (ALPHABET.indexOf(f) >= 0) letters.add(f)
+            when (f) { 'й' -> letters.addAll(listOf('ю', 'я', 'ё')); 'т' -> letters.add('ц'); 'ш' -> letters.add('щ'); 'е' -> letters.add('э') }
+        }
+        for (r in keys[n - 1]) r.lastOrNull()?.let { lastSounds.add(it) }
+        inUse = HashSet(letters)
+
+        class Hit(val entry: Entry, val cost: Double)
+        val hits = ArrayList<Hit>()
+        val none = Int.MAX_VALUE
+        val sounds = CharArray(64)
+        val cost = IntArray(41 * 64)
+        for (letter in letters) {
+            val shard = shard(letter)
+            val limitPct = 0.6f
+            for ((k, entry) in shard.entries.withIndex()) {
+                if (k and 1023 == 0 && SuggestionWorker.isStale()) return emptyList()
+                if (entry.pct >= limitPct) continue
+                val w = entry.word
+                if (w.length < 2 || w.length > 30) continue
+                var m = 0
+                for (c in w) { for (sub in 0 until soundCount(c)) { sounds[m++] = sound(c, sub) } }
+                if (m < 2 || sounds[0] !in firstSounds) continue
+                val endsOnKey = sounds[m - 1] in lastSounds
+                val endsOnVowel = isVowel(sounds[m - 1]) && sounds[m - 2] in lastSounds
+                if (!endsOnKey && !endsOnVowel) continue
+
+                for (i in 0 until n * (m + 1)) cost[i] = none
+                fun fits(r: String, at: Int): Boolean {
+                    if (at + r.length > m) return false
+                    for (t in r.indices) if (sounds[at + t] != r[t]) return false
+                    return true
+                }
+                for (r in keys[0]) if (fits(r, 0)) cost[r.length] = 0
+                for (pi in 0 until n - 1) {
+                    for (wi in 1 until m) {
+                        val c = cost[pi * (m + 1) + wi]
+                        if (c == none) continue
+                        for (pj in pi + 1 until n) {
+                            val unused = pj - pi - 1
+                            for (r in keys[pj]) for (skip in 0..1) {
+                                if (skip == 1 && !(wi < m && isVowel(sounds[wi]))) continue
+                                val w0 = wi + skip
+                                if (!fits(r, w0)) continue
+                                val nc = c + unused + skip * 3
+                                val slot = pj * (m + 1) + w0 + r.length
+                                if (nc < cost[slot]) cost[slot] = nc
+                            }
+                        }
+                    }
+                }
+                var best = none
+                val end = (n - 1) * (m + 1)
+                if (cost[end + m] != none) best = cost[end + m]
+                if (cost[end + m - 1] != none && isVowel(sounds[m - 1])) best = minOf(best, cost[end + m - 1] + 3)
+                if (best == none) continue
+                hits.add(Hit(entry, best * 0.25 + entry.pct * 8.0))
+            }
+        }
+        hits.sortBy { it.cost }
+        val seen = HashSet<String>()
+        val out = ArrayList<Suggestion>()
+        for (h in hits) {
+            if (!seen.add(h.entry.word)) continue
+            out.add(Suggestion(h.entry.word, h.entry.word, transliterate(h.entry.word, exceptions)))
+            if (out.size == limit) break
+        }
+        return out
+    }
+
     // ---------------------------------------------------------------- Personalize T9
 
     private val learnedSpelled = HashMap<String, Pair<String, String>>()  // learned Cyrillic word -> (shown, key) for the current script
@@ -220,7 +376,7 @@ object WordSuggestionEngine {
         val lower = if (cyrillic) typed.lowercase() else fold(typed.lowercase())
         val first = lower.firstOrNull() ?: return null
         for (letter in lettersFor(first) ?: return null) {
-            val entries = (shard(letter, wait = false) ?: continue).entries
+            val entries = shard(letter).entries
             var low = 0
             var high = entries.size
             while (low < high) {
@@ -300,6 +456,110 @@ object WordSuggestionEngine {
         else -> c
     }
 
+    /**
+     * The words of [shard] the glyphs can stand for (true = they spell exactly this word, false = the word starts with what
+     * they spell), found by walking the sorted words as a trie with the set of ways the glyphs can have matched so far as
+     * state. It only visits prefixes that can still match, so it costs the same however many words the file holds. The
+     * outcome is the same as [bitikMatch] on every word. At most the 120 most frequent hits under any one prefix are kept.
+     */
+    private fun bitikHits(shard: Shard, g: List<List<String>>): Map<Entry, Boolean> {
+        val entries = shard.entries
+        val out = LinkedHashMap<Entry, Boolean>()
+        if (entries.isEmpty()) return out
+        val k = g.size
+        // A state is "between glyphs" (gi glyphs done, whether the last reading ended in a vowel) or "inside reading ri of glyph gi, off sounds matched".
+        fun between(gi: Int, pv: Boolean) = (gi shl 12) or (if (pv) 1 else 0)
+        fun inside(gi: Int, ri: Int, off: Int) = (gi shl 12) or 2 or (ri shl 2) or (off shl 8)
+        // Steps every state over one sound; sets completeAt when all glyphs are matched by it.
+        fun step(states: IntArray, count: Int, snd: Char, next: IntArray, completed: BooleanArray): Int {
+            var n = 0
+            fun add(st: Int) { for (q in 0 until n) if (next[q] == st) return; next[n++] = st }
+            for (q in 0 until count) {
+                val st = states[q]
+                val gi = st ushr 12
+                if (st and 2 == 0) {  // between glyphs
+                    val pv = st and 1 == 1
+                    for ((ri, r) in g[gi].withIndex()) {
+                        if (r[0] != snd) continue
+                        if (r.length == 1) { if (gi + 1 == k) completed[0] = true else add(between(gi + 1, isVowel(r.last()))) } else add(inside(gi, ri, 1))
+                    }
+                    if (gi > 0 && !pv && isVowel(snd)) add(between(gi, true))
+                } else {
+                    val ri = (st shr 2) and 63; val off = (st shr 8) and 15
+                    val r = g[gi][ri]
+                    if (r[off] != snd) continue
+                    if (off + 1 == r.length) { if (gi + 1 == k) completed[0] = true else add(between(gi + 1, isVowel(r.last()))) } else add(inside(gi, ri, off + 1))
+                }
+            }
+            return n
+        }
+        fun record(from: Int, to: Int, exact: Boolean) {
+            for (e in shard.top(from, to, 120)) { if (exact) out[e] = true else if (out[e] == null) out[e] = false }
+        }
+        val depthStates = Array(42) { IntArray(256) }
+        val scratch = Array(2) { IntArray(256) }
+        val flag = BooleanArray(1)
+        // exactCarry: all glyphs were matched exactly at the last sound (kept through silent letters ь and ъ).
+        fun walk(from: Int, to: Int, depth: Int, count: Int) {
+            if (SuggestionWorker.isStale()) return
+            var i = from
+            while (i < to && entries[i].key.length == depth) i++
+            while (i < to) {
+                val c = entries[i].key[depth]
+                var lo = i + 1; var hi = to
+                while (lo < hi) { val mid = (lo + hi) ushr 1; if (entries[mid].key[depth] == c) lo = mid + 1 else hi = mid }
+                val end = lo
+                val sc = soundCount(c)
+                // Step the states over this letter's sounds.
+                var cur = depthStates[depth]
+                var curN = count
+                var doneMid = false; var doneLast = false
+                var a = 0
+                val buf = arrayOf(IntArray(256), IntArray(256))
+                var src = cur
+                for (sIdx in 0 until sc) {
+                    flag[0] = false
+                    val dst = buf[sIdx and 1]
+                    curN = step(src, curN, sound(c, sIdx), dst, flag)
+                    if (flag[0]) { if (sIdx == sc - 1) doneLast = true else doneMid = true }
+                    src = dst
+                    a++
+                }
+                if (doneMid) record(i, end, false)  // all glyphs matched part-way through this letter: every word here is longer than that
+                if (doneLast) {
+                    var own = i
+                    while (own < end && entries[own].key.length == depth + 1) own++
+                    if (own > i) record(i, own, true)
+                    if (own < end) record(own, end, false)
+                    // Only a silent letter after it can still make a word exact.
+                    var j = own
+                    while (j < end) {
+                        val c2 = entries[j].key[depth + 1]
+                        var l2 = j + 1; var h2 = end
+                        while (l2 < h2) { val mid = (l2 + h2) ushr 1; if (entries[mid].key[depth + 1] == c2) l2 = mid + 1 else h2 = mid }
+                        if (soundCount(c2) == 0) {
+                            var o2 = j
+                            while (o2 < l2 && entries[o2].key.length == depth + 2) o2++
+                            if (o2 > j) record(j, o2, true)
+                            // deeper silent letters: rare; the prefix hits above already list them
+                        }
+                        j = l2
+                    }
+                }
+                // Other ways the glyphs may still match (a skipped vowel, another reading) can make a longer word exact.
+                if (curN > 0) {
+                    val nextStates = depthStates[depth + 1]
+                    System.arraycopy(src, 0, nextStates, 0, curN)
+                    if (depth + 1 < 41) walk(i, end, depth + 1, curN)
+                }
+                i = end
+            }
+        }
+        depthStates[0][0] = between(0, false)
+        walk(0, entries.size, 0, 1)
+        return out
+    }
+
     /** 2 = the glyphs spell exactly this word, 1 = the word starts with what they spell, 0 = no match. */
     private fun bitikMatch(w: String, g: List<List<String>>): Int {
         val n = w.length
@@ -339,46 +599,58 @@ object WordSuggestionEngine {
         inUse.addAll(letters)
 
         val t = IntArray(m) { typed[it].code }
-        var previous = IntArray(m + 1)
-        var row = IntArray(m + 1)
-        class Hit(val entry: Entry, val cost: Int)
-        val found = ArrayList<Hit>()
+        class Hit(val entry: Entry, var cost: Int)
+        val found = LinkedHashMap<Entry, Hit>()
         for (letter in letters) {
-            val shard = shard(letter, wait = false)
-            if (shard == null) { pendingRefresh = true; continue }
-            for (entry in shard.entries) {
-                if (entry.pct >= 0.4f) continue
-                val n = entry.len
-                if (n < m - 1 || n > 39 || entry.key == typed) continue
-                val key = entry.key
-                for (j in 0..m) previous[j] = j * 2
-                var best = Int.MAX_VALUE
-                var i = 0
-                while (i < n) {
-                    row[0] = (i + 1) * 2
+            val shard = shard(letter)
+            val entries = shard.entries
+            if (entries.isEmpty()) continue
+            // Walk the words as a trie (sorted keys: a node is a run of entries sharing a prefix) with the edit-distance row
+            // as state, and stop going down as soon as no word below can be within reach. This only ever visits the
+            // prefixes near the typed text, so it costs the same however many words the file holds.
+            val rows = Array(41) { IntArray(m + 1) }
+            for (j in 0..m) rows[0][j] = j * 2
+            fun accept(from: Int, to: Int, cost: Int) {
+                for (e in shard.top(from, to, 12, below = 0.4f) { it.len <= 39 && it.key != typed }) {
+                    val h = found[e]
+                    if (h == null) found[e] = Hit(e, cost) else if (cost < h.cost) h.cost = cost
+                }
+            }
+            fun walk(from: Int, to: Int, depth: Int) {
+                if (SuggestionWorker.isStale()) return
+                var i = from
+                while (i < to && entries[i].key.length == depth) i++  // words that end exactly here have no children
+                val prev = rows[depth]
+                while (i < to) {
+                    val c = entries[i].key[depth]
+                    var lo = i + 1; var hi = to
+                    while (lo < hi) { val mid = (lo + hi) ushr 1; if (entries[mid].key[depth] == c) lo = mid + 1 else hi = mid }
+                    val end = lo
+                    val row = rows[depth + 1]
+                    row[0] = (depth + 1) * 2
                     var rowMin = row[0]
-                    val wc = key[i].code
+                    val wc = c.code
                     for (j in 0 until m) {
                         val tc = t[j]
                         val sub = if (wc == tc) 0 else if (isNeighbour(wc, tc)) 1 else 2
-                        val v = min(min(previous[j + 1] + 2, row[j] + 2), previous[j] + sub)
+                        val v = min(min(prev[j + 1] + 2, row[j] + 2), prev[j] + sub)
                         row[j + 1] = v
                         if (v < rowMin) rowMin = v
                     }
-                    if (i + 1 >= m - 1 && row[m] < best) best = row[m]
-                    if (rowMin > maxCost) break
-                    val tmp = previous; previous = row; row = tmp
-                    i++
+                    if (depth + 1 >= m - 1 && row[m] <= maxCost) accept(i, end, row[m])
+                    if (rowMin <= maxCost && depth + 1 < 40) walk(i, end, depth + 1)
+                    i = end
                 }
-                if (best <= maxCost) found.add(Hit(entry, best))
             }
+            walk(0, entries.size, 0)
         }
-        found.sortWith(compareBy<Hit>({ it.cost }, { it.entry.pct }))
-        return found.take(12).map { it.entry }
+        val ordered = found.values.toMutableList()
+        ordered.sortWith(compareBy<Hit>({ it.cost }, { it.entry.pct }))
+        return ordered.take(12).map { it.entry }
     }
 
-    // Adjacent-key pairs as a bit table (index = a * 0x500 + b), rebuilt only when the set changes. Avoids boxing in the hot loops.
-    private val neighbourBits = LongArray(0x500 * 0x500 / 64 + 1)
+    // Adjacent-key pairs as a bit table (index = a * 0x700 + b), rebuilt only when the set changes. Avoids boxing in the hot loops.
+    private val neighbourBits = LongArray(0x700 * 0x700 / 64 + 1)
     private var neighbourSource: Set<Long>? = null
 
     private fun updateNeighbourBits(pairs: Set<Long>) {
@@ -387,13 +659,13 @@ object WordSuggestionEngine {
         neighbourBits.fill(0L)
         for (p in pairs) {
             val a = (p ushr 32).toInt(); val b = (p and 0xFFFFFFFFL).toInt()
-            if (a < 0x500 && b < 0x500) { val bit = a * 0x500 + b; neighbourBits[bit ushr 6] = neighbourBits[bit ushr 6] or (1L shl (bit and 63)) }
+            if (a < 0x700 && b < 0x700) { val bit = a * 0x700 + b; neighbourBits[bit ushr 6] = neighbourBits[bit ushr 6] or (1L shl (bit and 63)) }
         }
     }
 
     private fun isNeighbour(a: Int, b: Int): Boolean {
-        if (a >= 0x500 || b >= 0x500) return false
-        val bit = a * 0x500 + b
+        if (a >= 0x700 || b >= 0x700) return false
+        val bit = a * 0x700 + b
         return neighbourBits[bit ushr 6] and (1L shl (bit and 63)) != 0L
     }
 
@@ -404,32 +676,59 @@ object WordSuggestionEngine {
      * finger [trace]: it must start where the finger went down, end where it lifted, have a similar length, and follow
      * the same shape. Frequency breaks ties. [centres] maps each typable letter (and held letter) to its key centre.
      */
-    fun glideMatches(trace: List<PointF>, centres: Map<Char, PointF>, keyWidth: Float, startLetter: Char, limit: Int = 8): List<String> {
+    /**
+     * The word files a glide that went down at [begin] can need. A candidate word must start with a letter whose key is
+     * within about one key width of that point (the matcher rejects every other word), so only those letters' files matter.
+     */
+    private fun glideLetters(centres: Map<Char, GlidePoint>, keyWidth: Float, startLetter: Char, begin: GlidePoint): LinkedHashSet<Char> {
+        val starts = LinkedHashSet<Char>().apply { add(startLetter) }
+        for ((l, p) in centres) if (hypot(p.x - begin.x, p.y - begin.y) < keyWidth * 1.1f) starts.add(l)
+        val letters = LinkedHashSet<Char>()
+        for (s in starts) lettersFor(s)?.let { letters.addAll(it) }
+        return letters
+    }
+
+    /**
+     * Loads (and keeps) the word files a glide that went down at [begin] will need. Called when the finger goes down, so
+     * the files are ready by the time it lifts instead of being read, spelled and sorted after the release.
+     */
+    fun prefetchGlide(centres: Map<Char, GlidePoint>, keyWidth: Float, startLetter: Char, begin: GlidePoint) {
+        if (!configured || keyWidth <= 0f) return
+        val letters = glideLetters(centres, keyWidth, startLetter, begin)
+        inUse = HashSet(letters)
+        for (l in letters) shard(l)
+    }
+
+    fun glideMatches(trace: List<GlidePoint>, centres: Map<Char, GlidePoint>, keyWidth: Float, startLetter: Char, limit: Int = 8): List<String> {
         if (!configured || trace.size < 2 || keyWidth <= 0f) return emptyList()
         val begin = trace.first(); val end = trace.last()
         // The word's first letter is the key the swipe started on, or one beside it.
-        val starts = LinkedHashSet<Char>().apply { add(startLetter) }
-        centres[startLetter]?.let { c -> for ((l, p) in centres) if (hypot(p.x - c.x, p.y - c.y) < keyWidth * 2.2f) starts.add(l) }
-        val letters = LinkedHashSet<Char>()
-        for (s in starts) lettersFor(s)?.let { letters.addAll(it) }
+        val letters = glideLetters(centres, keyWidth, startLetter, begin)
         inUse = HashSet(letters)
 
         val kw = keyWidth.toDouble()
-        val has = BooleanArray(0x500); val cx = DoubleArray(0x500); val cy = DoubleArray(0x500)
-        for ((l, p) in centres) if (l.code < 0x500) { has[l.code] = true; cx[l.code] = p.x.toDouble(); cy[l.code] = p.y.toDouble() }
+        val has = BooleanArray(0x700); val cx = DoubleArray(0x700); val cy = DoubleArray(0x700)
+        for ((l, p) in centres) if (l.code < 0x700) { has[l.code] = true; cx[l.code] = p.x.toDouble(); cy[l.code] = p.y.toDouble() }
         val traceXY = DoubleArray(trace.size * 2).also { for (i in trace.indices) { it[2 * i] = trace[i].x.toDouble(); it[2 * i + 1] = trace[i].y.toDouble() } }
         val sample = resample(traceXY, 32)
         val traceLength = length(traceXY)
         class Hit(val word: String, val cost: Double)
         val hits = ArrayList<Hit>()
         var pts = DoubleArray(80)
+        // The word's first letter must be near where the finger went down: only entries whose key starts with one of those
+        // letters (the files are sorted by key) are looked at, not the whole file.
+        val firstKeys = LinkedHashSet<Char>()
+        for ((l, p) in centres) if (hypot(p.x - begin.x, p.y - begin.y) < kw * 1.1) firstKeys.add(fold(l.toString()).first())
         for (letter in letters) {
-            val shard = shard(letter, wait = true) ?: continue
-            for (entry in shard.entries) {
+            val shard = shard(letter)
+            val ranges = if (glideFullScan) listOf(shard.entries.indices) else firstKeys.map { shard.firstCharRange(it) }
+            for (range in ranges) for (n0 in range) {
+                val entry = shard.entries[n0]
+                if (n0 and 1023 == 0 && SuggestionWorker.isStale()) return emptyList()
                 if (entry.pct >= 0.5f) continue
                 val w = entry.word
                 val f = w[0].code; val l = w[w.length - 1].code
-                if (f >= 0x500 || l >= 0x500 || !has[f] || !has[l]) continue
+                if (f >= 0x700 || l >= 0x700 || !has[f] || !has[l]) continue
                 if (hypot(cx[f] - begin.x, cy[f] - begin.y) >= kw * 1.1 || hypot(cx[l] - end.x, cy[l] - end.y) >= kw * 1.3) continue
                 if (pts.size < w.length * 2) pts = DoubleArray(w.length * 2)
                 var count = 0
@@ -437,7 +736,7 @@ object WordSuggestionEngine {
                 var prev = -1
                 for (c in w) {
                     val u = c.code
-                    if (u >= 0x500 || !has[u]) { ok = false; break }
+                    if (u >= 0x700 || !has[u]) { ok = false; break }
                     if (u != prev) { pts[2 * count] = cx[u]; pts[2 * count + 1] = cy[u]; count++ }
                     prev = u
                 }
@@ -490,25 +789,11 @@ object WordSuggestionEngine {
     private fun lettersFor(first: Char): List<Char>? =
         if (cyrillic) (if (ALPHABET.indexOf(first) >= 0) listOf(first) else null) else latinFirst[fold(first.toString()).first()]
 
-    private fun shard(letter: Char, wait: Boolean): Shard? {
+    private fun shard(letter: Char): Shard {
         cache[letter]?.let { recency.remove(letter); recency.add(letter); return it }
-        if (wait) {
-            val s = loadEntries(letter)
-            store(s, letter)
-            return s
-        }
-        if (!loading.add(letter)) return null
-        val gen = generation
-        io.execute {
-            val s = loadEntries(letter)
-            main.post {
-                if (gen != generation) return@post
-                loading.remove(letter)
-                store(s, letter)
-                if (pendingRefresh) { pendingRefresh = false; onShardLoaded?.invoke() }
-            }
-        }
-        return null
+        val s = loadEntries(letter)
+        store(s, letter)
+        return s
     }
 
     private fun store(shard: Shard, letter: Char) {
@@ -525,7 +810,7 @@ object WordSuggestionEngine {
     private fun loadEntries(letter: Char): Shard {
         val name = "words/kyw_%04x.txt".format(letter.code)
         val words = try {
-            appContext.assets.open(name).bufferedReader().useLines { seq -> seq.map { it.trim() }.filter { it.isNotEmpty() }.toList() }
+            (source.open(name) ?: return Shard(emptyArray())).bufferedReader().useLines { seq -> seq.map { it.trim() }.filter { it.isNotEmpty() }.toList() }
         } catch (e: java.io.IOException) {
             return Shard(emptyArray())
         }

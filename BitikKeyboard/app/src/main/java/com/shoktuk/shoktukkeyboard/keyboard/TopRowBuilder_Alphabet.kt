@@ -54,6 +54,30 @@ object TopRowBuilder_Alphabet {
     /** The ★ and ⚙ buttons of the current top row: hidden while the suggestion strip has more than three chips. */
     private var sideButtons: List<View> = emptyList()
 
+    /** The Auto Bitik glow: round the whole centre slot when there is no suggestion strip, otherwise round the Bitik card only. */
+    private var slotGlow: NewGlowDrawable? = null
+    private val cardGlow = NewGlowDrawable().apply {
+        cornerRadius = 20f
+        innerGlowWidth = 4f
+        innerGlowBlur = 14
+        refreshFilters()
+    }
+    private var glowOnStrip = false
+    private var cardShown = false
+
+    private fun applyGlow(animate: Boolean) {
+        val on = MyKeyboardService.isAutoWriteBitikMode
+        fun drive(g: NewGlowDrawable?, show: Boolean) {
+            g ?: return
+            if (show) {
+                g.startRotating()
+                if (animate) g.animateAlpha(1f, 400L, null) else g.setVisibleAlpha(1f)
+            } else if (animate) g.animateAlpha(0f, 400L) { g.stopRotating() } else { g.setVisibleAlpha(0f); g.stopRotating() }
+        }
+        drive(slotGlow, on && !glowOnStrip)
+        drive(cardGlow, on && glowOnStrip && cardShown)
+    }
+
     private fun squareUp(service: InputMethodService, view: View, size: Int) {
         val inset = (service.resources.displayMetrics.density * 3).toInt()
         view.layoutParams = LinearLayout.LayoutParams(size, size)
@@ -101,14 +125,11 @@ object TopRowBuilder_Alphabet {
         }
 
         val newGlow = NewGlowDrawable()
-        
-        if (MyKeyboardService.isAutoWriteBitikMode) {
-            newGlow.setVisibleAlpha(1f)
-            newGlow.startRotating()
-        } else {
-            newGlow.setVisibleAlpha(0f)
-            newGlow.stopRotating()
-        }
+        slotGlow?.stopRotating()
+        slotGlow = newGlow
+        cardGlow.stopRotating()
+        glowOnStrip = false
+        applyGlow(false)
 
         val switchLanguageView = SystemKeyBuilder.systemButton_Text(
             service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() }, applyBitikFont = true)
@@ -166,14 +187,7 @@ object TopRowBuilder_Alphabet {
         }
 
         onBitikModeChanged.addListener { active ->
-            rowLayout.post {
-                if (active) {
-                    newGlow.startRotating()
-                    newGlow.animateAlpha(1f, 400L, null)
-                } else {
-                    newGlow.animateAlpha(0f, 400L) { newGlow.stopRotating() }
-                }
-            }
+            rowLayout.post { applyGlow(true) }
         }
 
         return rowLayout
@@ -198,9 +212,9 @@ object TopRowBuilder_Alphabet {
     }
 
     fun updateLastWord(inputConnection: InputConnection?, transcriber: JSTranscriber_Alphabet, container: LinearLayout?, buttonStyle: ButtonStyle?) {
-        WordSuggestionEngine.onShardLoaded = { TopRowBuilder_Old.onTypedListener.invoke() }
-        WordSuggestionEngine.configureFor(context)
-        showSideButtons(true)
+        val configure = WordSuggestionEngine.configurator(context)
+        // A lookup still running for an older state of the text must not draw over this one.
+        com.shoktuk.shoktukkeyboard.suggestions.SuggestionWorker.cancel()
 
         LastWord.extract(inputConnection)
         InputText_Transcribed = transcriber.getTranscription(inputText_LastWord).orEmpty().ifEmpty { inputText_LastWord }
@@ -214,7 +228,6 @@ object TopRowBuilder_Alphabet {
             return
         }
 
-        container.removeAllViews()
         val fullSp = buttonStyle.textSizeSp - 2f
 
         val textView = TextView(container.context).apply {
@@ -251,45 +264,65 @@ object TopRowBuilder_Alphabet {
         }
 
         // Password, e-mail and similar fields get nothing here at all (not even the Bitik read-out of what is typed).
-        if (!MyKeyboardService.canSuggest()) return
+        if (!MyKeyboardService.canSuggest()) { container.removeAllViews(); showSideButtons(true); glowOnStrip = false; applyGlow(false); return }
         val suggests = (context.writingSystem == WritingSystem.Latin || context.writingSystem == WritingSystem.Kiril || context.writingSystem == WritingSystem.Arab) && context.suggestionsEnabled(context.writingSystem)
         if (!suggests) {
+            container.removeAllViews()
+            showSideButtons(true)
+            glowOnStrip = false
+            applyGlow(false)
             container.addView(textView)
             return
         }
 
         // A scrollable strip: first the Bitik transcription (if switched on), then completions.
         val bitikOn = context.bitikTranscriptionAlphabets == BitikTranscriptionAlphabets.On
-        val strip = SuggestionViews.strip(container.context)
-        container.clipChildren = true
-        container.clipToPadding = true
-        (container.parent as? ViewGroup)?.apply { clipChildren = true }
-        container.addView(strip.scroll, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
         val cardHeight = (container.height * 0.94f).toInt().coerceAtLeast(1)
+        val last = inputText_LastWord
+        val bitikWord = InputText_Transcribed
+        val writingSystem = context.writingSystem
+        val showCyrillic = writingSystem != WritingSystem.Kiril && context.suggestionTranscription(writingSystem)
 
-        if (bitikOn && InputText_Transcribed.isNotEmpty() && inputText_LastWord.isNotBlank()) {
-            val last = inputText_LastWord
-            val bitikWord = InputText_Transcribed
-            strip.row.addView(SuggestionViews.wordCard(container.context, cardHeight, bitikWord, fullSp, bitik = true) { commitBitik(inputConnection, last.length, bitikWord, false) })
+        // Rebuilds the whole strip in one go: the Bitik card, then the completions.
+        fun build(words: List<WordSuggestionEngine.Suggestion>, typed: String) {
+            container.removeAllViews()
+            cardShown = false
+            val strip = SuggestionViews.strip(container.context)
+            container.clipChildren = true
+            container.clipToPadding = true
+            (container.parent as? ViewGroup)?.apply { clipChildren = true }
+            container.addView(strip.scroll, FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT))
+            if (bitikOn && bitikWord.isNotEmpty() && last.isNotBlank()) {
+                strip.row.addView(SuggestionViews.wordCard(container.context, cardHeight, bitikWord, fullSp, bitik = true) { commitBitik(inputConnection, last.length, bitikWord, false) }
+                    .also { it.foreground = cardGlow; cardShown = true })
+            }
+            // The aurora belongs to the Bitik card alone, not to the whole strip.
+            glowOnStrip = true
+            applyGlow(false)
+            val firstCards = strip.row.childCount
+            for (suggestion in words) {
+                val word = suggestion.word
+                // Latin words show their Cyrillic spelling, Arabic ones their Latin spelling.
+                val cyrillic = if (showCyrillic) (if (writingSystem == WritingSystem.Arab) suggestion.latin else suggestion.cyr) else null
+                strip.row.addView(SuggestionViews.wordCard(container.context, cardHeight, word, fullSp, transcription = cyrillic) {
+                    com.shoktuk.shoktukkeyboard.suggestions.LearnedWords.learn(suggestion.cyr)
+                    commitBitik(inputConnection, typed.length, word, true)
+                })
+            }
+            showSideButtons(firstCards + words.size <= 3)
         }
 
         // Only the trailing letters are a word being typed ("." and "," stay in the text).
         val typed = inputText_LastWord.takeLastWhile { it.isLetter() || it == '-' }
-        if (typed.isEmpty() || inputConnection == null) return
+        if (typed.isEmpty() || inputConnection == null) { build(emptyList(), typed); return }
         val neighbours = SuggestionNeighbours.pairs
+        // The search runs on the suggestion thread. The strip is rebuilt in one go when it is done (a newer key press drops
+        // it), so what is on screen, side buttons included, stays as it is meanwhile instead of flashing empty.
         // Building a chip costs a view each, so only the best few are shown (the strip scrolls).
-        val words = WordSuggestionEngine.completions(typed, 16, neighbours)
-        val showCyrillic = context.writingSystem != WritingSystem.Kiril && context.suggestionTranscription(context.writingSystem)
-        showSideButtons(strip.row.childCount + words.size <= 3)
-        for (suggestion in words) {
-            val word = suggestion.word
-            // Latin words show their Cyrillic spelling, Arabic ones their Latin spelling.
-            val cyrillic = if (showCyrillic) (if (context.writingSystem == WritingSystem.Arab) suggestion.latin else suggestion.cyr) else null
-            strip.row.addView(SuggestionViews.wordCard(container.context, cardHeight, word, fullSp, transcription = cyrillic) {
-                com.shoktuk.shoktukkeyboard.suggestions.LearnedWords.learn(suggestion.cyr)
-                commitBitik(inputConnection, typed.length, word, true)
-            })
-        }
+        com.shoktuk.shoktukkeyboard.suggestions.SuggestionWorker.submit({
+            configure()
+            WordSuggestionEngine.completions(typed, 16, neighbours)
+        }) { words -> build(words, typed) }
     }
 
     /** Replaces the last [typedLength] letters with [text] (plus a space when [space]) and refreshes the bar. */

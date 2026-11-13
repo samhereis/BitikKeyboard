@@ -15,10 +15,10 @@ class HarmonyExceptions {
     private val stems = ArrayList<Pair<String, BooleanArray?>>()
 
     companion object {
-        fun load(context: Context): HarmonyExceptions {
+        fun load(source: WordSuggestionEngine.Source): HarmonyExceptions {
             val result = HarmonyExceptions()
             try {
-                context.assets.open("words/latin_exceptions.txt").bufferedReader().useLines { lines ->
+                (source.open("words/latin_exceptions.txt") ?: return result).bufferedReader().useLines { lines ->
                     for (raw in lines) {
                         var line = raw.trim().lowercase()
                         if (line.isEmpty() || line.startsWith("#")) continue

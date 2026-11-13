@@ -295,6 +295,12 @@ object SystemKeyBuilder {
 
     fun performDelete(service: InputMethodService) {
         val ic = service.currentInputConnection ?: return
+        // With text selected, backspace removes the selection (deleteSurroundingText would only eat the text before it).
+        if (!ic.getSelectedText(0).isNullOrEmpty()) {
+            ic.commitText("", 1)
+            TopRowBuilder_Old.onTypedListener?.invoke()
+            return
+        }
         val before = ic.getTextBeforeCursor(2, 0)
         val deleteCount = when {
             before.isNullOrEmpty() -> 1

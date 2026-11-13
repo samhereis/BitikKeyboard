@@ -114,6 +114,14 @@ object BottomRowBuilder {
         if (system != MyKeyboardService.current_writingSystem) context.switchAlphabetTo(system) else context.reloadKeyboard()
     }
 
+    /** The dot and comma keys are a little narrower than the other system keys (they were easy to hit by mistake); space takes the room. */
+    private const val PUNCTUATION_WIDTH = 0.78f
+
+    private fun narrowPunctuation(view: View): View {
+        view.layoutParams = (view.layoutParams as LinearLayout.LayoutParams).apply { width = (width * PUNCTUATION_WIDTH).toInt() }
+        return view
+    }
+
     private fun dismissCarousel() {
         carousel?.dismiss()
         carousel = null
@@ -560,11 +568,11 @@ object BottomRowBuilder {
         bottomRow.addView(returnView)
 
         bottomRow.addView(
-            SystemKeyBuilder.systemButton_Text(service, dot, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
+            narrowPunctuation(SystemKeyBuilder.systemButton_Text(service, dot, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
                 onKeyPressed?.invoke(service.currentInputConnection, dot, true)
             }, onLongClick = {
                 onKeyPressed?.invoke(service.currentInputConnection, dot_alt, true)
-            })
+            }))
         )
 
         val spaceBtn = SystemKeyBuilder.expandableSystemButton_Icon(service, KeyboardTheme.SPACE_ICON_FILE, " ", buttonHeight) as FrameLayout
@@ -790,11 +798,11 @@ object BottomRowBuilder {
         }
 
         bottomRow.addView(
-            SystemKeyBuilder.systemButton_Text(service, comma, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
+            narrowPunctuation(SystemKeyBuilder.systemButton_Text(service, comma, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
                 onKeyPressed?.invoke(service.currentInputConnection, comma, true)
             }, onLongClick = {
                 onKeyPressed?.invoke(service.currentInputConnection, comma_alt, true)
-            })
+            }))
         )
 
         returnView = SystemKeyBuilder.systemButton_Icon(
