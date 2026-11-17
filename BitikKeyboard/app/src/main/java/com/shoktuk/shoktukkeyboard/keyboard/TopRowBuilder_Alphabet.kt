@@ -329,9 +329,10 @@ object TopRowBuilder_Alphabet {
     private fun commitBitik(ic: InputConnection?, typedLength: Int, text: String, space: Boolean) {
         ic ?: return
         ic.beginBatchEdit()
-        ic.deleteSurroundingText(typedLength, 0)
+        ic.deleteSurroundingText(MyKeyboardService.safeWordLength(ic, typedLength), 0)
         ic.commitText(if (space) "$text " else text, 1)
         ic.endBatchEdit()
+        if (space) MyKeyboardService.markAutoSpace(ic)
         TopRowBuilder_Old.onTypedListener.invoke()
     }
 }

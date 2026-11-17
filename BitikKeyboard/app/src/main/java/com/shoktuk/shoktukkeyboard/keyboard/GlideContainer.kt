@@ -151,10 +151,14 @@ class GlideContainer(context: Context, private val isMainLetters: Boolean) : Lin
                     }
                 }
             }
+            // A second finger means ordinary two-thumb typing, never a glide (and pointer 0 would jump to the other finger).
+            MotionEvent.ACTION_POINTER_DOWN -> if (!gliding) downOnLetter = false
             MotionEvent.ACTION_MOVE -> {
                 if (!downOnLetter || gliding) return gliding
+                if (ev.pointerCount > 1) { downOnLetter = false; return false }
                 trace.add(PointF(ev.rawX, ev.rawY))
-                if (hypot(ev.rawX - startX, ev.rawY - startY) > keyWidthOf(keyCentresByText().values) * 1.5f) {
+                val minimum = maxOf(keyWidthOf(keyCentresByText().values) * 1.5f, resources.displayMetrics.density * 56f)
+                if (hypot(ev.rawX - startX, ev.rawY - startY) > minimum) {
                     gliding = true
                     invalidate()
                     return true  // the keys receive ACTION_CANCEL
@@ -205,6 +209,7 @@ class GlideContainer(context: Context, private val isMainLetters: Boolean) : Lin
         }) { word ->
             if (word == null) return@submit
             ic.commitText(word + BitikSuggestionStrip.separator(), 1)
+            MyKeyboardService.markAutoSpace(ic)
             TopRowBuilder_Old.onTypedListener.invoke()
         }
     }
@@ -229,6 +234,7 @@ class GlideContainer(context: Context, private val isMainLetters: Boolean) : Lin
             if (best == null) return@submit
             val word = if (MyKeyboardService.isCaps) best.replaceFirstChar { it.uppercase() } else best
             ic.commitText("$word ", 1)
+            MyKeyboardService.markAutoSpace(ic)
             if (MyKeyboardService.isCaps) {
                 MyKeyboardService.isCaps = false
                 service.applyKeyboard()

@@ -256,6 +256,8 @@ object SystemKeyBuilder {
         val interval = 100L
         val repeater = object : Runnable {
             override fun run() {
+                // The finger may have gone without an UP reaching us (the bar rebuilt, the key got hidden): never keep deleting then.
+                if (!root.isAttachedToWindow || !root.isShown || !root.isPressed) return
                 performDelete(service)
                 try {
                     if (MyKeyboardService.context.vibrations == Vibrations.On) {
@@ -278,12 +280,20 @@ object SystemKeyBuilder {
                         print(e.message)
                     }
 
+                    root.isPressed = true
                     performDelete(service)
                     handler.postDelayed(repeater, HOLD_TO_REPEAT_MILLIS)
                     true
                 }
 
+                // Sliding off the key ends the hold too.
+                MotionEvent.ACTION_MOVE -> {
+                    if (e.x < 0 || e.y < 0 || e.x > v.width || e.y > v.height) { root.isPressed = false; handler.removeCallbacks(repeater) }
+                    true
+                }
+
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    root.isPressed = false
                     handler.removeCallbacks(repeater)
                     true
                 }

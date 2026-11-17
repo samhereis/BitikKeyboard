@@ -149,9 +149,10 @@ object BitikSuggestionStrip {
         fun commit(bitik: String) {
             ic ?: return
             ic.beginBatchEdit()
-            ic.deleteSurroundingText(raw.length, 0)
+            ic.deleteSurroundingText(MyKeyboardService.safeWordLength(ic, raw.length), 0)
             ic.commitText(bitik + separator(), 1)
             ic.endBatchEdit()
+            MyKeyboardService.markAutoSpace(ic)
             TopRowBuilder_Old.onTypedListener.invoke()
         }
 

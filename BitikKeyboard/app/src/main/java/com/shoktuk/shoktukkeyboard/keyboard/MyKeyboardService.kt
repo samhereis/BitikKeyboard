@@ -69,6 +69,27 @@ class MyKeyboardService : InputMethodService() {
         /** Whether suggestions may show / be learned in the current field. */
         fun canSuggest(): Boolean = fieldAllowsSuggestions
 
+        /** The tail of the text after the keyboard added a trailing space itself; a space the user typed never matches it. */
+        private var autoSpaceTail: String? = null
+
+        fun markAutoSpace(ic: InputConnection?) {
+            val before = ic?.getTextBeforeCursor(30, 0)?.toString() ?: ""
+            autoSpaceTail = if (before.endsWith(" ")) before else null
+        }
+
+        /** At most [wanted] units, and never more than the word (letters, Bitik glyphs) really before the cursor. */
+        fun safeWordLength(ic: InputConnection, wanted: Int): Int {
+            val before = ic.getTextBeforeCursor(wanted, 0)?.toString() ?: return 0
+            var n = 0
+            for (c in before.reversed()) { if (c.isLetter() || Character.isSurrogate(c) || Character.getType(c) == Character.NON_SPACING_MARK.toInt()) n++ else break }
+            return n
+        }
+
+        fun ownsTrailingSpace(before: String): Boolean {
+            val tail = autoSpaceTail ?: return false
+            return before.endsWith(" ") && before.takeLast(30) == tail
+        }
+
         fun allowsSuggestions(info: EditorInfo?): Boolean {
             val type = info?.inputType ?: return true
             if (type == 0) return true
@@ -492,6 +513,25 @@ class MyKeyboardService : InputMethodService() {
         val isSys = isSystemKey || listOfAlwaysSyss.contains(key)
         var toPasteAfter = key.replace("sys", "")
 
+        // Smart punctuation (like Gboard): only a space the keyboard added itself is taken back before punctuation,
+        // a space the user typed stays ("Hello !"); "5.12" keeps together; a letter after "7." brings the space back.
+        val before = ic.getTextBeforeCursor(30, 0)?.toString() ?: ""
+        val first = toPasteAfter.firstOrNull()
+        val isPunctuation = first != null && ".,!?⸮⹁·;:".indexOf(first) >= 0
+        var afterDigit = false
+        if (isPunctuation) {
+            if (ownsTrailingSpace(before)) {
+                val beforeSpace = before.dropLast(1).lastOrNull()
+                if (beforeSpace != null && !beforeSpace.isWhitespace() && beforeSpace != '⁚') ic.deleteSurroundingText(1, 0)
+            } else if (isSys && (first == '.' || first == ',' || first == '·' || first == '⹁') && before.lastOrNull()?.let { it in '0'..'9' } == true) {
+                afterDigit = true
+                toPasteAfter = first.toString()
+            }
+        } else if (!isSys && first != null && first.isLetter() && before.length >= 2 &&
+            before.last() in ".,·⹁" && before[before.length - 2] in '0'..'9') {
+            ic.commitText(" ", 1)
+        }
+
         // A space or punctuation ends the word being typed: it counts as used once more.
         if (current_writingSystem != WritingSystem.Bitik && canSuggest() && toPasteAfter.firstOrNull()?.isLetter() == false) {
             // Only a piece made of letters alone counts ("abc123", "me@mail.com" or "don't" never do).
@@ -500,7 +540,7 @@ class MyKeyboardService : InputMethodService() {
         }
 
         if (isAutoWriteBitikMode && isSys) {
-            toPasteAfter = toPasteAfter.replace("  ", " ").replace("?", "⸮ ").replace("!", "! ").replace(".", "·").replace(",", "⹁")
+            toPasteAfter = toPasteAfter.replace("  ", " ").replace("?", "⸮ ").replace("!", "! ").let { if (afterDigit) it else it.replace(".", "·").replace(",", "⹁") }
 
             if (toPasteAfter == " ") {
                 toPasteAfter = when (context.wordSeparator) {
@@ -515,11 +555,11 @@ class MyKeyboardService : InputMethodService() {
         } else {
             when {
                 current_writingSystem == WritingSystem.Bitik -> {
-                    ic.commitText(key, 1)
+                    ic.commitText(if (afterDigit) toPasteAfter else key, 1)
                 }
 
                 else -> {
-                    ic.commitText(key, 1)
+                    ic.commitText(if (afterDigit) toPasteAfter else key, 1)
 
                     if (isCaps) {
                         isCaps = false
@@ -530,6 +570,8 @@ class MyKeyboardService : InputMethodService() {
 
             TopRowBuilder_Old.onTypedListener?.invoke()
         }
+
+        if (isSys && isPunctuation && toPasteAfter.endsWith(" ")) markAutoSpace(ic)
 
         try {
             // Haptics.perform gates sound (Sounds setting) and vibration (Vibrations
@@ -544,7 +586,7 @@ class MyKeyboardService : InputMethodService() {
         if (!inputText_LastWord.isBlank()) {
             try {
                 ic.beginBatchEdit()
-                ic.deleteSurroundingText(inputText_LastWord.length, 0)
+                ic.deleteSurroundingText(safeWordLength(ic, inputText_LastWord.length), 0)
             } catch (_: Exception) {
             } finally {
                 ic.endBatchEdit()
