@@ -28,6 +28,7 @@ import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.NavBarPaddingSolution
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.arabicStatus
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.autoCapitalize
 import com.shoktuk.shoktukkeyboard.project.data.BitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikTranscriptionAlphabets
@@ -68,6 +69,27 @@ class MyKeyboardService : InputMethodService() {
 
         /** Whether suggestions may show / be learned in the current field. */
         fun canSuggest(): Boolean = fieldAllowsSuggestions
+
+        /** The shift key is on because of auto-capitalization (so it can go off again when the sentence start is gone). */
+        private var autoCapped = false
+        /** True while backspace is held down. */
+        @JvmStatic var deleteHeldAt = 0L
+        /** Backspace counts as held only while it keeps ticking, so a lost key-up can never leave auto-capital switched off. */
+        @JvmStatic var deleteHeld: Boolean = false
+            get() = field && android.os.SystemClock.uptimeMillis() - deleteHeldAt < 700
+            set(v) { field = v; if (v) deleteHeldAt = android.os.SystemClock.uptimeMillis() }
+        private var lastCapWanted = false
+
+        /** True when the next letter starts a text or a sentence: nothing typed yet, a new line, or a sentence end followed by a space. */
+        fun wantsCapital(before: String): Boolean {
+            var sawSpace = false
+            for (ch in before.reversed()) {
+                if (ch == '\n') return true
+                if (ch.isWhitespace()) { sawSpace = true; continue }
+                return sawSpace && ".!?⸮…".indexOf(ch) >= 0
+            }
+            return true
+        }
 
         /** The tail of the text after the keyboard added a trailing space itself; a space the user typed never matches it. */
         private var autoSpaceTail: String? = null
@@ -160,6 +182,10 @@ class MyKeyboardService : InputMethodService() {
         if (currentLayout != null) {
             reloadKeyboard()
         }
+        // The resets above wipe whatever onStartInputView decided, so decide again.
+        lastCapWanted = false
+        autoCapped = false
+        refreshAutoCaps()
 
         onSettingChanged.addListener {
             if (keyboardMode != KeyboardMode.Settings) reloadKeyboard()
@@ -182,9 +208,38 @@ class MyKeyboardService : InputMethodService() {
         return root
     }
 
+    /** Latin and Cyrillic keyboards: lets the shift key follow [wantsCapital] (setting on, field takes normal text). Acts only when it changes. */
+    private var lastCapContext = ""
+
+    fun refreshAutoCaps() {
+        if (deleteHeld) return
+        val ws = current_writingSystem
+        var wanted = false
+        var ctx = ""
+        if (autoCapitalize && (ws == WritingSystem.Latin || ws == WritingSystem.Kiril) && fieldAllowsSuggestions && keyboardMode == KeyboardMode.Main) {
+            val before = currentInputConnection?.getTextBeforeCursor(100, 0)?.toString() ?: return
+            ctx = before
+            wanted = wantsCapital(before)
+        }
+        // The text changed and a capital is wanted but shift is off (e.g. everything was erased after a stale read): switch it on again.
+        val stale = wanted && lastCapWanted && !isCaps && ctx != lastCapContext
+        lastCapContext = ctx
+        if (wanted == lastCapWanted && !stale) return
+        lastCapWanted = wanted
+        if (wanted) {
+            if (!isCaps) { isCaps = true; autoCapped = true; applyKeyboard() }
+        } else if (autoCapped) {
+            autoCapped = false
+            if (isCaps) { isCaps = false; applyKeyboard() }
+        }
+    }
+
     override fun onStartInputView(info: EditorInfo?, restarting: Boolean) {
         super.onStartInputView(info, restarting)
         fieldAllowsSuggestions = allowsSuggestions(info)
+        lastCapWanted = false
+        autoCapped = false
+        refreshAutoCaps()
         TopRowBuilder_Old.onTypedListener?.invoke()
         onKeyPressed.addListener { ic, key, isSystemKey ->
             handleKeyPress(ic, key, isSystemKey)
@@ -203,6 +258,7 @@ class MyKeyboardService : InputMethodService() {
             oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd
         )
         TopRowBuilder_Old.onTypedListener?.invoke()
+        refreshAutoCaps()
     }
 
     override fun onWindowHidden() {
@@ -270,6 +326,8 @@ class MyKeyboardService : InputMethodService() {
     private fun onModeChange(mode: KeyboardMode) {
         keyboardMode = mode
         applyKeyboard()
+        // Back from the symbols page (or emojis, settings): the text may now call for a capital again.
+        if (mode == KeyboardMode.Main) { lastCapWanted = false; autoCapped = false; refreshAutoCaps() }
     }
 
     fun availableWritingSystems(): List<WritingSystem> {
@@ -519,10 +577,12 @@ class MyKeyboardService : InputMethodService() {
         val first = toPasteAfter.firstOrNull()
         val isPunctuation = first != null && ".,!?⸮⹁·;:".indexOf(first) >= 0
         var afterDigit = false
+        var tookBackSpace = false
+        var autoSpaced = false
         if (isPunctuation) {
             if (ownsTrailingSpace(before)) {
                 val beforeSpace = before.dropLast(1).lastOrNull()
-                if (beforeSpace != null && !beforeSpace.isWhitespace() && beforeSpace != '⁚') ic.deleteSurroundingText(1, 0)
+                if (beforeSpace != null && !beforeSpace.isWhitespace() && beforeSpace != '⁚') { ic.deleteSurroundingText(1, 0); tookBackSpace = true }
             } else if (isSys && (first == '.' || first == ',' || first == '·' || first == '⹁') && before.lastOrNull()?.let { it in '0'..'9' } == true) {
                 afterDigit = true
                 toPasteAfter = first.toString()
@@ -553,25 +613,33 @@ class MyKeyboardService : InputMethodService() {
 
             replaceText(ic, InputText_Transcribed + toPasteAfter)
         } else {
+            // "!" and "?" from the symbols page end a sentence like the dot key does, so a space follows (not after a space, nor in e-mail/URL/password fields).
+            var out = if (afterDigit) toPasteAfter else key
+            if (out.length == 1 && out[0] in "!?⸮" && fieldAllowsSuggestions) {
+                val prev = (if (tookBackSpace) before.dropLast(1) else before).lastOrNull()
+                if (prev != null && !prev.isWhitespace() && prev != '⁚') { out += " "; autoSpaced = true }
+            }
             when {
                 current_writingSystem == WritingSystem.Bitik -> {
-                    ic.commitText(if (afterDigit) toPasteAfter else key, 1)
+                    ic.commitText(out, 1)
                 }
 
                 else -> {
-                    ic.commitText(if (afterDigit) toPasteAfter else key, 1)
-
+                    // Shift goes off before the text goes in: a field in this process reports the change from inside commitText, and auto-capital may switch shift on again from there.
                     if (isCaps) {
                         isCaps = false
                         applyKeyboard()
                     }
+                    ic.commitText(out, 1)
                 }
             }
 
             TopRowBuilder_Old.onTypedListener?.invoke()
         }
 
-        if (isSys && isPunctuation && toPasteAfter.endsWith(" ")) markAutoSpace(ic)
+        if (isPunctuation && (autoSpaced || (isSys && toPasteAfter.endsWith(" ")))) markAutoSpace(ic)
+
+        refreshAutoCaps()
 
         try {
             // Haptics.perform gates sound (Sounds setting) and vibration (Vibrations

@@ -73,6 +73,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikFont
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.autoCapitalize
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ebVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.ekVariant
@@ -122,6 +123,7 @@ fun OtherAlphabetsSettingsScreen() {
     var arabStatus by remember { mutableStateOf(context.arabicStatus) }
     var kirilisaStatus by remember { mutableStateOf(context.kirilisaStatus) }
     var bitikTranscriptionAlphabets by remember { mutableStateOf(context.bitikTranscriptionAlphabets) }
+    var autoCap by remember { mutableStateOf(context.autoCapitalize) }
 
     Column(
         Modifier
@@ -151,7 +153,17 @@ fun OtherAlphabetsSettingsScreen() {
                 )
 
                 EnumSwitchSetting(
-                    label = "Transcription to Bitik",
+                    label = Loc_Settings.autoCapitalize.localizedTitle(context),
+                    selected = autoCap, optionOn = true, optionOff = false,
+                    onSelect = { autoCap = it; context.autoCapitalize = it },
+                    modifier = Modifier.fillMaxWidth(),
+                    extraContent = {
+                        Text(Loc_Settings.autoCapitalizeNote.localizedTitle(context), Modifier.padding(horizontal = 12.dp, vertical = 6.dp), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                )
+
+                EnumSwitchSetting(
+                    label = Loc_Settings.transcriptionToBitik.localizedTitle(LocalContext.current),
                     selected = bitikTranscriptionAlphabets,
                     optionOn = BitikTranscriptionAlphabets.On,
                     optionOff = BitikTranscriptionAlphabets.Off,

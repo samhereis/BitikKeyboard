@@ -51,6 +51,13 @@ object SettingsManager {
     fun Context.suggestionTranscription(script: WritingSystem): Boolean =
         prefs().getStringOrDefault(SUGGESTION_TRANSCRIPTION_KEY, "${WritingSystem.Bitik.id},${WritingSystem.Latin.id},${WritingSystem.Arab.id}").split(",").contains(script.id)
 
+    private const val AUTO_CAPITALIZE_KEY = "autoCapitalize"
+
+    /** Capital letter at the start of a text and after a sentence end (Latin and Cyrillic keyboards). On until turned off. */
+    var Context.autoCapitalize: Boolean
+        get() = prefs().getStringOrDefault(AUTO_CAPITALIZE_KEY, "on") != "off"
+        set(value) { prefs().setString(AUTO_CAPITALIZE_KEY, if (value) "on" else "off") }
+
     private const val PERSONALIZE_KEY = "personalizeT9"
 
     /** "Personalize T9": remember the words you write to rank suggestions. Turning it off forgets them all. */

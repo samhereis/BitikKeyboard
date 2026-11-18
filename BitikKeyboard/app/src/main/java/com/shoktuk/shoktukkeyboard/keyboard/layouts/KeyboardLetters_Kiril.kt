@@ -43,13 +43,13 @@ object KeyboardLetters_Kiril {
         KeyEntry(
             name = "row1_4",
             lowercase = "е",
-            lowerCaseRomanization = "ә",
+            lowerCaseRomanization = "ё, ә",
             backgroundColorIndex_lowercase = 4,
-            lowerCaseAlternates = listOf("ә", "є", "ѐ"),
+            lowerCaseAlternates = listOf("ё", "ә", "є", "ѐ"),
             uppercase = "Е",
-            upperCaseRomanization = "Ә",
+            upperCaseRomanization = "Ё, Ә",
             backgroundColorIndex_uppercase = 4,
-            upperCaseAlternates = listOf("Ә", "Є", "Ѐ")
+            upperCaseAlternates = listOf("Ё", "Ә", "Є", "Ѐ")
         ),
         KeyEntry(
             name = "row1_5",
@@ -70,20 +70,18 @@ object KeyboardLetters_Kiril {
         KeyEntry(
             name = "row1_7",
             lowercase = "ш",
-            lowerCaseRomanization = "щ",
-            lowerCaseAlternates = listOf("щ"),
-            uppercase = "Ш",
-            upperCaseRomanization = "Щ",
-            upperCaseAlternates = listOf("Щ")
+            uppercase = "Ш"
         ),
         KeyEntry(
             name = "row1_8",
             lowercase = "ү",
+            lowerCaseRomanization = "щ",
             backgroundColorIndex_lowercase = 4,
-            lowerCaseAlternates = listOf("ӱ"),
+            lowerCaseAlternates = listOf("щ", "ӱ"),
             uppercase = "Ү",
+            upperCaseRomanization = "Щ",
             backgroundColorIndex_uppercase = 4,
-            upperCaseAlternates = listOf("Ӱ")
+            upperCaseAlternates = listOf("Щ", "Ӱ")
         ),
         KeyEntry(
             name = "row1_9",
@@ -147,13 +145,9 @@ object KeyboardLetters_Kiril {
         KeyEntry(
             name = "row2_6",
             lowercase = "о",
-            lowerCaseRomanization = "ё",
             backgroundColorIndex_lowercase = 4,
-            lowerCaseAlternates = listOf("ё"),
             uppercase = "О",
-            upperCaseRomanization = "Ё",
-            backgroundColorIndex_uppercase = 4,
-            upperCaseAlternates = listOf("Ё")
+            backgroundColorIndex_uppercase = 4
         ),
         KeyEntry(
             name = "row2_7",
@@ -227,13 +221,13 @@ object KeyboardLetters_Kiril {
         KeyEntry(
             name = "row3_6",
             lowercase = "ө",
-            lowerCaseRomanization = "ь",
+            lowerCaseRomanization = "ъ, ь",
             backgroundColorIndex_lowercase = 4,
-            lowerCaseAlternates = listOf("ь", "ъ", "ӧ", "ӫ"),
+            lowerCaseAlternates = listOf("ъ", "ь", "ӧ", "ӫ"),
             uppercase = "Ө",
-            upperCaseRomanization = "Ь",
+            upperCaseRomanization = "Ъ, Ь",
             backgroundColorIndex_uppercase = 4,
-            upperCaseAlternates = listOf("Ь", "Ъ", "Ӧ", "Ӫ")
+            upperCaseAlternates = listOf("Ъ", "Ь", "Ӧ", "Ӫ")
         ),
         KeyEntry(
             name = "row3_7",

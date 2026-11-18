@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import com.shoktuk.shoktukkeyboard.project.data.BitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.Coloring
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.autoCapitalize
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.suggestionsEnabled
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.suggestionTranscription
@@ -135,7 +136,7 @@ fun KeyboardSettingsPanel(onClose: () -> Unit) {
                                         }
                                         HorizontalDivider(Modifier.padding(horizontal = 16.dp))
                                     } else {
-                                        QuickToggle("Transcription to Bitik", toBitik == BitikTranscriptionAlphabets.On, Modifier.fillMaxWidth()) {
+                                        QuickToggle(Loc_Settings.transcriptionToBitik.localizedTitle(context), toBitik == BitikTranscriptionAlphabets.On, Modifier.fillMaxWidth()) {
                                             context.bitikTranscriptionAlphabets = if (it) BitikTranscriptionAlphabets.On else BitikTranscriptionAlphabets.Off
                                             toBitik = context.bitikTranscriptionAlphabets
                                         }
@@ -149,6 +150,14 @@ fun KeyboardSettingsPanel(onClose: () -> Unit) {
                                     QuickToggle(Loc_Settings.coloring.localizedTitle(context), coloringState == Coloring.On, Modifier.fillMaxWidth()) {
                                         context.coloring = if (it) Coloring.On else Coloring.Off
                                         coloringState = context.coloring
+                                    }
+                                    if (ws == WritingSystem.Latin || ws == WritingSystem.Kiril) {
+                                        var autoCap by remember { mutableStateOf(context.autoCapitalize) }
+                                        HorizontalDivider(Modifier.padding(horizontal = 16.dp))
+                                        QuickToggle(Loc_Settings.autoCapitalize.localizedTitle(context), autoCap, Modifier.fillMaxWidth()) {
+                                            context.autoCapitalize = it
+                                            autoCap = it
+                                        }
                                     }
                                 }
                             }

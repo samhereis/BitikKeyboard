@@ -251,13 +251,20 @@ object SystemKeyBuilder {
     /** A tap deletes one character; only a hold this long starts repeating. */
     private const val HOLD_TO_REPEAT_MILLIS = 400L
 
+    /** Auto-capital swaps the keyboard view, which would kill a held backspace, so it waits for the release. */
+    private fun endHold() {
+        MyKeyboardService.deleteHeld = false
+        (MyKeyboardService.context as? MyKeyboardService)?.refreshAutoCaps()
+    }
+
     private fun wireDelete(root: View, service: InputMethodService) {
         val handler = Handler(Looper.getMainLooper())
         val interval = 100L
         val repeater = object : Runnable {
             override fun run() {
                 // The finger may have gone without an UP reaching us (the bar rebuilt, the key got hidden): never keep deleting then.
-                if (!root.isAttachedToWindow || !root.isShown || !root.isPressed) return
+                if (!root.isAttachedToWindow || !root.isShown || !root.isPressed) { endHold(); return }
+                MyKeyboardService.deleteHeld = true
                 performDelete(service)
                 try {
                     if (MyKeyboardService.context.vibrations == Vibrations.On) {
@@ -281,6 +288,7 @@ object SystemKeyBuilder {
                     }
 
                     root.isPressed = true
+                    MyKeyboardService.deleteHeld = true
                     performDelete(service)
                     handler.postDelayed(repeater, HOLD_TO_REPEAT_MILLIS)
                     true
@@ -288,13 +296,14 @@ object SystemKeyBuilder {
 
                 // Sliding off the key ends the hold too.
                 MotionEvent.ACTION_MOVE -> {
-                    if (e.x < 0 || e.y < 0 || e.x > v.width || e.y > v.height) { root.isPressed = false; handler.removeCallbacks(repeater) }
+                    if (e.x < 0 || e.y < 0 || e.x > v.width || e.y > v.height) { root.isPressed = false; handler.removeCallbacks(repeater); endHold() }
                     true
                 }
 
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     root.isPressed = false
                     handler.removeCallbacks(repeater)
+                    endHold()
                     true
                 }
 

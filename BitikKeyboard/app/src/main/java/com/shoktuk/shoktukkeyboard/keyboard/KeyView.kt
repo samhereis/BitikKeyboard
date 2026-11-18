@@ -153,10 +153,10 @@ class KeyView(
     fun pxFromSp(sp: Float, context: Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, sp, context.resources.displayMetrics)
 
     private fun updateContent() {
-        var mainTextSize = style.textSizeSp
-        if (MyKeyboardService.current_writingSystem == WritingSystem.Latin && isCaps) {
-            mainTextSize /= 1.1f
-        }
+        // Capitals look bigger than small letters at the same size, so shifted Latin and Cyrillic text (and its hints) is a bit smaller.
+        val ws = MyKeyboardService.current_writingSystem
+        val capShrink = if (isCaps && (ws == WritingSystem.Latin || ws == WritingSystem.Kiril)) 1.1f else 1f
+        val mainTextSize = style.textSizeSp / capShrink
 
         val mainPx = pxFromSp(mainTextSize, context)
         mainText.apply {
@@ -179,7 +179,7 @@ class KeyView(
         val first = getCurrentSubText()?.toString().orEmpty()
         val second = getCurrentSubText_Alt()?.toString().orEmpty()
 
-        val topMaxPx = pxFromSp(hintButtonTextSize, context)
+        val topMaxPx = pxFromSp(hintButtonTextSize / capShrink, context)
         val topMinPx = pxFromSp(1f, context)
 
         val trailing = KeyboardTheme.hintsOnTrailing && MyKeyboardService.current_writingSystem != WritingSystem.Bitik
@@ -209,7 +209,7 @@ class KeyView(
             )
         }
 
-        val bottomMaxPx = pxFromSp(hintButtonTextSize, context)
+        val bottomMaxPx = pxFromSp(hintButtonTextSize / capShrink, context)
         val bottomMinPx = pxFromSp(1f, context)
         subText_bottom.apply {
             text = first
@@ -237,7 +237,7 @@ class KeyView(
         if (!MyKeyboardService.showLetterTranscription) {
             subText_top.text = ""
             subText_bottom.text = ""
-            mainText.setTextSize(TypedValue.COMPLEX_UNIT_SP, style.textSizeSp)
+            mainText.setTextSize(TypedValue.COMPLEX_UNIT_SP, mainTextSize)
         }
     }
 
