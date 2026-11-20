@@ -2,6 +2,7 @@ package com.shoktuk.shoktukkeyboard.suggestions
 
 import android.content.Context
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.personalizeT9
+import com.shoktuk.shoktukkeyboard.bench.TypingBench
 import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.Executors
@@ -101,8 +102,10 @@ object LearnedWords {
         val ctx = appContext ?: return
         val map = counts ?: return
         try {
-            val text = map.entries.joinToString("\n") { "${it.key}\t${it.value}" }
-            File(ctx.filesDir, FILE).writeText(text)
+            TypingBench.measure("learned flush (${map.size} words)") {
+                val text = map.entries.joinToString("\n") { "${it.key}\t${it.value}" }
+                File(ctx.filesDir, FILE).writeText(text)
+            }
         } catch (_: Exception) {
         }
     }

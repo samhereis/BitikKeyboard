@@ -14,6 +14,7 @@ import android.widget.LinearLayout
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.doOnAttach
+import com.shoktuk.shoktukkeyboard.bench.TypingBench
 import com.shoktuk.shoktukkeyboard.emoji.EmojisData
 import com.shoktuk.shoktukkeyboard.emoji.EmojisViewBuilder
 import com.shoktuk.shoktukkeyboard.keyboard.onKeyPressed.InputText_Transcribed
@@ -144,9 +145,11 @@ class MyKeyboardService : InputMethodService() {
         LocalizationManager.init(applicationContext)
         lifecycleOwner.onCreate()
         lifecycleOwner.onResume()
+        TypingBench.install(this)
     }
 
     override fun onDestroy() {
+        TypingBench.uninstall(this)
         lifecycleOwner.onDestroy()
         super.onDestroy()
     }
@@ -240,9 +243,14 @@ class MyKeyboardService : InputMethodService() {
         lastCapWanted = false
         autoCapped = false
         refreshAutoCaps()
+        run {
+            val configure = com.shoktuk.shoktukkeyboard.suggestions.WordSuggestionEngine.configurator(this)
+            com.shoktuk.shoktukkeyboard.suggestions.SuggestionWorker.idleWork { configure(); com.shoktuk.shoktukkeyboard.suggestions.WordSuggestionEngine.warmNext() }
+        }
         TopRowBuilder_Old.onTypedListener?.invoke()
         onKeyPressed.addListener { ic, key, isSystemKey ->
-            handleKeyPress(ic, key, isSystemKey)
+            TypingBench.noteKey(key)
+            TypingBench.measure("key total") { handleKeyPress(ic, key, isSystemKey) }
         }
     }
 
@@ -257,8 +265,10 @@ class MyKeyboardService : InputMethodService() {
         super.onUpdateSelection(
             oldSelStart, oldSelEnd, newSelStart, newSelEnd, candidatesStart, candidatesEnd
         )
-        TopRowBuilder_Old.onTypedListener?.invoke()
-        refreshAutoCaps()
+        TypingBench.measure("onUpdateSelection") {
+            TopRowBuilder_Old.onTypedListener?.invoke()
+            refreshAutoCaps()
+        }
     }
 
     override fun onWindowHidden() {
@@ -305,7 +315,9 @@ class MyKeyboardService : InputMethodService() {
         parent?.removeView(view)
     }
 
-    fun reloadKeyboard() {
+    fun reloadKeyboard() = TypingBench.measure("reloadKeyboard") { reloadKeyboardImpl() }
+
+    private fun reloadKeyboardImpl() {
         current_bitikVariant = context.keyboardVariant
         current_bitikDialect = context.bitikDialect
         current_writingSystem = context.writingSystem
@@ -568,12 +580,13 @@ class MyKeyboardService : InputMethodService() {
 
     val listOfAlwaysSyss: Set<String> = setOf("?", "⸮", "!")
     fun handleKeyPress(ic: InputConnection, key: String, isSystemKey: Boolean) {
+        com.shoktuk.shoktukkeyboard.bench.TypingBench.count("handleKeyPress")
         val isSys = isSystemKey || listOfAlwaysSyss.contains(key)
         var toPasteAfter = key.replace("sys", "")
 
         // Smart punctuation (like Gboard): only a space the keyboard added itself is taken back before punctuation,
         // a space the user typed stays ("Hello !"); "5.12" keeps together; a letter after "7." brings the space back.
-        val before = ic.getTextBeforeCursor(30, 0)?.toString() ?: ""
+        val before = TypingBench.measure("getTextBefore") { ic.getTextBeforeCursor(30, 0)?.toString() } ?: ""
         val first = toPasteAfter.firstOrNull()
         val isPunctuation = first != null && ".,!?⸮⹁·;:".indexOf(first) >= 0
         var afterDigit = false
@@ -621,16 +634,16 @@ class MyKeyboardService : InputMethodService() {
             }
             when {
                 current_writingSystem == WritingSystem.Bitik -> {
-                    ic.commitText(out, 1)
+                    TypingBench.measure("commitText") { ic.commitText(out, 1) }
                 }
 
                 else -> {
                     // Shift goes off before the text goes in: a field in this process reports the change from inside commitText, and auto-capital may switch shift on again from there.
                     if (isCaps) {
                         isCaps = false
-                        applyKeyboard()
+                        TypingBench.measure("applyKeyboard") { applyKeyboard() }
                     }
-                    ic.commitText(out, 1)
+                    TypingBench.measure("commitText") { ic.commitText(out, 1) }
                 }
             }
 
@@ -639,12 +652,12 @@ class MyKeyboardService : InputMethodService() {
 
         if (isPunctuation && (autoSpaced || (isSys && toPasteAfter.endsWith(" ")))) markAutoSpace(ic)
 
-        refreshAutoCaps()
+        TypingBench.measure("autoCaps") { refreshAutoCaps() }
 
         try {
             // Haptics.perform gates sound (Sounds setting) and vibration (Vibrations
             // setting) independently, so play it on every key regardless of vibration.
-            Haptics.perform(root as View, HapticFeedbackConstants.KEYBOARD_TAP)
+            TypingBench.measure("haptics") { Haptics.perform(root as View, HapticFeedbackConstants.KEYBOARD_TAP) }
         } catch (e: Exception) {
             print(e.message)
         }

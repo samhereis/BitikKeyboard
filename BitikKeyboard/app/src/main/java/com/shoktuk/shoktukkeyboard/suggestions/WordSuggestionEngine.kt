@@ -1,6 +1,7 @@
 package com.shoktuk.shoktukkeyboard.suggestions
 
 import android.content.Context
+import java.io.File
 import kotlin.math.hypot
 import kotlin.math.max
 import kotlin.math.min
@@ -18,13 +19,87 @@ object WordSuggestionEngine {
     /** A completion in the keyboard's own script ([word]) with its Cyrillic and Latin spellings. */
     class Suggestion(val word: String, val cyr: String, val latin: String)
 
-    private class Entry(val word: String, val key: String, val pct: Float, val len: Int, val cyr: String)
+    /** One word. [id] (file + position) makes two reads of the same word equal, since a file on disk hands out a fresh object each time. */
+    private class Entry(val word: String, val key: String, val pct: Float, val len: Int, val cyr: String, val id: Long = 0) {
+        override fun equals(other: Any?) = this === other || (id != 0L && other is Entry && other.id == id)
+        override fun hashCode() = if (id != 0L) id.hashCode() else System.identityHashCode(this)
+    }
+
+    /**
+     * The words of one file, sorted by key. Either on the heap (a file just built) or read straight from a memory-mapped file
+     * on disk: opening one costs next to nothing, a lookup touches only the few pages it needs, and nothing sits on the heap,
+     * so the dictionary can grow far past what memory holds.
+     *
+     * File layout (big-endian): magic, n, n frequency floats, n+1 offsets into the text, then per entry "word\0key\0cyr".
+     */
+    private class Entries(private val array: Array<Entry>?, private val map: java.nio.MappedByteBuffer?, val size: Int, private val letter: Int) : Iterable<Entry> {
+        constructor(array: Array<Entry>) : this(array, null, array.size, 0)
+
+        private val reader: java.nio.ByteBuffer? = map?.duplicate()
+        private val offsetsAt = 8 + 4 * size
+        private val textAt = offsetsAt + 4 * (size + 1)
+
+        val indices: IntRange get() = 0 until size
+        fun isEmpty() = size == 0
+        fun isNotEmpty() = size != 0
+        /** What this holds on the heap, in entries (a mapped file holds none). */
+        val heapCost: Int get() = if (array != null) size else 0
+
+        fun pct(i: Int): Float = if (array != null) array[i].pct else map!!.getFloat(8 + 4 * i)
+
+        operator fun get(i: Int): Entry {
+            array?.let { return it[i] }
+            val m = map!!
+            val from = m.getInt(offsetsAt + 4 * i); val to = m.getInt(offsetsAt + 4 * (i + 1))
+            val bytes = ByteArray(to - from)
+            reader!!.position(textAt + from); reader.get(bytes)
+            val text = String(bytes, Charsets.UTF_8)
+            val a = text.indexOf('\u0000'); val b = text.indexOf('\u0000', a + 1)
+            val word = text.substring(0, a)
+            return Entry(word, text.substring(a + 1, b), pct(i), word.length, text.substring(b + 1), (letter.toLong() shl 32) or (i + 1).toLong())
+        }
+
+        override fun iterator() = object : Iterator<Entry> {
+            var i = 0
+            override fun hasNext() = i < size
+            override fun next() = get(i++)
+        }
+
+        companion object {
+            private const val MAGIC = 0x42545631
+
+            fun write(file: File, entries: Array<Entry>) {
+                val texts = entries.map { (it.word + "\u0000" + it.key + "\u0000" + it.cyr).toByteArray(Charsets.UTF_8) }
+                val n = entries.size
+                val total = 8 + 4 * n + 4 * (n + 1) + texts.sumOf { it.size }
+                val out = java.nio.ByteBuffer.allocate(total)
+                out.putInt(MAGIC).putInt(n)
+                for (e in entries) out.putFloat(e.pct)
+                var at = 0
+                for (t in texts) { out.putInt(at); at += t.size }
+                out.putInt(at)
+                for (t in texts) out.put(t)
+                out.flip()
+                file.parentFile?.mkdirs()
+                val tmp = File(file.path + ".tmp")
+                java.io.FileOutputStream(tmp).use { it.channel.write(out) }
+                tmp.renameTo(file)
+            }
+
+            fun open(file: File, letter: Char): Entries? = try {
+                if (!file.exists()) null else java.io.RandomAccessFile(file, "r").use { raf ->
+                    val map = raf.channel.map(java.nio.channels.FileChannel.MapMode.READ_ONLY, 0, raf.length())
+                    if (raf.length() < 8 || map.getInt(0) != MAGIC) null else Entries(null, map, map.getInt(4), letter.code)
+                }
+            } catch (e: Exception) { null }
+        }
+    }
     /**
      * One loaded word file, sorted by key. [best] answers "which entry of this range is the most frequent" in constant
      * time (a sparse table over blocks of [BLOCK] entries), so the most frequent words of any prefix are found without
      * looking at every word that starts with it, however long the run is.
      */
-    private class Shard(val entries: Array<Entry>) {
+    private class Shard(val entries: Entries) {
         private val n = entries.size
         private val levels: Array<IntArray>
 
@@ -36,7 +111,7 @@ object WordSuggestionEngine {
             var span = 1
             while (span * 2 <= blocks) {
                 val prev = list.last()
-                list.add(IntArray(blocks - span * 2 + 1) { i -> if (entries[prev[i]].pct <= entries[prev[i + span]].pct) prev[i] else prev[i + span] })
+                list.add(IntArray(blocks - span * 2 + 1) { i -> if (entries.pct(prev[i]) <= entries.pct(prev[i + span])) prev[i] else prev[i + span] })
                 span *= 2
             }
             levels = list.toTypedArray()
@@ -44,7 +119,7 @@ object WordSuggestionEngine {
 
         private fun scanBest(from: Int, to: Int): Int {
             var best = from
-            for (i in from + 1..to) if (entries[i].pct < entries[best].pct) best = i
+            for (i in from + 1..to) if (entries.pct(i) < entries.pct(best)) best = i
             return best
         }
 
@@ -61,23 +136,23 @@ object WordSuggestionEngine {
             if (bt - bf < 2) return scanBest(from, to)
             var best = scanBest(from, (bf + 1) * BLOCK - 1)
             val tail = scanBest(bt * BLOCK, to)
-            if (entries[tail].pct < entries[best].pct) best = tail
+            if (entries.pct(tail) < entries.pct(best)) best = tail
             val lo = bf + 1; val hi = bt - 1
             val level = 31 - Integer.numberOfLeadingZeros(hi - lo + 1)
             val a = levels[level][lo]; val b = levels[level][hi - (1 shl level) + 1]
-            val mid = if (entries[a].pct <= entries[b].pct) a else b
-            return if (entries[mid].pct < entries[best].pct) mid else best
+            val mid = if (entries.pct(a) <= entries.pct(b)) a else b
+            return if (entries.pct(mid) < entries.pct(best)) mid else best
         }
 
         /** The [k] most frequent entries of `from until to`, most frequent first. Costs about k lookups, whatever the run length. */
         fun top(from: Int, to: Int, k: Int, below: Float = Float.MAX_VALUE, accept: (Entry) -> Boolean = { true }): List<Entry> {
             val out = ArrayList<Entry>(k)
             if (from >= to) return out
-            val heap = java.util.PriorityQueue<IntArray>(compareBy { entries[it[2]].pct })
+            val heap = java.util.PriorityQueue<IntArray>(compareBy { entries.pct(it[2]) })
             heap.add(intArrayOf(from, to, best(from, to - 1)))
             while (out.size < k) {
                 val seg = heap.poll() ?: break
-                if (entries[seg[2]].pct >= below) break  // everything left is rarer still
+                if (entries.pct(seg[2]) >= below) break  // everything left is rarer still
                 if (accept(entries[seg[2]])) out.add(entries[seg[2]])
                 if (seg[2] > seg[0]) heap.add(intArrayOf(seg[0], seg[2], best(seg[0], seg[2] - 1)))
                 if (seg[2] + 1 < seg[1]) heap.add(intArrayOf(seg[2] + 1, seg[1], best(seg[2] + 1, seg[1] - 1)))
@@ -123,6 +198,13 @@ object WordSuggestionEngine {
     fun configure(context: Context, cyrillic: Boolean, zh: String = "j", ch: String = "ç", ng: String = "ñ", o: String = "ö", arabic: Boolean = false) {
         if (!configured) {
             LearnedWords.attach(context.applicationContext)
+            diskCache = File(context.applicationContext.cacheDir, "shards")
+            cacheTag = try {
+                val info = context.applicationContext.packageManager.getPackageInfo(context.packageName, 0)
+                "${info.longVersionCode}_${info.lastUpdateTime}"
+            } catch (e: Exception) { "0" }
+            // Files of an older version (or the old text format) are of no use any more.
+            diskCache?.listFiles()?.forEach { if (!it.name.startsWith("${cacheTag}_") || !it.name.endsWith(".bin")) it.delete() }
             val assets = context.applicationContext.assets
             configure(Source { path -> try { assets.open(path) } catch (e: java.io.IOException) { null } }, cyrillic, zh, ch, ng, o, arabic)
             return
@@ -138,6 +220,7 @@ object WordSuggestionEngine {
         }
         val sig = "$cyrillic|$zh|$ch|$ng|$o|$arabic"
         if (sig == signature) return
+        com.shoktuk.shoktukkeyboard.bench.TypingBench.note("engine settings changed: $signature -> $sig (cache of ${cache.size} files dropped)")
         signature = sig
         this.cyrillic = cyrillic
         this.arabic = arabic
@@ -160,7 +243,8 @@ object WordSuggestionEngine {
      */
     fun configurator(service: com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService): () -> Unit {
         val system = com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.current_writingSystem
-        val kiril = system == com.shoktuk.shoktukkeyboard.project.data.WritingSystem.Kiril
+        // Bitik suggestions match the Cyrillic words, so they use the Cyrillic files.
+        val kiril = system == com.shoktuk.shoktukkeyboard.project.data.WritingSystem.Kiril || system == com.shoktuk.shoktukkeyboard.project.data.WritingSystem.Bitik
         val arab = system == com.shoktuk.shoktukkeyboard.project.data.WritingSystem.Arab
         with(com.shoktuk.shoktukkeyboard.project.data.SettingsManager) {
             val zh = service.latinZH.id; val ch = service.latinCH.id; val ng = service.latinNG.id; val o = service.latinO.id
@@ -799,29 +883,70 @@ object WordSuggestionEngine {
     private fun store(shard: Shard, letter: Char) {
         cache[letter] = shard
         recency.remove(letter); recency.add(letter)
-        var total = cache.values.sumOf { it.entries.size }
+        var total = cache.values.sumOf { it.entries.heapCost }
         while (total > MAX_CACHED_ENTRIES) {
             val oldest = recency.firstOrNull { it != letter && !inUse.contains(it) } ?: break
             recency.remove(oldest)
-            cache.remove(oldest)?.let { total -= it.entries.size }
+            cache.remove(oldest)?.let { total -= it.entries.heapCost }
         }
     }
 
+    /** Where the finished (spelled, sorted) word files are kept between loads; null in tests. Cleared by the system when space runs low. */
+    private var diskCache: File? = null
+
+    /** For tests: keeps the finished word files in [dir] (null = none, everything built in memory). */
+    internal fun useDiskCache(dir: File?, tag: String = "test") { diskCache = dir; cacheTag = tag; cache.clear(); recency.clear() }
+    private var cacheTag = "0"
+
+    private fun cacheFile(letter: Char): File? =
+        diskCache?.let { File(it, "%s_%08x_%04x.bin".format(cacheTag, signature.hashCode(), letter.code)) }
+
     private fun loadEntries(letter: Char): Shard {
+        val file = cacheFile(letter)
+        if (file != null) Entries.open(file, letter)?.let { return Shard(it) }
+        val built = buildEntries(letter)
+        if (file != null && built.entries.isNotEmpty()) {
+            Entries.write(file, Array(built.entries.size) { built.entries[it] })
+            Entries.open(file, letter)?.let { return Shard(it) }
+        }
+        return built
+    }
+
+    /**
+     * Builds the next word file that is not on disk yet (spelled, sorted, saved), so typing never has to. True when it built
+     * one (call again later), false when every file is there. Run it on the [SuggestionWorker], one file at a time.
+     */
+    fun warmNext(): Boolean {
+        if (!configured || diskCache == null) return false
+        for (c in ALPHABET) {
+            val file = cacheFile(c) ?: return false
+            if (file.exists()) continue
+            val built = buildEntries(c)
+            if (built.entries.isNotEmpty()) Entries.write(file, Array(built.entries.size) { built.entries[it] })
+            return true
+        }
+        return false
+    }
+
+    private fun buildEntries(letter: Char): Shard {
         val name = "words/kyw_%04x.txt".format(letter.code)
         val words = try {
-            (source.open(name) ?: return Shard(emptyArray())).bufferedReader().useLines { seq -> seq.map { it.trim() }.filter { it.isNotEmpty() }.toList() }
+            com.shoktuk.shoktukkeyboard.bench.TypingBench.measure("shard read") {
+                (source.open(name) ?: return Shard(Entries(emptyArray()))).bufferedReader().useLines { seq -> seq.map { it.trim() }.filter { it.isNotEmpty() }.toList() }
+            }
         } catch (e: java.io.IOException) {
-            return Shard(emptyArray())
+            return Shard(Entries(emptyArray()))
         }
         val total = max(words.size, 1).toFloat()
         val list = ArrayList<Entry>(words.size)
-        for ((i, w) in words.withIndex()) {
-            val word = if (cyrillic) w else spell(w, exceptions)
-            list.add(Entry(word, if (cyrillic) word else fold(word), i / total, word.length, w))
+        com.shoktuk.shoktukkeyboard.bench.TypingBench.measure("shard spell (${words.size})") {
+            for ((i, w) in words.withIndex()) {
+                val word = if (cyrillic) w else spell(w, exceptions)
+                list.add(Entry(word, if (cyrillic) word else fold(word), i / total, word.length, w, (letter.code.toLong() shl 32) or (i + 1).toLong()))
+            }
         }
-        list.sortBy { it.key }
-        return Shard(list.toTypedArray())
+        com.shoktuk.shoktukkeyboard.bench.TypingBench.measure("shard sort") { list.sortBy { it.key } }
+        return Shard(Entries(list.toTypedArray()))
     }
 
     private fun fold(s: String): String = s.replace('q', 'k').replace('ğ', 'g').replace('ق', 'ك').replace('ع', 'گ')

@@ -38,6 +38,26 @@ class SuggestionGoldenTest {
         return sb.toString()
     }
 
+    /** The same answers when the word files come from memory-mapped files on disk: the first pass builds and maps them, the second maps what is there. */
+    @Test
+    fun answersAreUnchangedFromDiskFiles() {
+        if (!golden.exists()) return
+        val dir = java.nio.file.Files.createTempDirectory("shards").toFile()
+        try {
+            WordSuggestionEngine.useDiskCache(dir)
+            for (pass in 1..2) {
+                val before = golden.readText().lines(); val after = render().lines()
+                for (i in before.indices) assertEquals("pass $pass, line ${i + 1}", before[i], after.getOrNull(i))
+                assertEquals(before.size, after.size)
+                assertEquals("files written", true, (dir.listFiles()?.size ?: 0) > 0)
+                WordSuggestionEngine.useDiskCache(dir)  // drop what is in memory: the second pass opens the files
+            }
+        } finally {
+            WordSuggestionEngine.useDiskCache(null)
+            dir.deleteRecursively()
+        }
+    }
+
     @Test
     fun answersAreUnchanged() {
         val now = render()

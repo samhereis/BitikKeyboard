@@ -265,6 +265,7 @@ class KeyView(
         setOnTouchListener { _, event ->
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
+                    com.shoktuk.shoktukkeyboard.bench.TypingBench.count("down")
                     lastRawX = event.rawX
                     lastRawY = event.rawY
                     isTouchInBounds = true
@@ -292,6 +293,7 @@ class KeyView(
                 }
 
                 MotionEvent.ACTION_UP -> {
+                    com.shoktuk.shoktukkeyboard.bench.TypingBench.count(if (isTouchInBounds && !isLongPressed) "up-click" else "up-NOCLICK(bounds=$isTouchInBounds,long=$isLongPressed,picker=${picker != null})")
                     picker?.let {
                         val chosen = it.selectedText()
                         it.dismiss()
@@ -312,6 +314,7 @@ class KeyView(
                 }
 
                 MotionEvent.ACTION_CANCEL -> {
+                    com.shoktuk.shoktukkeyboard.bench.TypingBench.count("CANCEL")
                     picker?.dismiss()
                     picker = null
                     handler.removeCallbacks(longPressRunnable)

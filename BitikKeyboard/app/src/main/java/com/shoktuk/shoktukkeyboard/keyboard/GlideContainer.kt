@@ -18,6 +18,8 @@ import kotlin.math.hypot
  * key and a half becomes a glide: the keys get ACTION_CANCEL, the finger path is recorded, and on release the best
  * matching word is typed with a space (the typing suggestions bar is not involved).
  */
+private const val PREFETCH_DELAY_MS = 150L
+
 class GlideContainer(context: Context, private val isMainLetters: Boolean) : LinearLayout(context) {
     private val trace = ArrayList<PointF>()
     private var gliding = false
@@ -127,10 +129,14 @@ class GlideContainer(context: Context, private val isMainLetters: Boolean) : Lin
         return if (best == Float.MAX_VALUE) width / 10f else best
     }
 
+    private var pendingPrefetch: Runnable? = null
+    private fun cancelPrefetch() { pendingPrefetch?.let { removeCallbacks(it) }; pendingPrefetch = null }
+
     override fun onInterceptTouchEvent(ev: MotionEvent): Boolean {
         if (!enabled()) return false
         when (ev.actionMasked) {
             MotionEvent.ACTION_DOWN -> {
+                cancelPrefetch()
                 gliding = false
                 trace.clear()
                 startX = ev.rawX; startY = ev.rawY
@@ -140,19 +146,28 @@ class GlideContainer(context: Context, private val isMainLetters: Boolean) : Lin
                 val kw = keyWidthOf(textCentres.values)
                 downOnLetter = textCentres.values.any { hypot(it.x - ev.rawX, it.y - ev.rawY) < kw * 0.9f }
                 if (downOnLetter && MyKeyboardService.current_writingSystem != WritingSystem.Bitik) {
-                    // Read the word files this glide may need now, while the finger travels, so the release doesn't wait for them.
+                    // Read the word files this glide may need while the finger travels, so the release doesn't wait for them.
+                    // Only once the finger has stayed down a moment: a normal tap is up long before, and prefetching on every tap
+                    // flooded the one suggestion thread (and swapped word files in and out) while typing fast.
                     val startLetter = centres.minByOrNull { hypot(it.value.x - ev.rawX, it.value.y - ev.rawY) }?.key
                     if (startLetter != null) {
+                        val downX = ev.rawX; val downY = ev.rawY
+                        val points = centres.mapValues { WordSuggestionEngine.GlidePoint(it.value.x, it.value.y) }
                         val configure = WordSuggestionEngine.configurator(MyKeyboardService.context)
-                        com.shoktuk.shoktukkeyboard.suggestions.SuggestionWorker.background {
-                            configure()
-                            WordSuggestionEngine.prefetchGlide(centres.mapValues { WordSuggestionEngine.GlidePoint(it.value.x, it.value.y) }, kw, startLetter, WordSuggestionEngine.GlidePoint(ev.rawX, ev.rawY))
+                        val job = Runnable {
+                            com.shoktuk.shoktukkeyboard.suggestions.SuggestionWorker.background {
+                                configure()
+                                WordSuggestionEngine.prefetchGlide(points, kw, startLetter, WordSuggestionEngine.GlidePoint(downX, downY))
+                            }
                         }
+                        pendingPrefetch = job
+                        postDelayed(job, PREFETCH_DELAY_MS)
                     }
                 }
             }
+            MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> cancelPrefetch()
             // A second finger means ordinary two-thumb typing, never a glide (and pointer 0 would jump to the other finger).
-            MotionEvent.ACTION_POINTER_DOWN -> if (!gliding) downOnLetter = false
+            MotionEvent.ACTION_POINTER_DOWN -> { cancelPrefetch(); if (!gliding) downOnLetter = false }
             MotionEvent.ACTION_MOVE -> {
                 if (!downOnLetter || gliding) return gliding
                 if (ev.pointerCount > 1) { downOnLetter = false; return false }
