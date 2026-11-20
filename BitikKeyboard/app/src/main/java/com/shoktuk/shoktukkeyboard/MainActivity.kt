@@ -78,6 +78,7 @@ class MainActivity : ComponentActivity() {
 
     private fun applyScreenshotLanguage() {
         if (applicationInfo.flags and ApplicationInfo.FLAG_DEBUGGABLE == 0) return
+        screenshotText = intent?.getStringExtra(EXTRA_SCREENSHOT_TEXT)?.let { if (it == "__empty__") "" else it }  // adb cannot pass an empty extra
         val code = intent?.getStringExtra(EXTRA_SCREENSHOT_LANGUAGE) ?: return
         Language.entries.find { it.code == code }?.let { LocalizationManager.setLanguage(this, it) }
     }
@@ -97,6 +98,10 @@ class MainActivity : ComponentActivity() {
     companion object {
         const val EXTRA_DESTINATION = "destination"
         const val EXTRA_SCREENSHOT_LANGUAGE = "screenshot_language"
+        const val EXTRA_SCREENSHOT_TEXT = "screenshot_text"
+
+        /** Debug builds only (store pictures): the text the "Test the keyboard" field starts with. */
+        var screenshotText: String? = null
     }
 }
 

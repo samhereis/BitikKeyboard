@@ -18,7 +18,7 @@ val cloudSyncedKeys: List<String> = listOf(
     AJ_Letter_Variant.KEY, ANG_Letter_Variant.KEY, EB_Letter_Variant.KEY, EN_Letter_Variant.KEY,
     AS_Letter_Variant.KEY, EK_Letter_Variant.KEY, ESH_Letter_Variant.KEY,
     Latin_Status.KEY, Latin_Variant.KEY, Latin_ZH.KEY, Latin_CH.KEY, Latin_NG.KEY, Latin_O.KEY, Arabic_Status.KEY, Kirilisa_Status.KEY,
-    Coloring.KEY, HoldabilityColoring.KEY, Vibrations.KEY, Sounds.KEY, WritingSystem.KEY,
+    Coloring.KEY, Vibrations.KEY, Sounds.KEY, WritingSystem.KEY,
     NavBarPaddingSolution.KEY,
 )
 

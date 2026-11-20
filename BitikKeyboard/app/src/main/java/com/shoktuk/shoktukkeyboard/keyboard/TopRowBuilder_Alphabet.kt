@@ -57,7 +57,8 @@ object TopRowBuilder_Alphabet {
     /** The Auto Bitik glow: round the whole centre slot when there is no suggestion strip, otherwise round the Bitik card only. */
     private var slotGlow: NewGlowDrawable? = null
     private val cardGlow = NewGlowDrawable().apply {
-        cornerRadius = 20f
+        cornerRadius = 100f  // more than half the chip's height: a pill
+        verticalInset = 3f * android.content.res.Resources.getSystem().displayMetrics.density  // a slimmer pill
         innerGlowWidth = 4f
         innerGlowBlur = 14
         refreshFilters()
@@ -124,7 +125,7 @@ object TopRowBuilder_Alphabet {
             }
         }
 
-        val newGlow = NewGlowDrawable()
+        val newGlow = NewGlowDrawable().apply { cornerRadius = 100f; verticalInset = 3f * android.content.res.Resources.getSystem().displayMetrics.density }
         slotGlow?.stopRotating()
         slotGlow = newGlow
         cardGlow.stopRotating()

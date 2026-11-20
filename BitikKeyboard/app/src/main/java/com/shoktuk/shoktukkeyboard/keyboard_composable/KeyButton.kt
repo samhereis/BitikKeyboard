@@ -41,10 +41,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.shoktuk.shoktukkeyboard.project.data.Coloring
-import com.shoktuk.shoktukkeyboard.project.data.HoldabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.LetterTranscription
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.holdabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.letterTranscription
 import kotlinx.coroutines.delay
 import kotlin.math.roundToInt
@@ -88,7 +86,6 @@ fun KeyButton(
     additionalOffsetX: Dp = 0.dp
 ) {
     val coloringOn = KeyboardViewControllerBase.context.coloring == Coloring.On || isSystem
-    val showHoldabilityColoring = KeyboardViewControllerBase.context.holdabilityColoring == HoldabilityColoring.On
     val bgIndex = if (!coloringOn) 1 else (backgroundColorIndex ?: 1)
     val showPreview = remember { mutableStateOf(false) }
     val isHolding = remember { mutableStateOf(false) }
@@ -115,9 +112,6 @@ fun KeyButton(
     val hintHold = remember(
         key, isShiftEnabled.value
     ) { key?.let { if (isShiftEnabled.value) it.upperCaseHoldHint else it.lowerCaseHoldHint } ?: "" }
-    val showCorner = remember(
-        key, isShiftEnabled.value
-    ) { showHoldabilityColoring && key != null && (if (isShiftEnabled.value) key.upperCaseHold != null else key.lowerCaseHold != null) }
     val showTranscription = KeyboardViewControllerBase.keyboardMode == KeyboardState.Symbols || KeyboardViewControllerBase.context.letterTranscription == LetterTranscription.On
 
     val previewBg = remember(isHolding.value, key, isShiftEnabled.value, baseBg) {
@@ -190,7 +184,6 @@ fun KeyButton(
                 showTranscription = showTranscription,
                 hintTop = hintSecondary,
                 hintBottom = hintPrimary,
-                showCornerStripe = showCorner,
                 isSystem = isSystem,
                 scale = scale
             )
@@ -239,7 +232,6 @@ fun KeyButton(
                         showTranscription = showTranscription,
                         hintTop = hintSecondary,
                         hintBottom = previewHintBottom,
-                        showCornerStripe = showCorner,
                         isSystem = isSystem,
                         scale = scale
                     )
@@ -262,7 +254,6 @@ fun KeyButton(
                     showTranscription = showTranscription,
                     hintTop = hintSecondary,
                     hintBottom = previewHintBottom,
-                    showCornerStripe = showCorner,
                     isSystem = isSystem,
                     scale = scale
                 )
@@ -282,7 +273,6 @@ private fun KeyFaceContent(
     showTranscription: Boolean,
     hintTop: String?,
     hintBottom: String?,
-    showCornerStripe: Boolean,
     isSystem: Boolean,
     scale: Float,
 ) {
@@ -317,16 +307,6 @@ private fun KeyFaceContent(
                 hintBottom, color = textColor ?: Color.Unspecified, style = androidx.compose.ui.text.TextStyle(
                     fontSize = KeyboardStyle.hintFontSize(scale), platformStyle = androidx.compose.ui.text.PlatformTextStyle(includeFontPadding = false)
                 ), modifier = Modifier.align(Alignment.BottomCenter)
-            )
-        }
-
-        if (showCornerStripe) {
-            Box(
-                Modifier
-                    .align(Alignment.TopCenter)
-                    .fillMaxWidth()
-                    .height(1.dp)
-                    .background(color = textColor ?: Color.Unspecified)
             )
         }
     }

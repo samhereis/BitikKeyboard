@@ -24,9 +24,7 @@ import androidx.core.graphics.toColorInt
 import androidx.core.widget.TextViewCompat
 import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.project.data.Coloring
-import com.shoktuk.shoktukkeyboard.project.data.HoldabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.coloring
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.holdabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme.dpToPx
@@ -145,7 +143,6 @@ class KeyView(
 
         applyStyle()
         updateContent()
-        addHoldIndicatorIfNeeded(view)
     }
 
     fun pxFromDp(dp: Float, context: Context) = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, context.resources.displayMetrics)
@@ -425,46 +422,6 @@ class KeyView(
         } catch (e: Throwable) {
             notifyError("Failed to update preview.", e)
         }
-    }
-
-    private fun addHoldIndicatorIfNeeded(root: View) {
-        if (context.holdabilityColoring == HoldabilityColoring.Off) {
-            return
-        }
-
-        // The indicator marks keys whose hold picker offers more than the key's own letter.
-        if (currentAlternates().isEmpty()) return
-
-        val radius = dpToPx(context, 6).toFloat()
-        val clipToParentOutline = true
-        val topPadding = dpToPx(context, 0)
-        val indicatorColor = KeyboardTheme.getColor(3).toColorInt()
-        val indicatorHeight = dpToPx(context, 1)
-
-        if (clipToParentOutline && android.os.Build.VERSION.SDK_INT >= 21) {
-            (root as? ViewGroup)?.clipToPadding = false
-            root.clipToOutline = true
-        }
-
-        val indicator = View(context).apply {
-            layoutParams = FrameLayout.LayoutParams(
-                FrameLayout.LayoutParams.MATCH_PARENT, indicatorHeight
-            ).apply {
-                gravity = Gravity.TOP
-                topMargin = topPadding
-            }
-
-            background = GradientDrawable().apply {
-                shape = GradientDrawable.RECTANGLE
-                setColor(indicatorColor)
-
-                cornerRadii = floatArrayOf(
-                    radius, radius, radius, radius, 0f, 0f, 0f, 0f
-                )
-            }
-        }
-
-        (root as ViewGroup).addView(indicator)
     }
 
     /** The picker lists only the key's *other* letters (its own is what a tap types); keys without any open nothing. */

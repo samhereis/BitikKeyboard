@@ -7,7 +7,14 @@ import androidx.core.content.edit
 object SettingsManager {
     private const val PREFS_NAME = "settings_prefs"
 
-    private fun Context.prefs(): SharedPreferences = getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+    /**
+     * Only the debug store-screenshot tool ever sets this (always null in the app): the settings are then read from and
+     * written to this in-memory copy, so the pictures never touch the person's saved settings.
+     */
+    @Volatile
+    var prefsOverride: SharedPreferences? = null
+
+    private fun Context.prefs(): SharedPreferences = prefsOverride ?: getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     private inline fun <reified E : Enum<E>> SharedPreferences.getEnum(
         key: String, default: E
@@ -178,10 +185,6 @@ object SettingsManager {
     var Context.coloring: Coloring
         get() = prefs().getEnum(Coloring.KEY, Coloring.On)
         set(v) = prefs().setEnum(Coloring.KEY, v)
-
-    var Context.holdabilityColoring: HoldabilityColoring
-        get() = prefs().getEnum(HoldabilityColoring.KEY, HoldabilityColoring.On)
-        set(v) = prefs().setEnum(HoldabilityColoring.KEY, v)
 
     var Context.bitikFont: BitikFont
         get() = prefs().getEnum(BitikFont.KEY, BitikFont.Zamanchak)

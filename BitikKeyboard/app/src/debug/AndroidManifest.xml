@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Debug builds only: renders the Play Store banners (see _Editor/Store/make_store_screenshots.sh). -->
+    <application>
+        <activity
+            android:name="com.shoktuk.shoktukkeyboard.store.StoreBannerActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ShoktuKeyboard" />
+        <activity
+            android:name="com.shoktuk.shoktukkeyboard.store.ScreenshotExporterActivity"
+            android:exported="true"
+            android:theme="@style/Theme.ShoktuKeyboard" />
+    </application>
+
+</manifest>

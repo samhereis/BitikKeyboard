@@ -49,7 +49,7 @@ import com.shoktuk.shoktukkeyboard.project.data.WritingSystem
 import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.whl.quickjs.android.QuickJSLoader
 
-class MyKeyboardService : InputMethodService() {
+open class MyKeyboardService : InputMethodService() {
     companion object {
         lateinit var context: MyKeyboardService
 
@@ -306,9 +306,12 @@ class MyKeyboardService : InputMethodService() {
 
         root?.let {
             applyInsetsNowAndOnChange(it)
-            setInputView(it)
+            showInputView(it)
         }
     }
+
+    /** Puts the keyboard on screen. The debug store tooling (src/debug/.../store) overrides it to draw the keyboard into a picture. */
+    protected open fun showInputView(view: View) = setInputView(view)
 
     private fun ensureDetached(view: View?) {
         val parent = view?.parent as? ViewGroup

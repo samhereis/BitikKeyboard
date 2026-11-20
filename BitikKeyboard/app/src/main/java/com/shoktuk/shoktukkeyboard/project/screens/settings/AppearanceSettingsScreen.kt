@@ -54,7 +54,6 @@ import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EK_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
-import com.shoktuk.shoktukkeyboard.project.data.HoldabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
@@ -80,7 +79,6 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.holdabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
@@ -113,8 +111,6 @@ fun AppearanceSettingsScreen() {
 
     var coloring by remember { mutableStateOf(context.coloring) }
     var coloringPreviewExpanded by remember { mutableStateOf(false) }
-    var holdabilityColoring by remember { mutableStateOf(context.holdabilityColoring) }
-    var holdabilityColoringPreviewExpanded by remember { mutableStateOf(false) }
     var bitikFont by remember { mutableStateOf(context.bitikFont) }
     var bitikFontPreviewExpanded by remember { mutableStateOf(false) }
     var vibrations by remember { mutableStateOf(context.vibrations) }
@@ -162,29 +158,6 @@ fun AppearanceSettingsScreen() {
                             onExpandedChange = { coloringPreviewExpanded = it },
                             label = { if (it == Coloring.On) "setting_on".localized("settings", context) else "setting_off".localized("settings", context) },
                             imageName = { it.settingImageName(Coloring.KEY) }
-                        )
-                    }
-                )
-
-                EnumSwitchSetting(
-                    label = Loc_Settings.holdabilityIndicator.localizedTitle(LocalContext.current),
-                    selected = holdabilityColoring,
-                    optionOn = HoldabilityColoring.On,
-                    optionOff = HoldabilityColoring.Off,
-                    onSelect = {
-                        context.holdabilityColoring = if (it == HoldabilityColoring.On) HoldabilityColoring.On else HoldabilityColoring.Off
-                        holdabilityColoring = context.holdabilityColoring
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    onLabelClick = { holdabilityColoringPreviewExpanded = !holdabilityColoringPreviewExpanded },
-                    extraContent = {
-                        HowItLooksPreviewRow(
-                            items = HoldabilityColoring.entries,
-                            selection = holdabilityColoring,
-                            expanded = holdabilityColoringPreviewExpanded,
-                            onExpandedChange = { holdabilityColoringPreviewExpanded = it },
-                            label = { if (it == HoldabilityColoring.On) "setting_on".localized("settings", context) else "setting_off".localized("settings", context) },
-                            imageName = { it.settingImageName(HoldabilityColoring.KEY) }
                         )
                     }
                 )

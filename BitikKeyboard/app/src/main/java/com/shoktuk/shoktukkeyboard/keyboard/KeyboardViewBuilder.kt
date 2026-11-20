@@ -2,6 +2,7 @@ package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.inputmethodservice.InputMethodService
 import android.view.Gravity
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.shoktuk.shoktukkeyboard.keyboard.MyKeyboardService.Companion.context
@@ -165,16 +166,24 @@ object KeyboardViewBuilder {
             clipToPadding = false
         }
 
-        middleKeys.forEach { key ->
-            middleContainer.addView(
-                LetterKeyBuilder.createLetterKey(service, process(key, mode), isCaps, buttonHeight, keybWidth, onKeyClick = { letter ->
-                    onKeyPressed?.invoke(service.currentInputConnection, letter)
-                }, onLongPress = { letter ->
-                    letter?.let { onKeyPressed?.invoke(service.currentInputConnection, letter) }
-                })
-            )
+        // Arabic has no shift: the harakat key (first key of the row with delete) and the delete key share the free width
+        // on the two sides equally, as on iOS. Every other key keeps the normal key width.
+        var harakatKey: View? = null
+        middleKeys.forEachIndexed { index, key ->
+            val keyView = LetterKeyBuilder.createLetterKey(service, process(key, mode), isCaps, buttonHeight, keybWidth, onKeyClick = { letter ->
+                onKeyPressed?.invoke(service.currentInputConnection, letter)
+            }, onLongPress = { letter ->
+                letter?.let { onKeyPressed?.invoke(service.currentInputConnection, letter) }
+            })
+            if (isArab && delKey != null && index == 0) {
+                keyView.layoutParams = LinearLayout.LayoutParams(0, buttonHeight, 1f)
+                harakatKey = keyView
+            } else {
+                middleContainer.addView(keyView)
+            }
         }
 
+        harakatKey?.let { rowLayout.addView(it) }
         rowLayout.addView(middleContainer)
 
         var extraLeft = KeyboardTheme.dpToPx(service, 20)
@@ -186,8 +195,9 @@ object KeyboardViewBuilder {
         }
 
         rowLayout.post {
+            harakatKey?.extendHorizontalHit(extraLeft, 0)
             if (middleContainer.childCount > 0) {
-                middleContainer.getChildAt(0)?.extendHorizontalHit(extraLeft, 0)
+                if (harakatKey == null) middleContainer.getChildAt(0)?.extendHorizontalHit(extraLeft, 0)
                 middleContainer.getChildAt(middleContainer.childCount - 1)?.extendHorizontalHit(0, extraRight)
             }
         }

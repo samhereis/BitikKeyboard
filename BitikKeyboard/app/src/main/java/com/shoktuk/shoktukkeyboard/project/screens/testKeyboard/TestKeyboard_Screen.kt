@@ -61,7 +61,7 @@ import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_Settings
 fun TestKeyboard_Screen() {
     val context = LocalContext.current
 
-    var text by remember { mutableStateOf("𐰖𐰁𐰕𐰃𐰯 𐰛𐰇𐰼𐰈𐰭𐰈𐰕 ") }
+    var text by remember { mutableStateOf(com.shoktuk.shoktukkeyboard.MainActivity.screenshotText ?: "𐰖𐰁𐰕𐰃𐰯 𐰛𐰇𐰼𐰈𐰭𐰈𐰕 ") }
     var buttonHeight by remember { mutableStateOf(context.keyboardHeight) }
     var bottomOffset by remember { mutableStateOf(context.bottomOffset) }
 

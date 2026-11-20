@@ -1,6 +1,7 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
+import localized
 import android.content.Intent
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -82,7 +83,7 @@ fun SavedStringsView(
                 ) {
                     Icon(Icons.Filled.Edit, contentDescription = null, tint = accent, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(5.dp))
-                    Text(editTitle(), color = accent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
+                    Text(editTitle(ctx), color = accent, fontSize = 15.sp, fontWeight = FontWeight.SemiBold)
                 }
             }
 
@@ -108,10 +109,7 @@ fun SavedStringsView(
     }
 }
 
-private fun editTitle(): String {
-    val titles = mapOf("ky" to "Өзгөртүү", "tr" to "Düzenle", "kk" to "Өзгерту", "az" to "Redaktə et", "ru" to "Изменить")
-    return titles[Locale.getDefault().language] ?: "Edit"
-}
+private fun editTitle(context: Context): String = "themeEdit".localized("settings", context)
 
 private fun openSavedStringsEditor(context: Context) {
     val intent = Intent(context, MainActivity::class.java)

@@ -221,13 +221,13 @@ object KeyboardLetters_Kiril {
         KeyEntry(
             name = "row3_6",
             lowercase = "ө",
-            lowerCaseRomanization = "ъ, ь",
+            lowerCaseRomanization = "ь, ъ",
             backgroundColorIndex_lowercase = 4,
-            lowerCaseAlternates = listOf("ъ", "ь", "ӧ", "ӫ"),
+            lowerCaseAlternates = listOf("ь", "ъ", "ӧ", "ӫ"),
             uppercase = "Ө",
-            upperCaseRomanization = "Ъ, Ь",
+            upperCaseRomanization = "Ь, Ъ",
             backgroundColorIndex_uppercase = 4,
-            upperCaseAlternates = listOf("Ъ", "Ь", "Ӧ", "Ӫ")
+            upperCaseAlternates = listOf("Ь", "Ъ", "Ӧ", "Ӫ")
         ),
         KeyEntry(
             name = "row3_7",

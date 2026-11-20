@@ -7,7 +7,7 @@ keyboardVariant_Classic,Tüp nusqa,Түп нуска,Classic,Klasik,Түпнұс
 keyboardVariant_Classic_Note,"Bitik tuuraluu köp bilbeseñiz, demeykini qoldonuñuz. Al tüp nusqağa da jaqın, üyrönüü jana qoldonuu da oñoy.","Битик тууралуу көп билбесеңиз, демейкини колдонуңуз. Ал түп нускага да жакын, үйрөнүү жана колдонуу да оңой.","If you are unfamiliar with Bitik, please use the default variant. It is close to the original and modernized a bit for ease of use.",Varsayılanı kullanın; orijinale yakın ve kullanımı kolay.,Әдепкі нұсқасын пайдаланыңыз; түпнұсқасына жақын және қолдануға оңай.,"Bitiklə tanış deyilsinizsə, standart variantdan istifadə edin. Orijinala yaxındır və istifadə asanlığı üçün bir az müasirləşdirilmişdir.","Если вы не знакомы с Битиком, используйте вариант по умолчанию. Оно близко к оригиналу, но немного модернизировано совсем чуть чуть."
 keyboardVariant_Standart,Demeyki,Демейки,Default,Varsayılan,Әдепкі,Standart,По умолчанию
 keyboardVariant_Standart_Note,"Demeyki variantı bul biraz ıñgaylaştırlğan orignal! Qarapayım qoldonuuçuğa da oñoy, tüp nusqağa da jaqın.","Демейки варианты бул бираз ыңгайлаштырылган оригинал! Карапайым колдонуучуга да оңой, түп нускага да жакын.","Default variant is the original Bitik but modernized a bit! It will be easy for an average user and does not violate the original Bitik rules.","Varsayılan varyant biraz uyarlanmış; kullanıcı için kolay ve orijinale yakın.","Әдепкі нұсқа аздап бейімделген; қарапайым қолданушыға оңай және түпнұсқасына жақын.","Standart variant orijinal Bitikdir, lakin bir az müasirləşdirilmişdir! Adi istifadəçi üçün asan olacaq və orijinal Bitik qaydalarını pozmur.","Вариант по умолчанию - это оригинал, но немного модернизированный. Подходит для обычного пользователя."
-keyboardVariant_Modern,Zamanbaptalğan,Заманбапталган,Modernized,Modernleştirilmiş,Модернизацияланған,Müasirləşdirilmiş,Модернизированный
+keyboardVariant_Modern,Zamanbap,Заманбап,Modernized,Modernleştirilmiş,Модернизацияланған,Müasirləşdirilmiş,Модернизированный
 keyboardVariant_Modern_Note,"Ooba, ıñgayluu biroq rasmiy emes, avtor jañılağan bitik qoldonuudasız!","Ооба, ыңгайлуу бирок расмий эмес, автор жаңылаган битик колдонуудасыз!","You are using the modernized version (by the author). Although it is easy to use, it has letters that are not ""official"".","Rahat ama resmi değil; yazar tarafından değiştirilmiş","Ыңғайлы, бірақ ресми емес; автор өзгерткен нұсқа!","Rahatdır, lakin rəsmi deyil; müəllif tərəfindən dəyişdirilmiş versiya!","Вы ипользуйте модернизованный автором вариант. Да, оно удобное, но содержит ""неоффициальные"" тамги."
 keyboardDialect,Bitik dialekti,Битик диалекти,Bitik dialect,Bitik Diyalekti,Битик диалектісі,Bitik Dialekti,Диалект Битика
 keyboardDialect_Altay,Altay,Алтай,Altay,Altay,Алтай,Altay,Алтай
@@ -22,7 +22,6 @@ experience,Seziliş,Сезилиш,Experience,Deneyim,Тәжірибе,Təcrüb�
 coloring,Tüstöö,Түстөө,Coloring,Renklendirme,Түстерлеу,Rəngləmə,Окрашивание
 vibration,Dirildöö,Дирилдөө,Vibration,Titreşim,Діріл,Vibrasiya,Вибрация
 clickSound,Basuu ünü,Басуу үнү,Click sound,Tıklama sesi,Басу дыбысы,Klik səsi,Звук нажатия
-holdabilityIndicator,Uzaq basa aluu belgisi,Узак баса алуу белгиси,Holdability indicator,Basılı tutma göstergesi,Ұзақ басу индикаторы,Saxlama göstəricisi,Индикатор удерживания
 bitikFont,Bitik şrifti,Битик шрифти,Bitik font,Bitik Yazı Tipi,Битик қарпы,Bitik Şrifti,Шрифт Битика
 bitikFont_System,Sistemalıq,Системалык,System,Sistem,Жүйелік,Sistem,Системный
 bitikFont_Zamanchak,Zamanchak,Заманчак,Zamanchak,Zamanchak,Заманчак,Zamançak,Заманчак
@@ -47,7 +46,7 @@ latinAlphabet_Kyrgyz,Azğana,Азгана,Minimal,Az,Минимал,Minimal,Ми
 latinAlphabet_Full,Toluq,Толук,Full,Tam,Tолық,Tam,Полная
 arabAlphabet,Arab aribi,Араб ариби,Arabic script,Араб Yazısı,Араб Жазуы,Ərəb Yazısı,Арабица
 kirilAlphabet,Kiril aribi,Кирил ариби,Cyrilic script,Kiril Alfabesi,Кирилл Элипбисы,Kiril Əlifbası,Кириллица
-changeOrder,İrettöö,Иреттөө,Edit,Düzenle,Өзгерту,Redaktə et,Изменить
+changeOrder,Özgörtüü,Өзгөртүү,Edit,Düzenle,Өзгерту,Redaktə et,Изменить
 add,Qoş,Кош,Add,Ekle,Қосу,Əlavə et,Добавить
 ready,Dayar,Даяр,Ready,Hazır,Даяр,Hazır,Готово
 holdShift,Shift basıp turuñuz,Shift басып туруңуз,Hold on Shift,Shift'e basılı tutun,Shift-ті басып тұрыңыз,Shift-i basılı saxlayın,Удерживайте Shift
@@ -100,3 +99,4 @@ t9ClearNote,Alar bul tüzmöktön jana iCloud'dan öçürülöt. Munu qaytaruuğ
 "autoCapitalize","Avto baş tamga","Авто баш тамга","Auto-capitalization","Otomatik büyük harf","Авто бас әріп","Avtomatik böyük hərf","Автоматическая заглавная"
 "autoCapitalizeNote","Sözdömdün birinçi tamgasın özü baş tamga kılat (Latın jana Kirill klaviaturasında).","Сүйлөмдүн биринчи тамгасын өзү баш тамга кылат (Латын жана Кирилл клавиатурасында).","Capitalizes the first letter of a sentence (Latin and Cyrillic keyboards).","Cümlenin ilk harfini otomatik büyük yapar (Latin ve Kiril klavyeleri).","Сөйлемнің бірінші әрпін өзі бас әріп етеді (Латын және Кирилл пернетақталары).","Cümlənin ilk hərfini avtomatik böyük edir (Latın və Kiril klaviaturaları).","Делает первую букву предложения заглавной (латинская и кириллическая клавиатуры)."
 "transcriptionToBitik","Bitikke transkripsiya","Битикке транскрипция","Transcription to Bitik","Bitik'e transkripsiyon","Бітікке транскрипция","Bitikə transkripsiya","Транскрипция в битик"
+"themeEdit","Özgörtüü","Өзгөртүү","Edit","Düzenle","Өңдеу","Redaktə","Изменить"

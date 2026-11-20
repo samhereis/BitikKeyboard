@@ -185,14 +185,6 @@ enum class Coloring(val id: String) {
     }
 }
 
-enum class HoldabilityColoring(val id: String) {
-    On("Жанык"), Off("Өчүк");
-
-    companion object {
-        const val KEY = "HoldabilityColoring"
-    }
-}
-
 enum class BitikFont(val id: String) {
     System("bitikFont_System"), Zamanchak("bitikFont_Zamanchak");
 

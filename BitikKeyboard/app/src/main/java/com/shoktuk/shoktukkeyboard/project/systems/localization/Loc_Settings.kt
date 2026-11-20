@@ -32,7 +32,6 @@ enum class Loc_Settings(
     experience("hand.tap"),
     coloring("paintpalette"),
     vibration("paintpalette"),
-    holdabilityIndicator("hand.point.up.left"),
     bitikFont("textformat"),
 
     letters("e.circle"),

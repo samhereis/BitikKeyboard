@@ -1,6 +1,7 @@
 package com.shoktuk.shoktukkeyboard.keyboard
 
 import android.content.Context
+import localized
 import android.content.Intent
 import android.graphics.Typeface
 import android.graphics.drawable.GradientDrawable
@@ -63,7 +64,7 @@ object SavedStringsViewBuilder {
             setPadding(dp(service, 4f), 0, dp(service, 12f), 0)
         }
         val editButton = TextView(service).apply {
-            text = "✎  ${editTitle()}"
+            text = "✎  ${editTitle(service)}"
             setTextColor(KeyboardTheme.getColor(2).toColorInt())
             setTextSize(TypedValue.COMPLEX_UNIT_SP, 15f)
             typeface = Typeface.DEFAULT_BOLD
@@ -187,10 +188,7 @@ object SavedStringsViewBuilder {
         if (strokeDp > 0) setStroke(dp(ctx, strokeDp.toFloat()), ColorUtils.setAlphaComponent(accent, 140))
     }
 
-    private fun editTitle(): String {
-        val titles = mapOf("ky" to "Өзгөртүү", "tr" to "Düzenle", "kk" to "Өзгерту", "az" to "Redaktə et", "ru" to "Изменить")
-        return titles[Locale.getDefault().language] ?: "Edit"
-    }
+    private fun editTitle(context: Context): String = "themeEdit".localized("settings", context)
 
     private fun openSavedStringsEditor(service: InputMethodService) {
         val intent = Intent(service, MainActivity::class.java)

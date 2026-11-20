@@ -8,6 +8,7 @@ import android.graphics.Color
 import android.graphics.ColorFilter
 import android.graphics.Matrix
 import android.graphics.Paint
+import android.graphics.Path
 import android.graphics.PixelFormat
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
@@ -28,6 +29,8 @@ class NewGlowDrawable : Drawable(), Choreographer.FrameCallback {
     var outerGlowWidth = 0f
     var outerGlowBlur = 0f
     var insetForBlur = 0f
+    /** Pulls the glow in from the top and bottom (pixels), so a tall slot gives a slimmer pill. */
+    var verticalInset = 0f
     var degreesPerSecond = 20f
 
     @ColorInt
@@ -48,6 +51,7 @@ class NewGlowDrawable : Drawable(), Choreographer.FrameCallback {
     private var sweep: SweepGradient? = null
     private val matrix = Matrix()
     private val rect = RectF()
+    private val clipShape = Path()
 
     private var frameRunning = false
     private var activeRequested = false
@@ -99,23 +103,29 @@ class NewGlowDrawable : Drawable(), Choreographer.FrameCallback {
         }
 
         val left = b.left + insetForBlur
-        val top = b.top + insetForBlur
+        val top = b.top + insetForBlur + verticalInset
         val right = b.right - insetForBlur
-        val bottom = b.bottom - insetForBlur
+        val bottom = b.bottom - insetForBlur - verticalInset
 
         val a = (baseAlpha * fade).toInt().coerceIn(0, 255)
+        // A radius larger than half the height makes a pill. The glow is cut to this shape, so no soft glow reaches the corners.
+        val radius = cornerRadius.coerceAtMost(minOf(right - left, bottom - top) / 2f)
+        clipShape.reset()
+        clipShape.addRoundRect(RectF(left, top, right, bottom), radius, radius, Path.Direction.CW)
+        val clipSave = canvas.save()
+        canvas.clipPath(clipShape)
 
         rect.set(left + outerGlowWidth / 2f, top + outerGlowWidth / 2f, right - outerGlowWidth / 2f, bottom - outerGlowWidth / 2f)
         outerPaint.shader = sweep
         outerPaint.strokeWidth = outerGlowWidth
         outerPaint.alpha = (a * 0.55f).toInt()
         outerPaint.maskFilter = outerMask1
-        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, outerPaint)
+        canvas.drawRoundRect(rect, radius, radius, outerPaint)
 
         outerPaint.alpha = (a * 0.28f).toInt()
         outerPaint.strokeWidth = outerGlowWidth + 6f
         outerPaint.maskFilter = outerMask2
-        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, outerPaint)
+        canvas.drawRoundRect(rect, radius, radius, outerPaint)
 
         val save = canvas.saveLayer(null, null)
 
@@ -124,12 +134,12 @@ class NewGlowDrawable : Drawable(), Choreographer.FrameCallback {
         innerPaint.strokeWidth = innerGlowWidth
         innerPaint.alpha = (a * innerGlowOpacity).toInt().coerceIn(0, 255)
         innerPaint.maskFilter = innerMask1
-        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, innerPaint)
+        canvas.drawRoundRect(rect, radius, radius, innerPaint)
 
         innerPaint.alpha = (a * (innerGlowOpacity * 0.45f)).toInt().coerceIn(0, 255)
         innerPaint.strokeWidth = innerGlowWidth + 6f
         innerPaint.maskFilter = innerMask2
-        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, innerPaint)
+        canvas.drawRoundRect(rect, radius, radius, innerPaint)
 
         rect.set(left + 1f, top + 1f, right - 1f, bottom - 1f)
         if (Build.VERSION.SDK_INT >= 29) {
@@ -138,19 +148,20 @@ class NewGlowDrawable : Drawable(), Choreographer.FrameCallback {
             @Suppress("DEPRECATION") keepInsidePaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.DST_IN)
         }
         keepInsidePaint.color = Color.WHITE
-        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, keepInsidePaint)
+        canvas.drawRoundRect(rect, radius, radius, keepInsidePaint)
         if (Build.VERSION.SDK_INT >= 29) keepInsidePaint.blendMode = null
         else @Suppress("DEPRECATION") {
             keepInsidePaint.xfermode = null
         }
 
         canvas.restoreToCount(save)
+        canvas.restoreToCount(clipSave)
 
         borderPaint.shader = sweep
         borderPaint.alpha = a
         borderPaint.strokeWidth = 2f
         rect.set(left + 1f, top + 1f, right - 1f, bottom - 1f)
-        canvas.drawRoundRect(rect, cornerRadius, cornerRadius, borderPaint)
+        canvas.drawRoundRect(rect, radius, radius, borderPaint)
     }
 
     override fun setAlpha(alpha: Int) {

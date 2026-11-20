@@ -54,7 +54,6 @@ import com.shoktuk.shoktukkeyboard.project.data.EB_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EK_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.EN_Letter_Variant
 import com.shoktuk.shoktukkeyboard.project.data.ESH_Letter_Variant
-import com.shoktuk.shoktukkeyboard.project.data.HoldabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.Kirilisa_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Status
 import com.shoktuk.shoktukkeyboard.project.data.Latin_Variant
@@ -80,7 +79,6 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.holdabilityColoring
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
@@ -107,8 +105,9 @@ import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_SideMenu
 import com.shoktuk.shoktukkeyboard.ui.theme.ShoktukKeyboardTheme
 import localized
 
+/** The store banners pass false for both: [showSliders] the keyboard height / bottom offset sliders, [showVariantNote] the note under the variant picker. */
 @Composable
-fun MainSettingsScreen() {
+fun MainSettingsScreen(showSliders: Boolean = true, showVariantNote: Boolean = true) {
     val context = LocalContext.current
 
     var buttonHeight by remember { mutableStateOf(context.keyboardHeight) }
@@ -153,6 +152,7 @@ fun MainSettingsScreen() {
                     .fillMaxWidth()
                     .padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
+                if (showSliders) {
                 SliderSetting(
                     label = Loc_Settings.buttonHeight.localizedTitle(context), value = buttonHeight, valueRange = 100f..300f, onValueChange = {
                         buttonHeight = it
@@ -165,11 +165,13 @@ fun MainSettingsScreen() {
                         context.bottomOffset = bottomOffset
                         onSettingChanged.invoke()
                     })
+                }
 
                 Text(
                     text = Loc_SideMenu.SETTINGS.localizedTitle(LocalContext.current), style = MaterialTheme.typography.titleMedium, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center
                 )
 
+                if (showVariantNote) {
                 if (keyboardVariant == BitikVariant.CLASSIC) {
                     Surface(
                         modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), tonalElevation = 2.dp, shadowElevation = 4.dp
@@ -233,6 +235,7 @@ fun MainSettingsScreen() {
                             )
                         }
                     }
+                }
                 }
 
                 CenteredDropdownPopup(
@@ -337,7 +340,7 @@ fun MainSettingsScreen() {
                         context.wordSeparator = alpha
                         wordSeparator = context.wordSeparator
                     },
-                    optionLabel = { it.id },
+                    optionLabel = { if (it == WordSeparator.Off) "setting_no".localized("settings", context) else it.id },
                     modifier = Modifier.fillMaxWidth(),
                     onLabelClick = { wordSeparatorPreviewExpanded = !wordSeparatorPreviewExpanded },
                     extraContent = {
@@ -346,7 +349,7 @@ fun MainSettingsScreen() {
                             selection = wordSeparator,
                             expanded = wordSeparatorPreviewExpanded,
                             onExpandedChange = { wordSeparatorPreviewExpanded = it },
-                            label = { it.id },
+                            label = { if (it == WordSeparator.Off) "setting_no".localized("settings", context) else it.id },
                             imageName = { it.settingImageName(WordSeparator.KEY) }
                         )
                     }
@@ -435,4 +438,4 @@ fun MainSettingsScreen() {
     }
 }
 
-// MARK: - Appearance (coloring, holdability, vibration)
+// MARK: - Appearance (coloring, vibration)
