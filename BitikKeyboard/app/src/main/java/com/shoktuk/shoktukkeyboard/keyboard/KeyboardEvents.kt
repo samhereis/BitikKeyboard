@@ -47,7 +47,7 @@ import com.shoktuk.shoktukkeyboard.ui.theme.KeyboardTheme
 import com.whl.quickjs.android.QuickJSLoader
 
 enum class KeyboardMode(val id: String) {
-    Main("Main"), Symbols("Symbols"), Emojis("Emojis"), SavedStrings("SavedStrings"), Settings("Settings");
+    Main("Main"), Symbols("Symbols"), Emojis("Emojis"), SavedStrings("SavedStrings"), Settings("Settings"), Resize("Resize");
 }
 
 object onKeyPressed {
@@ -79,5 +79,18 @@ object onSettingChanged {
     fun invoke() {
         MyKeyboardService.bottomPadding = null
         listeners.forEach { it() }
+    }
+
+    private val handler = android.os.Handler(android.os.Looper.getMainLooper())
+    private val runListeners = Runnable { listeners.forEach { it() } }
+
+    /**
+     * For a slider, which reports every small move: the keyboard is rebuilt once, a moment after the value stops changing,
+     * instead of on every move (a rebuild on the same thread that drags the slider made it stutter).
+     */
+    fun invokeDebounced(delayMs: Long = 150) {
+        MyKeyboardService.bottomPadding = null
+        handler.removeCallbacks(runListeners)
+        handler.postDelayed(runListeners, delayMs)
     }
 }

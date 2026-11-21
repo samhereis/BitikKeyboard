@@ -53,7 +53,7 @@ import com.github.skydoves.colorpicker.compose.rememberColorPickerController
 import com.shoktuk.shoktukkeyboard.R
 import com.shoktuk.shoktukkeyboard.keyboard.onSettingChanged
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeightSetting
 import com.shoktuk.shoktukkeyboard.project.screens.settings.SliderSetting
 import com.shoktuk.shoktukkeyboard.project.systems.localization.Loc_Settings
 
@@ -62,8 +62,8 @@ fun TestKeyboard_Screen() {
     val context = LocalContext.current
 
     var text by remember { mutableStateOf(com.shoktuk.shoktukkeyboard.MainActivity.screenshotText ?: "𐰖𐰁𐰕𐰃𐰯 𐰛𐰇𐰼𐰈𐰭𐰈𐰕 ") }
-    var buttonHeight by remember { mutableStateOf(context.keyboardHeight) }
-    var bottomOffset by remember { mutableStateOf(context.bottomOffset) }
+    var buttonHeight by remember(com.shoktuk.shoktukkeyboard.project.data.ResizeSync.tick) { mutableStateOf(context.keyboardHeightSetting) }
+    var bottomOffset by remember(com.shoktuk.shoktukkeyboard.project.data.ResizeSync.tick) { mutableStateOf(context.bottomOffset) }
 
     LocalFocusManager.current
 
@@ -78,17 +78,17 @@ fun TestKeyboard_Screen() {
             modifier = Modifier.align(Alignment.TopCenter)
         ) {
             SliderSetting(
-                modifier = Modifier.padding(bottom = 15.dp), label = Loc_Settings.buttonHeight.localizedTitle(context), value = buttonHeight, valueRange = 100f..300f, onValueChange = {
+                modifier = Modifier.padding(bottom = 15.dp), label = Loc_Settings.buttonHeight.localizedTitle(context), value = buttonHeight, valueRange = 30f..230f, defaultValue = com.shoktuk.shoktukkeyboard.project.data.SettingsManager.DEFAULT_KEYBOARD_HEIGHT_SETTING, onValueChange = {
                     buttonHeight = it
-                    context.keyboardHeight = buttonHeight
-                    onSettingChanged.invoke()
+                    context.keyboardHeightSetting = buttonHeight
+                    onSettingChanged.invokeDebounced()
                 })
 
             SliderSetting(
-                modifier = Modifier.padding(bottom = 15.dp), label = Loc_Settings.bottomOffset.localizedTitle(context), value = bottomOffset, valueRange = -200f..200f, onValueChange = {
+                modifier = Modifier.padding(bottom = 15.dp), label = Loc_Settings.bottomOffset.localizedTitle(context), value = bottomOffset, valueRange = -200f..200f, defaultValue = com.shoktuk.shoktukkeyboard.project.data.SettingsManager.DEFAULT_BOTTOM_OFFSET, onValueChange = {
                     bottomOffset = it
                     context.bottomOffset = bottomOffset
-                    onSettingChanged.invoke()
+                    onSettingChanged.invokeDebounced()
                 })
 
             TextField(

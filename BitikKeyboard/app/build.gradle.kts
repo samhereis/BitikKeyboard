@@ -12,7 +12,7 @@ android {
         applicationId = "com.shoktuk.shoktukkeyboard"
         minSdk = 25
         targetSdk = 37
-        versionCode = 76
+        versionCode = 78
         versionName = "5.3.5"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"

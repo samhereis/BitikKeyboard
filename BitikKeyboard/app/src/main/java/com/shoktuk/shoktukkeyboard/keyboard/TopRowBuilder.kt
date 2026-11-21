@@ -52,17 +52,23 @@ object TopRowBuilder {
             }
         }
 
-        val switchLanguageView = SystemKeyBuilder.systemButton_Text(
+        val switchLanguageView = TopRowButtons.text(
             service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() }, applyBitikFont = true)
         rowLayout.addView(switchLanguageView)
-        val starButton = SystemKeyBuilder.systemButton_Text(
-            service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
+        val starButton = TopRowButtons.drawable(
+            service = service, drawableRes = com.shoktuk.shoktukkeyboard.R.drawable.ic_key_star, buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
         rowLayout.addView(starButton)
+        // Emoji panel, right after the saved strings key; it hides together with it while a word is typed.
+        val emojiButton = TopRowButtons.text(
+            service = service, text = "😀", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Emojis) })
+        rowLayout.addView(emojiButton)
 
+        var spreadCentre: android.view.ViewGroup? = null
         if (context.suggestionsEnabled(WritingSystem.Bitik)) {
             val jsTranscriber = JSTranscriber(service)
             val strip = BitikSuggestionStrip.createContainer(service, buttonHeight)
             rowLayout.addView(strip)
+            spreadCentre = strip
             TopRowBuilder_Old.onTypedListener.addOnTypedListener(strip) {
                 strip.post { BitikSuggestionStrip.update(service.currentInputConnection, jsTranscriber, strip) }
             }
@@ -125,19 +131,25 @@ object TopRowBuilder {
         rowLayout.addView(scrollView)
         }
 
-        val imePicker = SystemKeyBuilder.systemButton_Icon(
-            service = service, assetPath = KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight = buttonHeight, onClick = {
+        val imePicker = TopRowButtons.drawable(
+            service = service, drawableRes = com.shoktuk.shoktukkeyboard.R.drawable.ic_key_language, buttonHeight = buttonHeight, onClick = {
                 val imm = service.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showInputMethodPicker()
                 TopRowBuilder_Old.onTypedListener?.invoke()
             })
 
-        val gearButton = SystemKeyBuilder.systemButton_Text(
-            service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) })
+        // Resize mode (keyboard height and position), just left of the settings key.
+        val resizeButton = TopRowButtons.drawable(
+            service = service, drawableRes = com.shoktuk.shoktukkeyboard.R.drawable.ic_key_resize, buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Resize) })
+        rowLayout.addView(resizeButton)
+        val gearButton = TopRowButtons.drawable(
+            service = service, drawableRes = com.shoktuk.shoktukkeyboard.R.drawable.ic_key_settings, buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) })
         rowLayout.addView(gearButton)
-        BitikSuggestionStrip.sideButtons = if (context.suggestionsEnabled(WritingSystem.Bitik)) listOf(starButton, gearButton) else emptyList()
+        BitikSuggestionStrip.sideButtons = if (context.suggestionsEnabled(WritingSystem.Bitik)) listOf(switchLanguageView, starButton, emojiButton, resizeButton, gearButton, imePicker) else emptyList()
         rowLayout.addView(imePicker)
 
+        spreadCentre?.let { TopRowSpacing.spreadEvenly(rowLayout, it, it) }
+        TopRowSpacing.flatten(switchLanguageView, starButton, emojiButton, resizeButton, gearButton, imePicker)
         return rowLayout
     }
 }

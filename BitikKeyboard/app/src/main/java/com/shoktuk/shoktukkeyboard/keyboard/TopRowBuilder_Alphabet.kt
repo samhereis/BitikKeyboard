@@ -51,7 +51,7 @@ object onBitikModeChanged {
 }
 
 object TopRowBuilder_Alphabet {
-    /** The ★ and ⚙ buttons of the current top row: hidden while the suggestion strip has more than three chips. */
+    /** Every button of the current top row except the centre slot: hidden while the suggestion strip has more than three chips. */
     private var sideButtons: List<View> = emptyList()
 
     /** The Auto Bitik glow: round the whole centre slot when there is no suggestion strip, otherwise round the Bitik card only. */
@@ -64,6 +64,7 @@ object TopRowBuilder_Alphabet {
         refreshFilters()
     }
     private var glowOnStrip = false
+    private var spacingRefresh: (() -> Unit)? = null
     private var cardShown = false
 
     private fun applyGlow(animate: Boolean) {
@@ -77,6 +78,7 @@ object TopRowBuilder_Alphabet {
         }
         drive(slotGlow, on && !glowOnStrip)
         drive(cardGlow, on && glowOnStrip && cardShown)
+        spacingRefresh?.invoke()
     }
 
     private fun squareUp(service: InputMethodService, view: View, size: Int) {
@@ -132,7 +134,7 @@ object TopRowBuilder_Alphabet {
         glowOnStrip = false
         applyGlow(false)
 
-        val switchLanguageView = SystemKeyBuilder.systemButton_Text(
+        val switchLanguageView = TopRowButtons.text(
             service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() }, applyBitikFont = true)
 
         val centerSlot = FrameLayout(service).apply {
@@ -156,25 +158,34 @@ object TopRowBuilder_Alphabet {
 
         centerSlot.addView(lastWordContainer)
         rowLayout.addView(switchLanguageView)
-        val starButton = SystemKeyBuilder.systemButton_Text(
-            service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
+        val starButton = TopRowButtons.drawable(
+            service = service, drawableRes = com.shoktuk.shoktukkeyboard.R.drawable.ic_key_star, buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
         rowLayout.addView(starButton)
+        // Emoji panel, right after the saved strings key; it hides together with it while a word is typed.
+        val emojiButton = TopRowButtons.text(
+            service = service, text = "😀", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Emojis) })
+        rowLayout.addView(emojiButton)
         rowLayout.addView(centerSlot)
-        val gearButton = SystemKeyBuilder.systemButton_Text(
-            service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) })
+        // Resize mode (keyboard height and position), just left of the settings key.
+        val resizeButton = TopRowButtons.drawable(
+            service = service, drawableRes = com.shoktuk.shoktukkeyboard.R.drawable.ic_key_resize, buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Resize) })
+        rowLayout.addView(resizeButton)
+        val gearButton = TopRowButtons.drawable(
+            service = service, drawableRes = com.shoktuk.shoktukkeyboard.R.drawable.ic_key_settings, buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) })
         rowLayout.addView(gearButton)
-        sideButtons = listOf(starButton, gearButton)
-        val languageButton = SystemKeyBuilder.systemButton_Icon(
-            service, KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight, onClick = {
+        val languageButton = TopRowButtons.drawable(
+            service, com.shoktuk.shoktukkeyboard.R.drawable.ic_key_language, buttonHeight, onClick = {
                 val imm = service.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
                 imm.showInputMethodPicker()
                 TopRowBuilder_Old.onTypedListener.invoke()
             })
         rowLayout.addView(languageButton)
+        sideButtons = listOf(switchLanguageView, starButton, emojiButton, resizeButton, gearButton, languageButton)
+        spacingRefresh = null  // set below, once the row is final
 
-        // Latin and Kiril: the four side buttons are square (1:1) and tighter, so the suggestions get the room.
+        // Latin and Kiril: the five side buttons are square (1:1) and tighter, so the suggestions get the room.
         if (context.writingSystem == WritingSystem.Latin || context.writingSystem == WritingSystem.Kiril) {
-            listOf(switchLanguageView, starButton, gearButton, languageButton).forEach { squareUp(service, it, buttonHeight) }
+            listOf(switchLanguageView, starButton, emojiButton, resizeButton, gearButton, languageButton).forEach { squareUp(service, it, buttonHeight) }
         }
 
         TopRowBuilder_Old.onTypedListener.addOnTypedListener(lastWordContainer) {
@@ -191,6 +202,8 @@ object TopRowBuilder_Alphabet {
             rowLayout.post { applyGlow(true) }
         }
 
+        spacingRefresh = TopRowSpacing.spreadEvenly(rowLayout, centerSlot, lastWordContainer) { MyKeyboardService.isAutoWriteBitikMode }
+        TopRowSpacing.flatten(switchLanguageView, starButton, emojiButton, resizeButton, gearButton, languageButton)
         return rowLayout
     }
 

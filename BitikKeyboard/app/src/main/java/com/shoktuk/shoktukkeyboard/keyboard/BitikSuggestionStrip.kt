@@ -167,6 +167,7 @@ object BitikSuggestionStrip {
         val typed = InputText_Transcribed
         val typedAlt = InputText_Transcribed_Alt
         val showTranscription = ctx.suggestionTranscription(WritingSystem.Bitik)
+        val showLiteral = with(com.shoktuk.shoktukkeyboard.project.data.SettingsManager) { ctx.textTranscription } == com.shoktuk.shoktukkeyboard.project.data.TextTranscription.On
         val cyrillicBelow = ctx.suggestionTranscriptionScript == "kiril"
         // The search and the Bitik spelling of each word run on the suggestion thread. The strip is rebuilt in one go when
         // they are done, so what is on screen (and the side buttons) stay as they are meanwhile instead of flashing empty.
@@ -187,24 +188,27 @@ object BitikSuggestionStrip {
             container.addView(strip.scroll, FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT))
 
             // 1. The literal Latin reading, as the old read-out showed it: each letter with its other reading above.
-            val literal = LinearLayout(container.context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER }
-            typed.forEachIndexed { index, base ->
-                val alt = typedAlt.getOrNull(index)
-                if (alt != null && alt != base) {
-                    // Two floors, both at half size: the other reading above, the main one below.
-                    literal.addView(LinearLayout(container.context).apply {
-                        orientation = LinearLayout.VERTICAL
-                        gravity = Gravity.CENTER
-                        addView(SuggestionViews.text(container.context, alt.toString(), sp / 2f, bitik = true))
-                        addView(SuggestionViews.text(container.context, base.toString(), sp / 2f, bitik = true))
-                    })
-                } else literal.addView(SuggestionViews.text(container.context, base.toString(), sp, bitik = true))
+            // It is the "text transcription" setting's read-out, so it goes away when that setting is off.
+            if (showLiteral) {
+                val literal = LinearLayout(container.context).apply { orientation = LinearLayout.HORIZONTAL; gravity = Gravity.CENTER }
+                typed.forEachIndexed { index, base ->
+                    val alt = typedAlt.getOrNull(index)
+                    if (alt != null && alt != base) {
+                        // Two floors, both at half size: the other reading above, the main one below.
+                        literal.addView(LinearLayout(container.context).apply {
+                            orientation = LinearLayout.VERTICAL
+                            gravity = Gravity.CENTER
+                            addView(SuggestionViews.text(container.context, alt.toString(), sp / 2f, bitik = true))
+                            addView(SuggestionViews.text(container.context, base.toString(), sp / 2f, bitik = true))
+                        })
+                    } else literal.addView(SuggestionViews.text(container.context, base.toString(), sp, bitik = true))
+                }
+                // What is already typed: tapping only ends the word.
+                strip.row.addView(SuggestionViews.card(container.context, cardHeight, literal, null) {
+                    ic?.commitText(separator(), 1)
+                    TopRowBuilder_Old.onTypedListener.invoke()
+                })
             }
-            // What is already typed: tapping only ends the word.
-            strip.row.addView(SuggestionViews.card(container.context, cardHeight, literal, null) {
-                ic?.commitText(separator(), 1)
-                TopRowBuilder_Old.onTypedListener.invoke()
-            })
 
             // 2. Cards: the Bitik word with its Latin spelling below.
             for ((w, bitik) in cards) {

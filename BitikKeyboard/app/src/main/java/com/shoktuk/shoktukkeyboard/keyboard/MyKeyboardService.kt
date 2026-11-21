@@ -34,6 +34,9 @@ import com.shoktuk.shoktukkeyboard.project.data.BitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikDialect
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bitikTranscriptionAlphabets
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.bottomOffset
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager
+import com.shoktuk.shoktukkeyboard.project.data.ResizeSync
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
@@ -142,6 +145,7 @@ open class MyKeyboardService : InputMethodService() {
 
     override fun onCreate() {
         super.onCreate()
+        SettingsManager.migrateKeyboardHeight(this)
         LocalizationManager.init(applicationContext)
         lifecycleOwner.onCreate()
         lifecycleOwner.onResume()
@@ -288,6 +292,8 @@ open class MyKeyboardService : InputMethodService() {
             root = makeSavablesView()
         } else if (keyboardMode == KeyboardMode.Settings) {
             root = makeSettingsView()
+        } else if (keyboardMode == KeyboardMode.Resize) {
+            root = makeResizeView()
         } else {
             if (isCaps) {
                 root = root_ShiftOn
@@ -299,13 +305,14 @@ open class MyKeyboardService : InputMethodService() {
             }
         }
 
-        if (keyboardMode != KeyboardMode.Settings && keyboardMode != KeyboardMode.SavedStrings) {
+        // Emojis fill the top bar's height with a taller grid, so the keyboard keeps one height.
+        if (keyboardMode != KeyboardMode.Settings && keyboardMode != KeyboardMode.SavedStrings && keyboardMode != KeyboardMode.Emojis && keyboardMode != KeyboardMode.Resize) {
             ensureDetached(topBar)
             root?.addView(topBar, 0)
         }
 
         root?.let {
-            applyInsetsNowAndOnChange(it)
+            if (keyboardMode != KeyboardMode.Resize) applyInsetsNowAndOnChange(it)
             showInputView(it)
         }
     }
@@ -392,6 +399,8 @@ open class MyKeyboardService : InputMethodService() {
     }
 
     private fun fillRoots() {
+        root_Emojis = null  // rebuilt on the next open, so theme and size changes apply
+        EmojisViewBuilder.warmUp(EmojisData.defaultCategories())
         currentLayout = KeyboardLayoutLoader.loadKeyboardLayout(this, keyboardMode, getLanguage())
         var systemKeybHeight = (KeyboardTheme.getButtonHeight() / 1.5f).toInt()
 
@@ -449,7 +458,9 @@ open class MyKeyboardService : InputMethodService() {
     }
 
     private fun makeEmojiView(): LinearLayout {
-        root_Emojis = EmojisViewBuilder.create(service = this, EmojisData.defaultCategories(), onKeyPress = {
+        root_Emojis?.let { return it }
+        val topBarHeight = (KeyboardTheme.getButtonHeight() / 1.5f).toInt()
+        root_Emojis = EmojisViewBuilder.create(service = this, EmojisData.defaultCategories(), totalHeight = KeyboardTheme.getButtonHeight() * 4 + topBarHeight, onKeyPress = {
             onKeyPressed?.invoke(this.currentInputConnection, it, false)
         }, onABC = {
             keyboardMode = KeyboardMode.Main
@@ -471,6 +482,66 @@ open class MyKeyboardService : InputMethodService() {
         return LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
             addView(panel)
+        }
+    }
+
+    /** The resize mode: the keyboard without labels and the buttons that change its height and position, see [ResizeOverlayView]. */
+    private fun makeResizeView(): LinearLayout {
+        val box = LinearLayout(this).apply { orientation = LinearLayout.VERTICAL }
+        // The space under the keyboard without the offset (the navigation bar); the overlay draws that space itself, so this root gets no padding.
+        val base = (bottomPadding ?: (autoNavBarInsetPx(box) + this.bottomOffset)) - this.bottomOffset
+        lateinit var overlay: ResizeOverlayView
+        overlay = ResizeOverlayView(
+            this,
+            startHeight = this.keyboardHeight,
+            startOffset = this.bottomOffset,
+            defaultHeight = SettingsManager.DEFAULT_KEYBOARD_HEIGHT,
+            defaultOffset = SettingsManager.DEFAULT_BOTTOM_OFFSET,
+            basePadding = base,
+            onChange = { keyHeight, offset ->
+                this.keyboardHeight = keyHeight
+                this.bottomOffset = offset
+                ResizeSync.tick++  // the sliders in the app follow along
+                overlay.layoutParams = overlay.layoutParams.apply { height = overlay.windowHeight() }
+            },
+            onReleased = { overlay.setLook(captureKeyboardLook()) },
+            onDone = {
+                bottomPadding = null  // worked out again for the new offset
+                keyboardMode = KeyboardMode.Main
+                reloadKeyboard()
+            })
+        overlay.layoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, overlay.windowHeight())
+        overlay.setLook(captureKeyboardLook())
+        box.addView(overlay)
+        return box
+    }
+
+    /**
+     * A picture of the real keyboard (top row included) at the current size with every label hidden, the same look the keys take while
+     * the cursor is dragged. It is built off screen; null if anything goes wrong, and the resize view then draws plain keys.
+     */
+    private fun captureKeyboardLook(): android.graphics.Bitmap? {
+        val savedMode = keyboardMode
+        return try {
+            keyboardMode = KeyboardMode.Main  // the Main layout, not the plain one
+            fillRoots()
+            val keyboard = root_ShiftOff ?: return null
+            ensureDetached(keyboard)
+            ensureDetached(topBar)
+            topBar?.let { keyboard.addView(it, 0) }
+            val width = resources.displayMetrics.widthPixels
+            keyboard.measure(View.MeasureSpec.makeMeasureSpec(width, View.MeasureSpec.EXACTLY), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED))
+            keyboard.layout(0, 0, width, keyboard.measuredHeight)
+            BottomRowBuilder.setLabelsHidden(keyboard, true)
+            val bitmap = android.graphics.Bitmap.createBitmap(width, keyboard.measuredHeight, android.graphics.Bitmap.Config.ARGB_8888)
+            keyboard.draw(android.graphics.Canvas(bitmap))
+            BottomRowBuilder.setLabelsHidden(keyboard, false)
+            topBar?.let { keyboard.removeView(it) }
+            bitmap
+        } catch (e: Throwable) {
+            null
+        } finally {
+            keyboardMode = savedMode
         }
     }
 

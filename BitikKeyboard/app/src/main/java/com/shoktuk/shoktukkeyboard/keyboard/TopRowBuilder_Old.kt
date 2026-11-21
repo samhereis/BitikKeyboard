@@ -65,17 +65,23 @@ object TopRowBuilder_Old {
             }
         }
 
-        var switchLanguageView = SystemKeyBuilder.systemButton_Text(
+        var switchLanguageView = TopRowButtons.text(
             service = service, text = alphabetLabel, buttonHeight = buttonHeight, onClick = { onAlphabetChange() }, applyBitikFont = true)
         rowLayout.addView(switchLanguageView)
-        val starButton = SystemKeyBuilder.systemButton_Text(
-            service = service, text = "★", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
+        val starButton = TopRowButtons.drawable(
+            service = service, drawableRes = com.shoktuk.shoktukkeyboard.R.drawable.ic_key_star, buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.SavedStrings) })
         rowLayout.addView(starButton)
+        // Emoji panel, right after the saved strings key; it hides together with it while a word is typed.
+        val emojiButton = TopRowButtons.text(
+            service = service, text = "😀", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Emojis) })
+        rowLayout.addView(emojiButton)
         val jsTranscriber = JSTranscriber(service)
+        var spreadCentre: ViewGroup? = null
 
         if (context.suggestionsEnabled(WritingSystem.Bitik)) {
             val strip = BitikSuggestionStrip.createContainer(service, buttonHeight)
             rowLayout.addView(strip)
+            spreadCentre = strip
             onTypedListener.addOnTypedListener(strip) {
                 strip.post { BitikSuggestionStrip.update(service.currentInputConnection, jsTranscriber, strip) }
             }
@@ -86,6 +92,7 @@ object TopRowBuilder_Old {
             }
 
             rowLayout.addView(lastWordContainer)
+            spreadCentre = lastWordContainer
 
             onTypedListener.addOnTypedListener(lastWordContainer) {
                 lastWordContainer.post {
@@ -154,19 +161,24 @@ object TopRowBuilder_Old {
             rowLayout.addView(scrollView)
         }
 
-        val gearButton = SystemKeyBuilder.systemButton_Text(
-            service = service, text = "⚙", buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) })
+        // Resize mode (keyboard height and position), just left of the settings key.
+        val resizeButton = TopRowButtons.drawable(
+            service = service, drawableRes = com.shoktuk.shoktukkeyboard.R.drawable.ic_key_resize, buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Resize) })
+        rowLayout.addView(resizeButton)
+        val gearButton = TopRowButtons.drawable(
+            service = service, drawableRes = com.shoktuk.shoktukkeyboard.R.drawable.ic_key_settings, buttonHeight = buttonHeight, onClick = { onModeChange(KeyboardMode.Settings) })
         rowLayout.addView(gearButton)
-        BitikSuggestionStrip.sideButtons = if (context.suggestionsEnabled(WritingSystem.Bitik)) listOf(starButton, gearButton) else emptyList()
-        rowLayout.addView(
-            SystemKeyBuilder.systemButton_Icon(
-                service, KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight, onClick = {
-                    val imm = service.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-                    imm.showInputMethodPicker()
-                    TopRowBuilder_Old.onTypedListener.invoke()
-                })
-        )
+        val globeButton = TopRowButtons.drawable(
+            service, com.shoktuk.shoktukkeyboard.R.drawable.ic_key_language, buttonHeight, onClick = {
+                val imm = service.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+                imm.showInputMethodPicker()
+                TopRowBuilder_Old.onTypedListener.invoke()
+            })
+        BitikSuggestionStrip.sideButtons = if (context.suggestionsEnabled(WritingSystem.Bitik)) listOf(switchLanguageView, starButton, emojiButton, resizeButton, gearButton, globeButton) else emptyList()
+        rowLayout.addView(globeButton)
 
+        spreadCentre?.let { TopRowSpacing.spreadEvenly(rowLayout, it, it) }
+        TopRowSpacing.flatten(switchLanguageView, starButton, emojiButton, resizeButton, gearButton, globeButton)
         return rowLayout
     }
 

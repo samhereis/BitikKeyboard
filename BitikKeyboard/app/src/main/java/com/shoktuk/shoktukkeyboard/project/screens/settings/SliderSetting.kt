@@ -1,6 +1,8 @@
 package com.shoktuk.shoktukkeyboard.project.screens.settings
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +24,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -29,7 +32,9 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SliderSetting(
-    label: String, value: Int, valueRange: ClosedFloatingPointRange<Float>, onValueChange: (Int) -> Unit, modifier: Modifier = Modifier
+    label: String, value: Int, valueRange: ClosedFloatingPointRange<Float>, onValueChange: (Int) -> Unit, modifier: Modifier = Modifier,
+    /** When set, a small mark on the track and a note beside the label show where the standard value is. */
+    defaultValue: Int? = null
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), tonalElevation = 0.dp, shadowElevation = 0.dp, border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
@@ -42,13 +47,30 @@ fun SliderSetting(
         ) {
 
             Column(Modifier.weight(1f)) {
-                Text(
-                    text = label, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = label, fontSize = 15.sp, color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    if (defaultValue != null) {
+                        Text(
+                            text = "  ·  " + defaultValue, fontSize = 12.sp, color = MaterialTheme.colorScheme.outline
+                        )
+                    }
+                }
 
-                Slider(value = value.toFloat(), onValueChange = { onValueChange(it.toInt()) }, valueRange = valueRange, thumb = {
-                    SliderDefaults.TickSize
-                })
+                val markColor = MaterialTheme.colorScheme.primary
+                Box {
+                    Slider(value = value.toFloat(), onValueChange = { new -> new.toInt().let { if (it != value) onValueChange(it) } }, valueRange = valueRange, thumb = {
+                        SliderDefaults.TickSize
+                    })
+                    if (defaultValue != null) {
+                        Canvas(Modifier.matchParentSize()) {
+                            val fraction = (defaultValue - valueRange.start) / (valueRange.endInclusive - valueRange.start)
+                            val x = fraction.coerceIn(0f, 1f) * size.width
+                            drawLine(markColor, Offset(x, size.height * 0.2f), Offset(x, size.height * 0.8f), strokeWidth = 2.dp.toPx())
+                        }
+                    }
+                }
             }
 
             Text(

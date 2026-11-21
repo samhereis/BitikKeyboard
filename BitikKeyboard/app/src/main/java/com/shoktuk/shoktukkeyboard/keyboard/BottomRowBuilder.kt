@@ -55,14 +55,14 @@ object BottomRowBuilder {
     private val hiddenLabels = HashMap<View, Float>()
 
     /** The system keyboard's trackpad mode: every label disappears while the cursor is being dragged. */
-    private fun setLabelsHidden(anchor: View, hidden: Boolean) {
+    fun setLabelsHidden(anchor: View, hidden: Boolean) {
         if (!hidden) {
             hiddenLabels.forEach { (view, alpha) -> view.alpha = alpha }
             hiddenLabels.clear()
             return
         }
         fun walk(view: View) {
-            if ((view is TextView || view is android.widget.ImageView) && view.tag != KEEP_VISIBLE) {
+            if ((view is TextView || view is android.widget.ImageView || view is TopRowButtons.GlyphView) && view.tag != KEEP_VISIBLE) {
                 hiddenLabels[view] = view.alpha
                 view.alpha = 0f
             }
@@ -117,9 +117,31 @@ object BottomRowBuilder {
     /** The dot and comma keys are a little narrower than the other system keys (they were easy to hit by mistake); space takes the room. */
     private const val PUNCTUATION_WIDTH = 0.78f
 
-    private fun narrowPunctuation(view: View): View {
-        view.layoutParams = (view.layoutParams as LinearLayout.LayoutParams).apply { width = (width * PUNCTUATION_WIDTH).toInt() }
+    /** The symbols and enter keys, as a share of a normal system key's width (space takes the room that frees up). */
+    private const val SYSTEM_KEY_WIDTH = 0.8f
+
+    /**
+     * The gap between two neighbouring bottom-row keys is `KeyboardTheme.BOTTOM_ROW_KEY_GAP_DP`, drawn in whole pixels (the nearest
+     * whole number, so any decimal like 3.5 works). Each key keeps the smaller half on its start side and the rest on its end side,
+     * so two neighbours always add up to exactly the gap, odd or even.
+     */
+    private fun keyGapPx(context: android.content.Context): Int =
+        kotlin.math.round(KeyboardTheme.BOTTOM_ROW_KEY_GAP_DP * context.resources.displayMetrics.density).toInt()
+
+    private fun keyGapStartPx(context: android.content.Context): Int = keyGapPx(context) / 2
+    private fun keyGapEndPx(context: android.content.Context): Int = keyGapPx(context) - keyGapStartPx(context)
+
+    /** Redraws the key's pill with the bottom row's gap on its sides (the touch area stays the same). */
+    private fun tightGap(view: View, style: com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle): View {
+        val v = dpToPx(view.context, KeyboardTheme.KEY_MARGIN_DP_OnlyVisual_V)
+        view.background = android.graphics.drawable.InsetDrawable(
+            KeyboardTheme.createDrawableFromStyle(view.context, style), keyGapStartPx(view.context), v, keyGapEndPx(view.context), v)
         return view
+    }
+
+    private fun narrowPunctuation(view: View, style: com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle = KeyboardTheme.getLetterButtonStyle_Normal(view.context)): View {
+        view.layoutParams = (view.layoutParams as LinearLayout.LayoutParams).apply { width = (width * PUNCTUATION_WIDTH).toInt() }
+        return tightGap(view, style)
     }
 
     private fun dismissCarousel() {
@@ -414,12 +436,18 @@ object BottomRowBuilder {
         service.currentInputConnection?.setSelection(start, end)
     }
 
-    /** Enter keeps its tap; dragging sideways from it right away moves the cursor, like the space bar used to. */
-    private fun wireEnterCursorDrag(service: InputMethodService, key: View) {
+    /**
+     * Enter and the word separator keep their tap (and long press, if they have one); dragging sideways from them right away
+     * moves the cursor, like the space bar used to.
+     */
+    private fun wireEnterCursorDrag(
+        service: InputMethodService, key: View,
+        style: com.shoktuk.shoktukkeyboard.ui.theme.ButtonStyle = KeyboardTheme.getSystemButtonStyle(service),
+    ) {
         val density = key.resources.displayMetrics.density
         val stepPx = density * 10
         val slopPx = density * 12
-        val tint = KeyboardTheme.getSystemButtonStyle(service).textColor.toColorInt()
+        val tint = style.textColor.toColorInt()
         // Added once and only faded in and out, like the space bar's icon, so it can't be lost between drags.
         val dragIcon = android.widget.ImageView(service).apply {
             setImageResource(com.shoktuk.shoktukkeyboard.R.drawable.ic_drag_all)
@@ -486,7 +514,11 @@ object BottomRowBuilder {
                 MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
                     v.isPressed = false
                     if (cursorMode) show(false)
-                    else if (e.actionMasked == MotionEvent.ACTION_UP) v.performClick()
+                    else if (e.actionMasked == MotionEvent.ACTION_UP) {
+                        // The touch listener takes the events, so a long press has to be recognised here.
+                        val held = e.eventTime - e.downTime >= android.view.ViewConfiguration.getLongPressTimeout()
+                        if (!(held && v.hasOnLongClickListeners() && v.performLongClick())) v.performClick()
+                    }
                     cursorMode = false
                     v.parent?.requestDisallowInterceptTouchEvent(false)
                     true
@@ -506,6 +538,11 @@ object BottomRowBuilder {
         var comma_alt = if (isLeftSide) ", " else "⹁ "
         var dot = if (isBitik) "· " else ". "
         var dot_alt = if (isBitik) ". " else "· "
+        // Every alphabet follows the usual order: comma left of space, dot right.
+        val leftKey = comma
+        val leftAlt = comma_alt
+        val rightKey = dot
+        val rightAlt = dot_alt
 
         val action = service.currentInputEditorInfo.imeOptions and EditorInfo.IME_MASK_ACTION
         val isMultiline = (service.currentInputEditorInfo.inputType and InputType.TYPE_TEXT_FLAG_MULTI_LINE) != 0
@@ -558,25 +595,39 @@ object BottomRowBuilder {
             }
 
             layoutParams = LinearLayout.LayoutParams(
-                KeyboardTheme.getSystemButtonWidth(context), targetHeight, 0.1f
+                (KeyboardTheme.getSystemButtonWidth(context) * SYSTEM_KEY_WIDTH).toInt(), targetHeight, 0.1f
             ).apply {
-                marginStart = dpToPx(context, 4)
-                marginEnd = dpToPx(context, 4)
+                marginStart = keyGapStartPx(context)
+                marginEnd = keyGapEndPx(context)
             }
         }
 
         bottomRow.addView(returnView)
 
         bottomRow.addView(
-            narrowPunctuation(SystemKeyBuilder.systemButton_Text(service, dot, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
-                onKeyPressed?.invoke(service.currentInputConnection, dot, true)
+            narrowPunctuation(SystemKeyBuilder.systemButton_Text(service, leftKey, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
+                onKeyPressed?.invoke(service.currentInputConnection, leftKey, true)
             }, onLongClick = {
-                onKeyPressed?.invoke(service.currentInputConnection, dot_alt, true)
+                onKeyPressed?.invoke(service.currentInputConnection, leftAlt, true)
             }))
+        )
+
+        // The keyboard switcher again (it is also in the top row), just before the space bar, where Gboard has its globe.
+        // Same size as the comma and dot keys.
+        bottomRow.addView(
+            narrowPunctuation(
+                SystemKeyBuilder.systemButton_Icon(service, KeyboardTheme.LANGUAGE_ICON_FILE, buttonHeight, onClick = {
+                    val imm = service.getSystemService(android.content.Context.INPUT_METHOD_SERVICE) as android.view.inputmethod.InputMethodManager
+                    imm.showInputMethodPicker()
+                    TopRowBuilder_Old.onTypedListener.invoke()
+                }),
+                KeyboardTheme.getSystemButtonStyle(service)
+            )
         )
 
         val spaceBtn = SystemKeyBuilder.expandableSystemButton_Icon(service, KeyboardTheme.SPACE_ICON_FILE, " ", buttonHeight) as FrameLayout
         val spaceStyle = KeyboardTheme.getLetterButtonStyle_Normal(service)
+        tightGap(spaceBtn, spaceStyle)
         val spaceTextColor = spaceStyle.textColor.toColorInt()
         val canSwitchKeyboard = MyKeyboardService.context.availableWritingSystems().size > 1
         val mutedColor = androidx.core.graphics.ColorUtils.setAlphaComponent(spaceTextColor, 110)
@@ -789,19 +840,23 @@ object BottomRowBuilder {
         if (isBitik && MyKeyboardService.context.wordSeparator != WordSeparator.Off) {
             var wp = MyKeyboardService.context.wordSeparator.id.replace("{", "").replace("}", "").reversed()
 
-            bottomRow.addView(
+            val separatorStyle = KeyboardTheme.getLetterButtonStyle_Normal(service)
+            val separatorKey = tightGap(
                 SystemKeyBuilder.expandableSystemButton_Text(
                     service, "⁚", buttonHeight, wp, onClick = {
                         onKeyPressed?.invoke(service.currentInputConnection, ":", true)
-                    })
+                    }),
+                separatorStyle
             )
+            wireEnterCursorDrag(service, separatorKey, separatorStyle)
+            bottomRow.addView(separatorKey)
         }
 
         bottomRow.addView(
-            narrowPunctuation(SystemKeyBuilder.systemButton_Text(service, comma, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
-                onKeyPressed?.invoke(service.currentInputConnection, comma, true)
+            narrowPunctuation(SystemKeyBuilder.systemButton_Text(service, rightKey, buttonHeight, style = KeyboardTheme.getLetterButtonStyle_Normal(service), onClick = {
+                onKeyPressed?.invoke(service.currentInputConnection, rightKey, true)
             }, onLongClick = {
-                onKeyPressed?.invoke(service.currentInputConnection, comma_alt, true)
+                onKeyPressed?.invoke(service.currentInputConnection, rightAlt, true)
             }))
         )
 
@@ -844,10 +899,10 @@ object BottomRowBuilder {
             }
 
             layoutParams = LinearLayout.LayoutParams(
-                KeyboardTheme.getSystemButtonWidth(context), targetHeight, 0.1f
+                (KeyboardTheme.getSystemButtonWidth(context) * SYSTEM_KEY_WIDTH).toInt(), targetHeight, 0.1f
             ).apply {
-                marginStart = dpToPx(context, 4)
-                marginEnd = dpToPx(context, 4)
+                marginStart = keyGapStartPx(context)
+                marginEnd = keyGapEndPx(context)
             }
         }
 

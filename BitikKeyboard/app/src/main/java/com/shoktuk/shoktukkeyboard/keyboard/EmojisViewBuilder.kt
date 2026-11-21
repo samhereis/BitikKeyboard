@@ -57,8 +57,25 @@ object EmojisViewBuilder {
         sp.edit().putString(KEY_RECENTS, arr.toString()).apply()
     }
 
+    /** Which emoji the phone's font can draw, per category. Checking thousands of glyphs is the slow part of opening the view, so it is done once. */
+    private val drawableCache = java.util.concurrent.ConcurrentHashMap<Int, List<String>>()
+
+    private fun drawableEmojis(cat: EmojiCategory): List<String> =
+        drawableCache.getOrPut(cat.type) {
+            // Newer emoji the phone's font can't draw would show as empty boxes, so leave them out.
+            val paint = Paint()
+            cat.emojis.filter { paint.hasGlyph(it) }
+        }
+
+    /** Does the glyph check ahead of time, off the main thread, so the first open of the emoji view is quick too. */
+    fun warmUp(categories: List<EmojiCategory>) {
+        if (drawableCache.size >= categories.size) return
+        Thread { categories.forEach { drawableEmojis(it) } }.start()
+    }
+
+    /** [totalHeight] is the height of the main keyboard (top bar included), so switching to emojis does not resize the keyboard. */
     fun create(
-        service: InputMethodService, emojiByType: List<EmojiCategory>, onKeyPress: (String) -> Unit, onABC: () -> Unit, onBackspace: () -> Unit
+        service: InputMethodService, emojiByType: List<EmojiCategory>, totalHeight: Int, onKeyPress: (String) -> Unit, onABC: () -> Unit, onBackspace: () -> Unit
     ): LinearLayout {
 
         val buttonHeight = KeyboardTheme.getButtonHeight()
@@ -146,7 +163,8 @@ object EmojisViewBuilder {
         root.addView(recentsScroll)
 
         val rowsCount = 4
-        val gridAreaHeight = buttonHeight * 3
+        // Whatever is left after the recents row, the bottom strip and the divider line goes to the grid.
+        val gridAreaHeight = max(buttonHeight * 3, totalHeight - recentsRowHeight - buttonHeight / 2 - dp(service, 1f))
 
         val mainHScroll = HorizontalScrollView(service).apply {
             isHorizontalScrollBarEnabled = false
@@ -164,7 +182,6 @@ object EmojisViewBuilder {
 
         // Sections in display order. Positions are read from the views when needed, so nothing depends on layout listeners.
         val sectionViews = linkedMapOf<Int, View>()
-        val glyphPaint = Paint()
         var selectedType = tabOrder.firstOrNull() ?: 0
 
         fun registerRecent(emoji: String) {
@@ -175,11 +192,12 @@ object EmojisViewBuilder {
             rebuildRecents()
         }
 
-        for (type in tabOrder) {
-            val cat = emojiByType.firstOrNull { it.type == type } ?: continue
-            // Newer emoji the phone's font can't draw would show as empty boxes, so leave them out.
-            val drawable = cat.emojis.filter { glyphPaint.hasGlyph(it) }
-            if (drawable.isEmpty()) continue
+        /** Builds one category's grid and adds it to the scroller. */
+        fun addSection(type: Int) {
+            val cat = emojiByType.firstOrNull { it.type == type } ?: return
+            val drawable = drawableEmojis(cat)
+            if (drawable.isEmpty()) return
+
 
             val cellSide = max(1, floor(gridAreaHeight.toFloat() / rowsCount.toFloat()).toInt())
 
@@ -235,6 +253,19 @@ object EmojisViewBuilder {
             hStack.addView(section)
         }
 
+        // The first category is there at once; the rest are added one per frame, so the view opens without waiting for all ~2000 emoji.
+        val toAdd = tabOrder.filter { t -> emojiByType.firstOrNull { it.type == t }?.let { drawableEmojis(it).isNotEmpty() } == true }
+        toAdd.firstOrNull()?.let { addSection(it) }
+        val handler = android.os.Handler(android.os.Looper.getMainLooper())
+        fun addRest(i: Int) {
+            if (i >= toAdd.size) return
+            handler.post {
+                addSection(toAdd[i])
+                addRest(i + 1)
+            }
+        }
+        addRest(1)
+
         root.addView(mainHScroll)
 
         val bottom = LinearLayout(service).apply {
@@ -269,7 +300,7 @@ object EmojisViewBuilder {
         var pickerDownX = 0f
         var pickerDragging = false
         var pickerScrubbing = false
-        val visibleTypes = sectionViews.keys.toList()
+        val visibleTypes = toAdd
         val chipSide = (buttonHeight / 2.5f).toInt()
         val chips = linkedMapOf<Int, TextView>()
 

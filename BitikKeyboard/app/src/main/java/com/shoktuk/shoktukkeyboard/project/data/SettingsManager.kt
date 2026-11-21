@@ -32,10 +32,27 @@ object SettingsManager {
             print(e)
         }
 
-        return 170
+        return default
     }
 
     private fun SharedPreferences.setInt(key: String, value: Int) = edit { putInt(key, value) }
+
+    /**
+     * The height setting changed its zero: the old key "buttonHeight" counted 170 as the standard size, the new key
+     * "keyboard_height_v2" counts the same size as 100. A saved old value is moved over once as (old - 70), so nobody's keyboard
+     * changes size, and a person who never set it simply gets the new default, which is the same 170 on screen.
+     * The keyboard itself works with the "real" value (old numbers); only the sliders show the new numbers.
+     */
+    private const val HEIGHT_KEY = "keyboard_height_v2"
+    private const val LEGACY_HEIGHT_KEY = "buttonHeight"
+    const val KEYBOARD_HEIGHT_BASE = 70
+
+    /** The standard height as the sliders show it. */
+    const val DEFAULT_KEYBOARD_HEIGHT_SETTING = 100
+
+    /** The standard height as the keyboard uses it (what the resize mode snaps to). */
+    const val DEFAULT_KEYBOARD_HEIGHT = DEFAULT_KEYBOARD_HEIGHT_SETTING + KEYBOARD_HEIGHT_BASE
+    const val DEFAULT_BOTTOM_OFFSET = 25
 
     private const val SUGGESTIONS_OFF_KEY = "suggestionsOffScripts"
 
@@ -214,15 +231,38 @@ object SettingsManager {
         get() = prefs().getEnum(NavBarPaddingSolution.KEY, NavBarPaddingSolution.Solution_Auto)
         set(v) = prefs().setEnum(NavBarPaddingSolution.KEY, v)
 
+    /**
+     * Moves an old saved height to the new key, once, and removes the old key so it is never read or updated again:
+     * 190 saved under "buttonHeight" becomes 120 under "keyboard_height_v2" (190 - [KEYBOARD_HEIGHT_BASE]) and looks exactly the same.
+     * Runs when the app or the keyboard starts; reading the height does the same check, in case something reads it first.
+     */
+    fun migrateKeyboardHeight(context: Context) {
+        val prefs = context.prefs()
+        if (!prefs.contains(LEGACY_HEIGHT_KEY)) return
+        prefs.edit {
+            if (!prefs.contains(HEIGHT_KEY)) putInt(HEIGHT_KEY, prefs.getIntOrDefault(LEGACY_HEIGHT_KEY, DEFAULT_KEYBOARD_HEIGHT) - KEYBOARD_HEIGHT_BASE)
+            remove(LEGACY_HEIGHT_KEY)
+        }
+    }
+
+    /** The keyboard's key height in pixels, as the keyboard uses it. Stored as [HEIGHT_KEY] (this minus [KEYBOARD_HEIGHT_BASE]). */
     var Context.keyboardHeight: Int
-        get() = prefs().getIntOrDefault("buttonHeight", 170)
-        set(v) = prefs().setInt("buttonHeight", v)
+        get() {
+            migrateKeyboardHeight(this)
+            return prefs().getIntOrDefault(HEIGHT_KEY, DEFAULT_KEYBOARD_HEIGHT_SETTING) + KEYBOARD_HEIGHT_BASE
+        }
+        set(v) = prefs().setInt(HEIGHT_KEY, v - KEYBOARD_HEIGHT_BASE)
+
+    /** The same height as the sliders show it (standard = [DEFAULT_KEYBOARD_HEIGHT_SETTING]). */
+    var Context.keyboardHeightSetting: Int
+        get() = keyboardHeight - KEYBOARD_HEIGHT_BASE
+        set(v) { keyboardHeight = v + KEYBOARD_HEIGHT_BASE }
 
     var Context.savedStringsTextSize: Int
         get() = prefs().getIntOrDefault("savedStringsTextSize", 15)
         set(v) = prefs().setInt("savedStringsTextSize", v)
 
     var Context.bottomOffset: Int
-        get() = prefs().getIntOrDefault("bottomOffset", 25)
+        get() = prefs().getIntOrDefault("bottomOffset", DEFAULT_BOTTOM_OFFSET)
         set(v) = prefs().setInt("bottomOffset", v)
 }

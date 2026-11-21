@@ -61,6 +61,16 @@ object SystemKeyBuilder {
         return root
     }
 
+    /** Like [systemButton_Icon] but for a vector drawable resource (tinted to the key's text colour). */
+    fun systemButton_Drawable(
+        service: InputMethodService, @androidx.annotation.DrawableRes drawableRes: Int, buttonHeight: Int, style: ButtonStyle = KeyboardTheme.getSystemButtonStyle(service), onClick: (() -> Unit)? = null, weight: Float = 0f
+    ): View {
+        val root = newContainer(service, style, buttonHeight, weight)
+        root.addView(makeCenteredContent(service, style, buttonHeight, iconRes = drawableRes))
+        root.setOnClickListener { onClick?.invoke() }
+        return root
+    }
+
     fun systemButton_Icon(
         service: InputMethodService, assetPath: String, buttonHeight: Int, style: ButtonStyle = KeyboardTheme.getSystemButtonStyle(service), onClick: (() -> Unit)? = null, weight: Float = 0f
     ): View {
@@ -165,7 +175,7 @@ object SystemKeyBuilder {
     }
 
     private fun makeCenteredContent(
-        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, bald: Boolean = true, textId: Int? = null, textToSet: String? = null, iconAssetPath: String? = null, applyBitikFont: Boolean = false
+        service: InputMethodService, style: ButtonStyle, buttonHeight: Int, bald: Boolean = true, textId: Int? = null, textToSet: String? = null, iconAssetPath: String? = null, iconRes: Int? = null, applyBitikFont: Boolean = false
     ): View {
         val container = LinearLayout(service).apply {
             orientation = LinearLayout.VERTICAL
@@ -176,8 +186,8 @@ object SystemKeyBuilder {
         }
         val textColorInt = style.textColor.toColorInt()
 
-        if (iconAssetPath != null) {
-            KeyboardTheme.loadAssetDrawable(service, iconAssetPath)?.let { d ->
+        if (iconAssetPath != null || iconRes != null) {
+            (if (iconRes != null) androidx.core.content.ContextCompat.getDrawable(service, iconRes) else KeyboardTheme.loadAssetDrawable(service, iconAssetPath!!))?.let { d ->
                 val icon = DrawableCompat.wrap(d).mutate()
                 DrawableCompat.setTint(icon, textColorInt)
                 val size = (buttonHeight / 2.5).toInt()

@@ -55,6 +55,8 @@ object KeyboardTheme {
     const val KEY_MARGIN_DP_OnlyVisual_H = 2
     const val KEY_MARGIN_DP_OnlyVisual_V = 6
 
+    const val BOTTOM_ROW_KEY_GAP_DP = 6f
+
     private val BASE_LETTER_TEXT_SIZE_SP = 19
     private val BASE_LETTER_TEXT_SIZE_SP_NOHINT = 21
     private val BASE_HINT_TEXT_SIZE_SP = 9.5f
@@ -320,12 +322,12 @@ private fun KeyboardThemeColorsPreview(colors: List<String>) {
 @Composable
 private fun KeyboardThemePreview_Light() {
     val context = LocalContext.current
-    KeyboardThemeColorsPreview(KeyboardTheme.getDynamicColorPalette(false))
+    KeyboardThemeColorsPreview(KeyboardTheme.getDynamicColorPalette(false, context))
 }
 
 @Preview(name = "KeyboardTheme – Dark", showBackground = true, uiMode = android.content.res.Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun KeyboardThemePreview_Dark() {
     val context = LocalContext.current
-    KeyboardThemeColorsPreview(KeyboardTheme.getDynamicColorPalette(true))
+    KeyboardThemeColorsPreview(KeyboardTheme.getDynamicColorPalette(true, context))
 }

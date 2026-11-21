@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.shoktuk.shoktukkeyboard.project.data.SettingsManager.migrateKeyboardHeight(this)
         enableEdgeToEdge()
         requestedDestination = intent?.getStringExtra(EXTRA_DESTINATION)
         applyScreenshotLanguage()

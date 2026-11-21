@@ -79,7 +79,7 @@ import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.enVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.eshVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Click
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.freeTamga_Hold
-import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeight
+import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardHeightSetting
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.keyboardVariant
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.kirilisaStatus
 import com.shoktuk.shoktukkeyboard.project.data.SettingsManager.latinStatus
@@ -110,8 +110,8 @@ import localized
 fun MainSettingsScreen(showSliders: Boolean = true, showVariantNote: Boolean = true) {
     val context = LocalContext.current
 
-    var buttonHeight by remember { mutableStateOf(context.keyboardHeight) }
-    var bottomOffset by remember { mutableStateOf(context.bottomOffset) }
+    var buttonHeight by remember(com.shoktuk.shoktukkeyboard.project.data.ResizeSync.tick) { mutableStateOf(context.keyboardHeightSetting) }
+    var bottomOffset by remember(com.shoktuk.shoktukkeyboard.project.data.ResizeSync.tick) { mutableStateOf(context.bottomOffset) }
 
     var keyboardVariant by remember { mutableStateOf(context.keyboardVariant) }
     var keyboardVariantPreviewExpanded by remember { mutableStateOf(false) }
@@ -154,16 +154,16 @@ fun MainSettingsScreen(showSliders: Boolean = true, showVariantNote: Boolean = t
             ) {
                 if (showSliders) {
                 SliderSetting(
-                    label = Loc_Settings.buttonHeight.localizedTitle(context), value = buttonHeight, valueRange = 100f..300f, onValueChange = {
+                    label = Loc_Settings.buttonHeight.localizedTitle(context), value = buttonHeight, valueRange = 30f..230f, defaultValue = com.shoktuk.shoktukkeyboard.project.data.SettingsManager.DEFAULT_KEYBOARD_HEIGHT_SETTING, onValueChange = {
                         buttonHeight = it
-                        context.keyboardHeight = buttonHeight
-                        onSettingChanged.invoke()
+                        context.keyboardHeightSetting = buttonHeight
+                        onSettingChanged.invokeDebounced()
                     })
                 SliderSetting(
-                    label = Loc_Settings.bottomOffset.localizedTitle(context), value = bottomOffset, valueRange = -200f..200f, onValueChange = {
+                    label = Loc_Settings.bottomOffset.localizedTitle(context), value = bottomOffset, valueRange = -200f..200f, defaultValue = com.shoktuk.shoktukkeyboard.project.data.SettingsManager.DEFAULT_BOTTOM_OFFSET, onValueChange = {
                         bottomOffset = it
                         context.bottomOffset = bottomOffset
-                        onSettingChanged.invoke()
+                        onSettingChanged.invokeDebounced()
                     })
                 }
 
